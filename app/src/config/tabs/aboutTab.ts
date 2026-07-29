@@ -62,18 +62,6 @@ const registerAboutInfoGroup = (tab: SettingTabBuilder) => {
     </div>
 </div>`,
     });
-    group.slot({
-        key: "accountSupport",
-        keywords: [
-            window.siyuan.languages.accountSupport1,
-            window.siyuan.languages.accountSupport2,
-        ],
-        html: () => `<div class="b3-label config-item">
-    <div class="b3-label__text">${window.siyuan.languages.accountSupport1}</div>
-    <div class="fn__hr"></div>
-    <div class="b3-label__text">${window.siyuan.languages.accountSupport2}</div>
-</div>`,
-    });
 };
 
 export const registerAboutTab = (tab: SettingTabBuilder) => {

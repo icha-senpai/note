@@ -56,9 +56,6 @@ type AppConf struct {
 	Export         *conf.Export         `json:"export"`
 	Graph          *conf.Graph          `json:"graph"`
 	UILayout       *conf.UILayout       `json:"uiLayout"`
-	UserData       string               `json:"userData"`
-	User           *conf.User           `json:"-"`
-	Account        *conf.Account        `json:"account"`
 	ReadOnly       bool                 `json:"readonly"`
 	ServerAddrs    []string             `json:"serverAddrs"`
 	AccessAuthCode string               `json:"accessAuthCode"`
@@ -85,8 +82,7 @@ type AppConf struct {
 
 	MCPOAuth string `json:"mcpOAuth"`
 
-	m        *sync.RWMutex
-	userLock *sync.RWMutex
+	m *sync.RWMutex
 }
 
 func NewAppConf() *AppConf {
@@ -94,7 +90,6 @@ func NewAppConf() *AppConf {
 		LogLevel:    "debug",
 		CloudRegion: 1,
 		m:           &sync.RWMutex{},
-		userLock:    &sync.RWMutex{},
 	}
 }
 
@@ -128,18 +123,6 @@ func (conf *AppConf) SetUILayout(uiLayout *conf.UILayout) {
 	conf.m.Lock()
 	defer conf.m.Unlock()
 	conf.UILayout = uiLayout
-}
-
-func (conf *AppConf) GetUser() *conf.User {
-	conf.userLock.RLock()
-	defer conf.userLock.RUnlock()
-	return conf.User
-}
-
-func (conf *AppConf) SetUser(user *conf.User) {
-	conf.userLock.Lock()
-	defer conf.userLock.Unlock()
-	conf.User = user
 }
 
 func InitConf() {
@@ -462,14 +445,6 @@ func InitConf() {
 
 	if nil == Conf.Snippet {
 		Conf.Snippet = conf.NewSnpt()
-	}
-
-	if "" != Conf.UserData {
-		Conf.UserData = ""
-		Conf.Save()
-	}
-	if nil == Conf.Account {
-		Conf.Account = conf.NewAccount()
 	}
 
 	if nil == Conf.Sync {
@@ -1099,7 +1074,6 @@ func (conf *AppConf) GetClosedBoxes() (ret []*Box) {
 
 func (conf *AppConf) Language(num int) (ret string) {
 	ret = conf.language(num)
-	ret = strings.ReplaceAll(ret, "${accountServer}", util.GetCloudAccountServer())
 	return
 }
 
@@ -1129,12 +1103,7 @@ func InitBoxes() {
 	logging.LogInfof("tree/block count [%d/%d]", treenode.CountTrees(), blockCount)
 }
 
-func HasFullAccess() bool {
-	return true
-}
-
 const (
-	MaskedUserData       = ""
 	MaskedAccessAuthCode = "*******"
 )
 
@@ -1153,7 +1122,6 @@ func GetMaskedConf() (ret *AppConf, err error) {
 		return
 	}
 
-	ret.UserData = MaskedUserData
 	ret.MCPOAuth = ""
 	if "" != ret.AccessAuthCode {
 		ret.AccessAuthCode = MaskedAccessAuthCode

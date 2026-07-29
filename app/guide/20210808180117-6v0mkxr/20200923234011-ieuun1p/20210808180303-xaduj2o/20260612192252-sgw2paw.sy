@@ -6352,20 +6352,6 @@
 			]
 		},
 		{
-			"ID": "20260630162856-zj3ir9b",
-			"Type": "NodeParagraph",
-			"Properties": {
-				"id": "20260630162856-zj3ir9b",
-				"updated": "20260630162856"
-			},
-			"Children": [
-				{
-					"Type": "NodeText",
-					"Data": "List, read, and convert cloud inbox shorthands (clipped web pages, messages, and attachments) into local documents. Requires a subscription."
-				}
-			]
-		},
-		{
 			"ID": "20260630162856-rb809w6",
 			"Type": "NodeTable",
 			"TableAligns": [

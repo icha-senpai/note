@@ -276,12 +276,6 @@ func checkSync(boot, exit, byHand bool) bool {
 		Conf.Sync.Enabled = false
 		Conf.Save()
 		return false
-	case conf.ProviderWebDAV, conf.ProviderS3, conf.ProviderLocal:
-		if !HasFullAccess() {
-			Conf.Sync.Enabled = false
-			Conf.Save()
-			return false
-		}
 	}
 
 	if 7 < autoSyncErrCount && !byHand {

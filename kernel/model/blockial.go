@@ -37,13 +37,6 @@ import (
 )
 
 func SetBlockReminder(id, timed string) (err error) {
-	if !HasFullAccess() {
-		if "ios" == util.Container {
-			return errors.New(Conf.Language(122))
-		}
-		return errors.New(Conf.Language(29))
-	}
-
 	var timedMills int64
 	if "0" != timed {
 		t, e := dateparse.ParseIn(timed, time.Now().Location())

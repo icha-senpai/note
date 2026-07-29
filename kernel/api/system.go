@@ -337,8 +337,6 @@ func exportConf(c *gin.Context) {
 	if nil != clonedConf.Export {
 		clonedConf.Export.PandocBin = ""
 	}
-	clonedConf.UserData = ""
-	clonedConf.Account = nil
 	clonedConf.AccessAuthCode = ""
 	if nil != clonedConf.System {
 		clonedConf.System.ID = ""
@@ -602,7 +600,7 @@ func getConf(c *gin.Context) {
 		return
 	}
 
-	if !maskedConf.Sync.Enabled || (0 == maskedConf.Sync.Provider && !model.HasFullAccess()) {
+	if !maskedConf.Sync.Enabled || 0 == maskedConf.Sync.Provider {
 		maskedConf.Sync.Stat = model.Conf.Language(53)
 	}
 

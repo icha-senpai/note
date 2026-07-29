@@ -1430,38 +1430,6 @@
 			]
 		},
 		{
-			"ID": "20240530101000-qpmlidy",
-			"Type": "NodeParagraph",
-			"Properties": {
-				"ID": "20240530101000-5yask4p",
-				"id": "20240530101000-qpmlidy",
-				"updated": "20240530101000"
-			},
-			"Children": [
-				{
-					"Type": "NodeTextMark",
-					"TextMarkType": "block-ref",
-					"TextMarkBlockRefID": "20240530101000-cb37szr",
-					"TextMarkBlockRefSubtype": "s",
-					"TextMarkTextContent": "メンバーシップサービス"
-				},
-				{
-					"Type": "NodeText",
-					"Data": "を利用するには有料会員登録が必要です。詳しくは"
-				},
-				{
-					"Type": "NodeTextMark",
-					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/en/pricing.html",
-					"TextMarkTextContent": "料金ページ"
-				},
-				{
-					"Type": "NodeText",
-					"Data": "をご覧ください。"
-				}
-			]
-		},
-		{
 			"ID": "20240530101000-6cg9mi2",
 			"Type": "NodeHeading",
 			"HeadingLevel": 2,

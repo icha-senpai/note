@@ -3,8 +3,6 @@ import {fetchPost, fetchSyncPost} from "../util/fetch";
 import {openDataMigration} from "../menus/dataMigration";
 import {mountHelp} from "../util/mount";
 import {syncGuide} from "../sync/syncGuide";
-import {openSetting} from "../config";
-import {hasFeatureAccess} from "../util/featureAccess";
 import {setNoteBook} from "../util/pathName";
 import type {App} from "../index";
 /// #if MOBILE
@@ -35,15 +33,10 @@ const shouldShowOnboarding = () => {
         !window.siyuan.config.onboarding.dismissed;
 };
 
-let pendingLoginHandler: (() => void) | undefined;
 let pendingSyncHandler: (() => void) | undefined;
 let mobileKeyboardHandler: EventListener | undefined;
 
 const dismissOnboarding = () => {
-    if (pendingLoginHandler) {
-        window.removeEventListener("siyuan-login-success", pendingLoginHandler);
-        pendingLoginHandler = undefined;
-    }
     if (pendingSyncHandler) {
         window.removeEventListener("siyuan-sync-success", pendingSyncHandler);
         pendingSyncHandler = undefined;
@@ -71,28 +64,6 @@ const syncAndDismissOnSuccess = (app: App) => {
     syncGuide(app);
 };
 
-const loginAndSync = (app: App) => {
-    if (window.siyuan.user) {
-        if (hasFeatureAccess()) {
-            syncAndDismissOnSuccess(app);
-        } else {
-            syncGuide(app);
-        }
-        return;
-    }
-    if (pendingLoginHandler) {
-        window.removeEventListener("siyuan-login-success", pendingLoginHandler);
-    }
-    pendingLoginHandler = () => {
-        pendingLoginHandler = undefined;
-        if (hasFeatureAccess()) {
-            syncAndDismissOnSuccess(app);
-        }
-    };
-    window.addEventListener("siyuan-login-success", pendingLoginHandler, {once: true});
-    openSetting(app, "sync");
-};
-
 const renderOnboarding = (app: App) => {
     if (!shouldShowOnboarding() || document.querySelector(".onboarding")) {
         return;
@@ -108,7 +79,7 @@ const renderOnboarding = (app: App) => {
     <svg><use xlink:href="#iconDownload"></use></svg>${window.siyuan.languages.importExistingData}
 </button>
 <button class="b3-button b3-button--outline fn__block" data-type="sync">
-    <svg><use xlink:href="#iconCloud"></use></svg>${window.siyuan.languages.loginAndSync}
+    <svg><use xlink:href="#iconCloud"></use></svg>${window.siyuan.languages.settingsAndSync}
 </button>
 <button class="b3-button b3-button--outline fn__block" data-type="guide">
     <svg><use xlink:href="#iconHelp"></use></svg>${window.siyuan.languages.userGuide}
@@ -130,7 +101,7 @@ const renderOnboarding = (app: App) => {
                 });
                 break;
             case "sync":
-                loginAndSync(app);
+                syncAndDismissOnSuccess(app);
                 break;
             case "guide":
                 mountHelp();

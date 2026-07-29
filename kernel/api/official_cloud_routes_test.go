@@ -23,6 +23,7 @@ func TestOfficialCloudRoutesAreNotRegistered(t *testing.T) {
 		"/api/asset/uploadCloud",
 		"/api/asset/uploadCloudByAssetsPaths",
 		"/api/inbox/",
+		"/api/setting/setAccount",
 	}
 
 	for _, route := range server.Routes() {

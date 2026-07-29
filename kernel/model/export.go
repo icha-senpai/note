@@ -1800,9 +1800,6 @@ func ExportStdMarkdown(id string, assetsDestSpace2Underscore, fillCSSVar, adjust
 
 		tree := prepareExportTree(bt)
 		cloudAssetsBase := ""
-		if HasFullAccess() {
-			cloudAssetsBase = util.GetCloudAssetsServer() + Conf.GetUser().UserId + "/"
-		}
 
 		var defBlockIDs []string
 		if 4 == Conf.Export.BlockRefMode {

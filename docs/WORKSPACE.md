@@ -201,7 +201,7 @@ Be careful to distinguish the two `conf.json` files:
 | `conf/conf.json` | **Workspace root** | Workspace-level global config (appearance / langs / system / editor / sync / repo, etc.) |
 | `<boxID>/.siyuan/conf.json` | **Inside a notebook** | That notebook only (BoxConf) |
 
-`conf/conf.json` holds UI appearance, account, sync, AI, flashcard, and other workspace-level settings.
+`conf/conf.json` holds UI appearance, sync, AI, flashcard, and other workspace-level settings.
 
 ---
 

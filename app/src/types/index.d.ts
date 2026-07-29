@@ -565,20 +565,6 @@ interface ISiyuan {
             inbox: import("../layout/dock/Inbox").Inbox | null,
         } & { [key: string]: import("../layout/Model").Model | any };
     },
-    user?: {
-        userId: string
-        userName: string
-        userAvatarURL: string
-        userHomeBImgURL: string
-        userIntro: string
-        userNickname: string
-        userToken: string
-        userTitles: {
-            name: string,
-            icon: string,
-            desc: string
-        }[]
-    },
     dragElement?: HTMLElement,
     dragTitle?: string,
     currentDragOverTabHeadersElement?: HTMLElement

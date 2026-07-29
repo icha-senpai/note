@@ -56,7 +56,6 @@
   - [How to upgrade to a new version?](#how-to-upgrade-to-a-new-version)
   - [What if some blocks (such as paragraph blocks in list items) cannot find the block icon?](#what-if-some-blocks-such-as-paragraph-blocks-in-list-items-cannot-find-the-block-icon)
   - [What should I do if the data repo key is lost?](#what-should-i-do-if-the-data-repo-key-is-lost)
-  - [Do I need to pay for it?](#do-i-need-to-pay-for-it)
 - [🙏 Acknowledgement](#-acknowledgement)
   - [Contributors](#contributors)
 
@@ -77,7 +76,7 @@ Online user guide: [English](https://siyuan-en.b3log.org/)
 
 ## 🔮 Features
 
-Most features are free, even for commercial use.
+All local Scribli features are free to use, including S3, WebDAV, and local-folder sync.
 
 - Content block
   - Block-level reference and two-way links
@@ -110,8 +109,6 @@ Most features are free, even for commercial use.
 - Docker deployment
 - [API](https://github.com/siyuan-note/siyuan/blob/master/docs/API.md)
 - Community marketplace
-
-Some features are only available to paid members, for more details please refer to [Pricing](https://b3log.org/siyuan/en/pricing.html).
 
 ## 🏗️ Architecture and Ecosystem
 
@@ -453,7 +450,7 @@ The data is saved in the workspace data folder:
 
 Data synchronization through third-party synchronization disks is not supported, otherwise data may be corrupted.
 
-Although it does not support third-party sync disks, it supports connecting with third-party cloud storage (Members' privileges).
+Although it does not support third-party sync disks, it supports user-controlled S3, WebDAV, and local-folder sync providers.
 
 ### Is SiYuan open source?
 
@@ -489,12 +486,6 @@ The block icon is omitted for the first sub-block under the list item. You can m
   3. Reinitialize the data repo key. After initializing the key on one device, other devices import the key
   4. The cloud uses the new synchronization directory, the old synchronization directory is no longer available and can be deleted
   5. The existing cloud snapshots are no longer available and can be deleted
-
-### Do I need to pay for it?
-
-Most features are free, even for commercial use.
-
-Member's privileges can only be used after payment, please refer to [Pricing](https://b3log.org/siyuan/en/pricing.html).
 
 ## 🙏 Acknowledgement
 

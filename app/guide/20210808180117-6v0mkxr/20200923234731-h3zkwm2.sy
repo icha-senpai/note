@@ -1249,20 +1249,6 @@
 			]
 		},
 		{
-			"ID": "20201224120448-0rqote3",
-			"Type": "NodeHeading",
-			"HeadingLevel": 2,
-			"Properties": {
-				"id": "20201224120448-0rqote3"
-			},
-			"Children": [
-				{
-					"Type": "NodeText",
-					"Data": "Do I need to pay for it?"
-				}
-			]
-		},
-		{
 			"ID": "20230406111519-ro0o3iv",
 			"Type": "NodeParagraph",
 			"Properties": {
@@ -1273,37 +1259,6 @@
 				{
 					"Type": "NodeText",
 					"Data": "Most features are free, even for commercial use."
-				}
-			]
-		},
-		{
-			"ID": "20230627215819-kfmomdw",
-			"Type": "NodeParagraph",
-			"Properties": {
-				"id": "20230627215819-kfmomdw",
-				"updated": "20230806004444"
-			},
-			"Children": [
-				{
-					"Type": "NodeTextMark",
-					"TextMarkType": "block-ref",
-					"TextMarkBlockRefID": "20230805231614-vqn28eh",
-					"TextMarkBlockRefSubtype": "s",
-					"TextMarkTextContent": "Member\u0026apos;s privileges"
-				},
-				{
-					"Type": "NodeText",
-					"Data": " can only be used after payment, please refer to "
-				},
-				{
-					"Type": "NodeTextMark",
-					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/en/pricing.html",
-					"TextMarkTextContent": "Pricing"
-				},
-				{
-					"Type": "NodeText",
-					"Data": "."
 				}
 			]
 		},

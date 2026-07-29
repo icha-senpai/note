@@ -102,7 +102,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20230429115740-21j01p3",
@@ -159,7 +159,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20230429115740-id1s5ff",
@@ -399,7 +399,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111229-vob22z9",
@@ -465,7 +465,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111229-98p3e3u",
@@ -522,7 +522,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111229-qsw7m2s",
@@ -579,7 +579,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111229-pg7ejry",
@@ -1158,7 +1158,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111245-4exrwcd",
@@ -1215,7 +1215,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111245-c72qm7a",
@@ -1230,20 +1230,6 @@
 							"Data": "An inbox is a container for temporarily storing information to be processed."
 						}
 					]
-				}
-			]
-		},
-		{
-			"ID": "20260614111245-qeay9ky",
-			"Type": "NodeParagraph",
-			"Properties": {
-				"id": "20260614111245-qeay9ky",
-				"updated": "20260614111245"
-			},
-			"Children": [
-				{
-					"Type": "NodeText",
-					"Data": "In Scribli, the Inbox is a cloud-based quick capture feature. Text is temporarily stored in the cloud via WeChat or API calls, and can later be moved into documents from the Inbox panel. This feature requires a subscription."
 				}
 			]
 		},
@@ -1272,7 +1258,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111245-rq2epc7",
@@ -1329,7 +1315,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111245-8z5dsoc",
@@ -1450,7 +1436,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111257-uo9f96w",
@@ -1507,7 +1493,7 @@
 			"Children": [
 				{
 					"Type": "NodeBlockquoteMarker",
-					"Data": "\u003e"
+					"Data": ">"
 				},
 				{
 					"ID": "20260614111257-rt41e11",

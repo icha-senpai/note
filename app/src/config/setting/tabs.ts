@@ -102,7 +102,7 @@ const settingTabs = {
     sync: setting.tab({
         id: "sync",
         icon: "iconCloud",
-        title: () => window.siyuan.languages.accountSync,
+        title: () => window.siyuan.languages.settingsAndSync,
         defaultSave: patchSyncConfig,
         afterMount: mountSyncTabExtras,
     }, registerSyncTab),

@@ -6,7 +6,6 @@ import {isLocalPath, pathPosix} from "../../util/pathName";
 import {processSiYuanUri} from "../../util/uri";
 import {previewDocImage} from "./image";
 import {getDiagramBlock, previewDiagram} from "./diagram";
-import {hasFeatureAccess} from "../../util/featureAccess";
 import {Constants} from "../../constants";
 import {getSearch, isMobile} from "../../util/functions";
 /// #if !BROWSER
@@ -216,20 +215,7 @@ export class Preview {
     }
 
     private link2online(copyElement: HTMLElement) {
-        if (!hasFeatureAccess()) {
-            return;
-        }
-        copyElement.querySelectorAll("[href],[src]").forEach(item => {
-            const oldLink = item.getAttribute("href") || item.getAttribute("src");
-            if (oldLink && oldLink.startsWith("assets/")) {
-                const newLink = Constants.ASSETS_ADDRESS + window.siyuan.user.userId + "/" + oldLink;
-                if (item.getAttribute("href")) {
-                    item.setAttribute("href", newLink);
-                } else {
-                    item.setAttribute("src", newLink);
-                }
-            }
-        });
+        return copyElement;
     }
 
     private async copyToX(copyElement: HTMLElement, protyle: IProtyle, type?: string) {

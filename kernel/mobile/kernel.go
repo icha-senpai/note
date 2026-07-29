@@ -21,7 +21,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
@@ -38,80 +37,6 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 	_ "golang.org/x/mobile/bind"
 )
-
-//
-// accountToken UUID:
-//
-//	6ba7b810-9dad-11d1-0001-377616491562
-
-//
-
-//
-
-func VerifyAppStoreTransaction(accountToken, transactionID string) (retCode int) {
-	retCode = -2
-	retMsg := "unknown error"
-
-	accountToken = strings.TrimSpace(accountToken)
-	transactionID = strings.TrimSpace(transactionID)
-	if "" == accountToken || "" == transactionID {
-		retCode = -6
-		retMsg = "invalid parameters"
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-
-	if 36 != len(accountToken) {
-		retCode = -6
-		retMsg = fmt.Sprintf("invalid accountToken [%s]", accountToken)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-
-	if util.ContainerIOS != util.Container {
-		retCode = -3
-		retMsg = fmt.Sprintf("invalid container [%s]", util.Container)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-
-	user := model.Conf.GetUser()
-	if nil == user || "" == user.UserToken {
-		retCode = -4
-		retMsg = "account not logged in"
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-
-	cloudRegionArg := accountToken[19:20]
-	if "0" != cloudRegionArg && "1" != cloudRegionArg {
-		retCode = -1
-		retMsg = fmt.Sprintf("invalid cloud region [%s]", cloudRegionArg)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-
-	cloudRegion, _ := strconv.Atoi(cloudRegionArg)
-	if util.CurrentCloudRegion != cloudRegion {
-		retCode = -1
-		retMsg = fmt.Sprintf("invalid cloud region [cloudRegionArg=%s, currentRegion=%d]", cloudRegionArg, util.CurrentCloudRegion)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-
-	userID := strings.ReplaceAll(accountToken[22:], "-", "")
-	if user.UserId != userID {
-		retCode = -5
-		retMsg = fmt.Sprintf("invalid user [userID=%s, accountToken=%s]", user.UserId, accountToken)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-
-	retCode = -2
-	retMsg = util.ErrOfficialServicesDisabled.Error()
-	logging.LogErrorf("%s", retMsg)
-	return
-}
 
 func StartKernelFast(container, appDir, workspaceBaseDir, localIPs string) {
 	go server.Serve(true, model.Conf.CookieKey)
