@@ -1,16 +1,13 @@
 import {showMessage} from "../../dialog/message";
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
-import {confirmDialog} from "../../dialog/confirmDialog";
 import {saveExportFile} from "../../protyle/util/compatibility";
 import {hasFeatureAccess} from "../../util/featureAccess";
-import {getCloudURL} from "../util/about";
 
 /** 按当前配置刷新同步 Tab 可见性与动态面板（供 syncRuntime 调用） */
 export const refreshSyncTabPanels = (root: Element) => {
     setSyncConfigItemVisible(root);
     setSyncModeRelatedConfigItemVisible(root);
     renderProviderConfig(root);
-    renderCloudSpace(root);
 };
 
 /** 仅刷新与同步模式相关的配置项可见性（供 syncRuntime 调用） */
@@ -21,14 +18,12 @@ export const refreshSyncModeRelatedItems = (root: Element) => {
 const setSyncConfigItemVisible = (root: Element) => {
     const visible = window.siyuan.config.sync.provider !== 0 && hasFeatureAccess();
     [
-        "cloudSpace",
         "sync.enabled",
         "sync.generateConflictDoc",
         "sync.mode",
         "sync.interval",
         "sync.perception",
         "syncCloudDirBlock",
-        "syncCloudBackupBlock",
     ]
     .forEach((id) => {
         root.querySelector(`#${CSS.escape(id)}`)?.closest(".config-item")?.classList.toggle("fn__none", !visible);
@@ -174,7 +169,6 @@ const buildProviderConfigKeywords = (): string[] => {
         window.siyuan.languages.syncThirdPartyProviderLocalIntro,
         window.siyuan.languages.syncThirdPartyProviderTip,
         // 操作按钮
-        window.siyuan.languages.cloudStoragePurge,
         window.siyuan.languages.import,
         window.siyuan.languages.export,
         // 表单标签与选项（硬编码英文）
@@ -254,7 +248,11 @@ const genProviderFlexSelect = (label: string, id: string, optionsHtml: string) =
 </div>`;
 
 const genProviderActionButtons = (dataType: SyncProviderConfigKey) => {
-    const importExportHtml = dataType === "s3" || dataType === "webdav" ? `<div class="fn__space"></div>
+    if (dataType !== "s3" && dataType !== "webdav") {
+        return "";
+    }
+    return `<div class="b3-label b3-label--inner fn__flex fn__flex-wrap">
+    <div class="fn__flex-1"></div>
     <button class="b3-button b3-button--outline fn__size200" style="position: relative">
         <input id="importSyncConfig" class="b3-form__upload" type="file" data-type="${dataType}">
         <svg><use xlink:href="#iconDownload"></use></svg>${window.siyuan.languages.import}
@@ -262,12 +260,7 @@ const genProviderActionButtons = (dataType: SyncProviderConfigKey) => {
     <div class="fn__space"></div>
     <button class="b3-button b3-button--outline fn__size200" id="exportSyncConfig" data-type="${dataType}">
         <svg><use xlink:href="#iconUpload"></use></svg>${window.siyuan.languages.export}
-    </button>` : "";
-    return `<div class="b3-label b3-label--inner fn__flex fn__flex-wrap">
-    <div class="fn__flex-1"></div>
-    <button class="b3-button b3-button--outline fn__size200" id="purgeCloudData">
-        <svg><use xlink:href="#iconTrashcan"></use></svg>${window.siyuan.languages.cloudStoragePurge}
-    </button>${importExportHtml}
+    </button>
 </div>`;
 };
 
@@ -302,12 +295,6 @@ const bindProviderConfigEvent = (configElement: Element, root: Element) => {
     exportButton?.addEventListener("click", () => {
         fetchPost(exportButton.getAttribute("data-type") === "s3" ? "/api/sync/exportSyncProviderS3" : "/api/sync/exportSyncProviderWebDAV", {}, (response) => {
             void saveExportFile(response.data.zip);
-        });
-    });
-
-    configElement.querySelector("#purgeCloudData")?.addEventListener("click", () => {
-        confirmDialog("♻️ " + window.siyuan.languages.cloudStoragePurge, `<div class="b3-typography">${window.siyuan.languages.cloudStoragePurgeConfirm}</div>`, () => {
-            fetchPost("/api/repo/purgeCloudRepo");
         });
     });
 
@@ -384,87 +371,3 @@ const readProviderConfigFields = <T extends object>(configElement: Element, temp
     });
     return result as T;
 };
-
-const renderCloudSpace = (root: Element) => {
-    const cloudSpaceElement = root.querySelector("#cloudSpace");
-    if (!cloudSpaceElement) {
-        return;
-    }
-
-    const isProviderOfficial = window.siyuan.config.sync.provider === 0;
-    const hasAccess = hasFeatureAccess();
-    const hidden = cloudSpaceElement.classList.toggle("fn__none", !isProviderOfficial || !hasAccess);
-    if (!hidden) {
-        cloudSpaceElement.innerHTML = buildCloudSpaceHtml(
-            Object.fromEntries(CLOUD_SPACE_DISPLAY_KEYS.map((key) => [key, "0B"])) as CloudSpaceDisplayData,
-            true
-        );
-        fetchSyncPost("/api/cloud/getCloudSpace").then((response) => {
-            if (response.code === 1) {
-                cloudSpaceElement.innerHTML = `<span class="ft__error">${response.msg}</span>`;
-                return;
-            }
-            if (response.code !== 0 || !response.data) {
-                return;
-            }
-            cloudSpaceElement.innerHTML = buildCloudSpaceHtml({
-                syncSize: response.data.sync.hSize,
-                backupSize: response.data.backup.hSize,
-                hAssetSize: response.data.hAssetSize,
-                hSize: response.data.hSize,
-                hTotalSize: response.data.hTotalSize,
-                hExchangeSize: response.data.hExchangeSize,
-                hTrafficUploadSize: response.data.hTrafficUploadSize,
-                hTrafficDownloadSize: response.data.hTrafficDownloadSize,
-                hTrafficAPIGet: response.data.hTrafficAPIGet,
-                hTrafficAPIPut: response.data.hTrafficAPIPut,
-            }, false);
-        }).catch(() => {});
-    }
-};
-
-const CLOUD_SPACE_DISPLAY_KEYS = [
-    "syncSize",
-    "backupSize",
-    "hAssetSize",
-    "hSize",
-    "hTotalSize",
-    "hExchangeSize",
-    "hTrafficUploadSize",
-    "hTrafficDownloadSize",
-    "hTrafficAPIGet",
-    "hTrafficAPIPut",
-] as const;
-
-type CloudSpaceDisplayData = Record<(typeof CLOUD_SPACE_DISPLAY_KEYS)[number], string>;
-
-const buildCloudSpaceHtml = (data: CloudSpaceDisplayData, loading: boolean) =>
-    `<div class="fn__flex config-cloud-space${loading ? " config-cloud-space--loading" : ""}">
-    <div class="config-cloud-space__body">
-        ${window.siyuan.languages.cloudStorage}
-        <div class="config-cloud-space__placeholder">
-        <div class="fn__hr"></div>
-        <ul class="b3-list">
-            <li class="b3-list-item" style="cursor: auto;">${window.siyuan.languages.sync}<span class="b3-list-item__meta">${data.syncSize}</span></li>
-            <li class="b3-list-item" style="cursor: auto;">${window.siyuan.languages.backup}<span class="b3-list-item__meta">${data.backupSize}</span></li>
-            <li class="b3-list-item" style="cursor: auto;"><a href="${getCloudURL("settings/file?type=3")}" target="_blank">${window.siyuan.languages.cdn}</a><span class="b3-list-item__meta">${data.hAssetSize}</span></li>
-            <li class="b3-list-item" style="cursor: auto;">${window.siyuan.languages.total}<span class="b3-list-item__meta">${data.hSize}</span></li>
-            <li class="b3-list-item" style="cursor: auto;">${window.siyuan.languages.sizeLimit}<span class="b3-list-item__meta">${data.hTotalSize}</span></li>
-            <li class="b3-list-item" style="cursor: auto;"><a href="${getCloudURL("settings/point")}" target="_blank">${window.siyuan.languages.pointExchangeSize}</a><span class="b3-list-item__meta">${data.hExchangeSize}</span></li>
-        </ul>
-        </div>
-    </div>
-    <div class="config-cloud-space__body">
-        ${window.siyuan.languages.trafficStat}
-        <div class="config-cloud-space__placeholder">
-        <div class="fn__hr"></div>
-        <ul class="b3-list">
-            <li class="b3-list-item" style="cursor: auto;">${window.siyuan.languages.upload}<span class="fn__space"></span><span class="ft__on-surface">${data.hTrafficUploadSize}</span></li>
-            <li class="b3-list-item" style="cursor: auto;">${window.siyuan.languages.download}<span class="fn__space"></span><span class="ft__on-surface">${data.hTrafficDownloadSize}</span></li>
-            <li class="b3-list-item" style="cursor: auto;">API GET<span class="fn__space"></span><span class="ft__on-surface">${data.hTrafficAPIGet}</span></li>
-            <li class="b3-list-item" style="cursor: auto;">API PUT<span class="fn__space"></span><span class="ft__on-surface">${data.hTrafficAPIPut}</span></li>
-        </ul>
-        </div>
-    </div>
-    ${loading ? '<div class="fn__loading"><img width="64px" src="/stage/loading-pure.svg"></div>' : ""}
-</div>`;

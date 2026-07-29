@@ -1619,8 +1619,8 @@ declare namespace Config {
          */
         perception: boolean;
         /**
-         * Cloud storage service provider
-         * - `0`: Scribli official cloud storage service
+         * Synchronization provider
+         * - `0`: Disabled / no sync provider
          * - `2`: Object storage service compatible with S3 protocol
          * - `3`: Network storage service using WebDAV protocol
          * - `4`: Local file system

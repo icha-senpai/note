@@ -71,16 +71,16 @@ type Local struct {
 }
 
 const (
-	ProviderSiYuan = 0
-	ProviderS3     = 2
-	ProviderWebDAV = 3
-	ProviderLocal  = 4
+	ProviderDisabled = 0
+	ProviderS3       = 2
+	ProviderWebDAV   = 3
+	ProviderLocal    = 4
 )
 
 func ProviderToStr(provider int) string {
 	switch provider {
-	case ProviderSiYuan:
-		return "Scribli"
+	case ProviderDisabled:
+		return "Disabled"
 	case ProviderS3:
 		return "S3"
 	case ProviderWebDAV:

@@ -1,0 +1,35 @@
+package api
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+)
+
+func TestOfficialCloudRoutesAreNotRegistered(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	server := gin.New()
+	ServeAPI(server)
+
+	removedRoutes := []string{
+		"/api/cloud/",
+		"/api/repo/purgeCloudRepo",
+		"/api/repo/getCloudRepoTagSnapshots",
+		"/api/repo/getCloudRepoSnapshots",
+		"/api/repo/removeCloudRepoTagSnapshot",
+		"/api/repo/uploadCloudSnapshot",
+		"/api/repo/downloadCloudSnapshot",
+		"/api/asset/uploadCloud",
+		"/api/asset/uploadCloudByAssetsPaths",
+		"/api/inbox/",
+	}
+
+	for _, route := range server.Routes() {
+		for _, removed := range removedRoutes {
+			if strings.HasPrefix(route.Path, removed) {
+				t.Fatalf("official cloud route is still registered: %s", route.Path)
+			}
+		}
+	}
+}

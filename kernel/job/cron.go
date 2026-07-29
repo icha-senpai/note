@@ -32,9 +32,6 @@ func StartCron() {
 	go every(7*time.Second, task.StatusJob)
 	go every(5*time.Second, model.SyncDataJob)
 	go every(2*time.Hour, model.StatJob)
-	go every(6*time.Hour, util.RefreshRhyResultJob, "RefreshRhyResultJob")
-	go every(2*time.Hour, model.RefreshCheckJob2H)
-	go every(6*time.Hour, model.RefreshCheckJob6H)
 	go every(3*time.Second, model.FlushUpdateRefTextRenameDocJob)
 	go every(util.SQLFlushInterval, sql.FlushTxJob)
 	go every(util.SQLFlushInterval, sql.FlushHistoryTxJob)
@@ -46,7 +43,7 @@ func StartCron() {
 	go every(30*time.Second, model.HookDesktopUIProcJob)
 	go every(24*time.Hour, model.AutoPurgeRepoJob)
 	go every(1*time.Minute, model.AutoFixIndex)
-	go every(30*time.Minute, model.AutoCheckMicrosoftDefenderJob)
+	go every(7*24*time.Hour, model.AutoCheckMicrosoftDefenderJob)
 	go every(24*time.Hour, model.ClearOutdatedHistoryDirJob)
 	go every(1*time.Minute, model.AutoLockIdleEncryptedBoxesJob)
 	if util.IsMobileContainer() {

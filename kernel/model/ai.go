@@ -102,17 +102,12 @@ func chatGPTComplete(msg string, contextMsgs []string, cloud bool) (ret string, 
 		contextMsgs = contextMsgs[len(contextMsgs)-editing.MaxHistoryMessages:]
 	}
 
-	var gpt GPT
-	if cloud {
-		gpt = &CloudGPT{}
-	} else {
-		gpt = &OpenAIGPT{
-			c:                   util.NewOpenAIClientWithModel(prov.APIKey, prov.BaseURL, m.Name),
-			m:                   m,
-			timeout:             prov.RequestTimeout,
-			maxCompletionTokens: editing.MaxCompletionTokens,
-			temperature:         editing.Temperature,
-		}
+	gpt := &OpenAIGPT{
+		c:                   util.NewOpenAIClientWithModel(prov.APIKey, prov.BaseURL, m.Name),
+		m:                   m,
+		timeout:             prov.RequestTimeout,
+		maxCompletionTokens: editing.MaxCompletionTokens,
+		temperature:         editing.Temperature,
 	}
 
 	part, stop, chatErr := gpt.chat(msg, contextMsgs)
@@ -198,11 +193,4 @@ type OpenAIGPT struct {
 
 func (gpt *OpenAIGPT) chat(msg string, contextMsgs []string) (partRet string, stop bool, err error) {
 	return util.ChatGPT(msg, contextMsgs, gpt.c, gpt.m.Name, gpt.maxCompletionTokens, gpt.temperature, gpt.timeout)
-}
-
-type CloudGPT struct {
-}
-
-func (gpt *CloudGPT) chat(msg string, contextMsgs []string) (partRet string, stop bool, err error) {
-	return CloudChatGPT(msg, contextMsgs)
 }

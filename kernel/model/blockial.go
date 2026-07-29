@@ -25,7 +25,6 @@ import (
 
 	"github.com/88250/gulu"
 	"github.com/88250/lute/ast"
-	"github.com/88250/lute/editor"
 	"github.com/88250/lute/html"
 	"github.com/88250/lute/parse"
 	"github.com/araddon/dateparse"
@@ -36,39 +35,6 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/treenode"
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
-
-func SetCloudReminder(id, content, timed string) (err error) {
-	if !HasFullAccess() {
-		if "ios" == util.Container {
-			return errors.New(Conf.Language(122))
-		}
-		return errors.New(Conf.Language(29))
-	}
-
-	var timedMills int64
-	if "0" != timed {
-		t, e := dateparse.ParseIn(timed, time.Now().Location())
-		if nil != e {
-			return e
-		}
-		timedMills = t.UnixMilli()
-	}
-
-	content = strings.TrimSpace(content)
-	err = SetCloudBlockReminder(id, content, timedMills)
-	if err != nil {
-		return
-	}
-
-	if "0" == timed {
-		util.PushMsg(fmt.Sprintf(Conf.Language(109), content), 3000)
-	} else {
-		util.PushMsg(fmt.Sprintf(Conf.Language(101), time.UnixMilli(timedMills).Format("2006-01-02 15:04")), 5000)
-	}
-
-	IncSync()
-	return
-}
 
 func SetBlockReminder(id, timed string) (err error) {
 	if !HasFullAccess() {
@@ -102,14 +68,6 @@ func SetBlockReminder(id, timed string) (err error) {
 
 	if ast.NodeDocument != node.Type && node.IsContainerBlock() {
 		node = treenode.FirstLeafBlock(node)
-	}
-
-	content := sql.NodeStaticContent(node, nil, false, false, false)
-	content = gulu.Str.SubStr(content, 128)
-	content = strings.ReplaceAll(content, editor.Zwsp, "")
-	err = SetCloudBlockReminder(id, content, timedMills)
-	if err != nil {
-		return
 	}
 
 	attrName := "custom-reminder-wechat"

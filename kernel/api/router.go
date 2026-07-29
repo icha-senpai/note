@@ -291,9 +291,6 @@ func ServeAPI(ginServer *gin.Engine) {
 	ginServer.Handle("POST", "/api/attr/getBlockAttrs", model.CheckAuth, getBlockAttrs)
 	ginServer.Handle("POST", "/api/attr/batchGetBlockAttrs", model.CheckAuth, batchGetBlockAttrs)
 
-	ginServer.Handle("POST", "/api/cloud/getCloudSpace", model.CheckAuth, model.CheckAdminRole, getCloudSpace)
-	ginServer.Handle("POST", "/api/cloud/setCloudReminder", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, setCloudReminder)
-
 	ginServer.Handle("POST", "/api/sync/setSyncEnable", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, setSyncEnable)
 	ginServer.Handle("POST", "/api/sync/setSyncInterval", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, setSyncInterval)
 	ginServer.Handle("POST", "/api/sync/setSyncPerception", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, setSyncPerception)
@@ -316,17 +313,11 @@ func ServeAPI(ginServer *gin.Engine) {
 	ginServer.Handle("POST", "/api/sync/exportSyncProviderWebDAV", model.CheckAuth, model.CheckAdminRole, exportSyncProviderWebDAV)
 	ginServer.Handle("POST", "/api/sync/importSyncProviderWebDAV", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, importSyncProviderWebDAV)
 
-	ginServer.Handle("POST", "/api/inbox/getShorthands", model.CheckAuth, model.CheckAdminRole, getShorthands)
-	ginServer.Handle("POST", "/api/inbox/getShorthand", model.CheckAuth, model.CheckAdminRole, getShorthand)
-	ginServer.Handle("POST", "/api/inbox/removeShorthands", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, removeShorthands)
-
 	ginServer.Handle("POST", "/api/extension/copy", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, extensionCopy)
 
 	ginServer.Handle("POST", "/api/clipboard/readFilePaths", model.CheckAuth, model.CheckAdminRole, readFilePaths)
 	ginServer.Handle("POST", "/api/clipboard/writeFilePath", model.CheckAuth, model.CheckAdminRole, writeFilePath)
 
-	ginServer.Handle("POST", "/api/asset/uploadCloud", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, uploadCloud)
-	ginServer.Handle("POST", "/api/asset/uploadCloudByAssetsPaths", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, uploadCloudByAssetsPaths)
 	ginServer.Handle("POST", "/api/asset/insertLocalAssets", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, insertLocalAssets)
 	ginServer.Handle("POST", "/api/asset/insertCover", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, insertCover)
 	ginServer.Handle("POST", "/api/asset/resolveAssetPath", model.CheckAuth, resolveAssetPath)
@@ -434,7 +425,6 @@ func ServeAPI(ginServer *gin.Engine) {
 	ginServer.Handle("POST", "/api/repo/initRepoKeyFromPassphrase", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, initRepoKeyFromPassphrase)
 	ginServer.Handle("POST", "/api/repo/resetRepo", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, resetRepo)
 	ginServer.Handle("POST", "/api/repo/purgeRepo", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, purgeRepo)
-	ginServer.Handle("POST", "/api/repo/purgeCloudRepo", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, purgeCloudRepo)
 	ginServer.Handle("POST", "/api/repo/importRepoKey", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, importRepoKey)
 	ginServer.Handle("POST", "/api/repo/createSnapshot", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, createSnapshot)
 	ginServer.Handle("POST", "/api/repo/tagSnapshot", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, tagSnapshot)
@@ -443,11 +433,6 @@ func ServeAPI(ginServer *gin.Engine) {
 	ginServer.Handle("POST", "/api/repo/searchRepoFile", model.CheckAuth, model.CheckAdminRole, searchRepoFile)
 	ginServer.Handle("POST", "/api/repo/getRepoTagSnapshots", model.CheckAuth, model.CheckAdminRole, getRepoTagSnapshots)
 	ginServer.Handle("POST", "/api/repo/removeRepoTagSnapshot", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, removeRepoTagSnapshot)
-	ginServer.Handle("POST", "/api/repo/getCloudRepoTagSnapshots", model.CheckAuth, model.CheckAdminRole, getCloudRepoTagSnapshots)
-	ginServer.Handle("POST", "/api/repo/getCloudRepoSnapshots", model.CheckAuth, model.CheckAdminRole, getCloudRepoSnapshots)
-	ginServer.Handle("POST", "/api/repo/removeCloudRepoTagSnapshot", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, removeCloudRepoTagSnapshot)
-	ginServer.Handle("POST", "/api/repo/uploadCloudSnapshot", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, uploadCloudSnapshot)
-	ginServer.Handle("POST", "/api/repo/downloadCloudSnapshot", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, downloadCloudSnapshot)
 	ginServer.Handle("POST", "/api/repo/diffRepoSnapshots", model.CheckAuth, model.CheckAdminRole, diffRepoSnapshots)
 	ginServer.Handle("POST", "/api/repo/openRepoSnapshotFile", model.CheckAuth, model.CheckAdminRole, openRepoSnapshotFile)
 	ginServer.Handle("POST", "/api/repo/rollbackRepoSnapshotFile", model.CheckAuth, model.CheckAdminRole, rollbackRepoSnapshotFile)

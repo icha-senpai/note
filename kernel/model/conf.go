@@ -465,7 +465,8 @@ func InitConf() {
 	}
 
 	if "" != Conf.UserData {
-		Conf.SetUser(loadUserFromConf())
+		Conf.UserData = ""
+		Conf.Save()
 	}
 	if nil == Conf.Account {
 		Conf.Account = conf.NewAccount()
@@ -833,8 +834,7 @@ func Close(force, setCurrentWorkspace bool, execInstallPkg int) (exitCode int, i
 			OnKernelPluginsStop()
 		}
 
-		if Conf.Sync.Enabled && 3 != Conf.Sync.Mode &&
-			((HasFullAccess() && conf.ProviderSiYuan == Conf.Sync.Provider) || conf.ProviderSiYuan != Conf.Sync.Provider) {
+		if Conf.Sync.Enabled && 3 != Conf.Sync.Mode && conf.ProviderDisabled != Conf.Sync.Provider {
 			syncData(true, false)
 			if 0 != ExitSyncSucc {
 				exitCode = 1

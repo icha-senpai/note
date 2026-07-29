@@ -9,7 +9,6 @@ import {RecordMedia} from "../util/RecordMedia";
 import {hideMessage, showMessage} from "../../dialog/message";
 import {uploadFiles} from "../upload";
 import {hasClosestBlock, hasTopClosestByClassName} from "../util/hasClosest";
-import {hasFeatureAccess} from "../../util/featureAccess";
 import {isMobile} from "../../util/functions";
 import {zoomOut} from "../../menus/protyle";
 import {getEditorRange} from "../util/selection";
@@ -22,7 +21,6 @@ import {ipcRenderer} from "electron";
 /// #endif
 import {onGet} from "../util/onGet";
 import {hideElements} from "../ui/hideElements";
-import {confirmDialog} from "../../dialog/confirmDialog";
 import {reloadProtyle} from "../util/reload";
 import {Menu} from "../../plugin/Menu";
 import {getNoContainerElement} from "../wysiwyg/getBlock";
@@ -390,18 +388,6 @@ ${padHTML}
                     accelerator: window.siyuan.config.keymap.editor.general.netAssets2LocalAssets.custom,
                     click() {
                         net2LocalAssets(protyle, "Assets");
-                    }
-                }).element);
-                window.siyuan.menus.menu.append(new MenuItem({
-                    id: "uploadAssets2CDN",
-                    label: window.siyuan.languages.uploadAssets2CDN,
-                    icon: "iconUploadAssets",
-                    click() {
-                        if (hasFeatureAccess()) {
-                            confirmDialog("📦 " + window.siyuan.languages.uploadAssets2CDN, window.siyuan.languages.uploadAssets2CDNConfirmTip, () => {
-                                fetchPost("/api/asset/uploadCloud", {id: protyle.block.id});
-                            });
-                        }
                     }
                 }).element);
             }

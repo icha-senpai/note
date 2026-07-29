@@ -19,16 +19,13 @@ package model
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/88250/go-humanize"
 	"github.com/88250/gulu"
 	"github.com/88250/lute/html"
 	"github.com/gorilla/websocket"
@@ -275,20 +272,10 @@ func checkSync(boot, exit, byHand bool) bool {
 	}
 
 	switch Conf.Sync.Provider {
-	case conf.ProviderSiYuan:
-		if util.OfficialServicesUnavailable() {
-			if byHand {
-				util.PushMsg(util.OfficialServicesError().Error(), 5000)
-			}
-			Conf.Sync.Enabled = false
-			Conf.Save()
-			return false
-		}
-		if !HasFullAccess() {
-			Conf.Sync.Enabled = false
-			Conf.Save()
-			return false
-		}
+	case conf.ProviderDisabled:
+		Conf.Sync.Enabled = false
+		Conf.Save()
+		return false
 	case conf.ProviderWebDAV, conf.ProviderS3, conf.ProviderLocal:
 		if !HasFullAccess() {
 			Conf.Sync.Enabled = false
@@ -464,6 +451,9 @@ func SetSyncMode(mode int) {
 
 func SetSyncProvider(provider int) (err error) {
 	Conf.Sync.Provider = provider
+	if conf.ProviderDisabled == provider {
+		Conf.Sync.Enabled = false
+	}
 	Conf.Save()
 	return
 }
@@ -548,7 +538,7 @@ var (
 
 func CreateCloudSyncDir(name string) (err error) {
 	switch Conf.Sync.Provider {
-	case conf.ProviderSiYuan, conf.ProviderLocal:
+	case conf.ProviderLocal:
 		break
 	default:
 		err = errors.New(Conf.Language(131))
@@ -575,7 +565,7 @@ func CreateCloudSyncDir(name string) (err error) {
 
 func RemoveCloudSyncDir(name string) (err error) {
 	switch Conf.Sync.Provider {
-	case conf.ProviderSiYuan, conf.ProviderLocal:
+	case conf.ProviderLocal:
 		break
 	default:
 		err = errors.New(Conf.Language(131))
@@ -608,14 +598,13 @@ func RemoveCloudSyncDir(name string) (err error) {
 func ListCloudSyncDir() (syncDirs []*Sync, hSize string, err error) {
 	syncDirs = []*Sync{}
 	var dirs []*cloud.Repo
-	var size int64
 
 	repo, err := newRepository()
 	if err != nil {
 		return
 	}
 
-	dirs, size, err = repo.GetCloudRepos()
+	dirs, _, err = repo.GetCloudRepos()
 	if err != nil {
 		err = errors.New(formatRepoErrorMsg(err))
 		return
@@ -636,15 +625,9 @@ func ListCloudSyncDir() (syncDirs []*Sync, hSize string, err error) {
 			Updated:   d.Updated,
 			CloudName: d.Name,
 		}
-		if conf.ProviderSiYuan == Conf.Sync.Provider {
-			sync.HSize = humanize.BytesCustomCeil(uint64(dirSize), 2)
-		}
 		syncDirs = append(syncDirs, sync)
 	}
 	hSize = "-"
-	if conf.ProviderSiYuan == Conf.Sync.Provider {
-		hSize = humanize.BytesCustomCeil(uint64(size), 2)
-	}
 	if conf.ProviderS3 == Conf.Sync.Provider {
 		Conf.Sync.CloudName = syncDirs[0].CloudName
 		Conf.Save()
@@ -804,11 +787,8 @@ func isProviderOnline(byHand bool) (ret bool) {
 	var checkURL string
 	skipTlsVerify := false
 	switch Conf.Sync.Provider {
-	case conf.ProviderSiYuan:
-		if util.OfficialServicesUnavailable() {
-			return false
-		}
-		checkURL = util.GetCloudSyncServer()
+	case conf.ProviderDisabled:
+		return false
 	case conf.ProviderS3:
 		checkURL = Conf.Sync.S3.Endpoint
 		skipTlsVerify = Conf.Sync.S3.SkipTlsVerify
@@ -886,119 +866,11 @@ func closeSyncWebSocket() {
 func connectSyncWebSocket() {
 	defer logging.Recover()
 
-	if util.OfficialServicesUnavailable() {
-		return
-	}
-
-	if !Conf.Sync.Enabled || !HasFullAccess() || conf.ProviderSiYuan != Conf.Sync.Provider {
-		return
-	}
-
-	if util.ContainerDocker == util.Container {
-		return
-	}
-
-	webSocketConnLock.Lock()
-	defer webSocketConnLock.Unlock()
-
-	if nil != webSocketConn {
-		return
-	}
-
-	//logging.LogInfof("connecting sync websocket...")
-	var dialErr error
-	webSocketConn, dialErr = dialSyncWebSocket()
-	if nil != dialErr {
-		logging.LogWarnf("connect sync websocket failed: %s", dialErr)
-		return
-	}
-	logging.LogInfof("sync websocket connected")
-
-	webSocketConn.SetCloseHandler(func(code int, text string) error {
-		logging.LogWarnf("sync websocket closed: %d, %s", code, text)
-		return nil
-	})
-
-	go func() {
-		defer logging.Recover()
-
-		for {
-			result := gulu.Ret.NewResult()
-			if readErr := webSocketConn.ReadJSON(&result); nil != readErr {
-				time.Sleep(1 * time.Second)
-				if closedSyncWebSocket.Load() {
-					return
-				}
-
-				reconnected := false
-				for range 7 {
-					time.Sleep(7 * time.Second)
-					if nil == Conf.GetUser() {
-						return
-					}
-
-					//logging.LogInfof("reconnecting sync websocket...")
-					webSocketConn, dialErr = dialSyncWebSocket()
-					if nil != dialErr {
-						logging.LogWarnf("reconnect sync websocket failed: %s", dialErr)
-						continue
-					}
-
-					logging.LogInfof("sync websocket reconnected")
-					reconnected = true
-					break
-				}
-				if !reconnected {
-					logging.LogWarnf("reconnect sync websocket failed, do not retry")
-					webSocketConn = nil
-					return
-				}
-
-				continue
-			}
-
-			logging.LogInfof("sync websocket message: %v", result)
-			data := result.Data.(map[string]any)
-			switch data["cmd"].(string) {
-			case "synced":
-				// Improve data synchronization perception https://github.com/siyuan-note/siyuan/issues/13000
-				SyncDataDownload()
-			case "kernels":
-				onlineKernelsLock.Lock()
-
-				onlineKernels = []*OnlineKernel{}
-				for _, kernel := range data["kernels"].([]any) {
-					kernelMap := kernel.(map[string]any)
-					onlineKernels = append(onlineKernels, &OnlineKernel{
-						ID:       kernelMap["id"].(string),
-						Hostname: kernelMap["hostname"].(string),
-						OS:       kernelMap["os"].(string),
-						Ver:      kernelMap["ver"].(string),
-					})
-				}
-
-				onlineKernelsLock.Unlock()
-			}
-		}
-	}()
+	closeSyncWebSocket()
 }
 
 var KernelID = gulu.Rand.String(7)
 
 func dialSyncWebSocket() (c *websocket.Conn, err error) {
-	endpoint := util.GetCloudWebSocketServer() + "/apis/siyuan/dejavu/ws"
-	header := http.Header{
-		"User-Agent":        []string{util.UserAgent},
-		"x-siyuan-uid":      []string{Conf.GetUser().UserId},
-		"x-siyuan-kernel":   []string{KernelID},
-		"x-siyuan-ver":      []string{util.Ver},
-		"x-siyuan-os":       []string{runtime.GOOS},
-		"x-siyuan-hostname": []string{util.GetDeviceName()},
-		"x-siyuan-repo":     []string{Conf.Sync.CloudName},
-	}
-	c, _, err = websocket.DefaultDialer.Dial(endpoint, header)
-	if err == nil {
-		closedSyncWebSocket.Store(false)
-	}
-	return
+	return nil, util.ErrOfficialServicesDisabled
 }

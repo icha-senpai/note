@@ -116,48 +116,8 @@ const renderRepoItem = (response: IWebSocketData, element: Element, type: string
     }
     let actionHTML = "";
     /// #if MOBILE
-    if (type === "getCloudRepoTagSnapshots") {
+    if (type === "getRepoTagSnapshots") {
         actionHTML = `<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="downloadSnapshot">
-    <svg><use xlink:href="#iconDownload"></use></svg>
-    <span class="fn__space"></span>
-    ${window.siyuan.languages.download}
-</span>
-<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="downloadRollback">
-    <svg><use xlink:href="#iconUndo"></use></svg>
-    <span class="fn__space"></span>
-    ${window.siyuan.languages.downloadRollback}
-</span>
-<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="removeCloudRepoTagSnapshot">
-    <svg><use xlink:href="#iconTrashcan"></use></svg>
-    <span class="fn__space"></span>
-    ${window.siyuan.languages.remove}
-</span>
-<span class="fn__flex-1"></span>`;
-    } else if (type === "getCloudRepoSnapshots") {
-        actionHTML = `<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="downloadSnapshot">
-    <svg><use xlink:href="#iconDownload"></use></svg>
-    <span class="fn__space"></span>
-    ${window.siyuan.languages.download}
-</span>
-<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="downloadRollback">
-    <svg><use xlink:href="#iconUndo"></use></svg>
-    <span class="fn__space"></span>
-    ${window.siyuan.languages.downloadRollback}
-</span>
-<span class="fn__flex-1"></span>`;
-    } else if (type === "getRepoTagSnapshots") {
-        actionHTML = `<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="uploadSnapshot">
-    <svg><use xlink:href="#iconUpload"></use></svg>
-    <span class="fn__space"></span>
-    ${window.siyuan.languages.upload}
-</span>
-<span class="fn__flex-1"></span>
 <span class="b3-list-item__action" data-type="rollback">
     <svg><use xlink:href="#iconUndo"></use></svg>
     <span class="fn__space"></span>
@@ -186,16 +146,8 @@ const renderRepoItem = (response: IWebSocketData, element: Element, type: string
 <span class="fn__flex-1"></span>`;
     }
     /// #else
-    if (type === "getCloudRepoTagSnapshots") {
-        actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="downloadSnapshot" aria-label="${window.siyuan.languages.download}"><svg><use xlink:href="#iconDownload"></use></svg></span>
-<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="downloadRollback" aria-label="${window.siyuan.languages.downloadRollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>
-<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="removeCloudRepoTagSnapshot" aria-label="${window.siyuan.languages.remove}"><svg><use xlink:href="#iconTrashcan"></use></svg></span>`;
-    } else if (type === "getCloudRepoSnapshots") {
-        actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="downloadSnapshot" aria-label="${window.siyuan.languages.download}"><svg><use xlink:href="#iconDownload"></use></svg></span>
-<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="downloadRollback" aria-label="${window.siyuan.languages.downloadRollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>`;
-    } else if (type === "getRepoTagSnapshots") {
-        actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="uploadSnapshot" aria-label="${window.siyuan.languages.upload}"><svg><use xlink:href="#iconUpload"></use></svg></span>
-<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.siyuan.languages.rollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>
+    if (type === "getRepoTagSnapshots") {
+        actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.siyuan.languages.rollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>
 <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="removeRepoTagSnapshot" aria-label="${window.siyuan.languages.remove}"><svg><use xlink:href="#iconTrashcan"></use></svg></span>`;
     } else if (type === "getRepoSnapshots") {
         actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="genTag" aria-label="${window.siyuan.languages.tagSnapshot}"><svg><use xlink:href="#iconTag"></use></svg></span>
@@ -385,7 +337,7 @@ const renderRepo = (element: Element, currentPage: number) => {
             pageElement.classList.remove("fn__none");
             renderRepoSearchResult(response, element);
         });
-    } else if (selectValue === "getRepoTagSnapshots" || selectValue === "getCloudRepoTagSnapshots") {
+    } else if (selectValue === "getRepoTagSnapshots") {
         fetchPost(`/api/repo/${selectValue}`, {}, (response) => {
             renderRepoItem(response, element, selectValue);
             selectElement.disabled = false;
@@ -558,8 +510,6 @@ export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc") 
                     <select class="b3-select ${isMobile() ? "fn__size96" : "fn__size200"}">
                         <option value="getRepoSnapshots">${window.siyuan.languages.localSnapshot}</option>
                         <option value="getRepoTagSnapshots">${window.siyuan.languages.localTagSnapshot}</option>
-                        <option value="getCloudRepoSnapshots">${window.siyuan.languages.cloudSnapshot}</option>
-                        <option value="getCloudRepoTagSnapshots">${window.siyuan.languages.cloudTagSnapshot}</option>
                     </select>
                     <span class="fn__space"></span>
                     <button class="b3-button b3-button--outline" disabled data-type="compare">${window.siyuan.languages.compare}</button>
@@ -1001,45 +951,13 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                 event.stopPropagation();
                 event.preventDefault();
                 break;
-            } else if (type === "removeRepoTagSnapshot" || type === "removeCloudRepoTagSnapshot") {
+            } else if (type === "removeRepoTagSnapshot") {
                 const tag = target.parentElement.getAttribute("data-tag");
                 confirmDialog(window.siyuan.languages.deleteOpConfirm, `${window.siyuan.languages.confirmDelete} <i>${tag}</i>?`, () => {
                     fetchPost("/api/repo/" + type, {tag}, () => {
                         renderRepo(repoElement, 1);
                     });
                 }, undefined, true);
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-            } else if (type === "uploadSnapshot") {
-                fetchPost("/api/repo/uploadCloudSnapshot", {
-                    tag: target.parentElement.getAttribute("data-tag"),
-                    id: target.parentElement.getAttribute("data-id")
-                });
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-            } else if (type === "downloadSnapshot") {
-                fetchPost("/api/repo/downloadCloudSnapshot", {
-                    tag: target.parentElement.getAttribute("data-tag"),
-                    id: target.parentElement.getAttribute("data-id")
-                });
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-            } else if (type === "downloadRollback" && !window.siyuan.config.readonly) {
-                confirmDialog("⚠️ " + window.siyuan.languages.downloadRollback, window.siyuan.languages.rollbackConfirm.replace("${name}", window.siyuan.languages.workspaceData)
-                    .replace("${time}", (isMobile() ? target.parentElement.parentElement : target.parentElement).querySelector("span[data-type='hCreated']").textContent.trim()), () => {
-                    const repoId = target.parentElement.getAttribute("data-id");
-                    fetchPost("/api/repo/downloadCloudSnapshot", {
-                        tag: target.parentElement.getAttribute("data-tag"),
-                        id: repoId
-                    }, () => {
-                        fetchPost("/api/repo/checkoutRepo", {
-                            id: repoId
-                        });
-                    });
-                });
                 event.stopPropagation();
                 event.preventDefault();
                 break;
@@ -1051,8 +969,7 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
 </div>
 <div class="b3-dialog__action">
     <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.tagSnapshot}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.tagSnapshotUpload}</button>
+    <button class="b3-button b3-button--text">${window.siyuan.languages.tagSnapshot}</button>
 </div>`,
                     width: isMobile() ? "92vw" : "520px",
                 });
@@ -1061,20 +978,6 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                 inputElement.select();
                 const btnsElement = genTagDialog.element.querySelectorAll(".b3-button");
                 btnsElement[0].addEventListener("click", () => {
-                    genTagDialog.destroy();
-                });
-                btnsElement[2].addEventListener("click", () => {
-                    fetchPost("/api/repo/tagSnapshot", {
-                        id: target.parentElement.getAttribute("data-id"),
-                        name: inputElement.value
-                    }, () => {
-                        fetchPost("/api/repo/uploadCloudSnapshot", {
-                            tag: inputElement.value,
-                            id: target.parentElement.getAttribute("data-id")
-                        }, () => {
-                            renderRepo(repoElement, 1);
-                        });
-                    });
                     genTagDialog.destroy();
                 });
                 btnsElement[1].addEventListener("click", () => {

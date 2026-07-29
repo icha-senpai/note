@@ -17,32 +17,20 @@
 package conf
 
 type User struct {
-	UserId                          string       `json:"userId"`
-	UserName                        string       `json:"userName"`
-	UserAvatarURL                   string       `json:"userAvatarURL"`
-	UserHomeBImgURL                 string       `json:"userHomeBImgURL"`
-	UserTitles                      []*UserTitle `json:"userTitles"`
-	UserIntro                       string       `json:"userIntro"`
-	UserNickname                    string       `json:"userNickname"`
-	UserCreateTime                  string       `json:"userCreateTime"`
-	UserToken                       string       `json:"userToken"`
-	UserTokenExpireTime             string       `json:"userTokenExpireTime"`
-	UserSiYuanRepoSize              float64      `json:"userSiYuanRepoSize"`
-	UserSiYuanPointExchangeRepoSize float64      `json:"userSiYuanPointExchangeRepoSize"`
-	UserSiYuanAssetSize             float64      `json:"userSiYuanAssetSize"`
-	UserTrafficUpload               float64      `json:"userTrafficUpload"`
-	UserTrafficDownload             float64      `json:"userTrafficDownload"`
-	UserTrafficAPIGet               float64      `json:"userTrafficAPIGet"`
-	UserTrafficAPIPut               float64      `json:"userTrafficAPIPut"`
-	UserTrafficTime                 float64      `json:"userTrafficTime"`
+	UserId              string       `json:"userId"`
+	UserName            string       `json:"userName"`
+	UserAvatarURL       string       `json:"userAvatarURL"`
+	UserHomeBImgURL     string       `json:"userHomeBImgURL"`
+	UserTitles          []*UserTitle `json:"userTitles"`
+	UserIntro           string       `json:"userIntro"`
+	UserNickname        string       `json:"userNickname"`
+	UserCreateTime      string       `json:"userCreateTime"`
+	UserToken           string       `json:"userToken"`
+	UserTokenExpireTime string       `json:"userTokenExpireTime"`
 }
 
 type UserTitle struct {
 	Name string `json:"name"`
 	Desc string `json:"desc"`
 	Icon string `json:"icon"`
-}
-
-func (user *User) GetCloudRepoAvailableSize() int64 {
-	return int64(user.UserSiYuanRepoSize - user.UserSiYuanAssetSize)
 }
