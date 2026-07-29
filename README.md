@@ -1,502 +1,208 @@
 <p align="center">
-<img alt="SiYuan" src="https://b3log.org/images/brand/siyuan-128.png">
+<img alt="Scribli" src="app/src/assets/icon.png" width="96" height="96">
 <br>
-<em>Refactor your thinking</em>
-<br><br>
-<a title="Build Status" target="_blank" href="https://github.com/siyuan-note/siyuan/actions/workflows/cd.yml"><img src="https://img.shields.io/github/actions/workflow/status/siyuan-note/siyuan/cd.yml?style=flat-square"></a>
-<a title="Releases" target="_blank" href="https://github.com/siyuan-note/siyuan/releases"><img src="https://img.shields.io/github/release/siyuan-note/siyuan.svg?style=flat-square&color=9CF"></a>
-<a title="Downloads" target="_blank" href="https://github.com/siyuan-note/siyuan/releases"><img src="https://img.shields.io/github/downloads/siyuan-note/siyuan/total.svg?style=flat-square&color=blueviolet"></a>
+<strong>Scribli</strong>
 <br>
-<a title="Docker Pulls" target="_blank" href="https://hub.docker.com/r/b3log/siyuan"><img src="https://img.shields.io/docker/pulls/b3log/siyuan.svg?style=flat-square&color=green"></a>
-<a title="Docker Image Size" target="_blank" href="https://hub.docker.com/r/b3log/siyuan"><img src="https://img.shields.io/docker/image-size/b3log/siyuan.svg?style=flat-square&color=ff96b4"></a>
-<a title="Hits" target="_blank" href="https://github.com/siyuan-note/siyuan"><img src="https://hits.b3log.org/siyuan-note/siyuan.svg"></a>
-<br>
-<a title="AGPLv3" target="_blank" href="https://www.gnu.org/licenses/agpl-3.0.txt"><img src="http://img.shields.io/badge/license-AGPLv3-orange.svg?style=flat-square"></a>
-<a title="Code Size" target="_blank" href="https://github.com/siyuan-note/siyuan"><img src="https://img.shields.io/github/languages/code-size/siyuan-note/siyuan.svg?style=flat-square&color=yellow"></a>
-<a title="GitHub Pull Requests" target="_blank" href="https://github.com/siyuan-note/siyuan/pulls"><img src="https://img.shields.io/github/issues-pr-closed/siyuan-note/siyuan.svg?style=flat-square&color=FF9966"></a>
-<br>
-<a title="GitHub Commits" target="_blank" href="https://github.com/siyuan-note/siyuan/commits/master"><img src="https://img.shields.io/github/commit-activity/m/siyuan-note/siyuan.svg?style=flat-square"></a>
-<a title="Last Commit" target="_blank" href="https://github.com/siyuan-note/siyuan/commits/master"><img src="https://img.shields.io/github/last-commit/siyuan-note/siyuan.svg?style=flat-square&color=FF9900"></a>
-<br><br>
-<a title="Twitter" target="_blank" href="https://twitter.com/b3logos"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/b3logos?label=Follow&style=social"></a>
-<a title="Discord" target="_blank" href="https://discord.gg/dmMbCqVX7G"><img alt="Chat on Discord" src="https://img.shields.io/discord/808152298789666826?label=Discord&logo=Discord&style=social"></a>
-<br><br>
-<a href="https://trendshift.io/repositories/3949" target="_blank"><img src="https://trendshift.io/api/badge/repositories/3949" alt="siyuan-note%2Fsiyuan | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<em>Local-first notes, documents, and personal knowledge management.</em>
 </p>
 
-<p align="center">
-<b>English</b>
-| <a href="README.ja.md">日本語</a>
-| <a href="README.tr.md">Türkçe</a>
-</p>
+# Scribli
 
----
+Scribli is a local-first desktop knowledge workspace for writing, linking, outlining, querying, exporting, and maintaining long-lived personal notes. It is based on SiYuan, keeps the inherited AGPL-3.0 license, and is being reshaped into a self-contained application that does not depend on SiYuan, B3log, LiuYun, or LianDi hosted services.
 
-## Table of Contents
+This repository contains the Scribli desktop/web frontend and Go kernel. The application stores user data in a local workspace first. Optional sync is controlled by the user and points only at user-configured S3, WebDAV, or local-folder storage.
 
-- [💡 Introduction](#-introduction)
-- [🔮 Features](#-features)
-- [🏗️ Architecture and Ecosystem](#-architecture-and-ecosystem)
-- [🗺️ Roadmap](#️-roadmap)
-- [🚀 Download Setup](#-download-setup)
-  - [App Market](#app-market)
-  - [Installation Package](#installation-package)
-  - [Package Manager](#package-manager)
-  - [Docker Hosting](#docker-hosting)
-  - [Unraid Hosting](#unraid-hosting)
-  - [TrueNAS Hosting](#truenas-hosting)
-  - [Insider Preview](#insider-preview)
-- [⌨️ Command-line Interface](#-command-line-interface)
-- [🏘️ Community](#️-community)
-- [🛠️ Development Guide](#️-development-guide)
-- [❓ FAQ](#-faq)
-  - [How does SiYuan store data?](#how-does-siyuan-store-data)
-  - [Does it support data synchronization through a third-party sync disk?](#does-it-support-data-synchronization-through-a-third-party-sync-disk)
-  - [Is SiYuan open source?](#is-siyuan-open-source)
-  - [How to upgrade to a new version?](#how-to-upgrade-to-a-new-version)
-  - [What if some blocks (such as paragraph blocks in list items) cannot find the block icon?](#what-if-some-blocks-such-as-paragraph-blocks-in-list-items-cannot-find-the-block-icon)
-  - [What should I do if the data repo key is lost?](#what-should-i-do-if-the-data-repo-key-is-lost)
-- [🙏 Acknowledgement](#-acknowledgement)
-  - [Contributors](#contributors)
+## Project Status
 
----
+Scribli is a fork in active cleanup. The main desktop path builds and packages, but this repository still contains inherited architecture, file names, internal identifiers, comments, generated assets, and upstream source history. Upstream copyright notices in inherited source files must stay intact.
 
-## 💡 Introduction
+## Core Features
 
-SiYuan is a privacy-first personal knowledge management system, supporting fine-grained block-level reference and Markdown
-WYSIWYG.
+- Block-based editor with Markdown WYSIWYG behavior.
+- Block references, backlinks, outlines, and document navigation.
+- Attribute views and queryable local data.
+- Local assets, file attachments, and export support.
+- PDF, HTML, Word, Markdown, and asset-oriented export workflows inherited from SiYuan.
+- Local snapshots, repository history, manual backups, and restore workflows.
+- User-controlled sync through S3, WebDAV, or local-folder providers.
+- Optional local HTTP API, WebSocket UI channel, plugin system, AI provider configuration, and MCP support when enabled or configured by the user.
 
-Welcome to [SiYuan English Discussion Forum](https://liuyun.io) to learn more.
+## Local-First Behavior
 
-Online user guide: [English](https://siyuan-en.b3log.org/)
+Scribli creates and reads a workspace on the local machine. On Windows, the default workspace is:
 
-![feature0.png](https://b3logfile.com/file/2025/11/feature0-GfbhEqf.png)
-
-![feature51.png](https://b3logfile.com/file/2025/11/feature5-1-7DJSfEP.png)
-
-## 🔮 Features
-
-All local Scribli features are free to use, including S3, WebDAV, and local-folder sync.
-
-- Content block
-  - Block-level reference and two-way links
-  - Custom attributes
-  - SQL query embed
-  - Protocol `scribli://`
-- Editor
-  - Block-style
-  - Markdown WYSIWYG
-  - List outline
-  - Block zoom-in
-  - Million-word large document editing
-  - Mathematical formulas, charts, flowcharts, Gantt charts, timing charts, staves, etc.
-  - Web clipping
-  - PDF Annotation link
-- Export
-  - Block ref and embed
-  - Standard Markdown with assets
-  - PDF, Word and HTML
-  - Copy to WeChat MP, Zhihu and Yuque
-- Database
-  - Table view
-- Flashcard spaced repetition
-- AI writing and Q/A chat via OpenAI API
-- Tesseract OCR 
-- Multi-tab, drag and drop to split screen
-- Template snippet
-- JavaScript/CSS snippet
-- Android/iOS/HarmonyOS App
-- Docker deployment
-- [API](https://github.com/siyuan-note/siyuan/blob/master/docs/API.md)
-- Community marketplace
-
-## 🏗️ Architecture and Ecosystem
-
-![SiYuan Arch](https://b3logfile.com/file/2023/05/SiYuan_Arch-Sgu8vXT.png "SiYuan Arch")
-
-| Project                                                  | Description           | Forks                                                                           | Stars                                                                                | 
-|----------------------------------------------------------|-----------------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| [lute](https://github.com/88250/lute)                    | Editor engine         | ![GitHub forks](https://img.shields.io/github/forks/88250/lute)                 | ![GitHub Repo stars](https://img.shields.io/github/stars/88250/lute)                 |
-| [chrome](https://github.com/siyuan-note/siyuan-chrome)   | Chrome/Edge extension | ![GitHub forks](https://img.shields.io/github/forks/siyuan-note/siyuan-chrome)  | ![GitHub Repo stars](https://img.shields.io/github/stars/siyuan-note/siyuan-chrome)  |
-| [bazaar](https://github.com/siyuan-note/bazaar)          | Community marketplace | ![GitHub forks](https://img.shields.io/github/forks/siyuan-note/bazaar)         | ![GitHub Repo stars](https://img.shields.io/github/stars/siyuan-note/bazaar)         |
-| [dejavu](https://github.com/siyuan-note/dejavu)          | Data repo             | ![GitHub forks](https://img.shields.io/github/forks/siyuan-note/dejavu)         | ![GitHub Repo stars](https://img.shields.io/github/stars/siyuan-note/dejavu)         |
-| [petal](https://github.com/siyuan-note/petal)            | Plugin API            | ![GitHub forks](https://img.shields.io/github/forks/siyuan-note/petal)          | ![GitHub Repo stars](https://img.shields.io/github/stars/siyuan-note/petal)          |
-| [android](https://github.com/siyuan-note/siyuan-android) | Android App           | ![GitHub forks](https://img.shields.io/github/forks/siyuan-note/siyuan-android) | ![GitHub Repo stars](https://img.shields.io/github/stars/siyuan-note/siyuan-android) |
-| [ios](https://github.com/siyuan-note/siyuan-ios)         | iOS App               | ![GitHub forks](https://img.shields.io/github/forks/siyuan-note/siyuan-ios)     | ![GitHub Repo stars](https://img.shields.io/github/stars/siyuan-note/siyuan-ios)     |
-| [harmony](https://github.com/siyuan-note/siyuan-harmony) | HarmonyOS App         | ![GitHub forks](https://img.shields.io/github/forks/siyuan-note/siyuan-harmony) | ![GitHub Repo stars](https://img.shields.io/github/stars/siyuan-note/siyuan-harmony) |
-| [riff](https://github.com/siyuan-note/riff)              | Spaced repetition     | ![GitHub forks](https://img.shields.io/github/forks/siyuan-note/riff)           | ![GitHub Repo stars](https://img.shields.io/github/stars/siyuan-note/riff)           |
-
-## 🗺️ Roadmap
-
-- [SiYuan development plan and progress](https://github.com/orgs/siyuan-note/projects/1)
-- [SiYuan changelog](CHANGELOG.md)
-
-## 🚀 Download Setup
-
-It is recommended to give priority to installing through the application market on desktop and mobile, so that you can upgrade the version with one click in the future.
-
-### App Market
-
-Mobile:
-
-- [App Store](https://apps.apple.com/us/app/siyuan/id1583226508)
-- [Google Play](https://play.google.com/store/apps/details?id=org.b3log.siyuan)
-- [F-Droid](https://f-droid.org/packages/org.b3log.siyuan)
-
-Desktop:
-
-- [Microsoft Store](https://apps.microsoft.com/detail/9p7hpmxp73k4)
-
-### Installation Package
-
-- [B3log](https://b3log.org/siyuan/en/download.html)
-- [GitHub](https://github.com/siyuan-note/siyuan/releases)
-
-### Package Manager
-
-#### `siyuan`
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/siyuan.svg)](https://repology.org/project/siyuan/versions)
-
-#### `siyuan-note`
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/siyuan-note.svg)](https://repology.org/project/siyuan-note/versions)
-
-### Docker Hosting
-
-<details>
-<summary>Docker Deployment</summary>
-
-#### Overview
-
-The easiest way to serve SiYuan on a server is to deploy it through Docker.
-
-- Image name `b3log/siyuan`
-- [Image URL](https://hub.docker.com/r/b3log/siyuan)
-
-#### File structure
-
-The overall program is located under `/opt/siyuan/`, which is basically the structure under the resources folder of the Electron installation package:
-
-- appearance: icon, theme, languages
-- guide: user guide document
-- stage: interface and static resources
-- kernel: kernel program
-
-#### Entrypoint
-
-The entry point is set when building the Docker image: `ENTRYPOINT ["/opt/siyuan/entrypoint.sh"]`. This script allows changing the `PUID` and `PGID` of the user that will run inside the container. This is especially relevant to solve permission issues when mounting directories from the host. The `PUID` (User ID) and `PGID` (Group ID) can be passed as environment variables, making it easier to ensure correct permissions when accessing host-mounted directories.
-
-Use the following parameters when running the container with `docker run b3log/siyuan`:
-
-> **Note:** Since v3.7.0, the `serve` subcommand must be passed explicitly (e.g. `docker run b3log/siyuan serve --workspace=...`). Run `docker run --rm b3log/siyuan serve --help` to see all serving options.
-
-- `--workspace`: Specifies the workspace folder path, mounted to the container via `-v` on the host
-- `--accessAuthCode`: Specifies the lock screen password
-
-More parameters can be found using `--help`. Here’s an example of a startup command with the new environment variables:
-
-```bash
-docker run -d \
-  -v workspace_dir_host:workspace_dir_container \
-  -p 6806:6806 \
-  -e PUID=1001 -e PGID=1002 \
-  b3log/siyuan \
-  serve \
-  --workspace=workspace_dir_container \
-  --accessAuthCode=xxx
+```text
+%USERPROFILE%\Documents\Scribli
 ```
 
-- `PUID`: Custom user ID (optional, defaults to `1000` if not provided)
-- `PGID`: Custom group ID (optional, defaults to `1000` if not provided)
-- `workspace_dir_host`: The workspace folder path on the host
-- `workspace_dir_container`: The path of the workspace folder in the container, as specified in `--workspace`
-  - Alternatively, it's possible to set the path via the `SIYUAN_WORKSPACE_PATH` env variable. The commandline will always have the priority, if both are set
-- `accessAuthCode`: Lock screen password (please **be sure to modify**, otherwise anyone can access your data)
-  - Alternatively, it's possible to set the lock screen password via the `SIYUAN_ACCESS_AUTH_CODE` env variable. The commandline will always have the priority, if both are set
-  - To disable the lock screen password set the env variable `SIYUAN_ACCESS_AUTH_CODE_BYPASS=true`
-- `SIYUAN_LANG`: Interface language (optional, defaults to `en` if unset in Docker). Accepts BCP 47 tags like `zh-CN`/`zh-TW`/`en`/`ja`/`pt-BR`; legacy underscore values like `zh_CN`/`en_US` are also accepted for backward compatibility. Omit it if you want the language chosen in **Settings** to persist across restarts; if set, it is applied on every startup and overrides the saved setting
-  - Alternatively, use the `--lang` command-line parameter. If both are set, the command-line takes priority
+Scribli also stores its workspace list and related local app configuration under:
 
-To simplify things, it is recommended to configure the workspace folder path to be consistent on the host and container, such as having both `workspace_dir_host` and `workspace_dir_container` configured as `/siyuan/workspace`. The corresponding startup command would be:
-
-```bash
-docker run -d \
-  -v /siyuan/workspace:/siyuan/workspace \
-  -p 6806:6806 \
-  -e PUID=1001 -e PGID=1002 \
-  b3log/siyuan \
-  serve \
-  --workspace=/siyuan/workspace/ \
-  --accessAuthCode=xxx
+```text
+%USERPROFILE%\.config\scribli
 ```
 
-#### Docker Compose
+The workspace contains notebooks, documents, assets, local configuration, indexes, snapshots, history, temporary files, and backups. Treat the whole workspace directory as user data.
 
-For users running SiYuan with Docker Compose, the environment variables `PUID` and `PGID` can be passed to customize the user and group IDs. Here's an example of a Docker Compose configuration:
+## Network Behavior
 
-```yaml
-version: "3.9"
-services:
-  main:
-    image: b3log/siyuan
-    command: ['serve', '--workspace=/siyuan/workspace/', '--accessAuthCode=${AuthCode}']
-    ports:
-      - 6806:6806
-    volumes:
-      - /siyuan/workspace:/siyuan/workspace
-    restart: unless-stopped
-    environment:
-      - TZ=${YOUR_TIME_ZONE}    # A list of time zone identifiers can be found at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-      - PUID=${YOUR_USER_PUID}  # Customize user ID
-      - PGID=${YOUR_USER_PGID}  # Customize group ID
+A fresh Scribli workspace is intended to run without contacting official SiYuan, B3log, LiuYun, or LianDi services. Official cloud login, account checks, subscriptions, payments, marketplace/bazaar access, official update checks, official cloud snapshots, and official cloud quota/status calls have been removed or disabled.
+
+Scribli can still make network connections when the user configures or triggers local features that require them:
+
+- S3 sync connects to the S3-compatible endpoint configured by the user.
+- WebDAV sync connects to the WebDAV endpoint configured by the user.
+- Remote asset import, web clipping, URL fetching, and similar tools connect to URLs supplied by the user or present in user content.
+- AI features connect to providers configured by the user.
+- MCP, plugin, API, WebDAV, CalDAV, and CardDAV server features can expose local services depending on configuration.
+
+Runtime auto-update is disabled until Scribli has its own signed release process.
+
+## Sync Providers
+
+Provider `0` is disabled and must not perform network sync activity. It is retained as a configuration-compatible numeric value.
+
+Supported user-controlled providers:
+
+| Provider | Meaning | Network owner |
+| --- | --- | --- |
+| `0` | Disabled / no sync provider | None |
+| `2` | S3-compatible storage | User-configured endpoint |
+| `3` | WebDAV storage | User-configured endpoint |
+| `4` | Local-folder sync | User-selected local path |
+
+Do not place the active workspace inside a third-party cloud-drive folder such as OneDrive, Dropbox, Google Drive, iCloud Drive, or similar tools. Use Scribli's sync provider configuration or manual backups instead. File-level cloud drives can erase the database, indexes, locks, and snapshot files.
+
+## What Was Removed From Upstream
+
+Scribli intentionally removes or disables inherited behavior tied to official upstream services:
+
+- Official SiYuan cloud provider.
+- Official account login and account-dependent sync.
+- Cloud account storage statistics.
+- Official cloud snapshot upload and download.
+- Official cloud backup listing.
+- Official cloud repository purge.
+- Official cloud traffic, quota, points, subscription, payment, and membership surfaces.
+- Bazaar/community marketplace access.
+- Upstream release checks and runtime auto-update install flow.
+- Build-time Electron mirror forcing and upstream publishing workflows.
+- Upstream Docker, AUR, and GitHub release publishing from this repository.
+
+## Installation
+
+Use a Scribli build produced from this repository or build locally. Current packaging produces a Windows installer at:
+
+```text
+app\build\scribli-<version>-win.exe
 ```
 
-In this setup:
+No official Scribli release channel is published from this repository yet. Until Scribli owns its release and signing pipeline, treat local builds as the source of truth.
 
-- `PUID` and `PGID` are set dynamically and passed to the container
-- If these variables are not provided, the default `1000` will be used
+## Development
 
-By specifying `PUID` and `PGID` in the environment, you avoid the need to explicitly set the `user` directive (`user: '1000:1000'`) in the compose file. The container will dynamically adjust the user and group based on these environment variables at startup.
+Required tools:
 
-#### User Permissions
+- Go matching the `go` directive in `kernel/go.mod`.
+- Node.js and pnpm matching `app/package.json`.
+- On Windows, a C compiler is required for CGO kernel builds. The local setup has used `w64devkit`.
 
-In the image, the `entrypoint.sh` script ensures the creation of the `siyuan` user and group with the specified `PUID` and `PGID`. Therefore, when the host creates a workspace folder, pay attention to setting the user and group ownership of the folder to match the `PUID` and `PGID` you plan to use. For example:
+Install frontend dependencies:
 
-```bash
-chown -R 1001:1002 /siyuan/workspace
+```powershell
+cd C:\Users\(user)\Documents\GitHub\note\app
+pnpm install
 ```
 
-If you use custom `PUID` and `PGID` values, the entrypoint script will ensure that the correct user and group are created inside the container, and ownership of mounted volumes will be adjusted accordingly. There’s no need to manually pass `-u` in `docker run` or `docker-compose` as the environment variables will handle the customization.
+Run frontend checks:
 
-#### Hidden port
-
-Use an NGINX reverse proxy to hide port 6806. Please note:
-
-- Configure the WebSocket reverse proxy for `/ws`
-
-#### Note
-
-- Be sure to confirm the correctness of the mounted volume, otherwise the data will be lost after the container is deleted
-- Do not use URL rewriting for redirection, otherwise there may be problems with authentication, it is recommended to configure a reverse proxy
-- If you encounter permission issues, verify that the `PUID` and `PGID` environment variables match the ownership of the mounted directories on your host system
-
-#### Limitations
-
-- Does not support desktop and mobile application connections, only supports use on browsers
-- Export to PDF, HTML and Word formats is not supported
-- Import Markdown file is not supported
-
-</details>
-
-### Unraid Hosting
-
-<details>
-<summary>Unraid Deployment</summary>
-
-Note: First run `chown -R 1000:1000 /mnt/user/appdata/siyuan` in the terminal
-
-Template reference:
-
-```
-Web UI: 6806
-Container Port: 6806
-Container Path: /home/siyuan
-Host path: /mnt/user/appdata/siyuan
-PUID: 1000
-PGID: 1000
-Publish parameters: serve --accessAuthCode=******(Lock screen password)
+```powershell
+cd C:\Users\(user)\Documents\GitHub\note\app
+pnpm run lint
+pnpm test
 ```
 
-</details>
+Run kernel tests from the kernel directory. On Windows with repo-local caches and `w64devkit`:
 
-### TrueNAS Hosting
-
-<details>
-<summary>TrueNAS Deployment</summary>
-
-Note: First, run the commands below in the TrueNAS Shell. Please update `Pool_1/Apps_Data/siyuan` to match your dataset path.
-
-```shell
-zfs create Pool_1/Apps_Data/siyuan
-chown -R 1001:1002 /mnt/Pool_1/Apps_Data/siyuan
-chmod 755 /mnt/Pool_1/Apps_Data/siyuan
+```powershell
+cd C:\Users\(user)\Documents\GitHub\note\kernel
+$env:PATH=(Resolve-Path "..\.tools\w64devkit\bin").Path + ";" + $env:PATH
+$env:GOCACHE=(Resolve-Path "..\.tools").Path + "\go-build-cache"
+$env:CGO_ENABLED="1"
+$env:CC=(Resolve-Path "..\.tools\w64devkit\bin\gcc.exe").Path
+go test ./...
 ```
 
-Navigate to Apps - DiscoverApps - More Options (on top right, besides Custom App) - Install via YAML
+## Build Instructions
 
-Template reference:
+Build production frontend bundles:
 
-```yaml
-services:
-  siyuan:
-    image: b3log/siyuan
-    container_name: siyuan
-    command: ['serve', '--workspace=/siyuan/workspace/', '--accessAuthCode=2222']
-    ports:
-      - 6806:6806
-    volumes:
-      - /mnt/Pool_1/Apps_Data/siyuan:/siyuan/workspace  # Adjust to your dataset path 
-    restart: unless-stopped
-    environment:
-      - TZ=America/New_York  # Replace with your timezone if needed
-      - PUID=1001
-      - PGID=1002
+```powershell
+cd C:\Users\(user)\Documents\GitHub\note\app
+pnpm build
 ```
 
-</details>
+Package the Windows desktop app:
 
-### Insider Preview
-
-We release insider preview before major updates, please visit [https://github.com/siyuan-note/insider](https://github.com/siyuan-note/insider).
-
-## ⌨️ Command-line Interface
-
-The built-in CLI provides direct access to workspace data — no running server required.
-
-### Quick Start
-
-```bash
-# List all notebooks
-siyuan notebook list -w ~/SiYuan
-
-# Full-text search with JSON output
-siyuan search "keyword" -w ~/SiYuan -f json
-
-# Search inside asset files (PDF/Word/Excel/txt etc.)
-siyuan search "phrase" --asset -w ~/SiYuan
-siyuan search "phrase" --asset --ext pdf --ext docx -w ~/SiYuan
-
-# Export a document as Markdown
-siyuan export md --id <block-id> -w ~/SiYuan
+```powershell
+cd C:\Users\(user)\Documents\GitHub\note\app
+pnpm run dist
 ```
 
-### Available Commands
+The dist scripts use `--publish=never`, and `electron-builder*.yml` sets `publish: null`. Publishing remains disabled until Scribli has its own release pipeline.
 
-| Category | Commands |
-|----------|----------|
-| Notebooks & Documents | `notebook`, `document`, `dailynote` — CRUD and daily notes |
-| Content | `block`, `attr`, `outline` — block read/write, attributes, outline |
-| Metadata | `tag`, `bookmark`, `template` — tags, bookmarks, template snippets |
-| Queries | `search`, `sql` — full-text, semantic, asset-content, and SQL queries |
-| References | `ref` — backlinks and mentions |
-| Import/Export | `export`, `import`, `inbox` — Markdown, HTML, preview, Word, .sy.zip, Data, cloud inbox |
-| Data Management | `repo`, `history`, `sync` — snapshots, versions, cloud sync |
-| Utilities | `asset`, `file` — resources and file system |
-| Database | `database` — attribute view management |
-| Server | `serve` — start the kernel HTTP server |
-| Workspace & System | `workspace`, `system` — list, inspect, system info |
+If the packaged app cannot find the kernel, build or copy the Scribli kernel binary into `app\kernel` using the repository's current build scripts before running the packaging command.
 
-Run `siyuan --help` for the full command tree. Use `-f json` (default is `-f table`) for script-friendly output. Most mutating commands also support `--dry-run` to preview changes without applying them.
+## Workspace And Backup Guidance
 
-### Installation
+- Back up the full workspace directory, not only individual `.sy` files.
+- Keep manual backups outside the active workspace.
+- Keep local-folder sync targets outside the active workspace and outside its parent directories.
+- Save the repository key and any sync credentials in a password manager. Losing the repository key can make encrypted snapshots unrecoverable.
+- Before experimenting with sync settings, make a manual backup of the workspace.
 
-The CLI binary is `<install-dir>/resources/kernel/SiYuan-Kernel`, invoked via the `siyuan` command.
+## Security Model
 
-- **Windows**: the installer automatically adds the kernel directory to `PATH`, so `siyuan` works out of the box. The Microsoft Store edition runs in an MSIX sandbox and cannot modify `PATH`; deploy a `siyuan.cmd` shim once (survives Store updates):
-  ```powershell
-  # Microsoft Store edition only — run once in PowerShell
-  $shimDir = "$env:LOCALAPPDATA\Microsoft\WindowsApps"   # already in PATH by default
-  @(
-      '@echo off'
-      'setlocal'
-      'set "ROOT="'
-      'for /f "delims=" %%i in (''powershell -NoProfile -Command "(Get-AppxPackage *SiYuan*).InstallLocation"'') do set "ROOT=%%i"'
-      'if not defined ROOT goto :noshim'
-      '"%ROOT%\app\resources\kernel\SiYuan-Kernel.exe" %*'
-      'exit /b %ERRORLEVEL%'
-      ':noshim'
-      '1>&2 echo siyuan: Microsoft Store edition not found'
-      'exit /b 1'
-  ) | Set-Content "$shimDir\siyuan.cmd"
-  ```
-  To remove on uninstall: `Remove-Item "$env:LOCALAPPDATA\Microsoft\WindowsApps\siyuan.cmd"`.
-- **macOS**: create a symlink after installing:
-  ```bash
-  ln -s /Applications/SiYuan.app/Contents/Resources/kernel/SiYuan-Kernel /usr/local/bin/siyuan
-  ```
-- **Linux**: create a symlink after installing:
-  ```bash
-  ln -s <install-dir>/resources/kernel/SiYuan-Kernel /usr/local/bin/siyuan
-  ```
+Scribli is designed around local ownership of data. Local workspace files, local configuration, user-configured sync storage, and user-configured providers are trusted by the application.
 
-## 🏘️ Community
+Important boundaries:
 
-- [English Discussion Forum](https://liuyun.io)
-- [User community summary](https://liuyun.io/article/1687779743723)
-- [Awesome SiYuan](https://github.com/siyuan-note/awesome)
+- Anyone with filesystem access to the workspace can read or alter local notes and assets unless the storage layer itself is protected.
+- S3, WebDAV, and local-folder sync targets are user-controlled trust boundaries. A compromised sync target can corrupt or roll back synced data.
+- The local HTTP API and local services should not be exposed to untrusted networks.
+- AI provider keys, S3 credentials, WebDAV credentials, and similar secrets should be treated as sensitive user configuration.
+- Plugins and snippets can execute code in the application context; install or author them with the same care as desktop extensions.
 
-## 🛠️ Development Guide
+## License
 
-See [Development Guide](https://github.com/siyuan-note/siyuan/blob/master/.github/CONTRIBUTING.md).
+Scribli is licensed under the GNU Affero General Public License v3.0. See `LICENSE`.
 
-## ❓ FAQ
+Because Scribli is based on SiYuan, inherited AGPL-3.0 obligations still apply. If you modify Scribli and provide it over a network or distribute binaries, you must provide corresponding source code under the AGPL-3.0 terms.
 
-### How does SiYuan store data?
+Do not remove upstream copyright notices from inherited source files.
 
-The data is saved in the workspace data folder:
+## Upstream Attribution
 
-- `assets` is used to save all inserted assets
-- `emojis` is used to save emoji images
-- `snippets` is used to save code snippets
-- `storage` is used to save query conditions, layouts and flashcards, etc.
-- `templates` is used to save template snippets
-- `widgets` is used to save widgets
-- `plugins` is used to save plugins
-- `public` is used to save public data
-- The rest of the folders are the notebook folders created by the user, files with the suffix of `.sy` in the notebook folder are used to save the document data, and the data format is JSON
+Scribli is based on SiYuan by the SiYuan contributors and B3log/LianDi upstream maintainers. The original project provided the Go kernel, Electron/web frontend, editor architecture, data model, and much of the feature surface that Scribli inherits.
 
-### Does it support data synchronization through a third-party sync disk?
+This fork changes application identity, disables official upstream cloud/account/commercial services, removes upstream publishing paths, and documents the project as Scribli. It is not an official SiYuan build and is not operated by B3log or LianDi.
 
-Data synchronization through third-party synchronization disks is not supported, otherwise data may be corrupted.
+## Known Limitations
 
-Although it does not support third-party sync disks, it supports user-controlled S3, WebDAV, and local-folder sync providers.
+- Some internal package names, source paths, generated artifacts, and compatibility names may still contain inherited SiYuan identifiers.
+- Mobile packaging is not currently a Scribli-owned release path.
+- Docker publishing is disabled.
+- Runtime updates are disabled.
+- Official cloud, account, subscription, payment, and marketplace services are intentionally unavailable.
+- Existing SiYuan workspaces may need careful backup and migration testing before day-to-day use with Scribli.
 
-### Is SiYuan open source?
+## Contributing
 
-SiYuan is completely open source, and contributions are welcome:
+Contributions should keep Scribli local-first and independent from official upstream services. Before opening a change:
 
-- [User Interface and Kernel](https://github.com/siyuan-note/siyuan)
-- [Android](https://github.com/siyuan-note/siyuan-android)
-- [iOS](https://github.com/siyuan-note/siyuan-ios)
-- [HarmonyOS](https://github.com/siyuan-note/siyuan-harmony)
-- [Chrome Clipping Extension](https://github.com/siyuan-note/siyuan-chrome)
+- Preserve AGPL-3.0 licensing and inherited copyright notices.
+- Avoid adding telemetry, official upstream service calls, or automatic publishing.
+- Keep S3, WebDAV, local sync, local snapshots, manual backups, API, MCP, and user-controlled provider behavior working.
+- Run relevant checks before calling work ready.
+- Document any new network behavior clearly.
 
-For more details, please refer to [Development Guide](https://github.com/siyuan-note/siyuan/blob/master/.github/CONTRIBUTING.md).
-
-### How to upgrade to a new version?
-
-- If installed via app store, please update via app store
-- If it is installed with the desktop installation package on Windows or macOS, you can enable the option of <kbd>Settings</kbd> - <kbd>About</kbd> - <kbd>Automatically download update installation package</kbd>, so that SiYuan will automatically download the latest version of the installation package and prompt to install
-- If it is installed by manual installation package, please download the installation package again to install
-
-You can <kbd>Check update</kbd> in <kbd>Settings</kbd> - <kbd>About</kbd> - <kbd>Current Version</kbd>, or pay attention to [Official Download](https://b3log.org/siyuan/en/download.html) or [GitHub Releases](https://github.com/siyuan-note/siyuan/releases) to get the new version.
-
-### What if some blocks (such as paragraph blocks in list items) cannot find the block icon?
-
-The block icon is omitted for the first sub-block under the list item. You can move the cursor into this block and trigger its block menu with <kbd>Ctrl+/</kbd> .
-
-### What should I do if the data repo key is lost?
-
-- If the data repo key is correctly initialized on multiple devices previously, the key is the same on all devices and can be retrieved in <kbd>Settings</kbd> - <kbd>Account & Sync</kbd> - <kbd>Local Data Repo</kbd> - <kbd>Data repo key</kbd> - <kbd>Copy key string</kbd>
-- If it has not been configured correctly before (for example, the keys on multiple devices are inconsistent) or all devices are unavailable and the key string cannot be obtained, you can reset the key by following the steps below:
-
-  1. Manually back up the data, you can use <kbd>Export Data</kbd> or directly copy the <kbd>workspace/data/</kbd> folder on the file system
-  2. <kbd>Settings</kbd> - <kbd>Account & Sync</kbd> - <kbd>Local Data Repo</kbd> - <kbd>Data repo key</kbd> - <kbd>Reset data repo</kbd>
-  3. Reinitialize the data repo key. After initializing the key on one device, other devices import the key
-  4. The cloud uses the new synchronization directory, the old synchronization directory is no longer available and can be deleted
-  5. The existing cloud snapshots are no longer available and can be deleted
-
-## 🙏 Acknowledgement
-
-The birth of SiYuan is inseparable from many open source projects and contributors. Please refer to the project source code kernel/go.mod, app/package.json and project homepage.
-
-The growth of SiYuan is inseparable from user feedback and promotion. Thank you, everyone, for your help with SiYuan ❤️
-
-### Contributors
-
-Welcome to join us and contribute code to SiYuan together.
-
-<a href="https://github.com/siyuan-note/siyuan/graphs/contributors">
-   <img src="https://contrib.rocks/image?repo=siyuan-note/siyuan" />
-</a>
+For detailed repository guidance, see `AGENTS.md`.

@@ -1,153 +1,182 @@
 # AGENTS.md
 
-Scribli repository guide. Module path `github.com/siyuan-note/siyuan`, license AGPL-3.0.
+Scribli repository guide. Scribli is a local-first fork of SiYuan. The inherited Go module path is still `github.com/siyuan-note/siyuan/kernel`; do not rename it casually because Go imports, generated assets, and upstream dependency history still depend on it. License: AGPL-3.0.
 
-**Architecture:** Go kernel (`kernel/`) + TypeScript frontend (`app/`), plus a separate `export` bundle (global `Protyle`, entry `src/protyle/method.ts`) for rendering rich content in exported HTML / PDF preview. Read versions from `kernel/go.mod`, `app/package.json`, `kernel/util/working.go`.
-
----
-
-## 1. Required toolchain
-
-| Tool | Version | Source of truth |
-|---|---|---|
-| Go | see `go` directive | `kernel/go.mod` |
-| Node (+ pnpm) | see CI matrix | `.github/workflows/cd.yml`, `app/package.json` (`packageManager` field) |
+Scribli must present itself as Scribli in public project surfaces and application metadata while preserving inherited upstream copyright notices in source files.
 
 ---
 
-## 2. Related repositories (navigation)
+## 1. Current Project Shape
 
-SiYuan spans several repos. This repo (`siyuan`) holds the kernel + Electron/web frontend; the others are separate projects with their own tooling.
+Scribli is a desktop knowledge workspace built from:
 
-| Repo | Role / what to know |
-|---|---|
-| `siyuan` | **This repo** — kernel + Electron/web/tablet UI |
-| `siyuan-android` / `siyuan-ios` / `siyuan-harmony` | Native apps wrapping the gomobile kernel; build steps differ per platform — see each project's README |
-| `siyuan-chrome` | Browser extension (web clipper); talks to the running kernel over HTTP only |
-| `siyuan-testing` | Playwright end-to-end tests for a running SiYuan instance; test data belongs in the `SiYuan Testing` notebook — see that repository's `AGENTS.md` |
-| `petal` | SiYuan Plugin API declaration (the plugin system is named "petal"); consumed by plugins, not a kernel Go dependency |
-| `lute` | Markdown/Kramdown AST engine — the editor + `.sy` format; also the source of the bundled `lute.min.js` (a GopherJS build served to the frontend). **Lives under `$GOPATH/src/github.com/88250/lute`, not as a sibling repo** |
-| `dejavu` | Data repo / sync engine (encrypted snapshots) |
-| `riff` | Spaced-repetition (SRS) flashcard scheduler |
-| `gulu` | General Go utility library (`gulu.Ret`, `gulu.JSON`, …) |
-| `eventbus` | In-process event bus |
-| `filelock` | Cross-platform file locking (`.sy` read/write) |
-| `httpclient` | HTTP client wrapper (cloud / sync / bazaar calls) |
-| `logging` | Leveled logging used throughout the kernel |
-| `go-sqlite3` / `pdfcpu` | Maintainer's forks, pulled in via permanent `replace` in `kernel/go.mod` (keep those) |
-| `epub` / `clipboard` / `go-humanize` / `vitess-sqlparser` / `dataparser` / `encryption` | Smaller Go libraries (export / clipboard / formatting / SQL parse / data parse / crypto) |
+| Path | Role |
+| --- | --- |
+| `kernel/` | Go backend, local data engine, HTTP API, sync, search, export, history, AI, MCP, WebDAV/CalDAV/CardDAV, and desktop kernel entrypoint |
+| `app/` | TypeScript/Electron/web frontend built by webpack |
+| `app/appearance/` | Themes, icons, and i18n resources |
+| `app/stage/` | Generated frontend output served by the kernel |
+| `scripts/` | Packaging and helper scripts |
+| `.github/` | Repository metadata and disabled publishing placeholders |
 
-All Go libraries above are dependencies in `kernel/go.mod`. GitHub org: `siyuan-note/*` for the `siyuan-` apps and most libs; `88250/*` for lute, gulu, and the forks (go-sqlite3 / pdfcpu).
-
-### Cross-repo notes
-
-- **Editing any Go dependency (Lute / dejavu / gulu / eventbus / riff / filelock / httpclient / logging / go-sqlite3 / pdfcpu / epub / …):** these are imported by the kernel as Go modules (`kernel/go.mod`). To test a local change, add a temporary `replace` in `kernel/go.mod` pointing at your local checkout — but **never commit that `replace`**; it breaks builds for everyone else.
-- **Rebuilding `lute.min.js`:** it's the JS build of the Go `lute` project — generated upstream and checked into `app/stage/protyle/js/lute/`. Don't edit it here; change `lute`, rebuild, and copy the artifact in.
-- **Mobile apps (`siyuan-android` / `siyuan-ios` / `siyuan-harmony`):** each is a separate native app that wraps the kernel built from this repo. For how to build, vendor the kernel binding, and wire everything up, **read each project's own README** — the toolchains and steps differ per platform and aren't documented here.
-- **`siyuan-chrome`:** independent TypeScript project; it only interacts with a running SiYuan instance through the public HTTP API documented in `docs/API.md`.
+The main README is now the public Scribli surface. Keep it focused on Scribli's local-first behavior, user-controlled sync, AGPL-3.0 license, upstream attribution, and known limitations.
 
 ---
 
-## 3. Repository layout
+## 2. Scribli Product Rules
 
-Top level (repo root):
-
-| Path | Contents |
-|---|---|
-| `kernel/` | Go backend — server, data engine, API, all domain logic |
-| `app/` | TypeScript frontend (Electron/web), built by webpack into `app/stage/build/` |
-| `app/appearance/` | Themes, icons, **i18n** (`appearance/langs/*.json`) |
-| `app/stage/` | Build output served by the kernel |
-| `app/changelogs/` | Per-version changelog markdown |
-| `.github/` | `CONTRIBUTING.md` (+zh-CN), `SECURITY.md`, `CODE_OF_CONDUCT.md`, `PULL_REQUEST_TEMPLATE.md`, issue templates, `workflows/` |
-| `scripts/` | Release packaging: `win-build.bat`, `darwin-build.sh`, `linux-build.sh`, `parse-changelog.py`, `check-lang-keys.py` |
-
-### Major `kernel/` packages (under `kernel/`)
-
-| Package | Responsibility |
-|---|---|
-| `main.go` (`//go:build !mobile`) | Desktop entry point → `cli/cmd` |
-| `cli/cmd/` | Cobra CLI subcommands (`serve`, `notebook`, `block`, `search`, `sql`, `export`, `repo`, `sync`, …) |
-| `model/` | **Core domain** (~70 files): blocks/trees, transactions, indexing, search, attribute views, export, history, sync, flashcards, AI, CalDAV/CardDAV, auth |
-| `treenode/` | In-memory tree over the Lute AST + `blocktree.db` (`BlockTree{ID,RootID,ParentID,BoxID,Path,HPath,Type,...}`) |
-| `av/` | **Attribute View** (database) engine: values, filters, sorts, layouts (table/kanban/gallery) |
-| `sql/` | **Embedded SQLite** (`siyuan.db`, `history.db`, `asset_content.db`) + FTS5; async index queues |
-| `search/` | FTS tokenizer helpers, CJK conversion (`hanconv.go`) |
-| `bazaar/` | Marketplace: plugins/widgets/themes/icons/templates |
-| `filesys/` | Read/write `.sy` files on disk (via `filelock`) |
-| `server/` | Gin server bootstrap (`serve.go`): middleware, TLS/cmux, WebDAV/CalDAV/CardDAV, WebSocket, MCP |
-| `api/` | HTTP route registration (`router.go::ServeAPI`, ~400 endpoints) + per-area handlers |
-| `conf/` | Configuration structs |
-| `util/` | Cross-cutting: `working.go` (workspace, `Boot()`), `lute.go`, `i18n.go`, `websocket.go` (melody push), `result.go` (API envelope) |
-| `plugin/` | Plugin subsystem (kernel side) |
-| `mcp/` | MCP (Model Context Protocol) server |
-| `agent/` | AI agent runtime |
-| `mobile/`, `harmony/` | `//go:build mobile` gomobile bindings for Android/iOS/HarmonyOS |
-
-### Frontend (`app/src/`) highlights
-
-| Dir | Purpose |
-|---|---|
-| `index.ts` | Main `App` class — boots SPA, opens main WebSocket, handles WS push events |
-| `window/` | Detached Electron window variant |
-| `protyle/` | **The block editor** — `wysiwyg/`, `toolbar/`, `gutter/`, `breadcrumb/`, `hint/`, `scroll/`, `undo/`, `preview/`, `render/` (incl. `render/av/`) |
-| `editor/`, `layout/`, `menus/`, `dialog/`, `config/`, `mobile/`, `ai/`, `sync/`, `history/`, `search/`, `card/` | Feature modules |
-| `util/fetch.ts` | `fetchGet`/`fetchPost` — all kernel calls |
-| `layout/Model.ts` | WebSocket client all UI binds to |
-| `constants.ts` | Global constants (version, IDs, storage keys) |
-
-Four webpack configs each emit a separate bundle to `app/stage/build/{app,desktop,mobile,export}/`. The kernel's `serveAppearance` picks which bundle to serve based on User-Agent. The `export` bundle is different from the other three: it is not an app UI — it is a client-side library (global `Protyle`, entry `src/protyle/method.ts`) exposing renderers for code highlighting, math (KaTeX), and diagrams (Mermaid/flowchart/graphviz/…). It is loaded by the HTML pages assembled during export (`app/src/protyle/export/index.ts`) — the desktop PDF preview window and standalone exported HTML files — so rich content renders outside the editor.
+1. Scribli is local-first. A fresh workspace must not contact official SiYuan, B3log, LiuYun, or LianDi services.
+2. Official SiYuan cloud, account login, account checks, subscriptions, payments, points, quotas, marketplace/bazaar, upstream update checks, and upstream release install flows are removed or disabled.
+3. Keep user-controlled features working: S3 sync, WebDAV sync, local-folder sync, local snapshots, repository history, manual backups, import/export, API, MCP, AI provider configuration, plugins, and local server features.
+4. Sync provider `0` means disabled/no sync provider and must not perform network sync activity. Do not shift provider IDs unless a migration is implemented and tested.
+5. `scribli://` is the only active application protocol. Do not reintroduce `siyuan://`.
+6. Build-time mirrors and upstream publishing are disabled. Do not add `npmmirror`, Aliyun mirrors, upstream Docker publishing, upstream AUR publishing, upstream GitHub release publishing, or auto-update publishing until Scribli owns that pipeline.
+7. Electron builder config must keep `publish: null`, and package scripts must keep `--publish=never` unless a Scribli-owned signed release process exists.
+8. Do not claim Scribli LLC unless that legal entity exists. Use `Scribli contributors` or another accurate author value.
 
 ---
 
+## 3. Data, Workspace, And Network Boundaries
 
-## 4. Do not hand-edit
+Default Windows workspace:
 
-- `app/stage/protyle/js/lute/lute.min.js` (built from upstream `88250/lute`)
-- `app/stage/build/**`, `app/src/types/dist/**`
-- `app/changelogs/**` (generated by separate tooling)
-- `app/kernel/SiYuan-Kernel*`, `*.syso`, `kernel/kernel.aar`
+```text
+%USERPROFILE%\Documents\Scribli
+```
+
+Default Windows app config root:
+
+```text
+%USERPROFILE%\.config\scribli
+```
+
+Use `util.UserHomeConfDir()`-style helpers for home config paths. Mixed `.config\scribli` and `.config\siyuan` paths can break startup before Electron obtains the kernel port.
+
+Network-capable behavior must be explicit and user-controlled. Acceptable examples include S3/WebDAV endpoints configured by the user, user-supplied URLs for import/fetch tools, user-configured AI providers, and local API/MCP/plugin/server features. Any new network behavior must be documented and must not call upstream official services by default.
+
+---
+
+## 4. Required Toolchain
+
+| Tool | Version source |
+| --- | --- |
+| Go | `kernel/go.mod` |
+| Node and pnpm | `app/package.json` |
+| Windows C compiler | Required for CGO kernel tests/builds; this checkout has used repo-local `..\.tools\w64devkit\bin\gcc.exe` |
+
+Prefer repo-local Go caches for Windows work:
+
+```powershell
+$env:GOCACHE=(Resolve-Path "..\.tools").Path + "\go-build-cache"
+$env:GOMODCACHE=(Resolve-Path "..\.tools").Path + "\go-mod-cache"
+```
+
+---
+
+## 5. Verification Commands
+
+Frontend checks:
+
+```powershell
+cd app
+pnpm run lint
+pnpm test
+```
+
+Frontend production build:
+
+```powershell
+cd app
+pnpm build
+```
+
+Windows package:
+
+```powershell
+cd app
+pnpm run dist
+```
+
+Kernel tests on Windows with `w64devkit`:
+
+```powershell
+cd kernel
+$env:PATH=(Resolve-Path "..\.tools\w64devkit\bin").Path + ";" + $env:PATH
+$env:GOCACHE=(Resolve-Path "..\.tools").Path + "\go-build-cache"
+$env:GOMODCACHE=(Resolve-Path "..\.tools").Path + "\go-mod-cache"
+$env:CGO_ENABLED="1"
+$env:CC=(Resolve-Path "..\.tools\w64devkit\bin\gcc.exe").Path
+go test ./...
+```
+
+Run the checks that match the change. For docs-only changes, grep/status review is enough. For frontend code, run `pnpm run lint`; run `pnpm build` when production bundles or packaging readiness matter. For Go changes, run focused or full `go test ./...` as appropriate.
+
+Do not call work verified if a build or test command failed because of a local conflict. Report the conflict and the exact command that failed.
+
+---
+
+## 6. Do Not Hand-Edit
+
+- `app/stage/protyle/js/lute/lute.min.js`
+- `app/stage/build/**`
+- `app/src/types/dist/**`
+- `app/changelogs/**`
+- `app/kernel/SiYuan-Kernel*`
+- `app/kernel/Scribli-Kernel*`
+- `*.syso`
+- `kernel/kernel.aar`
 - `app/pandoc/*`
+- downloaded dependency caches under `.tools/` or `app/node_modules/`
+
+Generated build outputs may change when running build/package commands, but do not manually edit them.
 
 ---
 
-## 5. Project-specific rules
+## 7. Coding Conventions
 
-1. **i18n:**
-   - New keys go at the **top** of each `langs/*.json` object; add to every language file (reference `en.json`)
-   - Exception: inside the `_kernel` object, append new entries at the **end** using the next incremental numeric key
-   - Each language must be properly translated — do NOT copy the same text across all language files
-   - Use three ASCII periods (`...`) for ellipses in all localized strings; do not use Unicode ellipsis characters (`…` or `……`)
-   - Domains: `ld246.com` only in `zh-CN.json`; use `liuyun.io` in all other languages
-   - After modifying i18n files, run `python scripts/check-lang-keys.py` to verify key completeness across all language files
-2. **Windows scripting:** Prefer Node.js / Python; avoid PowerShell unless necessary
-3. **Frontend verification:** Do not use `npx webpack` or `pnpm dev` to verify changes; after changes, run `cd app && pnpm run lint` to check code style
-4. **Frontend build:** Codex is responsible for running `cd app && pnpm build` when production bundles or packaging readiness need verification. Do not assume the developer will run builds manually. Avoid starting long-running dev servers unless explicitly requested; if a build conflicts with an already-running process, report the conflict instead of calling the work verified
-5. **Kernel development:** After modifying Go code, do not compile the kernel binary or restart a running kernel; the developer handles both manually
-6. **Icons:** Do not hand-write SVG; use existing icons from `app/appearance/icons/litheness/icon.js` when possible
-7. **User guide:** When editing the user guide, follow `docs/SY-FORMAT.md`
-8. **Git:**
-   - **NEVER** run `git commit` / `git push` unless explicitly asked — no exceptions
-   - When you do commit, follow the style of recent commits (gitmoji prefix + subject, in English)
-   - Append the full issue/PR URL to the end of the commit title (e.g. `https://github.com/siyuan-note/siyuan/issues/<NNN>`, not the `#NNN` short form — it is clickable) only when a related issue exists; never put the URL in the commit body, and do not fabricate one
-9. **GitHub:** Prefer the GitHub CLI (`gh`) for all GitHub operations, including reading issues, comments, pull requests, commits, statuses, and metadata. If `gh` is unavailable or does not support the operation, fall back to the GitHub API or web interface
-10. **Issue titles:** Whenever the user asks to generate an issue title, provide it in English regardless of the wording of the request; do not start it with `Fix`, and describe the observed behavior directly instead
-11. **LD246:** When accessing `ld246.com`, set the HTTP `User-Agent` header to `SiYuan-Coding-Agent`
+1. Prefer existing repo patterns over new abstractions.
+2. Keep changes scoped to the requested behavior.
+3. Use structured APIs/parsers instead of ad hoc string edits when practical.
+4. TypeScript/JavaScript: semicolons, double quotes, spaces.
+5. Go: run `gofmt` after editing.
+6. Markdown: keep paragraphs and table rows on single lines; do not hand-wrap prose.
+7. Comments should be useful, short, and written in English unless surrounding code clearly requires another language.
+8. Do not add visible in-app marketing copy to explain controls or features. Build the actual usable surface.
+9. Do not hand-write SVG icons for UI work; use existing icons from `app/appearance/icons/litheness/icon.js` when possible.
 
 ---
 
-## 6. Coding conventions
+## 8. i18n And Public Text
 
-1. **Comments:** Wrap code comments at 120 characters
-2. **Comments:** Describe what the code does, not what it replaced — don't reference the old implementation in comments
-3. **Comments:** Write comments in Chinese
-4. **Punctuation:** Use language-appropriate punctuation (e.g. Chinese punctuation ，。：；！？「」 for Chinese, not ASCII); do not hard-code it in code — put it in the i18n language files so each locale renders its own. Applies to comments, user guide, `.md` docs, etc.
-5. **Markdown:** Do not hand-wrap; keep each line (paragraphs, table rows, list items, etc.) on a single line
-6. **TypeScript/JavaScript:** Semicolons required, use double quotes, indent with spaces
-7. **Go:** Format with `gofmt` after editing
+1. New user-facing strings belong in i18n resources when they appear in the app.
+2. Keep language keys complete across active language files when adding keys.
+3. Use three ASCII periods (`...`) for ellipses in localized strings.
+4. Do not add upstream hosted domains, upstream social links, upstream pricing links, or claims that Scribli provides official cloud services.
+5. Public README/docs must clearly state that Scribli is based on SiYuan and remains AGPL-3.0 licensed.
+6. Do not remove inherited upstream copyright notices from source files.
 
 ---
 
-## 7. Response style
+## 9. Git And Release Safety
 
-1. **Language:** Match the user's language; do not mix languages mid-sentence (keep proper nouns / identifiers in their original form)
+1. Never run `git commit` or `git push` unless Boss explicitly asks.
+2. Do not revert user changes. If the worktree is dirty, inspect enough to avoid overwriting unrelated edits.
+3. Do not add upstream release, Docker, AUR, app-store, signing, payment, subscription, or cloud-service publishing.
+4. Keep `.github/workflows/*` publishing workflows disabled until Scribli has its own release pipeline.
+5. Keep runtime update checks disabled unless Scribli has a signed release channel and Boss asks to enable it.
+
+---
+
+## 10. Upstream And Dependencies
+
+Scribli still inherits core architecture and dependencies from SiYuan. Related upstream projects such as Lute, Dejavu, Riff, Gulu, eventbus, filelock, httpclient, logging, go-sqlite3, pdfcpu, epub, clipboard, and others are Go module dependencies, not Scribli-owned sibling repos.
+
+If a dependency must be tested locally, use a temporary `replace` in `kernel/go.mod`, but do not commit that `replace`.
+
+Rebuilding `lute.min.js` requires the upstream Lute build process; do not edit the generated file in this repo.
+
+---
+
+## 11. Response Style
+
+Match Boss's language and keep answers direct. Explain root cause, what changed, what was verified, and what remains uncertain. Do not pretend a build, install, package, or runtime smoke test happened unless it actually did.
