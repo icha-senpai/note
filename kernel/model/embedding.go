@@ -701,7 +701,7 @@ func embeddingKey() string {
 	if nil != Conf.AI.Embedding && Conf.AI.Embedding.Enabled && "" != Conf.AI.Embedding.APIKey {
 		return Conf.AI.Embedding.APIKey
 	}
-	if v := os.Getenv("SIYUAN_OPENAI_EMBEDDING_API_KEY"); "" != v {
+	if v := os.Getenv("SCRIBLI_OPENAI_EMBEDDING_API_KEY"); "" != v {
 		return v
 	}
 	return ""
@@ -711,7 +711,7 @@ func embeddingBaseURL() string {
 	if nil != Conf.AI.Embedding && Conf.AI.Embedding.Enabled && "" != Conf.AI.Embedding.BaseURL {
 		return Conf.AI.Embedding.BaseURL
 	}
-	if v := os.Getenv("SIYUAN_OPENAI_EMBEDDING_BASE_URL"); "" != v {
+	if v := os.Getenv("SCRIBLI_OPENAI_EMBEDDING_BASE_URL"); "" != v {
 		return v
 	}
 	return ""
@@ -735,7 +735,7 @@ func embeddingModel() string {
 	if nil != Conf.AI.Embedding && Conf.AI.Embedding.Enabled && "" != Conf.AI.Embedding.Name {
 		return Conf.AI.Embedding.Name
 	}
-	if v := os.Getenv("SIYUAN_OPENAI_EMBEDDING_MODEL"); "" != v {
+	if v := os.Getenv("SCRIBLI_OPENAI_EMBEDDING_MODEL"); "" != v {
 		return v
 	}
 	return ""

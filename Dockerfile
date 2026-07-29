@@ -42,20 +42,20 @@ RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/g
     go build -tags fts5 -ldflags "-s -w"
 
 FROM alpine:latest
-LABEL maintainer="Liang Ding<845765@qq.com>"
+LABEL maintainer="Scribli contributors"
 
 RUN apk add --no-cache ca-certificates tzdata su-exec
 
-ENV TZ=Asia/Shanghai
-ENV HOME=/home/siyuan
+ENV TZ=UTC
+ENV HOME=/home/scribli
 ENV RUN_IN_CONTAINER=true
 EXPOSE 6806
 
-WORKDIR /opt/siyuan/
+WORKDIR /opt/scribli/
 COPY --from=go-build --chmod=755 /kernel/kernel /kernel/entrypoint.sh .
 COPY --from=node-build /artifacts .
 
-ENTRYPOINT ["/opt/siyuan/entrypoint.sh"]
-# 默认启动伺服。若通过 `docker run` / `command:` 传额外参数，需自行带上 `serve` 子命令，
-# 否则用户参数会整体覆盖 CMD。
-CMD ["/opt/siyuan/kernel", "serve"]
+ENTRYPOINT ["/opt/scribli/entrypoint.sh"]
+# Start the server by default. Extra `docker run` / `command:` args replace CMD,
+# so callers must include the `serve` subcommand when overriding it.
+CMD ["serve"]

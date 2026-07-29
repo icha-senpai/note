@@ -182,9 +182,9 @@ func NewAI() *AI {
 		ImageGeneration: defaultImageGeneration(),
 	}
 
-	apiKey := os.Getenv("SIYUAN_OPENAI_API_KEY")
-	apiModel := os.Getenv("SIYUAN_OPENAI_API_MODEL")
-	apiBaseURL := os.Getenv("SIYUAN_OPENAI_API_BASE_URL")
+	apiKey := os.Getenv("SCRIBLI_OPENAI_API_KEY")
+	apiModel := os.Getenv("SCRIBLI_OPENAI_API_MODEL")
+	apiBaseURL := os.Getenv("SCRIBLI_OPENAI_API_BASE_URL")
 
 	if !util.OfflineMode && apiModel != "" && apiBaseURL != "" {
 		provider := &Provider{
@@ -193,7 +193,7 @@ func NewAI() *AI {
 			Enabled:        true,
 			APIKey:         apiKey,
 		}
-		if timeout := os.Getenv("SIYUAN_OPENAI_API_TIMEOUT"); "" != timeout {
+		if timeout := os.Getenv("SCRIBLI_OPENAI_API_TIMEOUT"); "" != timeout {
 			if v, err := strconv.Atoi(timeout); err == nil {
 				provider.RequestTimeout = v
 			}
@@ -203,17 +203,17 @@ func NewAI() *AI {
 			Name:    apiModel,
 			Enabled: true,
 		}
-		if maxTokens := os.Getenv("SIYUAN_OPENAI_API_MAX_TOKENS"); "" != maxTokens {
+		if maxTokens := os.Getenv("SCRIBLI_OPENAI_API_MAX_TOKENS"); "" != maxTokens {
 			if v, err := strconv.Atoi(maxTokens); err == nil {
 				ai.Editing.MaxCompletionTokens = v
 			}
 		}
-		if temperature := os.Getenv("SIYUAN_OPENAI_API_TEMPERATURE"); "" != temperature {
+		if temperature := os.Getenv("SCRIBLI_OPENAI_API_TEMPERATURE"); "" != temperature {
 			if v, err := strconv.ParseFloat(temperature, 64); err == nil {
 				ai.Editing.Temperature = v
 			}
 		}
-		if maxContexts := os.Getenv("SIYUAN_OPENAI_API_MAX_CONTEXTS"); "" != maxContexts {
+		if maxContexts := os.Getenv("SCRIBLI_OPENAI_API_MAX_CONTEXTS"); "" != maxContexts {
 			if v, err := strconv.Atoi(maxContexts); err == nil {
 				ai.Editing.MaxHistoryMessages = v
 			}
@@ -223,45 +223,45 @@ func NewAI() *AI {
 		ai.Providers = append(ai.Providers, provider)
 	}
 
-	if agentTimeout := os.Getenv("SIYUAN_OPENAI_AGENT_TIMEOUT"); "" != agentTimeout {
+	if agentTimeout := os.Getenv("SCRIBLI_OPENAI_AGENT_TIMEOUT"); "" != agentTimeout {
 		if v, err := strconv.Atoi(agentTimeout); err == nil {
 			ai.Agent.SessionTimeout = v
 		}
 	}
-	if agentStreamIdleTimeout := os.Getenv("SIYUAN_OPENAI_AGENT_STREAM_IDLE_TIMEOUT"); "" != agentStreamIdleTimeout {
+	if agentStreamIdleTimeout := os.Getenv("SCRIBLI_OPENAI_AGENT_STREAM_IDLE_TIMEOUT"); "" != agentStreamIdleTimeout {
 		if v, err := strconv.Atoi(agentStreamIdleTimeout); err == nil {
 			ai.Agent.StreamIdleTimeout = v
 		}
 	}
-	if agentConfirmTimeout := os.Getenv("SIYUAN_OPENAI_AGENT_CONFIRM_TIMEOUT"); "" != agentConfirmTimeout {
+	if agentConfirmTimeout := os.Getenv("SCRIBLI_OPENAI_AGENT_CONFIRM_TIMEOUT"); "" != agentConfirmTimeout {
 		if v, err := strconv.Atoi(agentConfirmTimeout); err == nil {
 			ai.Agent.ConfirmTimeout = v
 		}
 	}
-	if agentMaxRetries := os.Getenv("SIYUAN_OPENAI_AGENT_MAX_RETRIES"); "" != agentMaxRetries {
+	if agentMaxRetries := os.Getenv("SCRIBLI_OPENAI_AGENT_MAX_RETRIES"); "" != agentMaxRetries {
 		if v, err := strconv.Atoi(agentMaxRetries); err == nil {
 			ai.Agent.MaxRetries = v
 		}
 	}
-	if agentTemperature := os.Getenv("SIYUAN_OPENAI_AGENT_TEMPERATURE"); "" != agentTemperature {
+	if agentTemperature := os.Getenv("SCRIBLI_OPENAI_AGENT_TEMPERATURE"); "" != agentTemperature {
 		if v, err := strconv.ParseFloat(agentTemperature, 64); err == nil {
 			ai.Agent.Temperature = v
 		}
 	}
-	if agentMaxCompletionTokens := os.Getenv("SIYUAN_OPENAI_AGENT_MAX_COMPLETION_TOKENS"); "" != agentMaxCompletionTokens {
+	if agentMaxCompletionTokens := os.Getenv("SCRIBLI_OPENAI_AGENT_MAX_COMPLETION_TOKENS"); "" != agentMaxCompletionTokens {
 		if v, err := strconv.Atoi(agentMaxCompletionTokens); err == nil {
 			ai.Agent.MaxCompletionTokens = v
 		}
 	}
-	if agentMaxToolCallRounds := os.Getenv("SIYUAN_OPENAI_AGENT_MAX_TOOL_CALL_ROUNDS"); "" != agentMaxToolCallRounds {
+	if agentMaxToolCallRounds := os.Getenv("SCRIBLI_OPENAI_AGENT_MAX_TOOL_CALL_ROUNDS"); "" != agentMaxToolCallRounds {
 		if v, err := strconv.Atoi(agentMaxToolCallRounds); err == nil {
 			ai.Agent.MaxToolCallRounds = v
 		}
 	}
 
-	embeddingKey := os.Getenv("SIYUAN_OPENAI_EMBEDDING_API_KEY")
-	embeddingBaseURL := os.Getenv("SIYUAN_OPENAI_EMBEDDING_BASE_URL")
-	embeddingModel := os.Getenv("SIYUAN_OPENAI_EMBEDDING_MODEL")
+	embeddingKey := os.Getenv("SCRIBLI_OPENAI_EMBEDDING_API_KEY")
+	embeddingBaseURL := os.Getenv("SCRIBLI_OPENAI_EMBEDDING_BASE_URL")
+	embeddingModel := os.Getenv("SCRIBLI_OPENAI_EMBEDDING_MODEL")
 	if !util.OfflineMode && "" != embeddingKey && "" != embeddingBaseURL && "" != embeddingModel {
 		ai.Embedding = &Embedding{
 			APIKey:  embeddingKey,

@@ -70,7 +70,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		if workspacePath == "" {
-			workspacePath = os.Getenv("SIYUAN_WORKSPACE_PATH")
+			workspacePath = os.Getenv("SCRIBLI_WORKSPACE_PATH")
 		}
 		if workspacePath == "" {
 			workspacePath = filepath.Join(util.HomeDir, "Scribli")

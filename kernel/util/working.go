@@ -55,20 +55,20 @@ func IsReleaseVer(ver string) bool {
 }
 
 var (
-	RunInContainer             = false
-	SiYuanAccessAuthCodeBypass = false
-	AttachUI                   = false
-	OfflineMode                = false
-	OfficialServicesDisabled   = true
+	RunInContainer              = false
+	ScribliAccessAuthCodeBypass = false
+	AttachUI                    = false
+	OfflineMode                 = false
+	OfficialServicesDisabled    = true
 )
 
 func initEnvVars() {
 	RunInContainer = isRunningInDockerContainer()
 	var err error
-	if SiYuanAccessAuthCodeBypass, err = strconv.ParseBool(os.Getenv("SIYUAN_ACCESS_AUTH_CODE_BYPASS")); err != nil {
-		SiYuanAccessAuthCodeBypass = false
+	if ScribliAccessAuthCodeBypass, err = strconv.ParseBool(os.Getenv("SCRIBLI_ACCESS_AUTH_CODE_BYPASS")); err != nil {
+		ScribliAccessAuthCodeBypass = false
 	}
-	if OfflineMode, err = strconv.ParseBool(os.Getenv("SIYUAN_OFFLINE_MODE")); err != nil {
+	if OfflineMode, err = strconv.ParseBool(os.Getenv("SCRIBLI_OFFLINE_MODE")); err != nil {
 		OfflineMode = false
 	}
 }
@@ -147,9 +147,9 @@ func BootWithFlags(workspacePath, wdPath, port, readOnly, accessAuthCode, lang, 
 	// Fallback to env vars if commandline args are not set
 	// valid only for CLI args that default to "", as the
 	// others have explicit (sane) defaults
-	workspacePath = *coalesceToEnvVar(&workspacePath, "SIYUAN_WORKSPACE_PATH")
-	accessAuthCode = *coalesceToEnvVar(&accessAuthCode, "SIYUAN_ACCESS_AUTH_CODE")
-	lang = *coalesceToEnvVar(&lang, "SIYUAN_LANG")
+	workspacePath = *coalesceToEnvVar(&workspacePath, "SCRIBLI_WORKSPACE_PATH")
+	accessAuthCode = *coalesceToEnvVar(&accessAuthCode, "SCRIBLI_ACCESS_AUTH_CODE")
+	lang = *coalesceToEnvVar(&lang, "SCRIBLI_LANG")
 
 	if "" != lang {
 		Lang = LangToBCP47(lang)
@@ -167,16 +167,15 @@ func BootWithFlags(workspacePath, wdPath, port, readOnly, accessAuthCode, lang, 
 		if "" == AccessAuthCode { // Still empty?
 			interruptBoot := true
 
-			// Set the env `SIYUAN_ACCESS_AUTH_CODE_BYPASS=true` to skip checking empty access auth code https://github.com/siyuan-note/siyuan/issues/9709
-			if SiYuanAccessAuthCodeBypass {
+			if ScribliAccessAuthCodeBypass {
 				interruptBoot = false
-				fmt.Println("bypass access auth code check since the env [SIYUAN_ACCESS_AUTH_CODE_BYPASS] is set to [true]")
+				fmt.Println("bypass access auth code check since the env [SCRIBLI_ACCESS_AUTH_CODE_BYPASS] is set to [true]")
 			}
 
 			if interruptBoot {
 				// The access authorization code command line parameter must be set when deploying via Docker https://github.com/siyuan-note/siyuan/issues/9328
 				fmt.Printf("the access authorization code command line parameter (--accessAuthCode) must be set when deploying via Docker\n")
-				fmt.Printf("or you can set the SIYUAN_ACCESS_AUTH_CODE env var")
+				fmt.Printf("or you can set the SCRIBLI_ACCESS_AUTH_CODE env var")
 				os.Exit(logging.ExitCodeSecurityRisk)
 			}
 		}
@@ -308,7 +307,7 @@ func initWorkspaceDir(workspaceArg string) {
 			defaultWorkspaceDir = filepath.Join(userProfile, "Scribli")
 		}
 	} else if gulu.OS.IsDarwin() {
-		// Change the initial workspace path to ~/Library/Application Support/SiYuan on macOS https://github.com/siyuan-note/siyuan/issues/17095
+		// Change the initial workspace path to ~/Library/Application Support/Scribli on macOS https://github.com/siyuan-note/siyuan/issues/17095
 		defaultWorkspaceDir = filepath.Join(HomeDir, "Library", "Application Support", "Scribli")
 	}
 

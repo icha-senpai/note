@@ -68,7 +68,7 @@ export const openTitleMenu = (protyle: IProtyle, position: IPosition, from: stri
                     })
                 ]);
 
-                const textHTML = `<!--data-siyuan='${encodeBase64(responseHTML.data.dom)}'-->${removeZWJ(responseHTML.data.dom)}`;
+                const textHTML = `<!--data-scribli='${encodeBase64(responseHTML.data.dom)}'-->${removeZWJ(responseHTML.data.dom)}`;
                 await navigator.clipboard.write([
                     new ClipboardItem({
                         "text/plain": new Blob([responseText.data.content], {type: "text/plain"}),

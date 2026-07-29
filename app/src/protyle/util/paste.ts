@@ -1,7 +1,7 @@
 import {Constants} from "../../constants";
 import {uploadFiles, uploadLocalFiles} from "../upload";
 import {processPasteCode, processRender} from "./processCode";
-import {getLocalFiles, getTextSiyuanFromTextHTML, readText} from "./compatibility";
+import {getLocalFiles, getTextScribliFromTextHTML, readText} from "./compatibility";
 import {hasClosestBlock, hasClosestByAttribute, hasClosestByClassName} from "./hasClosest";
 import {getEditorRange, getSelectionOffset} from "./selection";
 import {blockRender} from "../render/blockRender";
@@ -256,6 +256,7 @@ const readLocalFile = async (protyle: IProtyle, localFiles: ILocalFiles[]) => {
                     resolve,
                     textHTML: "",
                     textPlain: "",
+                    scribliHTML: "",
                     siyuanHTML: "",
                     localFiles
                 });
@@ -280,17 +281,17 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
     }
     let textHTML: string;
     let textPlain: string;
-    let siyuanHTML: string;
+    let scribliHTML: string;
     let files: FileList | DataTransferItemList | File[];
     if ("clipboardData" in event) {
         textHTML = event.clipboardData.getData("text/html");
         textPlain = event.clipboardData.getData("text/plain");
-        siyuanHTML = event.clipboardData.getData("text/siyuan");
+        scribliHTML = event.clipboardData.getData("text/scribli") || event.clipboardData.getData("text/siyuan");
         files = event.clipboardData.files;
     } else if ("dataTransfer" in event) {
         textHTML = event.dataTransfer.getData("text/html");
         textPlain = event.dataTransfer.getData("text/plain");
-        siyuanHTML = event.dataTransfer.getData("text/siyuan");
+        scribliHTML = event.dataTransfer.getData("text/scribli") || event.dataTransfer.getData("text/siyuan");
         if (event.dataTransfer.types[0] === "Files") {
             files = event.dataTransfer.items;
         }
@@ -301,7 +302,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         }
         textHTML = event.textHTML;
         textPlain = event.textPlain;
-        siyuanHTML = event.siyuanHTML;
+        scribliHTML = event.scribliHTML || event.siyuanHTML;
         files = event.files;
     }
 
@@ -309,7 +310,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
     textPlain = textPlain.replace(/\r\n|\r|\u2028|\u2029/g, "\n");
 
     /// #if !BROWSER
-    if (!siyuanHTML && !textHTML && !textPlain && ("clipboardData" in event)) {
+    if (!scribliHTML && !textHTML && !textPlain && ("clipboardData" in event)) {
         const localFiles: ILocalFiles[] = await getLocalFiles();
         if (localFiles.length > 0) {
             readLocalFile(protyle, localFiles);
@@ -326,17 +327,17 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         textHTML = "";
     }
     // 复制标题及其下方块使用 writeText，需将 textPlain 转换为 textHTML
-    if (textPlain.endsWith(Constants.ZWSP) && !textHTML && !siyuanHTML) {
-        siyuanHTML = textPlain.substr(0, textPlain.length - 1);
+    if (textPlain.endsWith(Constants.ZWSP) && !textHTML && !scribliHTML) {
+        scribliHTML = textPlain.substr(0, textPlain.length - 1);
     }
-    // 复制/剪切折叠标题需获取 siyuanHTML
-    if (textHTML && textPlain && !siyuanHTML) {
-        const textObj = getTextSiyuanFromTextHTML(textHTML);
-        siyuanHTML = textObj.textSiyuan;
+    // 复制/剪切折叠标题需获取 scribliHTML
+    if (textHTML && textPlain && !scribliHTML) {
+        const textObj = getTextScribliFromTextHTML(textHTML);
+        scribliHTML = textObj.textScribli;
         textHTML = textObj.textHtml;
     }
     // 剪切复制中首位包含空格或仅有空格 https://github.com/siyuan-note/siyuan/issues/5667
-    if (!siyuanHTML) {
+    if (!scribliHTML) {
         // process word
         const doc = new DOMParser().parseFromString(textHTML, "text/html");
         if (doc.body && doc.body.innerHTML) {
@@ -357,7 +358,8 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                     resolve,
                     textHTML,
                     textPlain,
-                    siyuanHTML,
+                    scribliHTML,
+                    siyuanHTML: scribliHTML,
                     files
                 });
                 if (emitResult) {
@@ -371,8 +373,10 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             if (response?.textPlain) {
                 textPlain = response.textPlain;
             }
-            if (response?.siyuanHTML) {
-                siyuanHTML = response.siyuanHTML;
+            if (response?.scribliHTML) {
+                scribliHTML = response.scribliHTML;
+            } else if (response?.siyuanHTML) {
+                scribliHTML = response.siyuanHTML;
             }
             if (response?.files) {
                 files = response.files as FileList;
@@ -403,7 +407,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         // https://github.com/siyuan-note/siyuan/issues/13552
         insertHTML(removeZWJ(textPlain).replace(/```/g, "\u200D```"), protyle);
         return;
-    } else if (siyuanHTML) {
+    } else if (scribliHTML) {
         async function streamInsert(container: HTMLElement, bigHtmlString: string) {
             const iframe = document.createElement("iframe");
             iframe.style.display = "none";
@@ -435,10 +439,10 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
 
         // 编辑器内部粘贴
         const tempElement = document.createElement("div");
-        if (1024 * 512 < siyuanHTML.length) {
-            await streamInsert(tempElement, siyuanHTML);
+        if (1024 * 512 < scribliHTML.length) {
+            await streamInsert(tempElement, scribliHTML);
         } else {
-            tempElement.innerHTML = siyuanHTML;
+            tempElement.innerHTML = scribliHTML;
         }
         if (range.toString()) {
             let types: string[] = [];
@@ -451,7 +455,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             }
             if (!linkElement) {
                 const linkTemp = document.createElement("template");
-                linkTemp.innerHTML = protyle.lute.SpinBlockDOM(siyuanHTML);
+                linkTemp.innerHTML = protyle.lute.SpinBlockDOM(scribliHTML);
                 if (linkTemp.content.firstChild.nodeType !== 3 && linkTemp.content.firstElementChild.classList.contains("p")) {
                     linkTemp.innerHTML = linkTemp.content.firstElementChild.firstElementChild.innerHTML.trim();
                 }
@@ -722,4 +726,3 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         scrollCenter(protyle, undefined, "nearest", "smooth");
     }
 };
-

@@ -99,7 +99,7 @@ var workspaceInfoCmd = &cobra.Command{
 }
 
 func resolveDefaultWorkspace() string {
-	if p := os.Getenv("SIYUAN_WORKSPACE_PATH"); p != "" {
+	if p := os.Getenv("SCRIBLI_WORKSPACE_PATH"); p != "" {
 		return p
 	}
 	paths, _ := util.ReadWorkspacePaths()

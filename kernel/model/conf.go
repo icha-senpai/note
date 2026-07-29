@@ -496,7 +496,7 @@ func InitConf() {
 	if nil == Conf.Repo {
 		Conf.Repo = conf.NewRepo()
 	}
-	if timingEnv := os.Getenv("SIYUAN_SYNC_INDEX_TIMING"); "" != timingEnv {
+	if timingEnv := os.Getenv("SCRIBLI_SYNC_INDEX_TIMING"); "" != timingEnv {
 		val, err := strconv.Atoi(timingEnv)
 		if err == nil {
 			Conf.Repo.SyncIndexTiming = int64(val)

@@ -170,7 +170,7 @@ class App {
                 fetchGet(`/appearance/langs/${window.scribli.config.appearance.lang}.json?v=${Constants.SCRIBLI_VERSION}`, (lauguages: IObject) => {
                     window.scribli.languages = lauguages;
                     window.scribli.menus = new Menus(this);
-                    document.title = window.scribli.languages.siyuanNote;
+                    document.title = window.scribli.languages.scribliNote;
                     bootSync();
                     appearanceConfigApi.apply(window.scribli.config.appearance);
                     initMessage();

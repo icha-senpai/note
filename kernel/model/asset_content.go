@@ -866,14 +866,14 @@ func (parser *PdfAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 		return
 	}
 
-	if maxSizeVal := os.Getenv("SIYUAN_PDF_ASSET_CONTENT_INDEX_MAX_SIZE"); "" != maxSizeVal {
+	if maxSizeVal := os.Getenv("SCRIBLI_PDF_ASSET_CONTENT_INDEX_MAX_SIZE"); "" != maxSizeVal {
 		if maxSize, parseErr := strconv.ParseUint(maxSizeVal, 10, 64); nil == parseErr {
 			if maxSize != PDFAssetContentMaxSize {
 				PDFAssetContentMaxSize = maxSize
 				logging.LogInfof("set PDF asset content index max size to [%s]", humanize.BytesCustomCeil(maxSize, 2))
 			}
 		} else {
-			logging.LogWarnf("invalid env [SIYUAN_PDF_ASSET_CONTENT_INDEX_MAX_SIZE]: [%s], parsing failed: %s", maxSizeVal, parseErr)
+			logging.LogWarnf("invalid env [SCRIBLI_PDF_ASSET_CONTENT_INDEX_MAX_SIZE]: [%s], parsing failed: %s", maxSizeVal, parseErr)
 		}
 	}
 

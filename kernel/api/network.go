@@ -397,11 +397,11 @@ func parseForwardProxyParams(c *gin.Context) (parsedURL *url.URL, headers *http.
 	return
 }
 
-// forwardResponseHeaders copies src headers into dst with a "Siyuan-Proxy-" prefix on each key.
+// forwardResponseHeaders copies src headers into dst with a "Scribli-Proxy-" prefix on each key.
 func forwardResponseHeaders(dst http.Header, src http.Header) {
 	for k, vs := range src {
 		for _, v := range vs {
-			dst.Add("Siyuan-Proxy-"+k, v)
+			dst.Add("Scribli-Proxy-"+k, v)
 		}
 	}
 }
@@ -413,7 +413,7 @@ func forwardResponseHeaders(dst http.Header, src http.Header) {
 //   - h: RawURLEncoding base64 of JSON map[string][]string forwarded as request headers
 //
 // The request method and body are taken from the incoming request.
-// Target response headers are forwarded with a "Siyuan-Proxy-" prefix.
+// Target response headers are forwarded with a "Scribli-Proxy-" prefix.
 func httpProxy(c *gin.Context) {
 	targetURL, targetHeaders, timeout, err := parseForwardProxyParams(c)
 	if err != nil {
@@ -468,7 +468,7 @@ func httpProxy(c *gin.Context) {
 //   - u: RawURLEncoding base64 of the target ws/wss URL
 //   - h: RawURLEncoding base64 of JSON map[string][]string forwarded as handshake headers
 //
-// Target response headers are forwarded with a "Siyuan-Proxy-" prefix.
+// Target response headers are forwarded with a "Scribli-Proxy-" prefix.
 func wsProxy(c *gin.Context) {
 	targetURL, targetHeaders, timeout, err := parseForwardProxyParams(c)
 	if err != nil {
@@ -561,7 +561,7 @@ func wsProxy(c *gin.Context) {
 //   - u: RawURLEncoding base64 of the target http/https URL
 //   - h: RawURLEncoding base64 of JSON map[string][]string forwarded as request headers
 //
-// Target response headers are forwarded with a "Siyuan-Proxy-" prefix.
+// Target response headers are forwarded with a "Scribli-Proxy-" prefix.
 func esProxy(c *gin.Context) {
 	targetURL, targetHeaders, timeout, err := parseForwardProxyParams(c)
 	if err != nil {

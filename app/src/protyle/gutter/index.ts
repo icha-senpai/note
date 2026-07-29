@@ -2046,12 +2046,19 @@ export class Gutter {
                         id,
                         removeFoldAttr: nodeElement.getAttribute("fold") !== "1"
                     }, (response) => {
+                        const textPlain = protyle.lute.BlockDOM2StdMd(response.data).trimEnd();
+                        const textHTML = protyle.lute.BlockDOM2HTML(response.data).trimEnd();
+                        const scribliHTML = response.data + Constants.ZWSP;
                         if (isInAndroid()) {
-                            window.JSAndroid.writeSiYuanHTMLClipboard(protyle.lute.BlockDOM2StdMd(response.data).trimEnd(), protyle.lute.BlockDOM2HTML(response.data).trimEnd(), response.data + Constants.ZWSP);
+                            const writeClipboard = window.JSAndroid.writeScribliHTMLClipboard ||
+                                window.JSAndroid.writeSiYuanHTMLClipboard;
+                            writeClipboard?.(textPlain, textHTML, scribliHTML);
                         } else if (isInHarmony()) {
-                            window.JSHarmony.writeSiYuanHTMLClipboard(protyle.lute.BlockDOM2StdMd(response.data).trimEnd(), protyle.lute.BlockDOM2HTML(response.data).trimEnd(), response.data + Constants.ZWSP);
+                            const writeClipboard = window.JSHarmony.writeScribliHTMLClipboard ||
+                                window.JSHarmony.writeSiYuanHTMLClipboard;
+                            writeClipboard?.(textPlain, textHTML, scribliHTML);
                         } else {
-                            writeText(response.data + Constants.ZWSP);
+                            writeText(scribliHTML);
                         }
                     });
                 }

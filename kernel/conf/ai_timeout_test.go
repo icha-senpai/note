@@ -42,7 +42,7 @@ func TestAINormalizeAgentTimeoutsAndRetries(t *testing.T) {
 }
 
 func TestNewAIReadsAgentStreamIdleTimeoutFromEnvironment(t *testing.T) {
-	t.Setenv("SIYUAN_OPENAI_AGENT_STREAM_IDLE_TIMEOUT", "240")
+	t.Setenv("SCRIBLI_OPENAI_AGENT_STREAM_IDLE_TIMEOUT", "240")
 	if got := NewAI().Agent.StreamIdleTimeout; got != 240 {
 		t.Fatalf("stream idle timeout = %d, want 240", got)
 	}
@@ -60,9 +60,9 @@ func TestAINormalizeProviderRequestTimeout(t *testing.T) {
 }
 
 func TestNewAIDefaultProviderRequestTimeout(t *testing.T) {
-	t.Setenv("SIYUAN_OPENAI_API_KEY", "test")
-	t.Setenv("SIYUAN_OPENAI_API_MODEL", "test-model")
-	t.Setenv("SIYUAN_OPENAI_API_BASE_URL", "https://example.com/v1")
+	t.Setenv("SCRIBLI_OPENAI_API_KEY", "test")
+	t.Setenv("SCRIBLI_OPENAI_API_MODEL", "test-model")
+	t.Setenv("SCRIBLI_OPENAI_API_BASE_URL", "https://example.com/v1")
 	ai := NewAI()
 	if len(ai.Providers) != 1 || ai.Providers[0].RequestTimeout != 120 {
 		t.Fatalf("unexpected default provider request timeout: %#v", ai.Providers)

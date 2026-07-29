@@ -243,7 +243,7 @@ func Tesseract(imgAbsPath string) (ret []map[string]any) {
 	defer logging.Recover()
 
 	timeout := 7000
-	timeoutEnv := os.Getenv("SIYUAN_TESSERACT_TIMEOUT")
+	timeoutEnv := os.Getenv("SCRIBLI_TESSERACT_TIMEOUT")
 	if "" != timeoutEnv {
 		if timeoutParsed, parseErr := strconv.Atoi(timeoutEnv); nil == parseErr {
 			timeout = timeoutParsed
@@ -340,15 +340,15 @@ func InitTesseract() {
 		return
 	}
 
-	maxSizeVal := os.Getenv("SIYUAN_TESSERACT_MAX_SIZE")
+	maxSizeVal := os.Getenv("SCRIBLI_TESSERACT_MAX_SIZE")
 	if "" != maxSizeVal {
 		if maxSize, parseErr := strconv.ParseUint(maxSizeVal, 10, 64); nil == parseErr {
 			TesseractMaxSize = maxSize
 		}
 	}
 
-	// Supports via environment var `SIYUAN_TESSERACT_ENABLED=false` to close OCR https://github.com/siyuan-note/siyuan/issues/9619
-	if enabled := os.Getenv("SIYUAN_TESSERACT_ENABLED"); "" != enabled {
+	// Supports via environment var `SCRIBLI_TESSERACT_ENABLED=false` to close OCR https://github.com/siyuan-note/siyuan/issues/9619
+	if enabled := os.Getenv("SCRIBLI_TESSERACT_ENABLED"); "" != enabled {
 		if enabledBool, parseErr := strconv.ParseBool(enabled); nil == parseErr {
 			TesseractEnabled = enabledBool
 			if !enabledBool {
@@ -367,7 +367,7 @@ func InitTesseract() {
 func filterTesseractLangs(langs []string) (ret []string) {
 	ret = []string{}
 
-	envLangsVal := os.Getenv("SIYUAN_TESSERACT_LANGS")
+	envLangsVal := os.Getenv("SCRIBLI_TESSERACT_LANGS")
 	if "" != envLangsVal {
 		envLangs := strings.Split(envLangsVal, "+")
 		for _, lang := range langs {

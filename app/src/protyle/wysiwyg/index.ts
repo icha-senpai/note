@@ -567,20 +567,20 @@ export class WYSIWYG {
                 enableLuteMarkdownSyntax(protyle);
                 // 表格选区（框选或跨多单元格文本选区）直接构建 BlockDOM，不走 HTML2BlockDOM 的 markdown 往返
                 //（GFM 表格只有单行表头，markdown 往返会丢失多行 thead 和单元格 th 属性）
-                let textSiyuan: string;
+                let textScribli: string;
                 if (selectTableElement || selectTableRange) {
                     // 表格选区：html 已是合法 <table>...</table>（含 thead/tbody/fn__none 占位），
                     // 构建最小化 NodeTable BlockDOM，不经过 markdown 往返（GFM 表格只有单行表头，往返会丢失多行 thead）
                     const newId = Lute.NewNodeID();
-                    textSiyuan = `<div data-node-id="${newId}" data-type="NodeTable" class="table"><div contenteditable="true" spellcheck="false">${html}<div class="protyle-action__table"><div class="table__resize"></div><div class="table__select"></div></div></div><div class="protyle-attr" contenteditable="false">\u200b</div></div>`;
-                    html = textSiyuan;
+                    textScribli = `<div data-node-id="${newId}" data-type="NodeTable" class="table"><div contenteditable="true" spellcheck="false">${html}<div class="protyle-action__table"><div class="table__resize"></div><div class="table__select"></div></div></div><div class="protyle-attr" contenteditable="false">\u200b</div></div>`;
+                    html = textScribli;
                 } else {
-                    textSiyuan = html;
+                    textScribli = html;
                 }
-                event.clipboardData.setData("text/siyuan", textSiyuan);
+                event.clipboardData.setData("text/scribli", textScribli);
                 restoreLuteMarkdownSyntax(protyle);
-                // 在 text/html 中插入注释节点，用于右键菜单粘贴时获取 text/siyuan 数据
-                const textHTML = `<!--data-siyuan='${encodeBase64(textSiyuan)}'-->` + removeZWJ((selectTableElement || selectTableRange) ? html : protyle.lute.BlockDOM2HTML(selectAVElement ? textPlain : html));
+                // 在 text/html 中插入注释节点，用于右键菜单粘贴时获取 text/scribli 数据
+                const textHTML = `<!--data-scribli='${encodeBase64(textScribli)}'-->` + removeZWJ((selectTableElement || selectTableRange) ? html : protyle.lute.BlockDOM2HTML(selectAVElement ? textPlain : html));
                 event.clipboardData.setData("text/html", textHTML);
                 if (needClipboardWrite) {
                     try {
@@ -2439,19 +2439,19 @@ export class WYSIWYG {
             if (!isInCodeBlock) {
                 enableLuteMarkdownSyntax(protyle);
                 // 表格选区（框选或跨多单元格文本选区）直接构建 BlockDOM，不走 HTML2BlockDOM 的 markdown 往返
-                let textSiyuan: string;
+                let textScribli: string;
                 if (selectTableElement || selectTableRange) {
                     // 表格选区：html 已是合法 <table>...</table>，构建最小化 NodeTable BlockDOM，不走 markdown 往返
                     const newId = Lute.NewNodeID();
-                    textSiyuan = `<div data-node-id="${newId}" data-type="NodeTable" class="table"><div contenteditable="true" spellcheck="false">${html}<div class="protyle-action__table"><div class="table__resize"></div><div class="table__select"></div></div></div><div class="protyle-attr" contenteditable="false">\u200b</div></div>`;
-                    html = textSiyuan;
+                    textScribli = `<div data-node-id="${newId}" data-type="NodeTable" class="table"><div contenteditable="true" spellcheck="false">${html}<div class="protyle-action__table"><div class="table__resize"></div><div class="table__select"></div></div></div><div class="protyle-attr" contenteditable="false">\u200b</div></div>`;
+                    html = textScribli;
                 } else {
-                    textSiyuan = html;
+                    textScribli = html;
                 }
                 restoreLuteMarkdownSyntax(protyle);
-                event.clipboardData.setData("text/siyuan", textSiyuan);
-                // 在 text/html 中插入注释节点，用于右键菜单粘贴时获取 text/siyuan 数据
-                const textHTML = `<!--data-siyuan='${encodeBase64(textSiyuan)}'-->` + removeZWJ((selectTableElement || selectTableRange) ? html : protyle.lute.BlockDOM2HTML(selectAVElement ? textPlain : html));
+                event.clipboardData.setData("text/scribli", textScribli);
+                // 在 text/html 中插入注释节点，用于右键菜单粘贴时获取 text/scribli 数据
+                const textHTML = `<!--data-scribli='${encodeBase64(textScribli)}'-->` + removeZWJ((selectTableElement || selectTableRange) ? html : protyle.lute.BlockDOM2HTML(selectAVElement ? textPlain : html));
                 event.clipboardData.setData("text/html", textHTML);
                 if (needClipboardWrite) {
                     try {

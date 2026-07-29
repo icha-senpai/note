@@ -51,7 +51,7 @@ export class Title {
                 event.stopPropagation();
                 event.preventDefault();
                 // 不能使用 range.insertNode，否则无法撤销
-                let text = event.clipboardData.getData("text/siyuan");
+                let text = event.clipboardData.getData("text/scribli") || event.clipboardData.getData("text/siyuan");
                 if (text) {
                     try {
                         JSON.parse(text);

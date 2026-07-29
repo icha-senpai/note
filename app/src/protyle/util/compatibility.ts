@@ -32,36 +32,38 @@ export const encodeBase64 = (text: string): string => {
     }
 };
 
-export const getTextSiyuanFromTextHTML = (html: string) => {
+export const getTextScribliFromTextHTML = (html: string) => {
+    const internalDataReg = /<!--data-scribli='[^']+'-->/g;
+    const legacyInternalDataReg = /<!--data-siyuan='[^']+'-->/g;
     if (html.trimStart().startsWith("<html") &&
         html.substring(0, html.indexOf(">")).includes('xmlns:x="urn:schemas-microsoft-com:office:excel"')) {
-        // 移除 Microsoft Excel 中的 data-siyuan https://github.com/siyuan-note/siyuan/pull/16338
+        // 移除 Microsoft Excel 中的内部剪贴板标记。
         return {
-            textSiyuan: "",
-            textHtml: html.replace(/<!--data-siyuan='[^']+'-->/g, "")
+            textScribli: "",
+            textHtml: html.replace(internalDataReg, "").replace(legacyInternalDataReg, "")
         };
     }
-    const siyuanMatch = html.match(/<!--data-siyuan='([^']+)'-->/);
-    let textSiyuan = "";
+    const scribliMatch = html.match(/<!--data-scribli='([^']+)'-->/) || html.match(/<!--data-siyuan='([^']+)'-->/);
+    let textScribli = "";
     let textHtml = html;
-    if (siyuanMatch) {
+    if (scribliMatch) {
         try {
             if (typeof Buffer !== "undefined") {
-                const decodedBytes = Buffer.from(siyuanMatch[1], "base64");
-                textSiyuan = decodedBytes.toString("utf8");
+                const decodedBytes = Buffer.from(scribliMatch[1], "base64");
+                textScribli = decodedBytes.toString("utf8");
             } else {
                 const decoder = new TextDecoder();
-                const bytes = Uint8Array.from(atob(siyuanMatch[1]), char => char.charCodeAt(0));
-                textSiyuan = decoder.decode(bytes);
+                const bytes = Uint8Array.from(atob(scribliMatch[1]), char => char.charCodeAt(0));
+                textScribli = decoder.decode(bytes);
             }
             // 移除注释节点，保持原有的 text/html 内容
-            textHtml = html.replace(/<!--data-siyuan='[^']+'-->/g, "");
+            textHtml = html.replace(internalDataReg, "").replace(legacyInternalDataReg, "");
         } catch (e) {
-            console.log("Failed to decode siyuan data from HTML comment:", e);
+            console.log("Failed to decode Scribli data from HTML comment:", e);
         }
     }
     return {
-        textSiyuan,
+        textScribli,
         textHtml
     };
 };
@@ -196,26 +198,30 @@ export const getLocalFiles = async () => {
 /// #endif
 
 export const readClipboard = async () => {
-    const text: IClipboardData = {textPlain: "", textHTML: "", siyuanHTML: ""};
+    const text: IClipboardData = {textPlain: "", textHTML: "", scribliHTML: ""};
     if (isInAndroid()) {
         text.textPlain = window.JSAndroid.readClipboard();
         text.textHTML = window.JSAndroid.readHTMLClipboard();
-        const textObj = getTextSiyuanFromTextHTML(text.textHTML);
+        const textObj = getTextScribliFromTextHTML(text.textHTML);
         text.textHTML = textObj.textHtml;
-        text.siyuanHTML = textObj.textSiyuan;
-        if (!text.siyuanHTML) {
-            text.siyuanHTML = window.JSAndroid.readSiYuanHTMLClipboard();
+        text.scribliHTML = textObj.textScribli;
+        if (!text.scribliHTML) {
+            text.scribliHTML = window.JSAndroid.readScribliHTMLClipboard?.() ||
+                window.JSAndroid.readSiYuanHTMLClipboard?.() ||
+                "";
         }
         return text;
     }
     if (isInHarmony()) {
         text.textPlain = window.JSHarmony.readClipboard();
         text.textHTML = window.JSHarmony.readHTMLClipboard();
-        const textObj = getTextSiyuanFromTextHTML(text.textHTML);
+        const textObj = getTextScribliFromTextHTML(text.textHTML);
         text.textHTML = textObj.textHtml;
-        text.siyuanHTML = textObj.textSiyuan;
-        if (!text.siyuanHTML) {
-            text.siyuanHTML = window.JSHarmony.readSiYuanHTMLClipboard();
+        text.scribliHTML = textObj.textScribli;
+        if (!text.scribliHTML) {
+            text.scribliHTML = window.JSHarmony.readScribliHTMLClipboard?.() ||
+                window.JSHarmony.readSiYuanHTMLClipboard?.() ||
+                "";
         }
         return text;
     }
@@ -234,9 +240,9 @@ export const readClipboard = async () => {
             if (item.types.includes("text/html")) {
                 const blob = await item.getType("text/html");
                 text.textHTML = await blob.text();
-                const textObj = getTextSiyuanFromTextHTML(text.textHTML);
+                const textObj = getTextScribliFromTextHTML(text.textHTML);
                 text.textHTML = textObj.textHtml;
-                text.siyuanHTML = textObj.textSiyuan;
+                text.scribliHTML = textObj.textScribli;
             }
             if (item.types.includes("text/plain")) {
                 const blob = await item.getType("text/plain");
@@ -651,7 +657,7 @@ export const initNativeDialogOverride = () => {
     window.alert = function (message: string) {
         try {
             ipcRenderer.sendSync(Constants.SCRIBLI_ALERT_DIALOG, {
-                title: window.scribli.languages.siyuanNote,
+                title: window.scribli.languages.scribliNote,
                 message,
                 buttons: [window.scribli.languages.confirm],
                 noLink: true,
@@ -665,7 +671,7 @@ export const initNativeDialogOverride = () => {
     window.confirm = function (message: string): boolean {
         try {
             const buttonIndex = ipcRenderer.sendSync(Constants.SCRIBLI_CONFIRM_DIALOG, {
-                title: window.scribli?.languages?.siyuanNote || "Scribli",
+                title: window.scribli?.languages?.scribliNote || "Scribli",
                 message,
                 buttons: [window.scribli?.languages?.cancel || "Cancel", window.scribli?.languages?.confirm || "OK"],
                 cancelId: 0,

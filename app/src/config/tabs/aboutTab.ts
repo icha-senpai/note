@@ -43,7 +43,7 @@ const registerAboutInfoGroup = (tab: SettingTabBuilder) => {
     group.slot({
         key: "aboutLogo",
         keywords: [
-            window.scribli.languages.siyuanNote,
+            window.scribli.languages.scribliNote,
             window.scribli.languages.slogan,
             window.scribli.languages.about1,
             window.scribli.languages.feedback,
@@ -53,7 +53,7 @@ const registerAboutInfoGroup = (tab: SettingTabBuilder) => {
         <div class="config-about__logo">
             <img src="/stage/icon.png">
             <span class="fn__space"></span>
-            <span>${window.scribli.languages.siyuanNote}</span>
+            <span>${window.scribli.languages.scribliNote}</span>
             <span class="fn__space"></span>
             <span class="ft__on-surface">${window.scribli.languages.slogan}</span>
         </div>

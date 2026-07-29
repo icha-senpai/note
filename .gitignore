@@ -14,7 +14,8 @@ app/stage/build
 app/build
 app/src/types/dist
 app/kernel*
-app/SiYuan-Kernel
+app/Scribli-Kernel
+kernel/.cache/
 ios
 pprof
 

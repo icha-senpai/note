@@ -257,7 +257,7 @@ func CheckAuth(c *gin.Context) {
 
 	if "" == Conf.AccessAuthCode {
 		// Skip the empty access authorization code check https://github.com/siyuan-note/siyuan/issues/9709
-		if util.SiYuanAccessAuthCodeBypass {
+		if util.ScribliAccessAuthCodeBypass {
 			c.Set(RoleContextKey, RoleAdministrator)
 			c.Next()
 			return
@@ -419,7 +419,7 @@ func Timing(c *gin.Context) {
 	}
 
 	timing := 15 * 1000
-	if timingEnv := os.Getenv("SIYUAN_PERFORMANCE_TIMING"); "" != timingEnv {
+	if timingEnv := os.Getenv("SCRIBLI_PERFORMANCE_TIMING"); "" != timingEnv {
 		val, err := strconv.Atoi(timingEnv)
 		if err == nil {
 			timing = val

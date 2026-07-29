@@ -9,7 +9,7 @@ These families are not permanent exceptions. They need staged migrations because
 | Identifier family | Why it is sensitive |
 | --- | --- |
 | `window.siyuan` | Frontend global used by app code and likely by plugins/snippets. Add `window.scribli`, migrate app code, test plugin access, then remove the legacy name in a breaking pass. |
-| `application/siyuan-*`, `text/siyuan`, `data-siyuan` | MIME, clipboard, export, and paste formats can affect copied content and external integrations. Add Scribli formats, read old formats during migration, then stop writing old formats. |
+| `application/siyuan-*` and legacy clipboard markers (`text/siyuan`, `data-siyuan`) | MIME, clipboard, export, and paste formats can affect copied content and external integrations. The app writes Scribli clipboard formats now and keeps read fallback for old copied content. Migrate the remaining MIME/API surfaces with tests before removing legacy readers. |
 | `github.com/siyuan-note/siyuan/kernel` | Current Go module path and import root. Renaming it is a broad module detachment project. |
 | `.siyuan`, `siyuan.db`, `siyuan-encrypted-*` | Workspace and notebook storage format names. Migrate only with backups, upgrade code, downgrade expectations, and tests. |
 | `/api/*` endpoint names inherited from SiYuan | Public API and plugin compatibility surface. Add Scribli endpoints or payload aliases before removing old names. |

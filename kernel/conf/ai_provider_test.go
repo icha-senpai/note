@@ -11,9 +11,9 @@ package conf
 import "testing"
 
 func TestNewAIAddsKeylessProviderFromEnvironment(t *testing.T) {
-	t.Setenv("SIYUAN_OPENAI_API_KEY", "")
-	t.Setenv("SIYUAN_OPENAI_API_MODEL", "local-model")
-	t.Setenv("SIYUAN_OPENAI_API_BASE_URL", "http://127.0.0.1:8080/v1")
+	t.Setenv("SCRIBLI_OPENAI_API_KEY", "")
+	t.Setenv("SCRIBLI_OPENAI_API_MODEL", "local-model")
+	t.Setenv("SCRIBLI_OPENAI_API_BASE_URL", "http://127.0.0.1:8080/v1")
 
 	ai := NewAI()
 	if len(ai.Providers) != 1 {
