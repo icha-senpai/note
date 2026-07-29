@@ -1,7 +1,5 @@
 <p align="center">
-<img alt="Scribli" src="app/src/assets/icon.png" width="96" height="96">
-<br>
-<strong>Scribli</strong>
+<img alt="Scribli" src="app/src/assets/logo.png" width="520">
 <br>
 <em>Local-first notes, documents, and personal knowledge management.</em>
 </p>
