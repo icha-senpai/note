@@ -205,8 +205,8 @@ func (p *KernelPlugin) InitRuntime() (err error) {
 			return
 		}
 
-		if enableErr := EnableSiyuanModule(p, rt); enableErr != nil {
-			err = fmt.Errorf("EnableSiyuanModule: %v", enableErr)
+		if enableErr := EnableScribliModule(p, rt); enableErr != nil {
+			err = fmt.Errorf("EnableScribliModule: %v", enableErr)
 			return
 		}
 
@@ -799,25 +799,25 @@ func (p *KernelPlugin) invokeHook(name string) {
 	done := make(chan TaskResult, 1)
 
 	runErr := p.worker.Run(func(rt *goja.Runtime) (_ any, err error) {
-		lifecycle, err := getJsContextValue(rt, []any{"siyuan", "plugin", "lifecycle"})
+		lifecycle, err := getJsContextValue(rt, []any{"scribli", "plugin", "lifecycle"})
 		if err != nil {
 			return
 		}
 		if lifecycle == nil {
-			err = fmt.Errorf("globalThis.siyuan.plugin.lifecycle not found")
+			err = fmt.Errorf("globalThis.scribli.plugin.lifecycle not found")
 			return
 		}
 
 		pluginObj := lifecycle.ToObject(rt)
 		if pluginObj == nil {
-			err = fmt.Errorf("globalThis.siyuan.plugin.lifecycle is not an object")
+			err = fmt.Errorf("globalThis.scribli.plugin.lifecycle is not an object")
 			return
 		}
 
 		hookValue := pluginObj.Get(name)
 		hook, ok := goja.AssertFunction(hookValue)
 		if !ok {
-			err = fmt.Errorf("globalThis.siyuan.plugin.lifecycle.%s not bound to a function", name)
+			err = fmt.Errorf("globalThis.scribli.plugin.lifecycle.%s not bound to a function", name)
 			return
 		}
 

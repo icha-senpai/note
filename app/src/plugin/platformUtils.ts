@@ -21,7 +21,7 @@ export const getLocalStorage = compatibility.getLocalStorage;
 export const setStorageVal = compatibility.setStorageVal;
 
 export const getStorageVal = (key: string): any => {
-    return window.siyuan.storage?.[key] ?? null; // 不存在时与接口响应一致使用 null
+    return window.scribli.storage?.[key] ?? null; // 不存在时与接口响应一致使用 null
 };
 
 /**
@@ -74,7 +74,7 @@ export const sendNotification = (options: {
         }
         /// #else
         const timeoutId = window.setTimeout(() => {
-            ipcRenderer.send(Constants.SIYUAN_CMD, {
+            ipcRenderer.send(Constants.SCRIBLI_CMD, {
                 cmd: "notification",
                 title,
                 body,

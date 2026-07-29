@@ -10,12 +10,12 @@ export class AVAttributePanel {
 
     constructor(protyle: IProtyle) {
         this.protyle = protyle;
-        this.collapsed = window.siyuan.config.editor.databaseAttrViewMode === 1;
+        this.collapsed = window.scribli.config.editor.databaseAttrViewMode === 1;
         this.element = document.createElement("div");
         this.element.className = "protyle-db-attr fn__none";
-        this.element.innerHTML = `<button type="button" class="protyle-db-attr__header fn__flex" data-type="toggle" aria-expanded="${!this.collapsed}" aria-label="${window.siyuan.languages.database}">
+        this.element.innerHTML = `<button type="button" class="protyle-db-attr__header fn__flex" data-type="toggle" aria-expanded="${!this.collapsed}" aria-label="${window.scribli.languages.database}">
     <span class="block__icon block__icon--show fn__flex-center"><svg><use xlink:href="#iconRight"></use></svg></span>
-    <span class="block__logo fn__flex-1"><svg class="block__logoicon"><use xlink:href="#iconDatabase"></use></svg><span>${window.siyuan.languages.database}</span></span>
+    <span class="block__logo fn__flex-1"><svg class="block__logoicon"><use xlink:href="#iconDatabase"></use></svg><span>${window.scribli.languages.database}</span></span>
 </button>`;
         this.bodyElement = document.createElement("div");
         this.bodyElement.className = "custom-attr protyle-db-attr__body";

@@ -16,7 +16,7 @@ import {
     writeText
 } from "../protyle/util/compatibility";
 import {openByMobile} from "../editor/openLink";
-import {processSiYuanUri} from "../util/uri";
+import {processScribliUri} from "../util/uri";
 import {fetchPost, fetchSyncPost} from "../util/fetch";
 import {hideMessage, showMessage} from "../dialog/message";
 import {Dialog} from "../dialog";
@@ -56,19 +56,19 @@ export const openWechatNotify = (nodeElement: Element) => {
     }
     const dialog = new Dialog({
         width: isMobile() ? "92vw" : "50vw",
-        title: window.siyuan.languages.wechatReminder,
+        title: window.scribli.languages.wechatReminder,
         content: `<div class="b3-dialog__content custom-attr">
     <div class="fn__flex">
-        <span class="ft__on-surface fn__flex-center" style="text-align: right;white-space: nowrap;width: 100px">${window.siyuan.languages.notifyTime}</span>
+        <span class="ft__on-surface fn__flex-center" style="text-align: right;white-space: nowrap;width: 100px">${window.scribli.languages.notifyTime}</span>
         <div class="fn__space"></div>
         <input class="b3-text-field fn__flex-1" type="datetime-local" max="9999-12-31 23:59" value="${reminderFormat}">
     </div>
-    <div class="b3-label__text" style="text-align: center">${window.siyuan.languages.wechatTip}</div>
+    <div class="b3-label__text" style="text-align: center">${window.scribli.languages.wechatTip}</div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.remove}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.remove}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         destroyCallback() {
             focusByRange(range);
@@ -93,7 +93,7 @@ export const openWechatNotify = (nodeElement: Element) => {
         const date = dialog.element.querySelector("input").value;
         if (date) {
             if (new Date(date) <= new Date()) {
-                showMessage(window.siyuan.languages.reminderTip);
+                showMessage(window.scribli.languages.reminderTip);
                 return;
             }
             if (btnsElement[2].getAttribute("disabled")) {
@@ -106,7 +106,7 @@ export const openWechatNotify = (nodeElement: Element) => {
                 dialog.destroy();
             });
         } else {
-            showMessage(window.siyuan.languages.notEmpty);
+            showMessage(window.scribli.languages.notEmpty);
         }
     });
 };
@@ -126,19 +126,19 @@ export const openFileWechatNotify = (protyle: IProtyle) => {
         }
         const dialog = new Dialog({
             width: isMobile() ? "92vw" : "50vw",
-            title: window.siyuan.languages.wechatReminder,
+            title: window.scribli.languages.wechatReminder,
             content: `<div class="b3-dialog__content custom-attr">
     <div class="fn__flex">
-        <span class="ft__on-surface fn__flex-center" style="text-align: right;white-space: nowrap;width: 100px">${window.siyuan.languages.notifyTime}</span>
+        <span class="ft__on-surface fn__flex-center" style="text-align: right;white-space: nowrap;width: 100px">${window.scribli.languages.notifyTime}</span>
         <div class="fn__space"></div>
         <input class="b3-text-field fn__flex-1" type="datetime-local" max="9999-12-31 23:59" value="${reminderFormat}">
     </div>
-    <div class="b3-label__text" style="text-align: center">${window.siyuan.languages.wechatTip}</div>
+    <div class="b3-label__text" style="text-align: center">${window.scribli.languages.wechatTip}</div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.remove}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.remove}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`
         });
         dialog.element.setAttribute("data-key", Constants.DIALOG_WECHATREMINDER);
@@ -155,7 +155,7 @@ export const openFileWechatNotify = (protyle: IProtyle) => {
             const date = dialog.element.querySelector("input").value;
             if (date) {
                 if (new Date(date) <= new Date()) {
-                    showMessage(window.siyuan.languages.reminderTip);
+                    showMessage(window.scribli.languages.reminderTip);
                     return;
                 }
                 fetchPost("/api/block/setBlockReminder", {
@@ -165,7 +165,7 @@ export const openFileWechatNotify = (protyle: IProtyle) => {
                     dialog.destroy();
                 });
             } else {
-                showMessage(window.siyuan.languages.notEmpty);
+                showMessage(window.scribli.languages.notEmpty);
             }
         });
     });
@@ -185,7 +185,7 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
             }
         });
         if (!protyle) {
-            ghostProtyle = new Protyle(window.siyuan.ws.app, document.createElement("div"), {
+            ghostProtyle = new Protyle(window.scribli.ws.app, document.createElement("div"), {
                 blockId: attrs.id,
             });
         }
@@ -196,7 +196,7 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
         }
         if (item === Constants.CUSTOM_REMINDER_WECHAT) {
             notifyHTML = `<label class="b3-label b3-label--noborder">
-    ${window.siyuan.languages.wechatReminder}
+    ${window.scribli.languages.wechatReminder}
     <div class="fn__hr"></div>
     <input class="b3-text-field fn__block" type="datetime-local" max="9999-12-31 23:59" readonly data-name="${item}" value="${dayjs(attrs[item]).format("YYYY-MM-DD HH:mm")}">
 </label>`;
@@ -221,17 +221,17 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
     <div class="layout-tab-bar fn__flex" style="${isMobile() ? "padding-right: 38px;" : ""}flex-shrink:0;border-radius: var(--b3-border-radius-b) var(--b3-border-radius-b) 0 0">
         <div class="item item--full item--focus" data-type="attr">
             <span class="fn__flex-1"></span>
-            <span class="item__text">${window.siyuan.languages.builtIn}</span>
+            <span class="item__text">${window.scribli.languages.builtIn}</span>
             <span class="fn__flex-1"></span>
         </div>
         <div class="item item--full${hasAV ? "" : " fn__none"}" data-type="NodeAttributeView">
             <span class="fn__flex-1"></span>
-            <span class="item__text">${window.siyuan.languages.database}</span>
+            <span class="item__text">${window.scribli.languages.database}</span>
             <span class="fn__flex-1"></span>
         </div>
         <div class="item item--full" data-type="custom">
             <span class="fn__flex-1"></span>
-            <span class="item__text">${window.siyuan.languages.custom}</span>
+            <span class="item__text">${window.scribli.languages.custom}</span>
             <span class="fn__flex-1"></span>
         </div>
     </div>
@@ -239,26 +239,26 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
         <div class="custom-attr" data-type="attr">
             <label class="b3-label b3-label--noborder">
                 <div class="fn__flex">
-                    <span class="fn__flex-1">${window.siyuan.languages.bookmark}</span>
+                    <span class="fn__flex-1">${window.scribli.languages.bookmark}</span>
                     <span data-action="bookmark" class="block__icon block__icon--show"><svg><use xlink:href="#iconDown"></use></svg></span>
                 </div>
                 <div class="fn__hr"></div>
-                <input spellcheck="${window.siyuan.config.editor.spellcheck}" class="b3-text-field fn__block" placeholder="${window.siyuan.languages.attrBookmarkTip}" data-name="bookmark">
+                <input spellcheck="${window.scribli.config.editor.spellcheck}" class="b3-text-field fn__block" placeholder="${window.scribli.languages.attrBookmarkTip}" data-name="bookmark">
             </label>
             <label class="b3-label b3-label--noborder">
-                ${window.siyuan.languages.name}
+                ${window.scribli.languages.name}
                 <div class="fn__hr"></div>
-                <input spellcheck="${window.siyuan.config.editor.spellcheck}" class="b3-text-field fn__block" placeholder="${window.siyuan.languages.attrNameTip}" data-name="name">
+                <input spellcheck="${window.scribli.config.editor.spellcheck}" class="b3-text-field fn__block" placeholder="${window.scribli.languages.attrNameTip}" data-name="name">
             </label>
             <label class="b3-label b3-label--noborder">
-                ${window.siyuan.languages.alias}
+                ${window.scribli.languages.alias}
                 <div class="fn__hr"></div>
-                <input spellcheck="${window.siyuan.config.editor.spellcheck}" class="b3-text-field fn__block" placeholder="${window.siyuan.languages.attrAliasTip}" data-name="alias">
+                <input spellcheck="${window.scribli.config.editor.spellcheck}" class="b3-text-field fn__block" placeholder="${window.scribli.languages.attrAliasTip}" data-name="alias">
             </label>
             <label class="b3-label b3-label--noborder">
-                ${window.siyuan.languages.memo}
+                ${window.scribli.languages.memo}
                 <div class="fn__hr"></div>
-                <textarea style="resize: vertical" spellcheck="${window.siyuan.config.editor.spellcheck}" class="b3-text-field fn__block" placeholder="${window.siyuan.languages.attrMemoTip}" rows="2" data-name="memo"></textarea>
+                <textarea style="resize: vertical" spellcheck="${window.scribli.config.editor.spellcheck}" class="b3-text-field fn__block" placeholder="${window.scribli.languages.attrMemoTip}" rows="2" data-name="memo"></textarea>
             </label>
             ${notifyHTML}
         </div>
@@ -267,7 +267,7 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
            ${customHTML}
            <div class="b3-label">
                <button data-action="addCustom" class="b3-button b3-button--cancel">
-                   <svg><use xlink:href="#iconAdd"></use></svg>${window.siyuan.languages.addAttr}
+                   <svg><use xlink:href="#iconAdd"></use></svg>${window.scribli.languages.addAttr}
                </button>
            </div>
         </div>
@@ -321,17 +321,17 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
                 break;
             } else if (type === "bookmark") {
                 fetchPost("/api/attr/getBookmarkLabels", {}, (response) => {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     if (response.data.length === 0) {
-                        window.siyuan.menus.menu.append(new MenuItem({
+                        window.scribli.menus.menu.append(new MenuItem({
                             id: "emptyContent",
                             iconHTML: "",
-                            label: window.siyuan.languages.emptyContent,
+                            label: window.scribli.languages.emptyContent,
                             type: "readonly",
                         }).element);
                     } else {
                         response.data.forEach((item: string) => {
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 label: item,
                                 click() {
                                     const bookmarkInputElement = target.parentElement.parentElement.querySelector("input");
@@ -341,19 +341,19 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
                             }).element);
                         });
                     }
-                    window.siyuan.menus.menu.element.classList.add("b3-menu--list");
-                    window.siyuan.menus.menu.popup({x: event.clientX, y: event.clientY + 16, w: 16});
+                    window.scribli.menus.menu.element.classList.add("b3-menu--list");
+                    window.scribli.menus.menu.popup({x: event.clientX, y: event.clientY + 16, w: 16});
                 });
                 event.stopPropagation();
                 event.preventDefault();
                 break;
             } else if (type === "addCustom") {
                 const addDialog = new Dialog({
-                    title: window.siyuan.languages.attrName,
+                    title: window.scribli.languages.attrName,
                     content: `<div class="b3-dialog__content"><input spellcheck="false" class="b3-text-field fn__block" value=""></div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                     width: isMobile() ? "92vw" : "520px",
                 });
@@ -371,7 +371,7 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
                 btnsElement[1].addEventListener("click", () => {
                     const value = inputElement.value.toLowerCase();
                     if (!isValidCustomAttrName(value)) {
-                        showMessage(window.siyuan.languages._kernel[25]);
+                        showMessage(window.scribli.languages._kernel[25]);
                         return false;
                     }
                     let existElement: HTMLElement | false;
@@ -382,7 +382,7 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
                         }
                     });
                     if (existElement) {
-                        showMessage(window.siyuan.languages.hasAttrName.replace("${x}", value));
+                        showMessage(window.scribli.languages.hasAttrName.replace("${x}", value));
                     } else {
                         target.parentElement.insertAdjacentHTML("beforebegin", `<div class="b3-label b3-label--noborder">
     <div class="fn__flex">
@@ -390,7 +390,7 @@ export const openFileAttr = (attrs: Record<string, string>, focusName = "bookmar
         <span data-action="remove" class="block__icon block__icon--show"><svg><use xlink:href="#iconMin"></use></svg></span>
     </div>
     <div class="fn__hr"></div>
-    <textarea style="resize: vertical" spellcheck="false" data-name="custom-${value}" class="b3-text-field fn__block" rows="1" placeholder="${window.siyuan.languages.attrValue1}"></textarea>
+    <textarea style="resize: vertical" spellcheck="false" data-name="custom-${value}" class="b3-text-field fn__block" rows="1" placeholder="${window.scribli.languages.attrValue1}"></textarea>
 </div>`);
                         const newInputElement = target.parentElement.previousElementSibling.querySelector(".b3-text-field") as HTMLInputElement;
                         newInputElement.focus();
@@ -433,8 +433,8 @@ export const copySubMenu = (ids: string[], accelerator = true, focusElement?: El
     const menuItems = [{
         id: "copyBlockRef",
         iconHTML: "",
-        accelerator: accelerator ? window.siyuan.config.keymap.editor.general.copyBlockRef.custom : undefined,
-        label: window.siyuan.languages.copyBlockRef,
+        accelerator: accelerator ? window.scribli.config.keymap.editor.general.copyBlockRef.custom : undefined,
+        label: window.scribli.languages.copyBlockRef,
         click: () => {
             copyTextByType(ids, "ref");
             if (focusElement) {
@@ -444,8 +444,8 @@ export const copySubMenu = (ids: string[], accelerator = true, focusElement?: El
     }, {
         id: "copyBlockEmbed",
         iconHTML: "",
-        label: window.siyuan.languages.copyBlockEmbed,
-        accelerator: accelerator ? window.siyuan.config.keymap.editor.general.copyBlockEmbed.custom : undefined,
+        label: window.scribli.languages.copyBlockEmbed,
+        accelerator: accelerator ? window.scribli.config.keymap.editor.general.copyBlockEmbed.custom : undefined,
         click: () => {
             copyTextByType(ids, "blockEmbed");
             if (focusElement) {
@@ -455,8 +455,8 @@ export const copySubMenu = (ids: string[], accelerator = true, focusElement?: El
     }, {
         id: "copyProtocol",
         iconHTML: "",
-        label: window.siyuan.languages.copyProtocol,
-        accelerator: accelerator ? window.siyuan.config.keymap.editor.general.copyProtocol.custom : undefined,
+        label: window.scribli.languages.copyProtocol,
+        accelerator: accelerator ? window.scribli.config.keymap.editor.general.copyProtocol.custom : undefined,
         click: () => {
             copyTextByType(ids, "protocol");
             if (focusElement) {
@@ -466,8 +466,8 @@ export const copySubMenu = (ids: string[], accelerator = true, focusElement?: El
     }, {
         id: "copyProtocolInMd",
         iconHTML: "",
-        label: window.siyuan.languages.copyProtocolInMd,
-        accelerator: accelerator ? window.siyuan.config.keymap.editor.general.copyProtocolInMd.custom : undefined,
+        label: window.scribli.languages.copyProtocolInMd,
+        accelerator: accelerator ? window.scribli.config.keymap.editor.general.copyProtocolInMd.custom : undefined,
         click: () => {
             copyTextByType(ids, "protocolMd");
             if (focusElement) {
@@ -479,7 +479,7 @@ export const copySubMenu = (ids: string[], accelerator = true, focusElement?: El
         {
             id: "copyWebURL",
             iconHTML: "",
-            label: window.siyuan.languages.copyWebURL,
+            label: window.scribli.languages.copyWebURL,
             click: () => {
                 copyTextByType(ids, "webURL");
                 if (focusElement) {
@@ -491,8 +491,8 @@ export const copySubMenu = (ids: string[], accelerator = true, focusElement?: El
         {
             id: "copyHPath",
             iconHTML: "",
-            label: window.siyuan.languages.copyHPath,
-            accelerator: accelerator ? window.siyuan.config.keymap.editor.general.copyHPath.custom : undefined,
+            label: window.scribli.languages.copyHPath,
+            accelerator: accelerator ? window.scribli.config.keymap.editor.general.copyHPath.custom : undefined,
             click: () => {
                 copyTextByType(ids, "hPath");
                 if (focusElement) {
@@ -502,8 +502,8 @@ export const copySubMenu = (ids: string[], accelerator = true, focusElement?: El
         }, {
             id: "copyID",
             iconHTML: "",
-            label: window.siyuan.languages.copyID,
-            accelerator: accelerator ? window.siyuan.config.keymap.editor.general.copyID.custom : undefined,
+            label: window.scribli.languages.copyID,
+            accelerator: accelerator ? window.scribli.config.keymap.editor.general.copyID.custom : undefined,
             click: () => {
                 copyTextByType(ids, "id");
                 if (focusElement) {
@@ -516,7 +516,7 @@ export const copySubMenu = (ids: string[], accelerator = true, focusElement?: El
         menuItems.push({
             id: "copyMarkdown",
             iconHTML: "",
-            label: window.siyuan.languages.copyMarkdown,
+            label: window.scribli.languages.copyMarkdown,
             accelerator: undefined,
             click: async () => {
                 const response = await fetchSyncPost("/api/export/exportMdContent", {
@@ -540,28 +540,28 @@ export const copySubMenu = (ids: string[], accelerator = true, focusElement?: El
 };
 
 export const exportMd = (id: string) => {
-    if (window.siyuan.isPublish) {
+    if (window.scribli.isPublish) {
         return;
     }
     return new MenuItem({
         id: "export",
-        label: window.siyuan.languages.export,
+        label: window.scribli.languages.export,
         type: "submenu",
         icon: "iconUpload",
         submenu: [{
             id: "exportTemplate",
-            label: window.siyuan.languages.template,
+            label: window.scribli.languages.template,
             iconClass: "ft__error",
             icon: "iconMarkdown",
             click: async () => {
                 const result = await fetchSyncPost("/api/block/getRefText", {id: id});
 
                 const dialog = new Dialog({
-                    title: window.siyuan.languages.fileName,
+                    title: window.scribli.languages.fileName,
                     content: `<div class="b3-dialog__content"><input class="b3-text-field fn__block" value=""></div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                     width: isMobile() ? "92vw" : "520px",
                 });
@@ -584,7 +584,7 @@ export const exportMd = (id: string) => {
                 });
                 btnsElement[1].addEventListener("click", () => {
                     if (inputElement.value.trim() === "") {
-                        inputElement.value = window.siyuan.languages.untitled;
+                        inputElement.value = window.scribli.languages.untitled;
                     } else {
                         inputElement.value = replaceFileName(inputElement.value);
                     }
@@ -600,20 +600,20 @@ export const exportMd = (id: string) => {
                     }, response => {
                         if (response.code === 1) {
                             // 重名
-                            confirmDialog(window.siyuan.languages.export, window.siyuan.languages.exportTplTip, () => {
+                            confirmDialog(window.scribli.languages.export, window.scribli.languages.exportTplTip, () => {
                                 fetchPost("/api/template/docSaveAsTemplate", {
                                     id,
                                     name: inputElement.value,
                                     overwrite: true
                                 }, resp => {
                                     if (resp.code === 0) {
-                                        showMessage(window.siyuan.languages.exportTplSucc);
+                                        showMessage(window.scribli.languages.exportTplSucc);
                                     }
                                 });
                             });
                             return;
                         }
-                        showMessage(window.siyuan.languages.exportTplSucc);
+                        showMessage(window.scribli.languages.exportTplSucc);
                     });
                     dialog.destroy();
                 });
@@ -623,7 +623,7 @@ export const exportMd = (id: string) => {
             label: "Scribli .sy.zip",
             icon: "iconScribli",
             click: () => {
-                const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                const msgId = showMessage(window.scribli.languages.exporting, -1);
                 fetchPost("/api/export/exportSY", {
                     id,
                 }, response => {
@@ -639,7 +639,7 @@ export const exportMd = (id: string) => {
             }
         }, {
             id: "exportImage",
-            label: window.siyuan.languages.image,
+            label: window.scribli.languages.image,
             icon: "iconImage",
             click: () => {
                 exportImage(id);
@@ -677,7 +677,7 @@ export const exportMd = (id: string) => {
                 }
             }, {
                 id: "exportMore",
-                label: window.siyuan.languages.more,
+                label: window.scribli.languages.more,
                 icon: "iconMore",
                 type: "submenu",
                 submenu: [{
@@ -685,7 +685,7 @@ export const exportMd = (id: string) => {
                     label: "reStructuredText",
                     iconHTML: "",
                     click: () => {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportReStructuredText", {
                             id,
                         }, response => {
@@ -697,7 +697,7 @@ export const exportMd = (id: string) => {
                     label: "AsciiDoc",
                     iconHTML: "",
                     click: () => {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportAsciiDoc", {
                             id,
                         }, response => {
@@ -709,7 +709,7 @@ export const exportMd = (id: string) => {
                     label: "Textile",
                     iconHTML: "",
                     click: () => {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportTextile", {
                             id,
                         }, response => {
@@ -721,7 +721,7 @@ export const exportMd = (id: string) => {
                     label: "OPML",
                     iconHTML: "",
                     click: () => {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportOPML", {
                             id,
                         }, response => {
@@ -733,7 +733,7 @@ export const exportMd = (id: string) => {
                     label: "Org-Mode",
                     iconHTML: "",
                     click: () => {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportOrgMode", {
                             id,
                         }, response => {
@@ -745,7 +745,7 @@ export const exportMd = (id: string) => {
                     label: "MediaWiki",
                     iconHTML: "",
                     click: () => {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportMediaWiki", {
                             id,
                         }, response => {
@@ -757,7 +757,7 @@ export const exportMd = (id: string) => {
                     label: "ODT",
                     iconHTML: "",
                     click: () => {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportODT", {
                             id,
                         }, response => {
@@ -769,7 +769,7 @@ export const exportMd = (id: string) => {
                     label: "RTF",
                     iconHTML: "",
                     click: () => {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportRTF", {
                             id,
                         }, response => {
@@ -781,7 +781,7 @@ export const exportMd = (id: string) => {
                     label: "EPUB",
                     iconHTML: "",
                     click: () => {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportEPUB", {
                             id,
                         }, response => {
@@ -793,12 +793,12 @@ export const exportMd = (id: string) => {
             /// #else
             {
                 id: "exportPDF",
-                label: window.siyuan.languages.print,
+                label: window.scribli.languages.print,
                 icon: "iconPDF",
                 ignore: !isInMobileApp(),
                 click: () => {
-                    const msgId = showMessage(window.siyuan.languages.exporting);
-                    const localData = window.siyuan.storage[Constants.LOCAL_EXPORTPDF];
+                    const msgId = showMessage(window.scribli.languages.exporting);
+                    const localData = window.scribli.storage[Constants.LOCAL_EXPORTPDF];
                     fetchPost("/api/export/exportPreviewHTML", {
                         id,
                         keepFold: localData.keepFold,
@@ -845,32 +845,32 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
     /// #if MOBILE
     submenu.push({
         id: isInAndroid() ? "useDefault" : "useBrowserView",
-        label: isInAndroid() ? window.siyuan.languages.useDefault : window.siyuan.languages.useBrowserView,
-        accelerator: showAccelerator ? window.siyuan.languages.click : "",
+        label: isInAndroid() ? window.scribli.languages.useDefault : window.scribli.languages.useBrowserView,
+        accelerator: showAccelerator ? window.scribli.languages.click : "",
         click: () => {
             openByMobile(src);
         }
     });
     /// #else
     if (isLocalPath(src)) {
-        if (Constants.SIYUAN_ASSETS_EXTS.includes(pathPosix().extname(src).split("?")[0]) &&
+        if (Constants.SCRIBLI_ASSETS_EXTS.includes(pathPosix().extname(src).split("?")[0]) &&
             (!src.endsWith(".pdf") ||
                 (src.endsWith(".pdf") && !src.startsWith("file://")))
         ) {
             submenu.push({
                 id: "insertRight",
                 icon: "iconLayoutRight",
-                label: window.siyuan.languages.insertRight,
-                accelerator: showAccelerator ? window.siyuan.languages.click : "",
+                label: window.scribli.languages.insertRight,
+                accelerator: showAccelerator ? window.scribli.languages.click : "",
                 click() {
                     openAsset(app, src.trim(), parseInt(getSearch("page", src)), "right");
                 }
             });
             submenu.push({
                 id: "openBy",
-                label: window.siyuan.languages.openBy,
+                label: window.scribli.languages.openBy,
                 icon: "iconOpen",
-                accelerator: showAccelerator ? "⌥" + window.siyuan.languages.click : "",
+                accelerator: showAccelerator ? "⌥" + window.scribli.languages.click : "",
                 click() {
                     openAsset(app, src.trim(), parseInt(getSearch("page", src)));
                 }
@@ -878,7 +878,7 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
             /// #if !BROWSER
             submenu.push({
                 id: "openByNewWindow",
-                label: window.siyuan.languages.openByNewWindow,
+                label: window.scribli.languages.openByNewWindow,
                 icon: "iconOpenWindow",
                 click() {
                     openAssetNewWindow(src.trim());
@@ -887,16 +887,16 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
             submenu.push({
                 id: "showInFolder",
                 icon: "iconFolder",
-                label: window.siyuan.languages.showInFolder,
-                accelerator: showAccelerator ? "⌘" + window.siyuan.languages.click : "",
+                label: window.scribli.languages.showInFolder,
+                accelerator: showAccelerator ? "⌘" + window.scribli.languages.click : "",
                 click: () => {
                     openBy(src, "folder");
                 }
             });
             submenu.push({
                 id: "useDefault",
-                label: window.siyuan.languages.useDefault,
-                accelerator: showAccelerator ? "⇧" + window.siyuan.languages.click : "",
+                label: window.scribli.languages.useDefault,
+                accelerator: showAccelerator ? "⇧" + window.scribli.languages.click : "",
                 click() {
                     openBy(src, "app");
                 }
@@ -906,8 +906,8 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
             /// #if !BROWSER
             submenu.push({
                 id: "useDefault",
-                label: window.siyuan.languages.useDefault,
-                accelerator: showAccelerator ? window.siyuan.languages.click : "",
+                label: window.scribli.languages.useDefault,
+                accelerator: showAccelerator ? window.scribli.languages.click : "",
                 click() {
                     openBy(src, "app");
                 }
@@ -915,8 +915,8 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
             submenu.push({
                 id: "showInFolder",
                 icon: "iconFolder",
-                label: window.siyuan.languages.showInFolder,
-                accelerator: showAccelerator ? "⌘" + window.siyuan.languages.click : "",
+                label: window.scribli.languages.showInFolder,
+                accelerator: showAccelerator ? "⌘" + window.scribli.languages.click : "",
                 click: () => {
                     openBy(src, "folder");
                 }
@@ -924,8 +924,8 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
             /// #else
             submenu.push({
                 id: isInAndroid() || isInHarmony() ? "useDefault" : "useBrowserView",
-                label: isInAndroid() || isInHarmony() ? window.siyuan.languages.useDefault : window.siyuan.languages.useBrowserView,
-                accelerator: showAccelerator ? window.siyuan.languages.click : "",
+                label: isInAndroid() || isInHarmony() ? window.scribli.languages.useDefault : window.scribli.languages.useBrowserView,
+                accelerator: showAccelerator ? window.scribli.languages.click : "",
                 click: () => {
                     openByMobile(src);
                 }
@@ -941,10 +941,10 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
         /// #if !BROWSER
         submenu.push({
             id: "useDefault",
-            label: window.siyuan.languages.useDefault,
-            accelerator: showAccelerator ? window.siyuan.languages.click : "",
+            label: window.scribli.languages.useDefault,
+            accelerator: showAccelerator ? window.scribli.languages.click : "",
             click: () => {
-                if (processSiYuanUri(app, src)) {
+                if (processScribliUri(app, src)) {
                     return;
                 }
                 shell.openExternal(src).catch((e) => {
@@ -955,8 +955,8 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
         /// #else
         submenu.push({
             id: isInAndroid() || isInHarmony() ? "useDefault" : "useBrowserView",
-            label: isInAndroid() || isInHarmony() ? window.siyuan.languages.useDefault : window.siyuan.languages.useBrowserView,
-            accelerator: showAccelerator ? window.siyuan.languages.click : "",
+            label: isInAndroid() || isInHarmony() ? window.scribli.languages.useDefault : window.scribli.languages.useBrowserView,
+            accelerator: showAccelerator ? window.scribli.languages.click : "",
             click: () => {
                 openByMobile(src);
             }
@@ -967,9 +967,9 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
     if (onlyMenu) {
         return submenu;
     }
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "openBy",
-        label: window.siyuan.languages.openBy,
+        label: window.scribli.languages.openBy,
         icon: "iconOpen",
         submenu
     }).element);
@@ -984,9 +984,9 @@ export const renameMenu = (options: {
 }) => {
     return new MenuItem({
         id: "rename",
-        accelerator: window.siyuan.config.keymap.editor.general.rename.custom,
+        accelerator: window.scribli.config.keymap.editor.general.rename.custom,
         icon: "iconEdit",
-        label: window.siyuan.languages.rename,
+        label: window.scribli.languages.rename,
         click: () => {
             if (options.type === "file" && options.docId) {
                 const docInfoParam: IObject = {
@@ -1012,9 +1012,9 @@ export const renameMenu = (options: {
 export const movePathToMenu = (paths: string[]) => {
     return new MenuItem({
         id: "move",
-        label: window.siyuan.languages.move,
+        label: window.scribli.languages.move,
         icon: "iconMove",
-        accelerator: window.siyuan.config.keymap.general.move.custom,
+        accelerator: window.scribli.config.keymap.general.move.custom,
         click() {
             const rootIDs: string[] = [];
             paths.forEach(item => {

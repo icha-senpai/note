@@ -35,11 +35,26 @@ import {clearOBG} from "../layout/dock/util";
 import {Model} from "../layout/Model";
 import {hideElements} from "../protyle/ui/hideElements";
 
+const DATABASE_ROW_MODEL_TYPE = "scribli-database-row";
+const LEGACY_DATABASE_ROW_MODEL_TYPE = "siyuan-database-row";
+
+const normalizeCustomModelType = (type: string) => {
+    if (type === LEGACY_DATABASE_ROW_MODEL_TYPE) {
+        return DATABASE_ROW_MODEL_TYPE;
+    }
+    return type;
+};
+
 const isSameCustomTab = (type: string, data: any, options: IOpenFileOptions) => {
-    if (!options.custom || (options.custom.id && options.custom.id !== type)) {
+    if (!options.custom) {
         return false;
     }
-    if (type === "siyuan-database-row") {
+    const existingType = normalizeCustomModelType(type);
+    const requestedType = normalizeCustomModelType(options.custom.id);
+    if (options.custom.id && requestedType !== existingType) {
+        return false;
+    }
+    if (existingType === DATABASE_ROW_MODEL_TYPE) {
         return data?.avID === options.custom.data?.avID && data?.itemID === options.custom.data?.itemID;
     }
     return objEquals(data, options.custom.data);
@@ -88,7 +103,7 @@ export const openFileById = async (options: {
 
 export const openAsset = (app: App, assetPath: string, page: number | string, position?: string) => {
     const suffix = pathPosix().extname(assetPath).split("?")[0];
-    if (!Constants.SIYUAN_ASSETS_EXTS.includes(suffix)) {
+    if (!Constants.SCRIBLI_ASSETS_EXTS.includes(suffix)) {
         return;
     }
     openFile({
@@ -219,8 +234,8 @@ export const openFile = async (options: IOpenFileOptions) => {
                 optionsClone[key] = JSON.parse(JSON.stringify(options[key]));
             }
         });
-        hasMatch = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
-            cmd: Constants.SIYUAN_OPEN_FILE,
+        hasMatch = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
+            cmd: Constants.SCRIBLI_OPEN_FILE,
             options: JSON.stringify(optionsClone),
             port: location.port,
         });
@@ -241,7 +256,7 @@ export const openFile = async (options: IOpenFileOptions) => {
     }
     if (!wnd) {
         // 中心 tab
-        wnd = getWndByLayout(window.siyuan.layout.centerLayout);
+        wnd = getWndByLayout(window.scribli.layout.centerLayout);
     }
     if (wnd) {
         let createdTab: Tab;
@@ -306,7 +321,7 @@ export const openFile = async (options: IOpenFileOptions) => {
             createdTab = newTab(options);
             createdTab.headElement.setAttribute("keep-cursor", options.id);
             wnd.addTab(createdTab, options.keepCursor);
-        } else if (window.siyuan.config.fileTree.openFilesUseCurrentTab) {
+        } else if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
             let unUpdateTab: Tab;
             // 不能 reverse, 找到也不能提前退出循环，否则 https://github.com/siyuan-note/siyuan/issues/3271
             wnd.children.find((item) => {
@@ -387,7 +402,7 @@ const switchEditor = (editor: Editor, options: IOpenFileOptions, allModels: IMod
         const getDocParam: IObject = {
             id: options.id,
             mode: (options.action && options.action.includes(Constants.CB_GET_CONTEXT)) ? 3 : 0,
-            size: window.siyuan.config.editor.dynamicLoadBlocks,
+            size: window.scribli.config.editor.dynamicLoadBlocks,
         };
         if (isEncryptedBox(editor.editor.protyle.notebookId)) {
             getDocParam.notebook = editor.editor.protyle.notebookId;
@@ -413,7 +428,7 @@ const switchEditor = (editor: Editor, options: IOpenFileOptions, allModels: IMod
             if (nodeElement) {
                 let scrollTop: number;
                 if (options.action.includes(Constants.CB_GET_SEARCH)) {
-                    const scrollAttr = window.siyuan.storage[Constants.LOCAL_FILEPOSITION][editor.editor.protyle.block.rootID];
+                    const scrollAttr = window.scribli.storage[Constants.LOCAL_FILEPOSITION][editor.editor.protyle.block.rootID];
                     focusByOffset(nodeElement, scrollAttr.focusStart, scrollAttr.focusEnd);
                     scrollTop = scrollAttr.scrollTop;
                 } else {
@@ -460,13 +475,13 @@ const newTab = (options: IOpenFileOptions) => {
     let tab: Tab;
     if (options.assetPath) {
         const suffix = pathPosix().extname(options.assetPath).split("?")[0];
-        if (Constants.SIYUAN_ASSETS_EXTS.includes(suffix)) {
+        if (Constants.SCRIBLI_ASSETS_EXTS.includes(suffix)) {
             let icon = "iconPDF";
-            if (Constants.SIYUAN_ASSETS_IMAGE.includes(suffix)) {
+            if (Constants.SCRIBLI_ASSETS_IMAGE.includes(suffix)) {
                 icon = "iconImage";
-            } else if (Constants.SIYUAN_ASSETS_AUDIO.includes(suffix)) {
+            } else if (Constants.SCRIBLI_ASSETS_AUDIO.includes(suffix)) {
                 icon = "iconRecord";
-            } else if (Constants.SIYUAN_ASSETS_VIDEO.includes(suffix)) {
+            } else if (Constants.SCRIBLI_ASSETS_VIDEO.includes(suffix)) {
                 icon = "iconVideo";
             }
             tab = new Tab({
@@ -511,7 +526,7 @@ const newTab = (options: IOpenFileOptions) => {
     } else if (options.searchData) {
         tab = new Tab({
             icon: "iconSearch",
-            title: window.siyuan.languages.search,
+            title: window.scribli.languages.search,
             callback(tab) {
                 tab.addModel(new Search({
                     app: options.app,
@@ -588,7 +603,7 @@ export const updatePanelByEditor = (options: {
                 countBlockWord([], options.protyle.block.rootID);
             }
         }
-        if (window.siyuan.config.fileTree.alwaysSelectOpenedFile && options.protyle) {
+        if (window.scribli.config.fileTree.alwaysSelectOpenedFile && options.protyle) {
             const fileModel = getDockByType("file")?.data.file;
             if (fileModel instanceof Files) {
                 const target = fileModel.element.querySelector(`li[data-path="${options.protyle.path}"]`);
@@ -711,8 +726,8 @@ export const updateBacklinkGraph = (models: IModels, protyle: IProtyle) => {
         }
         item.element.querySelector('.block__icon[data-type="refresh"] svg').classList.add("fn__rotate");
         const backlinkParam: IObject = {
-            sort: item.status[blockId] ? item.status[blockId].sort.toString() : window.siyuan.config.editor.backlinkSort.toString(),
-            mSort: item.status[blockId] ? item.status[blockId].mSort.toString() : window.siyuan.config.editor.backmentionSort.toString(),
+            sort: item.status[blockId] ? item.status[blockId].sort.toString() : window.scribli.config.editor.backlinkSort.toString(),
+            mSort: item.status[blockId] ? item.status[blockId].mSort.toString() : window.scribli.config.editor.backmentionSort.toString(),
             id: blockId || "",
             k: item.inputsElement[0].value,
             mk: item.inputsElement[1].value,
@@ -745,7 +760,7 @@ export const openBy = (url: string, type: "folder" | "app") => {
         return;
     }
     let address = "";
-    if ("windows" === window.siyuan.config.system.os) {
+    if ("windows" === window.scribli.config.system.os) {
         // `file://` 协议兼容 Window 平台使用 `/` 作为目录分割线 https://github.com/siyuan-note/siyuan/issues/5681
         address = url.replace("file:///", "").replace("file://\\", "").replace("file://", "").replace(/\//g, "\\");
     } else {
@@ -757,7 +772,7 @@ export const openBy = (url: string, type: "folder" | "app") => {
     if (type === "app") {
         useShell("openPath", address);
     } else if (type === "folder") {
-        if ("windows" === window.siyuan.config.system.os) {
+        if ("windows" === window.scribli.config.system.os) {
             if (!address.startsWith("\\\\")) { // \\ 开头的路径是 Windows 网络共享路径 https://github.com/siyuan-note/siyuan/issues/5980
                 // Windows 端打开本地文件所在位置失效 https://github.com/siyuan-note/siyuan/issues/5808
                 address = address.replace(/\\\\/g, "\\");

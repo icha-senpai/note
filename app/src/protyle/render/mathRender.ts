@@ -23,7 +23,7 @@ export const mathRender = (element: Element, cdn = Constants.PROTYLE_CDN, maxWid
                 mathElement.setAttribute("data-render", "true");
                 let macros = {};
                 try {
-                    macros = looseJsonParse(window.siyuan.config.editor.katexMacros || "{}");
+                    macros = looseJsonParse(window.scribli.config.editor.katexMacros || "{}");
                 } catch (e) {
                     console.warn("KaTex macros is not JSON", e);
                 }

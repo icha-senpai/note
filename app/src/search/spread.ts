@@ -13,7 +13,7 @@ export const openSearch = async (options: {
     notebookId?: string,
     searchPath?: string
 }) => {
-    const localData = window.siyuan.storage[Constants.LOCAL_SEARCHDATA];
+    const localData = window.scribli.storage[Constants.LOCAL_SEARCHDATA];
     let hPath = "";
     let idPath: string[] = [];
     if (options.notebookId) {
@@ -41,7 +41,7 @@ export const openSearch = async (options: {
         k: options.key || localData.k,
         r: localData.r,
         hasReplace: options.hotkey === Constants.DIALOG_REPLACE,
-        method: localData.method === 4 && !window.siyuan.config.ai.embedding.enabled ? 0 : localData.method,
+        method: localData.method === 4 && !window.scribli.config.ai.embedding.enabled ? 0 : localData.method,
         hPath,
         idPath,
         group: localData.group,
@@ -52,7 +52,7 @@ export const openSearch = async (options: {
         page: options.key ? 1 : localData.page
     };
     // 搜索中继续执行 ctrl+F/P 不退出 https://github.com/siyuan-note/siyuan/issues/11637
-    const exitDialog = window.siyuan.dialogs.find((item) => {
+    const exitDialog = window.scribli.dialogs.find((item) => {
         // 再次打开
         if (item.element.querySelector("#searchList")) {
             const searchElement = item.element.querySelector(".b3-dialog__body");

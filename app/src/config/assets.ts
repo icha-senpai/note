@@ -25,10 +25,10 @@ import {BlockPanel} from "../block/Panel";
 
 /** 资源 Tab 侧栏 / 全局搜索索引文案 */
 export const collectAssetsTabSearchStrings = (): string[] => [
-    window.siyuan.languages.assets,
-    window.siyuan.languages.unreferencedAssets,
-    window.siyuan.languages.unreferencedAV,
-    window.siyuan.languages.missingAssets,
+    window.scribli.languages.assets,
+    window.scribli.languages.unreferencedAssets,
+    window.scribli.languages.unreferencedAV,
+    window.scribli.languages.missingAssets,
 ];
 
 /** 资源 Tab 挂载（面板页，不走注册表渲染） */
@@ -44,9 +44,9 @@ export const mountAssetsTab = (root: HTMLElement, keywords?: string, app?: App) 
     }
     if (keywords) {
         switchSettingPanelSubTab(root, keywords, [
-            {type: "remove", label: window.siyuan.languages.unreferencedAssets},
-            {type: "removeAV", label: window.siyuan.languages.unreferencedAV},
-            {type: "missing", label: window.siyuan.languages.missingAssets},
+            {type: "remove", label: window.scribli.languages.unreferencedAssets},
+            {type: "removeAV", label: window.scribli.languages.unreferencedAV},
+            {type: "missing", label: window.scribli.languages.missingAssets},
         ]);
     }
 };
@@ -59,17 +59,17 @@ const assets = {
     <div class="layout-tab-bar fn__flex">
         <div class="item item--full item--focus" data-type="remove">
             <span class="fn__flex-1"></span>
-            <span class="item__text">${window.siyuan.languages.unreferencedAssets}</span>
+            <span class="item__text">${window.scribli.languages.unreferencedAssets}</span>
             <span class="fn__flex-1"></span>
         </div>
         <div class="item item--full" data-type="removeAV">
             <span class="fn__flex-1"></span>
-                <span class="item__text">${window.siyuan.languages.unreferencedAV}</span>
+                <span class="item__text">${window.scribli.languages.unreferencedAV}</span>
             <span class="fn__flex-1"></span>
         </div>
         <div class="item item--full" data-type="missing">
             <span class="fn__flex-1"></span>
-            <span class="item__text">${window.siyuan.languages.missingAssets}</span>
+            <span class="item__text">${window.scribli.languages.missingAssets}</span>
             <span class="fn__flex-1"></span>
         </div>
     </div>
@@ -80,7 +80,7 @@ const assets = {
                 <div class="fn__space"></div>
                 <button id="removeAll" class="b3-button b3-button--outline fn__flex-center fn__size200">
                     <svg class="svg"><use xlink:href="#iconTrashcan"></use></svg>
-                    ${window.siyuan.languages.delete}
+                    ${window.scribli.languages.delete}
                 </button>
             </div>
             <div class="fn__hr"></div>
@@ -95,7 +95,7 @@ const assets = {
                 <div class="fn__space"></div>
                 <button id="removeAVAll" class="b3-button b3-button--outline fn__flex-center fn__size200">
                     <svg class="svg"><use xlink:href="#iconTrashcan"></use></svg>
-                    ${window.siyuan.languages.delete}
+                    ${window.scribli.languages.delete}
                 </button>
             </div>
             <div class="fn__hr"></div>
@@ -135,7 +135,7 @@ const assets = {
             while (target && !target.isEqualNode(assets.element)) {
                 const type = target.getAttribute("data-type");
                 if (target.id === "removeAll") {
-                    confirmDialog(window.siyuan.languages.deleteOpConfirm, `${window.siyuan.languages.clearAll}`, () => {
+                    confirmDialog(window.scribli.languages.deleteOpConfirm, `${window.scribli.languages.clearAll}`, () => {
                         fetchPost("/api/asset/removeUnusedAssets", {}, response => {
                             /// #if !MOBILE
                             getAllModels().asset.forEach(item => {
@@ -144,7 +144,7 @@ const assets = {
                                 }
                             });
                             /// #endif
-                            assetsListElement.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+                            assetsListElement.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
                             assetsListElement.nextElementSibling.innerHTML = "";
                         });
                     }, undefined, true);
@@ -152,9 +152,9 @@ const assets = {
                     event.stopPropagation();
                     break;
                 } else if (target.id === "removeAVAll") {
-                    confirmDialog(window.siyuan.languages.deleteOpConfirm, `${window.siyuan.languages.clearAllAV}`, () => {
+                    confirmDialog(window.scribli.languages.deleteOpConfirm, `${window.scribli.languages.clearAllAV}`, () => {
                         fetchPost("/api/av/removeUnusedAttributeViews", {}, () => {
-                            avListElement.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+                            avListElement.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
                             avListElement.nextElementSibling.innerHTML = "";
                         });
                     }, undefined, true);
@@ -215,7 +215,7 @@ const assets = {
                         /// #if MOBILE
                         openMobileFileById(app, blockIDs[0], [Constants.CB_GET_HL, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL]);
                         /// #else
-                        window.siyuan.blockPanels.push(new BlockPanel({
+                        window.scribli.blockPanels.push(new BlockPanel({
                             app,
                             isBacklink: false,
                             targetElement: target,
@@ -232,14 +232,14 @@ const assets = {
                     } else {
                         writeText(target.parentElement.querySelector(".b3-list-item__text").textContent.trim());
                     }
-                    showMessage(window.siyuan.languages.copied);
+                    showMessage(window.scribli.languages.copied);
                     event.preventDefault();
                     event.stopPropagation();
                     break;
                 } else if (type === "open") {
                     /// #if !BROWSER
                     if (target.parentElement.getAttribute("data-tab-type") === "unRefAV") {
-                        openBy(path.join(window.siyuan.config.system.dataDir, "storage", "av", target.parentElement.dataset.item) + ".json", "folder");
+                        openBy(path.join(window.scribli.config.system.dataDir, "storage", "av", target.parentElement.dataset.item) + ".json", "folder");
                     } else {
                         openBy(target.parentElement.dataset.item, "folder");
                     }
@@ -249,14 +249,14 @@ const assets = {
                     break;
                 } else if (type === "clear") {
                     const liElement = target.parentElement;
-                    confirmDialog(window.siyuan.languages.deleteOpConfirm, `${window.siyuan.languages.delete} <b>${liElement.querySelector(".b3-list-item__text").textContent}</b>`, () => {
+                    confirmDialog(window.scribli.languages.deleteOpConfirm, `${window.scribli.languages.delete} <b>${liElement.querySelector(".b3-list-item__text").textContent}</b>`, () => {
                         if (liElement.getAttribute("data-tab-type") === "unRefAV") {
                             const id = liElement.getAttribute("data-item");
                             fetchPost("/api/av/removeUnusedAttributeView", {
                                 id,
                             }, () => {
                                 if (liElement.parentElement.querySelectorAll("li").length === 1) {
-                                    liElement.parentElement.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+                                    liElement.parentElement.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
                                 } else {
                                     liElement.remove();
                                 }
@@ -288,7 +288,7 @@ const assets = {
                                 });
                                 /// #endif
                                 if (liElement.parentElement.querySelectorAll("li").length === 1) {
-                                    liElement.parentElement.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+                                    liElement.parentElement.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
                                 } else {
                                     liElement.remove();
                                 }
@@ -324,33 +324,33 @@ const assets = {
         let html = "";
         let boxOpenHTML = "";
         if (!isBrowser() && type !== "lostAssets") {
-            boxOpenHTML = `<span data-type="open" class="ariaLabel b3-list-item__action" aria-label="${window.siyuan.languages.showInFolder}">
+            boxOpenHTML = `<span data-type="open" class="ariaLabel b3-list-item__action" aria-label="${window.scribli.languages.showInFolder}">
     <svg><use xlink:href="#iconFolder"></use></svg>
 </span>`;
         }
         let boxClearHTML = "";
         if (type !== "lostAssets") {
-            boxClearHTML = `<span data-type="clear" class="ariaLabel b3-list-item__action" aria-label="${window.siyuan.languages.delete}">
+            boxClearHTML = `<span data-type="clear" class="ariaLabel b3-list-item__action" aria-label="${window.scribli.languages.delete}">
     <svg><use xlink:href="#iconTrashcan"></use></svg>
 </span>`;
         }
         const mobile = isMobile();
         data.forEach((item) => {
             const blockPopoverHTML = type === "lostAssets" && item.blockIDs?.length > 0
-                ? `<span data-type="openFloat" data-id="${escapeAttr(JSON.stringify(item.blockIDs))}" class="ariaLabel b3-list-item__action" aria-label="${window.siyuan.languages.refPopover}">
+                ? `<span data-type="openFloat" data-id="${escapeAttr(JSON.stringify(item.blockIDs))}" class="ariaLabel b3-list-item__action" aria-label="${window.scribli.languages.refPopover}">
         <svg><use xlink:href="#iconPictureInPicture"></use></svg>
     </span>`
                 : "";
             html += `<li data-tab-type="${type}" data-item="${item.item}"  class="b3-list-item${mobile ? "" : " b3-list-item--hide-action"}">
     <span class="b3-list-item__text">${escapeHtml(item.name || item.item)}</span>
     ${blockPopoverHTML}
-    <span data-type="copy" class="ariaLabel b3-list-item__action" aria-label="${type === "unRefAV" ? window.siyuan.languages.copyMirror : window.siyuan.languages.copy}">
+    <span data-type="copy" class="ariaLabel b3-list-item__action" aria-label="${type === "unRefAV" ? window.scribli.languages.copyMirror : window.scribli.languages.copy}">
         <svg><use xlink:href="#iconCopy"></use></svg>
     </span>
     ${boxOpenHTML}
     ${boxClearHTML}
 </li>`;
         });
-        element.innerHTML = html || `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+        element.innerHTML = html || `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
     }
 };

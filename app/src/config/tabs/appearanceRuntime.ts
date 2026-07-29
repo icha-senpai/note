@@ -12,13 +12,13 @@ import {createConfigNamespaceApi} from "../util/namespaceApi";
 
 /** 主题模式下拉框初值：合并 mode / modeOS */
 export const appearanceThemeModeValue = (): number =>
-    window.siyuan.config.appearance.modeOS ? 2 : window.siyuan.config.appearance.mode;
+    window.scribli.config.appearance.modeOS ? 2 : window.scribli.config.appearance.mode;
 
 /** 主题模式选择：合并 mode / modeOS 后提交 */
 export const saveThemeMode = (value: number) => {
     const OSThemeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? 1 : 0;
     fetchPost("/api/setting/setAppearance", {
-        ...window.siyuan.config.appearance,
+        ...window.scribli.config.appearance,
         mode: (value === 2 ? OSThemeMode : value) as Config.IAppearance["mode"],
         modeOS: value === 2,
     });
@@ -26,15 +26,15 @@ export const saveThemeMode = (value: number) => {
 
 /// #if MOBILE
 const reloadUI = async () => {
-    if (window.siyuan.mobile.editor) {
-        await saveScroll(window.siyuan.mobile.editor.protyle);
+    if (window.scribli.mobile.editor) {
+        await saveScroll(window.scribli.mobile.editor.protyle);
     }
     window.location.reload();
 };
 /// #endif
 
 const applyAppearanceConfig = async (data: Config.IAppearance) => {
-    if (data.lang !== window.siyuan.config.appearance.lang) {
+    if (data.lang !== window.scribli.config.appearance.lang) {
         /// #if MOBILE
         void reloadUI();
         /// #else
@@ -48,11 +48,11 @@ const applyAppearanceConfig = async (data: Config.IAppearance) => {
         return;
     }
 
-    if (window.siyuan.config.appearance.themeJS) {
-        if (data.mode !== window.siyuan.config.appearance.mode ||
-            (data.mode === window.siyuan.config.appearance.mode && (
-                (data.mode === 0 && window.siyuan.config.appearance.themeLight !== data.themeLight) ||
-                (data.mode === 1 && window.siyuan.config.appearance.themeDark !== data.themeDark))
+    if (window.scribli.config.appearance.themeJS) {
+        if (data.mode !== window.scribli.config.appearance.mode ||
+            (data.mode === window.scribli.config.appearance.mode && (
+                (data.mode === 0 && window.scribli.config.appearance.themeLight !== data.themeLight) ||
+                (data.mode === 1 && window.scribli.config.appearance.themeDark !== data.themeDark))
             )
         ) {
             if (window.destroyTheme) {
@@ -79,8 +79,8 @@ const applyAppearanceConfig = async (data: Config.IAppearance) => {
         }
     }
 
-    const prevAppearance = window.siyuan.config.appearance;
-    window.siyuan.config.appearance = data;
+    const prevAppearance = window.scribli.config.appearance;
+    window.scribli.config.appearance = data;
 
     document.getElementById("status")?.classList.toggle("fn__none", data.hideStatusBar);
     /// #if !MOBILE
@@ -102,7 +102,7 @@ const applyAppearanceConfig = async (data: Config.IAppearance) => {
 /** 外观 Tab 命名空间：设置面板注册项 save */
 export const appearanceConfigApi = createConfigNamespaceApi<Config.IAppearance>({
     namespace: "appearance",
-    getConfig: () => window.siyuan.config.appearance,
+    getConfig: () => window.scribli.config.appearance,
     setConfig: (data) => {
         void applyAppearanceConfig(data);
     },

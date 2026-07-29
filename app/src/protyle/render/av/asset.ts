@@ -44,7 +44,7 @@ export const bindAssetEvent = (options: {
                 value.push({
                     name: key,
                     content: resData.data.succMap[key],
-                    type: Constants.SIYUAN_ASSETS_IMAGE.includes(pathPosix().extname(resData.data.succMap[key]).toLowerCase()) ? "image" : "file"
+                    type: Constants.SCRIBLI_ASSETS_IMAGE.includes(pathPosix().extname(resData.data.succMap[key]).toLowerCase()) ? "image" : "file"
                 });
             });
             updateAssetCell({
@@ -83,16 +83,16 @@ ${contentHTML}
     ${html}
     <button data-type="addAssetExist" class="b3-menu__item b3-menu__item--current">
         <svg class="b3-menu__icon"><use xlink:href="#iconImage"></use></svg>
-        <span class="b3-menu__label">${window.siyuan.languages.assets}</span>
+        <span class="b3-menu__label">${window.scribli.languages.assets}</span>
     </button>
     <button class="b3-menu__item">
         <svg class="b3-menu__icon"><use xlink:href="#iconDownload"></use></svg>
-        <span class="b3-menu__label">${window.siyuan.languages.insertAsset}</span> 
+        <span class="b3-menu__label">${window.scribli.languages.insertAsset}</span> 
         <input multiple class="b3-form__upload" type="file">
     </button>
     <button data-type="addAssetLink" class="b3-menu__item">
         <svg class="b3-menu__icon"><use xlink:href="#iconLink"></use></svg>
-        <span class="b3-menu__label">${window.siyuan.languages.link}</span>
+        <span class="b3-menu__label">${window.scribli.languages.link}</span>
     </button>
 </div>`;
 };
@@ -235,15 +235,15 @@ export const editAssetItem = (options: {
             iconHTML: "",
             type: "readonly",
             label: `<div class="fn__flex">
-    <span class="fn__flex-center">${window.siyuan.languages.link}</span>
+    <span class="fn__flex-center">${window.scribli.languages.link}</span>
     <span class="fn__space"></span>
-    <span data-action="copy" class="block__icon block__icon--show b3-tooltips b3-tooltips__e fn__flex-center" aria-label="${window.siyuan.languages.copy}">
+    <span data-action="copy" class="block__icon block__icon--show b3-tooltips b3-tooltips__e fn__flex-center" aria-label="${window.scribli.languages.copy}">
         <svg><use xlink:href="#iconCopy"></use></svg>
     </span>   
 </div><textarea rows="1" style="margin:4px 0;width: ${isMobile() ? "100%" : "360px"};resize: vertical;" class="b3-text-field"></textarea><div class="fn__hr"></div><div class="fn__flex">
-    <span class="fn__flex-center">${window.siyuan.languages.title}</span>
+    <span class="fn__flex-center">${window.scribli.languages.title}</span>
     <span class="fn__space"></span>
-    <span data-action="copy" class="block__icon block__icon--show b3-tooltips b3-tooltips__e fn__flex-center" aria-label="${window.siyuan.languages.copy}">
+    <span data-action="copy" class="block__icon block__icon--show b3-tooltips b3-tooltips__e fn__flex-center" aria-label="${window.scribli.languages.copy}">
         <svg><use xlink:href="#iconCopy"></use></svg>
     </span>   
 </div><textarea style="width: ${isMobile() ? "100%" : "360px"};margin: 4px 0;resize: vertical;" rows="1" class="b3-text-field"></textarea>`,
@@ -253,7 +253,7 @@ export const editAssetItem = (options: {
                     while (target) {
                         if (target.dataset.action === "copy") {
                             writeText((target.parentElement.nextElementSibling as HTMLTextAreaElement).value);
-                            showMessage(window.siyuan.languages.copied);
+                            showMessage(window.scribli.languages.copied);
                             break;
                         }
                         target = target.parentElement;
@@ -264,7 +264,7 @@ export const editAssetItem = (options: {
         menu.addSeparator({id: "separator_1"});
         menu.addItem({
             id: "copy",
-            label: window.siyuan.languages.copy,
+            label: window.scribli.languages.copy,
             icon: "iconCopy",
             click() {
                 writeText(`[${textElements[1].value || textElements[0].value}](${textElements[0].value})`);
@@ -276,9 +276,9 @@ export const editAssetItem = (options: {
             iconHTML: "",
             type: "readonly",
             label: `<div class="fn__flex">
-    <span class="fn__flex-center">${window.siyuan.languages.link}</span>
+    <span class="fn__flex-center">${window.scribli.languages.link}</span>
     <span class="fn__space"></span>
-    <span data-action="copy" class="block__icon block__icon--show b3-tooltips b3-tooltips__e fn__flex-center" aria-label="${window.siyuan.languages.copy}">
+    <span data-action="copy" class="block__icon block__icon--show b3-tooltips b3-tooltips__e fn__flex-center" aria-label="${window.scribli.languages.copy}">
         <svg><use xlink:href="#iconCopy"></use></svg>
     </span>   
 </div><textarea rows="1" style="margin:4px 0;width: ${isMobile() ? "100%" : "360px"};resize: vertical;" class="b3-text-field"></textarea>`,
@@ -288,7 +288,7 @@ export const editAssetItem = (options: {
                     while (target) {
                         if (target.dataset.action === "copy") {
                             writeText((target.parentElement.nextElementSibling as HTMLTextAreaElement).value);
-                            showMessage(window.siyuan.languages.copied);
+                            showMessage(window.scribli.languages.copied);
                             break;
                         }
                         target = target.parentElement;
@@ -299,7 +299,7 @@ export const editAssetItem = (options: {
         menu.addSeparator({id: "separator_1"});
         menu.addItem({
             id: "copy",
-            label: window.siyuan.languages.copy,
+            label: window.scribli.languages.copy,
             icon: "iconCopy",
             click() {
                 writeText(`![](${textElements[0].value})`);
@@ -307,7 +307,7 @@ export const editAssetItem = (options: {
         });
         menu.addItem({
             id: "copyAsPNG",
-            label: window.siyuan.languages.copyAsPNG,
+            label: window.scribli.languages.copyAsPNG,
             icon: "iconImage",
             click() {
                 copyPNGByLink(textElements[0].value);
@@ -317,7 +317,7 @@ export const editAssetItem = (options: {
     menu.addItem({
         id: "delete",
         icon: "iconTrashcan",
-        label: window.siyuan.languages.delete,
+        label: window.scribli.languages.delete,
         click() {
             updateAssetCell({
                 protyle: options.protyle,
@@ -330,7 +330,7 @@ export const editAssetItem = (options: {
     if (linkAddress?.startsWith("assets/")) {
         menu.addItem({
             id: "rename",
-            label: window.siyuan.languages.rename,
+            label: window.scribli.languages.rename,
             icon: "iconEdit",
             click() {
                 renameAsset(decodeURI(linkAddress));
@@ -338,7 +338,7 @@ export const editAssetItem = (options: {
             }
         });
     }
-    const openSubMenu = openMenu(options.protyle ? options.protyle.app : window.siyuan.ws.app, linkAddress, true, false);
+    const openSubMenu = openMenu(options.protyle ? options.protyle.app : window.scribli.ws.app, linkAddress, true, false);
     if (type !== "file" || openSubMenu.length > 0) {
         menu.addSeparator({id: "separator_2"});
     }
@@ -346,7 +346,7 @@ export const editAssetItem = (options: {
         menu.addItem({
             id: "cardPreview",
             icon: "iconPreview",
-            label: window.siyuan.languages.cardPreview,
+            label: window.scribli.languages.cardPreview,
             click() {
                 previewAttrViewImages(
                     linkAddress,
@@ -358,16 +358,16 @@ export const editAssetItem = (options: {
         });
     }
     if (openSubMenu.length > 0) {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "openBy",
-            label: window.siyuan.languages.openBy,
+            label: window.scribli.languages.openBy,
             icon: "iconOpen",
             submenu: openSubMenu
         }).element);
     }
     if (linkAddress?.startsWith("assets/")) {
-        window.siyuan.menus.menu.append(new MenuItem(exportAsset(decodeURI(linkAddress))).element);
-        window.siyuan.menus.menu.append(new MenuItem(writeAssetToClipboard(decodeURI(linkAddress))).element);
+        window.scribli.menus.menu.append(new MenuItem(exportAsset(decodeURI(linkAddress))).element);
+        window.scribli.menus.menu.append(new MenuItem(writeAssetToClipboard(decodeURI(linkAddress))).element);
     }
     const rect = options.rect;
     /// #if MOBILE
@@ -412,10 +412,10 @@ export const addAssetLink = (protyle: IProtyle, cellElements: HTMLElement[], tar
     menu.addItem({
         iconHTML: "",
         type: "readonly",
-        label: `${window.siyuan.languages.link}
+        label: `${window.scribli.languages.link}
 <textarea rows="1" style="margin:4px 0;width: ${isMobile() ? "200" : "360"}px;resize: vertical;" class="b3-text-field"></textarea>
 <div class="fn__hr"></div>
-${window.siyuan.languages.title}
+${window.scribli.languages.title}
 <textarea style="width: ${isMobile() ? "200" : "360"}px;margin: 4px 0;resize: vertical;" rows="1" class="b3-text-field"></textarea>`,
     });
     const rect = target.getBoundingClientRect();
@@ -433,13 +433,13 @@ export const dragUpload = (files: ILocalFiles[], protyle: IProtyle, cellElement:
     const assetPaths: string[] = [];
     files.forEach(item => {
         if (item.size && Constants.SIZE_UPLOAD_TIP_SIZE <= item.size) {
-            msg += window.siyuan.languages.uploadFileTooLarge.replace("${x}", item.path).replace("${y}", filesize(item.size, {standard: "iec"})) + "<br>";
+            msg += window.scribli.languages.uploadFileTooLarge.replace("${x}", item.path).replace("${y}", filesize(item.size, {standard: "iec"})) + "<br>";
         }
         assetPaths.push(item.path);
     });
 
-    confirmDialog(msg ? window.siyuan.languages.upload : "", msg, () => {
-        const msgId = showMessage(window.siyuan.languages.uploading, 0);
+    confirmDialog(msg ? window.scribli.languages.upload : "", msg, () => {
+        const msgId = showMessage(window.scribli.languages.uploading, 0);
         fetchPost("/api/asset/insertLocalAssets", {
             assetPaths,
             isUpload: true,
@@ -452,7 +452,7 @@ export const dragUpload = (files: ILocalFiles[], protyle: IProtyle, cellElement:
                 Object.keys(response.data.succMap).forEach(key => {
                     const type = pathPosix().extname(key).toLowerCase();
                     const name = key.substring(0, key.length - type.length);
-                    if (Constants.SIYUAN_ASSETS_IMAGE.includes(type)) {
+                    if (Constants.SCRIBLI_ASSETS_IMAGE.includes(type)) {
                         addValue.push({
                             type: "image",
                             name,

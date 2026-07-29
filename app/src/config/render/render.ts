@@ -67,7 +67,7 @@ const genTextBlockFieldHtml = (
     mode: "input-text" | "input-password" | "textarea",
     value: string,
 ): string => {
-    const spellcheck = window.siyuan.config.editor.spellcheck ? "true" : "false";
+    const spellcheck = window.scribli.config.editor.spellcheck ? "true" : "false";
     if (mode === "textarea") {
         return `<textarea class="b3-text-field fn__block" id="${id}" spellcheck="${spellcheck}">${value}</textarea>`;
     }

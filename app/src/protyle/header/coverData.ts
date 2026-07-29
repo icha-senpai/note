@@ -9,7 +9,7 @@ interface CoverEntry {
 }
 
 function getCategoryLabel(category: string): string {
-    const label = (window.siyuan.languages as Record<string, string>)[category];
+    const label = (window.scribli.languages as Record<string, string>)[category];
     return label || category;
 }
 

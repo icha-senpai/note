@@ -91,7 +91,7 @@ module.exports = (env, argv) => {
             }),
             new webpack.DefinePlugin({
                 NODE_ENV: JSON.stringify(argv.mode),
-                SIYUAN_VERSION: JSON.stringify(pkg.version),
+                SCRIBLI_VERSION: JSON.stringify(pkg.version),
             }),
             new MiniCssExtractPlugin({
                 filename: "base.css",

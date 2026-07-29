@@ -34,8 +34,8 @@ export const resizeSide = (targetElement: HTMLElement, previousElement: HTMLElem
             documentSelf.onselectstart = null;
             documentSelf.onselect = null;
             if (key) {
-                window.siyuan.storage[Constants.LOCAL_HISTORY][key] = previousElement.clientWidth + "px";
-                setStorageVal(Constants.LOCAL_HISTORY, window.siyuan.storage[Constants.LOCAL_HISTORY]);
+                window.scribli.storage[Constants.LOCAL_HISTORY][key] = previousElement.clientWidth + "px";
+                setStorageVal(Constants.LOCAL_HISTORY, window.scribli.storage[Constants.LOCAL_HISTORY]);
             }
         };
     });

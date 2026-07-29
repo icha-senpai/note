@@ -42,18 +42,18 @@ const confirmEncryptedExport = (notebookId: string, callback: () => void) => {
         callback();
         return;
     }
-    confirmDialog(window.siyuan.languages.export, window.siyuan.languages.encryptedExportRiskTip, callback);
+    confirmDialog(window.scribli.languages.export, window.scribli.languages.encryptedExportRiskTip, callback);
 };
 
 const initMultiMenu = (selectItemElements: NodeListOf<Element>, app: App) => {
-    window.siyuan.menus.menu.element.setAttribute("data-from", Constants.MENU_FROM_DOC_TREE_MORE_ITEMS);
+    window.scribli.menus.menu.element.setAttribute("data-from", Constants.MENU_FROM_DOC_TREE_MORE_ITEMS);
     const fileItemElement = Array.from(selectItemElements).find(item => {
         if (item.getAttribute("data-type") === "navigation-file") {
             return true;
         }
     });
     if (!fileItemElement) {
-        return window.siyuan.menus.menu;
+        return window.scribli.menus.menu;
     }
     const blockIDs: string[] = [];
     const notebookId = fileItemElement.parentElement?.getAttribute("data-url") || "";
@@ -65,16 +65,16 @@ const initMultiMenu = (selectItemElements: NodeListOf<Element>, app: App) => {
     });
 
     if (blockIDs.length > 0) {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "copy",
-            label: window.siyuan.languages.copy,
+            label: window.scribli.languages.copy,
             type: "submenu",
             icon: "iconCopy",
             submenu: copySubMenu(blockIDs).concat([{
                 id: "duplicate",
                 iconHTML: "",
-                label: window.siyuan.languages.duplicate,
-                accelerator: window.siyuan.config.keymap.editor.general.duplicate.custom,
+                label: window.scribli.languages.duplicate,
+                accelerator: window.scribli.config.keymap.editor.general.duplicate.custom,
                 click() {
                     blockIDs.forEach((id) => {
                         fetchPost("/api/filetree/duplicateDoc", {
@@ -86,25 +86,25 @@ const initMultiMenu = (selectItemElements: NodeListOf<Element>, app: App) => {
         }).element);
     }
 
-    window.siyuan.menus.menu.append(movePathToMenu(getTopPaths(
+    window.scribli.menus.menu.append(movePathToMenu(getTopPaths(
         Array.from(selectItemElements)
     )));
 
     if (blockIDs.length > 0) {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "addToDatabase",
-            label: window.siyuan.languages.addToDatabase,
-            accelerator: window.siyuan.config.keymap.general.addToDatabase.custom,
+            label: window.scribli.languages.addToDatabase,
+            accelerator: window.scribli.config.keymap.general.addToDatabase.custom,
             icon: "iconDatabase",
             click: () => {
                 addFilesToDatabase(Array.from(selectItemElements));
             }
         }).element);
     }
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "delete",
         icon: "iconTrashcan",
-        label: window.siyuan.languages.delete,
+        label: window.scribli.languages.delete,
         accelerator: "⌦",
         click: () => {
             deleteFiles(Array.from(selectItemElements));
@@ -112,15 +112,15 @@ const initMultiMenu = (selectItemElements: NodeListOf<Element>, app: App) => {
     }).element);
 
     if (blockIDs.length === 0) {
-        return window.siyuan.menus.menu;
+        return window.scribli.menus.menu;
     }
-    window.siyuan.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
-    if (!window.siyuan.config.readonly) {
+    window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
+    if (!window.scribli.config.readonly) {
         const riffCardMenu = [{
             id: "quickMakeCard",
             iconHTML: "",
-            accelerator: window.siyuan.config.keymap.editor.general.quickMakeCard.custom,
-            label: window.siyuan.languages.quickMakeCard,
+            accelerator: window.scribli.config.keymap.editor.general.quickMakeCard.custom,
+            label: window.scribli.languages.quickMakeCard,
             click: () => {
                 transaction(undefined, [{
                     action: "addFlashcards",
@@ -131,7 +131,7 @@ const initMultiMenu = (selectItemElements: NodeListOf<Element>, app: App) => {
         }, {
             id: "removeCard",
             iconHTML: "",
-            label: window.siyuan.languages.removeCard,
+            label: window.scribli.languages.removeCard,
             click: () => {
                 transaction(undefined, [{
                     action: "removeFlashcards",
@@ -140,28 +140,28 @@ const initMultiMenu = (selectItemElements: NodeListOf<Element>, app: App) => {
                 }]);
             }
         }];
-        if (window.siyuan.config.flashcard.deck) {
+        if (window.scribli.config.flashcard.deck) {
             riffCardMenu.push({
                 id: "addToDeck",
                 iconHTML: "",
-                label: window.siyuan.languages.addToDeck,
+                label: window.scribli.languages.addToDeck,
                 click: () => {
                     makeCard(app, blockIDs);
                 }
             });
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "riffCard",
-            label: window.siyuan.languages.riffCard,
+            label: window.scribli.languages.riffCard,
             icon: "iconRiffCard",
             submenu: riffCardMenu,
         }).element);
-        window.siyuan.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
+        window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
     }
     openEditorTab(app, blockIDs);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "export",
-        label: window.siyuan.languages.export,
+        label: window.scribli.languages.export,
         type: "submenu",
         icon: "iconUpload",
         submenu: [{
@@ -170,7 +170,7 @@ const initMultiMenu = (selectItemElements: NodeListOf<Element>, app: App) => {
             icon: "iconScribli",
             click: () => {
                 confirmEncryptedExport(notebookId, () => {
-                    const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                    const msgId = showMessage(window.scribli.languages.exporting, -1);
                     fetchPost("/api/export/exportSYs", {
                         ids: blockIDs,
                     }, response => {
@@ -198,15 +198,15 @@ const initMultiMenu = (selectItemElements: NodeListOf<Element>, app: App) => {
             separatorPosition: "top",
         });
     }
-    return window.siyuan.menus.menu;
+    return window.scribli.menus.menu;
 };
 
 export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
-    window.siyuan.menus.menu.remove();
-    window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_DOC_TREE_MORE);
+    window.scribli.menus.menu.remove();
+    window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_DOC_TREE_MORE);
     const fileElement = hasClosestByTag(liElement, "DIV");
     if (!fileElement) {
-        return window.siyuan.menus.menu;
+        return window.scribli.menus.menu;
     }
     if (!liElement.classList.contains("b3-list-item--focus")) {
         fileElement.querySelectorAll(".b3-list-item--focus").forEach(item => {
@@ -220,16 +220,16 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
     if (selectItemElements.length > 1) {
         return initMultiMenu(selectItemElements, app);
     }
-    window.siyuan.menus.menu.element.setAttribute("data-from", Constants.MENU_FROM_DOC_TREE_MORE_NOTEBOOK);
+    window.scribli.menus.menu.element.setAttribute("data-from", Constants.MENU_FROM_DOC_TREE_MORE_NOTEBOOK);
     const notebookId = liElement.parentElement.getAttribute("data-url");
     const name = getNotebookName(notebookId);
     /// #if !MOBILE
     const boxDocID = liElement.getAttribute("data-node-id");
-    if (boxDocID && window.siyuan.config.fileTree.parentDocClickExpand &&
+    if (boxDocID && window.scribli.config.fileTree.parentDocClickExpand &&
         Number(liElement.getAttribute("data-count")) > 0) {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "openDocument",
-            label: window.siyuan.languages.openDocument,
+            label: window.scribli.languages.openDocument,
             icon: "iconOpen",
             click: () => {
                 openFileById({
@@ -241,10 +241,10 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
         }).element);
     }
     /// #endif
-    if (!window.siyuan.config.readonly) {
-        window.siyuan.menus.menu.append(new MenuItem({
+    if (!window.scribli.config.readonly) {
+        window.scribli.menus.menu.append(new MenuItem({
             id: "changeIcon",
-            label: window.siyuan.languages.changeIcon,
+            label: window.scribli.languages.changeIcon,
             icon: "iconEmoji",
             click: () => {
                 const iconElement = liElement.querySelector<HTMLElement>(".b3-list-item__icon");
@@ -260,15 +260,15 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
                 }, undefined, iconElement.querySelector<HTMLElement>("img"));
             }
         }).element);
-        window.siyuan.menus.menu.append(renameMenu({
+        window.scribli.menus.menu.append(renameMenu({
             path: "/",
             notebookId,
             name,
             type: "notebook"
         }));
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "config",
-            label: window.siyuan.languages.config,
+            label: window.scribli.languages.config,
             icon: "iconSettings",
             click: () => {
                 fetchPost("/api/notebook/getNotebookConf", {
@@ -288,7 +288,7 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
                 liElement.parentElement.setAttribute("data-sortmode", sort.toString());
                 let files;
                 /// #if MOBILE
-                files = window.siyuan.mobile.docks.file;
+                files = window.scribli.mobile.docks.file;
                 /// #else
                 files = (getDockByType("file").data["file"] as Files);
                 /// #endif
@@ -301,25 +301,25 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             });
             return true;
         });
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "sort",
             icon: "iconSort",
-            label: window.siyuan.languages.sort,
+            label: window.scribli.languages.sort,
             type: "submenu",
             submenu: subMenu,
         }).element);
     }
-    if (!window.siyuan.config.readonly && !isEncryptedBox(notebookId)) {
-        window.siyuan.menus.menu.append(new MenuItem({
+    if (!window.scribli.config.readonly && !isEncryptedBox(notebookId)) {
+        window.scribli.menus.menu.append(new MenuItem({
             id: "riffCard",
-            label: window.siyuan.languages.riffCard,
+            label: window.scribli.languages.riffCard,
             type: "submenu",
             icon: "iconRiffCard",
             submenu: [{
                 id: "spaceRepetition",
                 iconHTML: "",
-                label: window.siyuan.languages.spaceRepetition,
-                accelerator: window.siyuan.config.keymap.editor.general.spaceRepetition.custom,
+                label: window.scribli.languages.spaceRepetition,
+                accelerator: window.scribli.config.keymap.editor.general.spaceRepetition.custom,
                 click: () => {
                     fetchPost("/api/riff/getNotebookRiffDueCards", {notebook: notebookId}, (response) => {
                         openCardByData(app, response.data, "notebook", notebookId, name);
@@ -331,7 +331,7 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             }, {
                 id: "manage",
                 iconHTML: "",
-                label: window.siyuan.languages.manage,
+                label: window.scribli.languages.manage,
                 click: () => {
                     viewCards(app, notebookId, name, "Notebook");
                     /// #if MOBILE
@@ -341,10 +341,10 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             }],
         }).element);
     }
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "search",
-        label: window.siyuan.languages.search,
-        accelerator: window.siyuan.config.keymap.general.search.custom,
+        label: window.scribli.languages.search,
+        accelerator: window.scribli.config.keymap.general.search.custom,
         icon: "iconSearch",
         click() {
             /// #if MOBILE
@@ -363,11 +363,11 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             /// #endif
         }
     }).element);
-    if (!window.siyuan.config.readonly) {
-        window.siyuan.menus.menu.append(new MenuItem({
+    if (!window.scribli.config.readonly) {
+        window.scribli.menus.menu.append(new MenuItem({
             id: "replace",
-            label: window.siyuan.languages.replace,
-            accelerator: window.siyuan.config.keymap.general.replace.custom,
+            label: window.scribli.languages.replace,
+            accelerator: window.scribli.config.keymap.general.replace.custom,
             icon: "iconReplace",
             click() {
                 /// #if MOBILE
@@ -387,12 +387,12 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             }
         }).element);
     }
-    if (!window.siyuan.config.readonly) {
-        window.siyuan.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
+    if (!window.scribli.config.readonly) {
+        window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
         if (!Object.values(Constants.HELP_PATH).includes(notebookId)) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "close",
-                label: window.siyuan.languages.close,
+                label: window.scribli.languages.close,
                 icon: "iconClose",
                 click: () => {
                     fetchPost("/api/notebook/closeNotebook", {
@@ -401,32 +401,32 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
                 }
             }).element);
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "delete",
             icon: "iconTrashcan",
-            label: window.siyuan.languages.delete,
+            label: window.scribli.languages.delete,
             accelerator: "⌦",
             click: () => {
                 deleteFiles(Array.from(fileElement.querySelectorAll(".b3-list-item--focus")));
             }
         }).element);
     }
-    window.siyuan.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
+    window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
     /// #if !BROWSER
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "showInFolder",
         icon: "iconFolder",
-        label: window.siyuan.languages.showInFolder,
+        label: window.scribli.languages.showInFolder,
         click: () => {
-            useShell("openPath", path.join(window.siyuan.config.system.dataDir, notebookId));
+            useShell("openPath", path.join(window.scribli.config.system.dataDir, notebookId));
         }
     }).element);
     /// #endif
     genImportMenu(notebookId, "/");
 
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "export",
-        label: window.siyuan.languages.export,
+        label: window.scribli.languages.export,
         type: "submenu",
         icon: "iconUpload",
         submenu: [{
@@ -435,7 +435,7 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             icon: "iconScribli",
             click: () => {
                 confirmEncryptedExport(notebookId, () => {
-                    const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                    const msgId = showMessage(window.scribli.languages.exporting, -1);
                     fetchPost("/api/export/exportNotebookSY", {
                         id: notebookId,
                     }, response => {
@@ -463,15 +463,15 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             separatorPosition: "top",
         });
     }
-    return window.siyuan.menus.menu;
+    return window.scribli.menus.menu;
 };
 
 export const initFileMenu = (app: App, notebookId: string, pathString: string, liElement: Element) => {
-    window.siyuan.menus.menu.remove();
-    window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_DOC_TREE_MORE);
+    window.scribli.menus.menu.remove();
+    window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_DOC_TREE_MORE);
     const fileElement = hasClosestByTag(liElement, "DIV");
     if (!fileElement) {
-        return window.siyuan.menus.menu;
+        return window.scribli.menus.menu;
     }
     if (!liElement.classList.contains("b3-list-item--focus")) {
         fileElement.querySelectorAll(".b3-list-item--focus").forEach(item => {
@@ -489,10 +489,10 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
     let name = liElement.getAttribute("data-name");
     name = getDisplayName(name, false, true);
     /// #if !MOBILE
-    if (window.siyuan.config.fileTree.parentDocClickExpand && Number(liElement.getAttribute("data-count")) > 0) {
-        window.siyuan.menus.menu.append(new MenuItem({
+    if (window.scribli.config.fileTree.parentDocClickExpand && Number(liElement.getAttribute("data-count")) > 0) {
+        window.scribli.menus.menu.append(new MenuItem({
             id: "openDocument",
-            label: window.siyuan.languages.openDocument,
+            label: window.scribli.languages.openDocument,
             icon: "iconOpen",
             click: () => {
                 openFileById({
@@ -504,13 +504,13 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
         }).element);
     }
     /// #endif
-    if (!window.siyuan.config.readonly) {
+    if (!window.scribli.config.readonly) {
         const topElement = hasTopClosestByTag(liElement, "UL");
-        if (window.siyuan.config.fileTree.sort === 6 || (topElement && topElement.dataset.sortmode === "6")) {
-            window.siyuan.menus.menu.append(new MenuItem({
+        if (window.scribli.config.fileTree.sort === 6 || (topElement && topElement.dataset.sortmode === "6")) {
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "newDocAbove",
                 icon: "iconBefore",
-                label: window.siyuan.languages.newDocAbove,
+                label: window.scribli.languages.newDocAbove,
                 click: () => {
                     const paths: string[] = [];
                     Array.from(liElement.parentElement.children).forEach((item) => {
@@ -524,10 +524,10 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
                     newFileInTree(app, notebookId, pathPosix().dirname(pathString), paths);
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "newDocBelow",
                 icon: "iconAfter",
-                label: window.siyuan.languages.newDocBelow,
+                label: window.scribli.languages.newDocBelow,
                 click: () => {
                     const paths: string[] = [];
                     Array.from(liElement.parentElement.children).forEach((item) => {
@@ -541,18 +541,18 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
                     newFileInTree(app, notebookId, pathPosix().dirname(pathString), paths);
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "copy",
-            label: window.siyuan.languages.copy,
+            label: window.scribli.languages.copy,
             type: "submenu",
             icon: "iconCopy",
             submenu: (copySubMenu([id]) as IMenu[]).concat([{
                 id: "duplicate",
                 iconHTML: "",
-                label: window.siyuan.languages.duplicate,
-                accelerator: window.siyuan.config.keymap.editor.general.duplicate.custom,
+                label: window.scribli.languages.duplicate,
+                accelerator: window.scribli.config.keymap.editor.general.duplicate.custom,
                 click() {
                     fetchPost("/api/filetree/duplicateDoc", {
                         id
@@ -560,38 +560,38 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
                 }
             }])
         }).element);
-        window.siyuan.menus.menu.append(movePathToMenu(getTopPaths(
+        window.scribli.menus.menu.append(movePathToMenu(getTopPaths(
             Array.from(fileElement.querySelectorAll(".b3-list-item--focus"))
         )));
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "addToDatabase",
-            label: window.siyuan.languages.addToDatabase,
-            accelerator: window.siyuan.config.keymap.general.addToDatabase.custom,
+            label: window.scribli.languages.addToDatabase,
+            accelerator: window.scribli.config.keymap.general.addToDatabase.custom,
             icon: "iconDatabase",
             click: () => {
                 addFilesToDatabase([liElement]);
             }
         }).element);
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "delete",
             icon: "iconTrashcan",
-            label: window.siyuan.languages.delete,
+            label: window.scribli.languages.delete,
             accelerator: "⌦",
             click: () => {
                 deleteFiles(Array.from(fileElement.querySelectorAll(".b3-list-item--focus")));
             }
         }).element);
-        window.siyuan.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
-        window.siyuan.menus.menu.append(renameMenu({
+        window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
+        window.scribli.menus.menu.append(renameMenu({
             path: pathString,
             notebookId,
             name,
             type: "file",
             docId: id,
         }));
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "attr",
-            label: window.siyuan.languages.attr,
+            label: window.scribli.languages.attr,
             icon: "iconAttr",
             click() {
                 const docInfoParam: IObject = {
@@ -605,12 +605,12 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
                 });
             }
         }).element);
-        if (!window.siyuan.config.readonly && !isEncryptedBox(notebookId)) {
+        if (!window.scribli.config.readonly && !isEncryptedBox(notebookId)) {
             const riffCardMenu = [{
                 id: "spaceRepetition",
                 iconHTML: "",
-                label: window.siyuan.languages.spaceRepetition,
-                accelerator: window.siyuan.config.keymap.editor.general.spaceRepetition.custom,
+                label: window.scribli.languages.spaceRepetition,
+                accelerator: window.scribli.config.keymap.editor.general.spaceRepetition.custom,
                 click: () => {
                     fetchPost("/api/riff/getTreeRiffDueCards", {rootID: id}, (response) => {
                         openCardByData(app, response.data, "doc", id, name);
@@ -622,7 +622,7 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
             }, {
                 id: "manage",
                 iconHTML: "",
-                label: window.siyuan.languages.manage,
+                label: window.scribli.languages.manage,
                 click: () => {
                     fetchPost("/api/filetree/getHPathByID", {
                         id
@@ -636,8 +636,8 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
             }, {
                 id: "quickMakeCard",
                 iconHTML: "",
-                accelerator: window.siyuan.config.keymap.editor.general.quickMakeCard.custom,
-                label: window.siyuan.languages.quickMakeCard,
+                accelerator: window.scribli.config.keymap.editor.general.quickMakeCard.custom,
+                label: window.scribli.languages.quickMakeCard,
                 click: () => {
                     transaction(undefined, [{
                         action: "addFlashcards",
@@ -648,7 +648,7 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
             }, {
                 id: "removeCard",
                 iconHTML: "",
-                label: window.siyuan.languages.removeCard,
+                label: window.scribli.languages.removeCard,
                 click: () => {
                     transaction(undefined, [{
                         action: "removeFlashcards",
@@ -657,29 +657,29 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
                     }]);
                 }
             }];
-            if (window.siyuan.config.flashcard.deck) {
+            if (window.scribli.config.flashcard.deck) {
                 riffCardMenu.push({
                     id: "addToDeck",
                     iconHTML: "",
-                    label: window.siyuan.languages.addToDeck,
+                    label: window.scribli.languages.addToDeck,
                     click: () => {
                         makeCard(app, [id]);
                     }
                 });
             }
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "riffCard",
-                label: window.siyuan.languages.riffCard,
+                label: window.scribli.languages.riffCard,
                 type: "submenu",
                 icon: "iconRiffCard",
                 submenu: riffCardMenu,
             }).element);
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "search",
-            label: window.siyuan.languages.search,
+            label: window.scribli.languages.search,
             icon: "iconSearch",
-            accelerator: window.siyuan.config.keymap.general.search.custom,
+            accelerator: window.scribli.config.keymap.general.search.custom,
             async click() {
                 const searchPath = getDisplayName(pathString, false, true);
                 /// #if MOBILE
@@ -703,10 +703,10 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
                 /// #endif
             }
         }).element);
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "replace",
-            label: window.siyuan.languages.replace,
-            accelerator: window.siyuan.config.keymap.general.replace.custom,
+            label: window.scribli.languages.replace,
+            accelerator: window.scribli.config.keymap.general.replace.custom,
             icon: "iconReplace",
             async click() {
                 const searchPath = getDisplayName(pathString, false, true);
@@ -731,13 +731,13 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
                 /// #endif
             }
         }).element);
-        window.siyuan.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
+        window.scribli.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
     }
     openEditorTab(app, [id], notebookId, pathString);
-    if (!window.siyuan.config.readonly) {
-        window.siyuan.menus.menu.append(new MenuItem({
+    if (!window.scribli.config.readonly) {
+        window.scribli.menus.menu.append(new MenuItem({
             id: "fileHistory",
-            label: window.siyuan.languages.fileHistory,
+            label: window.scribli.languages.fileHistory,
             icon: "iconHistory",
             click() {
                 openDocHistory({app, id, notebookId, pathString: name});
@@ -745,7 +745,7 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
         }).element);
     }
     genImportMenu(notebookId, pathString);
-    window.siyuan.menus.menu.append(exportMd(id));
+    window.scribli.menus.menu.append(exportMd(id));
     if (app.plugins) {
         emitOpenMenu({
             plugins: app.plugins,
@@ -757,25 +757,25 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
             separatorPosition: "top",
         });
     }
-    window.siyuan.menus.menu.element.setAttribute("data-from", Constants.MENU_FROM_DOC_TREE_MORE_DOC);
-    return window.siyuan.menus.menu;
+    window.scribli.menus.menu.element.setAttribute("data-from", Constants.MENU_FROM_DOC_TREE_MORE_DOC);
+    return window.scribli.menus.menu;
 };
 
 export const genImportMenu = (notebookId: string, pathString: string) => {
-    if (window.siyuan.config.readonly) {
+    if (window.scribli.config.readonly) {
         return;
     }
     const reloadDocTree = () => {
         let files;
         /// #if MOBILE
-        files = window.siyuan.mobile.docks.file;
+        files = window.scribli.mobile.docks.file;
         /// #else
         files = (getDockByType("file").data["file"] as Files);
         /// #endif
         const liElement = files.element.querySelector(`[data-path="${pathString}"]`);
         liElement.querySelector(".b3-list-item__toggle").classList.remove("fn__hidden");
         files.getLeaf(liElement, notebookId, true);
-        window.siyuan.menus.menu.remove();
+        window.scribli.menus.menu.remove();
     };
     /// #if !BROWSER
     const importstdmd = (label: string, isDoc?: boolean) => {
@@ -788,9 +788,9 @@ export const genImportMenu = (notebookId: string, pathString: string) => {
                 if (isDoc) {
                     filters = [{name: "Markdown", extensions: ["md", "markdown"]}];
                 }
-                const localPath = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+                const localPath = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
                     cmd: "showOpenDialog",
-                    defaultPath: window.siyuan.config.system.homeDir,
+                    defaultPath: window.scribli.config.system.homeDir,
                     filters,
                     properties: [isDoc ? "openFile" : "openDirectory"],
                 });
@@ -808,10 +808,10 @@ export const genImportMenu = (notebookId: string, pathString: string) => {
         };
     };
     /// #endif
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "import",
         icon: "iconDownload",
-        label: window.siyuan.languages.import,
+        label: window.scribli.languages.import,
         submenu: [
             {
                 id: "importScribliZip",
@@ -850,8 +850,8 @@ export const genImportMenu = (notebookId: string, pathString: string) => {
                 }
             },
             /// #if !BROWSER
-            importstdmd("Markdown " + window.siyuan.languages.doc, true),
-            importstdmd("Markdown " + window.siyuan.languages.folder)
+            importstdmd("Markdown " + window.scribli.languages.doc, true),
+            importstdmd("Markdown " + window.scribli.languages.folder)
             /// #endif
         ],
     }).element);
@@ -862,7 +862,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "fileNameASC",
         checked: sortMode === 0,
         iconHTML: "",
-        label: window.siyuan.languages.fileNameASC,
+        label: window.scribli.languages.fileNameASC,
         click: () => {
             clickEvent(0);
         }
@@ -870,7 +870,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "fileNameDESC",
         checked: sortMode === 1,
         iconHTML: "",
-        label: window.siyuan.languages.fileNameDESC,
+        label: window.scribli.languages.fileNameDESC,
         click: () => {
             clickEvent(1);
         }
@@ -878,7 +878,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "fileNameNatASC",
         checked: sortMode === 4,
         iconHTML: "",
-        label: window.siyuan.languages.fileNameNatASC,
+        label: window.scribli.languages.fileNameNatASC,
         click: () => {
             clickEvent(4);
         }
@@ -886,7 +886,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "fileNameNatDESC",
         checked: sortMode === 5,
         iconHTML: "",
-        label: window.siyuan.languages.fileNameNatDESC,
+        label: window.scribli.languages.fileNameNatDESC,
         click: () => {
             clickEvent(5);
         }
@@ -894,7 +894,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "createdASC",
         checked: sortMode === 9,
         iconHTML: "",
-        label: window.siyuan.languages.createdASC,
+        label: window.scribli.languages.createdASC,
         click: () => {
             clickEvent(9);
         }
@@ -902,7 +902,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "createdDESC",
         checked: sortMode === 10,
         iconHTML: "",
-        label: window.siyuan.languages.createdDESC,
+        label: window.scribli.languages.createdDESC,
         click: () => {
             clickEvent(10);
         }
@@ -910,7 +910,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "modifiedASC",
         checked: sortMode === 2,
         iconHTML: "",
-        label: window.siyuan.languages.modifiedASC,
+        label: window.scribli.languages.modifiedASC,
         click: () => {
             clickEvent(2);
         }
@@ -918,7 +918,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "modifiedDESC",
         checked: sortMode === 3,
         iconHTML: "",
-        label: window.siyuan.languages.modifiedDESC,
+        label: window.scribli.languages.modifiedDESC,
         click: () => {
             clickEvent(3);
         }
@@ -926,7 +926,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "refCountASC",
         checked: sortMode === 7,
         iconHTML: "",
-        label: window.siyuan.languages.refCountASC,
+        label: window.scribli.languages.refCountASC,
         click: () => {
             clickEvent(7);
         }
@@ -934,7 +934,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "refCountDESC",
         checked: sortMode === 8,
         iconHTML: "",
-        label: window.siyuan.languages.refCountDESC,
+        label: window.scribli.languages.refCountDESC,
         click: () => {
             clickEvent(8);
         }
@@ -942,7 +942,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "docSizeASC",
         checked: sortMode === 11,
         iconHTML: "",
-        label: window.siyuan.languages.docSizeASC,
+        label: window.scribli.languages.docSizeASC,
         click: () => {
             clickEvent(11);
         }
@@ -950,7 +950,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "docSizeDESC",
         checked: sortMode === 12,
         iconHTML: "",
-        label: window.siyuan.languages.docSizeDESC,
+        label: window.scribli.languages.docSizeDESC,
         click: () => {
             clickEvent(12);
         }
@@ -958,7 +958,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "subDocCountASC",
         checked: sortMode === 13,
         iconHTML: "",
-        label: window.siyuan.languages.subDocCountASC,
+        label: window.scribli.languages.subDocCountASC,
         click: () => {
             clickEvent(13);
         }
@@ -966,7 +966,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "subDocCountDESC",
         checked: sortMode === 14,
         iconHTML: "",
-        label: window.siyuan.languages.subDocCountDESC,
+        label: window.scribli.languages.subDocCountDESC,
         click: () => {
             clickEvent(14);
         }
@@ -974,7 +974,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
         id: "customSort",
         checked: sortMode === 6,
         iconHTML: "",
-        label: window.siyuan.languages.customSort,
+        label: window.scribli.languages.customSort,
         click: () => {
             clickEvent(6);
         }
@@ -984,7 +984,7 @@ export const sortMenu = (type: "notebooks" | "notebook", sortMode: number, click
             id: "sortByFiletree",
             checked: sortMode === 15,
             iconHTML: "",
-            label: window.siyuan.languages.sortByFiletree,
+            label: window.scribli.languages.sortByFiletree,
             click: () => {
                 clickEvent(15);
             }

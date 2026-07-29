@@ -27,7 +27,7 @@ export class Custom extends Model {
         init: (custom: Custom) => void
     }) {
         super({app: options.app});
-        if (window.siyuan.config.fileTree.openFilesUseCurrentTab) {
+        if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
             options.tab.headElement?.classList.add("item--unupdate");
         }
 

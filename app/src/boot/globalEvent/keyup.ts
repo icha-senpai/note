@@ -9,21 +9,21 @@ import {matchHotKey} from "../../protyle/util/hotKey";
 import {isWindow} from "../../util/functions";
 
 export const windowKeyUp = (app: App, event: KeyboardEvent) => {
-    window.siyuan.ctrlIsPressed = false;
-    window.siyuan.shiftIsPressed = false;
-    window.siyuan.altIsPressed = false;
+    window.scribli.ctrlIsPressed = false;
+    window.scribli.shiftIsPressed = false;
+    window.scribli.altIsPressed = false;
     document.body.classList.remove("body--shift-pressed");
-    const switchDialog = window.siyuan.dialogs.find(item => {
+    const switchDialog = window.scribli.dialogs.find(item => {
         if (item.element.getAttribute("data-key") === Constants.DIALOG_SWITCHTAB) {
             return true;
         }
     });
     if (switchDialog && switchDialog.element.parentElement) {
-        if (window.siyuan.config.keymap.general.goToEditTabNext.custom.endsWith(Constants.KEYCODELIST[event.keyCode]) ||
-            window.siyuan.config.keymap.general.goToEditTabPrev.custom.endsWith(Constants.KEYCODELIST[event.keyCode])) {
+        if (window.scribli.config.keymap.general.goToEditTabNext.custom.endsWith(Constants.KEYCODELIST[event.keyCode]) ||
+            window.scribli.config.keymap.general.goToEditTabPrev.custom.endsWith(Constants.KEYCODELIST[event.keyCode])) {
             let currentLiElement = switchDialog.element.querySelector(".b3-list-item--focus");
             currentLiElement.classList.remove("b3-list-item--focus");
-            if (matchHotKey(window.siyuan.config.keymap.general.goToEditTabPrev.custom, event)) {
+            if (matchHotKey(window.scribli.config.keymap.general.goToEditTabPrev.custom, event)) {
                 while (true) {
                     if (currentLiElement.previousElementSibling) {
                         currentLiElement = currentLiElement.previousElementSibling;
@@ -93,13 +93,13 @@ export const windowKeyUp = (app: App, event: KeyboardEvent) => {
             if (originalElement) {
                 originalElement.removeAttribute("data-original");
             }
-        } else if (window.siyuan.config.keymap.general.goToEditTabNext.custom.startsWith(Constants.KEYCODELIST[event.keyCode]) ||
-            window.siyuan.config.keymap.general.goToEditTabPrev.custom.startsWith(Constants.KEYCODELIST[event.keyCode])) {
+        } else if (window.scribli.config.keymap.general.goToEditTabNext.custom.startsWith(Constants.KEYCODELIST[event.keyCode]) ||
+            window.scribli.config.keymap.general.goToEditTabPrev.custom.startsWith(Constants.KEYCODELIST[event.keyCode])) {
             let currentLiElement = switchDialog.element.querySelector(".b3-list-item--focus");
             // 快速切换时，不触发 Tab
             if (currentLiElement.getAttribute("data-original")) {
                 currentLiElement.classList.remove("b3-list-item--focus");
-                if (matchHotKey(window.siyuan.config.keymap.general.goToEditTabPrev.custom, event)) {
+                if (matchHotKey(window.scribli.config.keymap.general.goToEditTabPrev.custom, event)) {
                     // 上一个
                     if (currentLiElement.previousElementSibling) {
                         currentLiElement.previousElementSibling.classList.add("b3-list-item--focus");

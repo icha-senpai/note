@@ -247,11 +247,11 @@ export const prepareAVLocate = (blockElement: HTMLElement, data: IAV, resetData:
         if (!request.messageShown) {
             request.messageShown = true;
             if (data.target.status === "filtered" || data.target.status === "groupHidden") {
-                showMessage(window.siyuan.languages.databaseItemFiltered);
+                showMessage(window.scribli.languages.databaseItemFiltered);
             } else if (data.target.status === "viewNotFound") {
-                showMessage(window.siyuan.languages.databaseViewNotFound);
+                showMessage(window.scribli.languages.databaseViewNotFound);
             } else {
-                showMessage(window.siyuan.languages.databaseItemNotFound);
+                showMessage(window.scribli.languages.databaseItemNotFound);
             }
         }
         return;
@@ -355,7 +355,7 @@ export const finishAVLocate = (blockElement: HTMLElement, protyle: IProtyle, dat
     if (!targetElement) {
         clearAVLocateRequest(blockElement, request);
         if (!request.messageShown) {
-            showMessage(window.siyuan.languages.databaseItemNotFound);
+            showMessage(window.scribli.languages.databaseItemNotFound);
         }
         return;
     }

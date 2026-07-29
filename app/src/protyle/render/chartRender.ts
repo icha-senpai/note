@@ -45,7 +45,7 @@ export const chartRender = (element: Element, cdn = Constants.PROTYLE_CDN) => {
                         }
                         chartInstance?.resize();
                     }
-                    window.echarts.init(renderElement.lastElementChild, window.siyuan.config.appearance.mode === 1 ? "dark" : undefined, {width}).setOption(option);
+                    window.echarts.init(renderElement.lastElementChild, window.scribli.config.appearance.mode === 1 ? "dark" : undefined, {width}).setOption(option);
                 } catch (error) {
                     window.echarts.dispose(renderElement.lastElementChild);
                     renderElement.innerHTML = `<span style="position: absolute;left:0;top:0;width: 1px;">${Constants.ZWSP}</span><div class="ft__error" style="height:${e.style.height || "420px"}" contenteditable="false">echarts render error: <br>${error}</div>`;

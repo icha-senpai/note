@@ -6,7 +6,7 @@ import {Constants} from "../../constants";
 /// #if !MOBILE
 import {exportLayout} from "../../layout/util";
 /// #endif
-import {exitSiYuan} from "../../dialog/processSystem";
+import {exitScribli} from "../../dialog/processSystem";
 
 /** 应用 / 关于 / 访问授权等 Tab 中的 system.* 设置项 save */
 export const sendAppSetting = (controlId: string, value: unknown) => {
@@ -14,9 +14,9 @@ export const sendAppSetting = (controlId: string, value: unknown) => {
         case "system.autoLaunch2": {
             const autoLaunchMode = value as Config.ISystem["autoLaunch2"];
             fetchPost("/api/system/setAutoLaunch", {autoLaunch: autoLaunchMode}, () => {
-                window.siyuan.config.system.autoLaunch2 = autoLaunchMode;
+                window.scribli.config.system.autoLaunch2 = autoLaunchMode;
                 /// #if !BROWSER
-                ipcRenderer.send(Constants.SIYUAN_AUTO_LAUNCH, {
+                ipcRenderer.send(Constants.SCRIBLI_AUTO_LAUNCH, {
                     openAtLogin: 0 !== autoLaunchMode,
                     openAsHidden: 2 === autoLaunchMode,
                 });
@@ -27,7 +27,7 @@ export const sendAppSetting = (controlId: string, value: unknown) => {
         case "system.lockScreenMode": {
             const lockScreenMode = (value ? 1 : 0) as Config.ISystem["lockScreenMode"];
             fetchPost("/api/system/setFollowSystemLockScreen", {lockScreenMode}, () => {
-                window.siyuan.config.system.lockScreenMode = lockScreenMode;
+                window.scribli.config.system.lockScreenMode = lockScreenMode;
             });
             break;
         }
@@ -35,11 +35,11 @@ export const sendAppSetting = (controlId: string, value: unknown) => {
             const networkServe = Boolean(value) as Config.ISystem["networkServe"];
             fetchPost("/api/system/setNetworkServe", {networkServe}, () => {
                 /// #if MOBILE
-                void exitSiYuan();
+                void exitScribli();
                 /// #else
                 void exportLayout({
                     errorExit: true,
-                    cb: exitSiYuan,
+                    cb: exitScribli,
                 });
                 /// #endif
             });
@@ -49,11 +49,11 @@ export const sendAppSetting = (controlId: string, value: unknown) => {
             const networkServeTLS = Boolean(value) as Config.ISystem["networkServeTLS"];
             fetchPost("/api/system/setNetworkServeTLS", {networkServeTLS}, () => {
                 /// #if MOBILE
-                void exitSiYuan();
+                void exitScribli();
                 /// #else
                 void exportLayout({
                     errorExit: true,
-                    cb: exitSiYuan,
+                    cb: exitScribli,
                 });
                 /// #endif
             });

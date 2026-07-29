@@ -594,19 +594,19 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         }
 
         // 居左
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.alignLeft.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.alignLeft.custom, event)) {
             setTableAlign(protyle, [cellElement], nodeElement, "left", range);
             event.preventDefault();
             return true;
         }
         // 居中
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.alignCenter.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.alignCenter.custom, event)) {
             setTableAlign(protyle, [cellElement], nodeElement, "center", range);
             event.preventDefault();
             return true;
         }
         // 居右
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.alignRight.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.alignRight.custom, event)) {
             setTableAlign(protyle, [cellElement], nodeElement, "right", range);
             event.preventDefault();
             return true;
@@ -686,7 +686,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
             return true;
         }
     });
-    if (matchHotKey(window.siyuan.config.keymap.editor.table.moveToUp.custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table.moveToUp.custom, event)) {
         if ((!hasNone || (hasNone && !hasRowSpan && hasColSpan)) &&
             (!previousHasNone || (previousHasNone && !previousHasRowSpan && previousHasColSpan))) {
             moveRowToUp(protyle, range, cellElement, nodeElement);
@@ -695,7 +695,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         return true;
     }
 
-    if (matchHotKey(window.siyuan.config.keymap.editor.table.moveToDown.custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table.moveToDown.custom, event)) {
         if ((!hasNone || (hasNone && !hasRowSpan && hasColSpan)) &&
             (!nextHasNone || (nextHasNone && !nextHasRowSpan && nextHasColSpan))) {
             moveRowToDown(protyle, range, cellElement, nodeElement);
@@ -704,7 +704,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         return true;
     }
 
-    if (matchHotKey(window.siyuan.config.keymap.editor.table.moveToLeft.custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table.moveToLeft.custom, event)) {
         if (colIsPure && previousColIsPure) {
             moveColumnToLeft(protyle, range, cellElement, nodeElement);
         }
@@ -712,7 +712,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         return true;
     }
 
-    if (matchHotKey(window.siyuan.config.keymap.editor.table.moveToRight.custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table.moveToRight.custom, event)) {
         if (colIsPure && nextColIsPure) {
             moveColumnToRight(protyle, range, cellElement, nodeElement);
         }
@@ -721,7 +721,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
     }
 
     // 上方新添加一行
-    if (matchHotKey(window.siyuan.config.keymap.editor.table.insertRowAbove.custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table.insertRowAbove.custom, event)) {
         insertRowAbove(protyle, range, cellElement, nodeElement);
         event.preventDefault();
         event.stopPropagation();
@@ -729,7 +729,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
     }
 
     // 下方新添加一行 https://github.com/Vanessa219/vditor/issues/46
-    if (matchHotKey(window.siyuan.config.keymap.editor.table.insertRowBelow.custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table.insertRowBelow.custom, event)) {
         if (!nextHasNone || (nextHasNone && !nextHasRowSpan && nextHasColSpan)) {
             insertRow(protyle, range, cellElement, nodeElement);
         }
@@ -738,7 +738,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
     }
 
     // 左方新添加一列
-    if (matchHotKey(window.siyuan.config.keymap.editor.table.insertColumnLeft.custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table.insertColumnLeft.custom, event)) {
         if (colIsPure || previousColIsPure) {
             insertColumn(protyle, nodeElement, cellElement, "beforebegin", range);
         }
@@ -747,7 +747,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
     }
 
     // 后方新添加一列
-    if (matchHotKey(window.siyuan.config.keymap.editor.table.insertColumnRight.custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table.insertColumnRight.custom, event)) {
         if (colIsPure || nextColIsPure) {
             insertColumn(protyle, nodeElement, cellElement, "afterend", range);
         }
@@ -756,7 +756,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
     }
 
     // 删除当前行
-    if (matchHotKey(window.siyuan.config.keymap.editor.table["delete-row"].custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table["delete-row"].custom, event)) {
         if ((!hasNone && !hasRowSpan) || //https://github.com/siyuan-note/siyuan/issues/5045
             (hasNone && !hasRowSpan && hasColSpan)) {
             deleteRow(protyle, range, cellElement, nodeElement);
@@ -767,7 +767,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
     }
 
     // 删除当前列
-    if (matchHotKey(window.siyuan.config.keymap.editor.table["delete-column"].custom, event)) {
+    if (matchHotKey(window.scribli.config.keymap.editor.table["delete-column"].custom, event)) {
         if (colIsPure) {
             deleteColumn(protyle, range, nodeElement, cellElement);
         }
@@ -827,29 +827,29 @@ export const clearTableCell = (protyle: IProtyle, tableBlockElement: HTMLElement
 
 export const updateTableTitle = (protyle: IProtyle, nodeElement: Element) => {
     const captionElement = nodeElement.querySelector("caption");
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
     const dialog = new Dialog({
-        title: window.siyuan.languages.table,
+        title: window.scribli.languages.table,
         width: isMobile() ? "92vw" : "520px",
         content: `<div class="b3-dialog__content">
     <label>
-        <div>${window.siyuan.languages.title}</div>
+        <div>${window.scribli.languages.title}</div>
         <div class="fn__hr"></div>
         <input class="b3-text-field fn__block">
     </label>
     <div class="fn__hr--b"></div>
     <label>
-        <div>${window.siyuan.languages.position}</div>
+        <div>${window.scribli.languages.position}</div>
         <div class="fn__hr"></div>
         <select class="b3-select fn__block">
-            <option value="top">${window.siyuan.languages.up}</option>
-            <option value="bottom" ${captionElement?.style.captionSide === "bottom" ? "selected" : ""}>${window.siyuan.languages.down}</option>
+            <option value="top">${window.scribli.languages.up}</option>
+            <option value="bottom" ${captionElement?.style.captionSide === "bottom" ? "selected" : ""}>${window.scribli.languages.down}</option>
         </select>
     </label>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>
 <div>`,
     });

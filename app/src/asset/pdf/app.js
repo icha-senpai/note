@@ -1097,7 +1097,7 @@ class PDFViewerApplication {
                 } else if (reason instanceof UnexpectedResponseException) {
                     key = "unexpectedResponseError";
                 }
-                return this._documentError(window.siyuan.languages[key], {message: reason.message}).then(
+                return this._documentError(window.scribli.languages[key], {message: reason.message}).then(
                     () => {
                         throw reason;
                     }
@@ -1190,7 +1190,7 @@ class PDFViewerApplication {
      */
     async _otherError(key, moreInfo = null) {
         // NOTE
-        const message = window.siyuan.languages[key] || key;
+        const message = window.scribli.languages[key] || key;
 
         const moreInfoText = [`PDF.js v${version || "?"} (build: ${build || "?"})`];
         if (moreInfo) {
@@ -1824,7 +1824,7 @@ class PDFViewerApplication {
 
         if (!this.supportsPrinting) {
             // NOTE
-            this._otherError(window.siyuan.languages.printingNotSupported);
+            this._otherError(window.scribli.languages.printingNotSupported);
             return;
         }
 
@@ -2273,7 +2273,7 @@ if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
             }
         } catch (ex) {
             // NOTE
-            console.log(window.siyuan.languages.loadingError, ex.message)
+            console.log(window.scribli.languages.loadingError, ex.message)
             // PDFViewerApplication._documentError("pdfjs-loading-error", {
             //   message: ex.message,
             // });

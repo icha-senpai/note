@@ -44,22 +44,22 @@ export class Breadcrumb {
         let padHTML = "";
         /// #if BROWSER && !MOBILE
         if (isIPad() || isInAndroid() || isInHarmony()) {
-            padHTML = `<button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.siyuan.languages.undo}" data-type="undo"><svg><use xlink:href="#iconUndo"></use></svg></button>
-<button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.siyuan.languages.redo}" data-type="redo"><svg><use xlink:href="#iconRedo"></use></svg></button>
-<button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.siyuan.languages.outdent}" data-type="outdent"><svg><use xlink:href="#iconOutdent"></use></svg></button>
-<button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.siyuan.languages.indent}" data-type="indent"><svg><use xlink:href="#iconIndent"></use></svg></button>`;
+            padHTML = `<button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.scribli.languages.undo}" data-type="undo"><svg><use xlink:href="#iconUndo"></use></svg></button>
+<button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.scribli.languages.redo}" data-type="redo"><svg><use xlink:href="#iconRedo"></use></svg></button>
+<button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.scribli.languages.outdent}" data-type="outdent"><svg><use xlink:href="#iconOutdent"></use></svg></button>
+<button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.scribli.languages.indent}" data-type="indent"><svg><use xlink:href="#iconIndent"></use></svg></button>`;
         }
         /// #endif
         element.innerHTML = `${isMobile() ?
-            `<button class="protyle-breadcrumb__icon" data-type="mobile-menu">${window.siyuan.languages.breadcrumb}</button>` :
+            `<button class="protyle-breadcrumb__icon" data-type="mobile-menu">${window.scribli.languages.breadcrumb}</button>` :
             '<div class="protyle-breadcrumb__bar"></div>'}
 <span class="protyle-breadcrumb__space"></span>
-<button class="protyle-breadcrumb__icon fn__none ariaLabel" aria-label="${updateHotkeyTip(window.siyuan.config.keymap.editor.general.exitFocus.custom)}" data-type="exit-focus">${window.siyuan.languages.exitFocus}</button>
+<button class="protyle-breadcrumb__icon fn__none ariaLabel" aria-label="${updateHotkeyTip(window.scribli.config.keymap.editor.general.exitFocus.custom)}" data-type="exit-focus">${window.scribli.languages.exitFocus}</button>
 ${padHTML}
-<button class="block__icon fn__flex-center ariaLabel${window.siyuan.config.readonly ? " fn__none" : ""}" aria-label="${window.siyuan.languages.lockEdit}" data-type="readonly" data-subtype="unlock"><svg><use xlink:href="#iconUnlock"></use></svg></button>
-<button class="block__icon fn__flex-center ariaLabel" data-type="doc" aria-label="${isMac() ? window.siyuan.languages.gutterTip2 : window.siyuan.languages.gutterTip2.replace("⇧", "Shift+")}"><svg><use xlink:href="#iconFile"></use></svg></button>
-<button class="block__icon fn__flex-center ariaLabel" data-type="more" aria-label="${window.siyuan.languages.more}"><svg><use xlink:href="#iconMore"></use></svg></button>
-<button class="block__icon fn__flex-center fn__none ariaLabel" data-type="context" aria-label="${window.siyuan.languages.context}"><svg><use xlink:href="#iconAlignCenter"></use></svg></button>`;
+<button class="block__icon fn__flex-center ariaLabel${window.scribli.config.readonly ? " fn__none" : ""}" aria-label="${window.scribli.languages.lockEdit}" data-type="readonly" data-subtype="unlock"><svg><use xlink:href="#iconUnlock"></use></svg></button>
+<button class="block__icon fn__flex-center ariaLabel" data-type="doc" aria-label="${isMac() ? window.scribli.languages.gutterTip2 : window.scribli.languages.gutterTip2.replace("⇧", "Shift+")}"><svg><use xlink:href="#iconFile"></use></svg></button>
+<button class="block__icon fn__flex-center ariaLabel" data-type="more" aria-label="${window.scribli.languages.more}"><svg><use xlink:href="#iconMore"></use></svg></button>
+<button class="block__icon fn__flex-center fn__none ariaLabel" data-type="context" aria-label="${window.scribli.languages.context}"><svg><use xlink:href="#iconAlignCenter"></use></svg></button>`;
         this.element = element.firstElementChild as HTMLElement;
         element.addEventListener("click", (event) => {
             let target = event.target as HTMLElement;
@@ -68,7 +68,7 @@ ${padHTML}
                 const type = target.getAttribute("data-type");
                 if (id) {
                     /// #if !MOBILE
-                    if (protyle.options.render.breadcrumbDocName && window.siyuan.ctrlIsPressed) {
+                    if (protyle.options.render.breadcrumbDocName && window.scribli.ctrlIsPressed) {
                         openFileById({
                             app: protyle.app,
                             id,
@@ -86,7 +86,7 @@ ${padHTML}
                     event.stopPropagation();
                     break;
                 } else if (type === "doc") {
-                    // 不使用 window.siyuan.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 https://github.com/siyuan-note/siyuan/issues/15075
+                    // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 https://github.com/siyuan-note/siyuan/issues/15075
                     if (event.shiftKey) {
                         const docInfoParam: IObject = {
                             id: protyle.block.rootID
@@ -134,7 +134,7 @@ ${padHTML}
                         const getDocParam: IObject = {
                             id: protyle.options.blockId,
                             mode: 3,
-                            size: window.siyuan.config.editor.dynamicLoadBlocks,
+                            size: window.scribli.config.editor.dynamicLoadBlocks,
                         };
                         if (isEncryptedBox(protyle.notebookId)) {
                             getDocParam.notebook = protyle.notebookId;
@@ -193,8 +193,8 @@ ${padHTML}
 
     private startRecord(protyle: IProtyle) {
         this.messageId = showMessage(`<div class="fn__flex fn__flex-wrap">
-<span class="fn__flex-center">${window.siyuan.languages.recording}</span><span class="fn__space"></span>
-<button class="b3-button b3-button--white">${window.siyuan.languages.endRecord}</button></div>`, -1);
+<span class="fn__flex-center">${window.scribli.languages.recording}</span><span class="fn__space"></span>
+<button class="b3-button b3-button--white">${window.scribli.languages.endRecord}</button></div>`, -1);
         document.querySelector(`#message [data-id="${this.messageId}"] button`).addEventListener("click", () => {
             this.mediaRecorder.stopRecording();
             hideMessage(this.messageId);
@@ -261,9 +261,9 @@ ${padHTML}
     }
 
     public showMenu(protyle: IProtyle, position: IPosition) {
-        if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-            window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_BREADCRUMB_MORE) {
-            window.siyuan.menus.menu.remove();
+        if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+            window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_BREADCRUMB_MORE) {
+            window.scribli.menus.menu.remove();
             return;
         }
         let id;
@@ -272,8 +272,8 @@ ${padHTML}
             id = cursorNodeElement.getAttribute("data-node-id");
         }
         fetchPost("/api/block/getTreeStat", {id: id || (protyle.block.showAll ? protyle.block.id : protyle.block.rootID)}, (response) => {
-            window.siyuan.menus.menu.remove();
-            window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_BREADCRUMB_MORE);
+            window.scribli.menus.menu.remove();
+            window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_BREADCRUMB_MORE);
             if (!protyle.contentElement.classList.contains("fn__none") && !protyle.disabled) {
                 let uploadHTML = "";
                 uploadHTML = '<input class="b3-form__upload" type="file" multiple="multiple"';
@@ -286,7 +286,7 @@ ${padHTML}
                     const imageUploadMenu = new MenuItem({
                         id: "insertImage",
                         icon: "iconImage",
-                        label: `${window.siyuan.languages.insertImage}<input class="b3-form__upload" type="file" multiple="multiple" accept="image/*,application/x-siyuan-image-picker">`,
+                        label: `${window.scribli.languages.insertImage}<input class="b3-form__upload" type="file" multiple="multiple" accept="image/*,application/x-siyuan-image-picker">`,
                     }).element;
                     imageUploadMenu.querySelector("input").addEventListener("change", (event: InputEvent & {
                         target: HTMLInputElement
@@ -295,14 +295,14 @@ ${padHTML}
                             return;
                         }
                         uploadFiles(protyle, event.target.files, event.target);
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                     });
-                    window.siyuan.menus.menu.append(imageUploadMenu);
+                    window.scribli.menus.menu.append(imageUploadMenu);
                 }
                 const uploadMenu = new MenuItem({
                     id: "insertAsset",
                     icon: "iconDownload",
-                    label: `${window.siyuan.languages.insertAsset}${uploadHTML}`,
+                    label: `${window.scribli.languages.insertAsset}${uploadHTML}`,
                 }).element;
                 uploadMenu.querySelector("input").addEventListener("change", (event: InputEvent & {
                     target: HTMLInputElement
@@ -311,26 +311,26 @@ ${padHTML}
                         return;
                     }
                     uploadFiles(protyle, event.target.files, event.target);
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                 });
-                window.siyuan.menus.menu.append(uploadMenu);
+                window.scribli.menus.menu.append(uploadMenu);
                 if (!isInAndroid() && !isInHarmony()) {
-                    window.siyuan.menus.menu.append(new MenuItem({
+                    window.scribli.menus.menu.append(new MenuItem({
                         id: this.mediaRecorder?.isRecording ? "endRecord" : "startRecord",
                         current: this.mediaRecorder && this.mediaRecorder.isRecording,
                         icon: "iconRecord",
-                        label: this.mediaRecorder?.isRecording ? window.siyuan.languages.endRecord : window.siyuan.languages.startRecord,
+                        label: this.mediaRecorder?.isRecording ? window.scribli.languages.endRecord : window.scribli.languages.startRecord,
                         click: async () => {
                             /// #if !BROWSER
-                            if (window.siyuan.config.system.os === "darwin") {
-                                const status = await ipcRenderer.invoke(Constants.SIYUAN_GET, {cmd: "getMicrophone"});
+                            if (window.scribli.config.system.os === "darwin") {
+                                const status = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {cmd: "getMicrophone"});
                                 if (["denied", "restricted", "unknown"].includes(status)) {
-                                    showMessage(window.siyuan.languages.microphoneDenied);
+                                    showMessage(window.scribli.languages.microphoneDenied);
                                     return;
                                 } else if (status === "not-determined") {
-                                    const isAccess = await ipcRenderer.invoke(Constants.SIYUAN_GET, {cmd: "askMicrophone"});
+                                    const isAccess = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {cmd: "askMicrophone"});
                                     if (!isAccess) {
-                                        showMessage(window.siyuan.languages.microphoneNotAccess);
+                                        showMessage(window.scribli.languages.microphoneNotAccess);
                                         return;
                                     }
                                 }
@@ -352,7 +352,7 @@ ${padHTML}
                                     };
                                     this.startRecord(protyle);
                                 }).catch(() => {
-                                    showMessage(window.siyuan.languages["record-tip"]);
+                                    showMessage(window.scribli.languages["record-tip"]);
                                 });
                                 return;
                             }
@@ -372,53 +372,53 @@ ${padHTML}
                 }
             }
             if (!protyle.disabled) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "netImg2LocalAsset",
-                    label: window.siyuan.languages.netImg2LocalAsset,
+                    label: window.scribli.languages.netImg2LocalAsset,
                     icon: "iconImgDown",
-                    accelerator: window.siyuan.config.keymap.editor.general.netImg2LocalAsset.custom,
+                    accelerator: window.scribli.config.keymap.editor.general.netImg2LocalAsset.custom,
                     click() {
                         net2LocalAssets(protyle, "Img");
                     }
                 }).element);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "netAssets2LocalAssets",
-                    label: window.siyuan.languages.netAssets2LocalAssets,
+                    label: window.scribli.languages.netAssets2LocalAssets,
                     icon: "iconDownloadAssets",
-                    accelerator: window.siyuan.config.keymap.editor.general.netAssets2LocalAssets.custom,
+                    accelerator: window.scribli.config.keymap.editor.general.netAssets2LocalAssets.custom,
                     click() {
                         net2LocalAssets(protyle, "Assets");
                     }
                 }).element);
             }
             if (!protyle.scroll?.element.classList.contains("fn__none")) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "keepLazyLoad",
                     icon: "iconKeepContent",
                     current: protyle.scroll.keepLazyLoad,
-                    label: window.siyuan.languages.keepLazyLoad,
+                    label: window.scribli.languages.keepLazyLoad,
                     click: () => {
                         protyle.scroll.keepLazyLoad = !protyle.scroll.keepLazyLoad;
                     }
                 }).element);
             }
-            if (window.siyuan.menus.menu.element.lastElementChild.childElementCount > 0) {
-                window.siyuan.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
+            if (window.scribli.menus.menu.element.lastElementChild.childElementCount > 0) {
+                window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
             }
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "refresh",
                 icon: "iconRefresh",
-                accelerator: window.siyuan.config.keymap.editor.general.refresh.custom,
-                label: window.siyuan.languages.refresh,
+                accelerator: window.scribli.config.keymap.editor.general.refresh.custom,
+                label: window.scribli.languages.refresh,
                 click: () => {
                     reloadProtyle(protyle, !isMobile());
                 }
             }).element);
             if (!protyle.disabled) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "optimizeTypography",
-                    label: window.siyuan.languages.optimizeTypography,
-                    accelerator: window.siyuan.config.keymap.editor.general.optimizeTypography.custom,
+                    label: window.scribli.languages.optimizeTypography,
+                    accelerator: window.scribli.config.keymap.editor.general.optimizeTypography.custom,
                     icon: "iconFormat",
                     click: () => {
                         hideElements(["toolbar"], protyle);
@@ -429,27 +429,27 @@ ${padHTML}
                 }).element);
             }
             /// #if !MOBILE
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "fullscreen",
                 icon: protyle.element.className.includes("fullscreen") ? "iconFullscreenExit" : "iconFullscreen",
-                accelerator: window.siyuan.config.keymap.editor.general.fullscreen.custom,
-                label: window.siyuan.languages.fullscreen,
+                accelerator: window.scribli.config.keymap.editor.general.fullscreen.custom,
+                label: window.scribli.languages.fullscreen,
                 click: () => {
                     fullscreen(protyle.element);
                     resize(protyle);
                 }
             }).element);
             /// #endif
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "editMode",
                 icon: "iconEdit",
-                label: window.siyuan.languages["edit-mode"],
+                label: window.scribli.languages["edit-mode"],
                 type: "submenu",
                 submenu: [{
                     id: "wysiwyg",
                     current: !protyle.contentElement.classList.contains("fn__none"),
-                    label: window.siyuan.languages.wysiwyg,
-                    accelerator: window.siyuan.config.keymap.editor.general.wysiwyg.custom,
+                    label: window.scribli.languages.wysiwyg,
+                    accelerator: window.scribli.config.keymap.editor.general.wysiwyg.custom,
                     click: () => {
                         setEditMode(protyle, "wysiwyg");
                         reloadProtyle(protyle, true);
@@ -461,29 +461,29 @@ ${padHTML}
                     id: "preview",
                     current: !protyle.preview.element.classList.contains("fn__none"),
                     icon: "iconPreview",
-                    label: window.siyuan.languages.preview,
-                    accelerator: window.siyuan.config.keymap.editor.general.preview.custom,
+                    label: window.scribli.languages.preview,
+                    accelerator: window.scribli.config.keymap.editor.general.preview.custom,
                     click: () => {
                         setEditMode(protyle, "preview");
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                         /// #if !MOBILE
                         saveLayout();
                         /// #endif
                     }
                 }]
             }).element);
-            if (!window.siyuan.config.editor.readOnly && !window.siyuan.config.readonly) {
+            if (!window.scribli.config.editor.readOnly && !window.scribli.config.readonly) {
                 const isCustomReadonly = protyle.wysiwyg.element.getAttribute(Constants.CUSTOM_SY_READONLY);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "editReadonly",
-                    label: window.siyuan.languages.editReadonly,
+                    label: window.scribli.languages.editReadonly,
                     icon: "iconLock",
                     type: "submenu",
                     submenu: [{
                         id: "enable",
                         iconHTML: "",
                         current: isCustomReadonly === "true",
-                        label: window.siyuan.languages.enable,
+                        label: window.scribli.languages.enable,
                         click() {
                             fetchPost("/api/attr/setBlockAttrs", {
                                 id: protyle.block.rootID,
@@ -494,7 +494,7 @@ ${padHTML}
                         id: "disable",
                         iconHTML: "",
                         current: !isCustomReadonly || isCustomReadonly === "false",
-                        label: window.siyuan.languages.disable,
+                        label: window.scribli.languages.disable,
                         click() {
                             fetchPost("/api/attr/setBlockAttrs", {
                                 id: protyle.block.rootID,
@@ -507,16 +507,16 @@ ${padHTML}
             /// #if !MOBILE
             if (!protyle.disabled) {
                 const isCustomFullWidth = protyle.wysiwyg.element.getAttribute(Constants.CUSTOM_SY_FULLWIDTH);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "fullWidth",
-                    label: window.siyuan.languages.fullWidth,
+                    label: window.scribli.languages.fullWidth,
                     icon: "iconFullWidth",
                     type: "submenu",
                     submenu: [{
                         id: "enable",
                         iconHTML: "",
                         current: isCustomFullWidth === "true",
-                        label: window.siyuan.languages.enable,
+                        label: window.scribli.languages.enable,
                         click() {
                             fetchPost("/api/attr/setBlockAttrs", {
                                 id: protyle.block.rootID,
@@ -527,7 +527,7 @@ ${padHTML}
                         id: "disable",
                         iconHTML: "",
                         current: isCustomFullWidth === "false",
-                        label: window.siyuan.languages.disable,
+                        label: window.scribli.languages.disable,
                         click() {
                             fetchPost("/api/attr/setBlockAttrs", {
                                 id: protyle.block.rootID,
@@ -538,7 +538,7 @@ ${padHTML}
                         id: "default",
                         iconHTML: "",
                         current: !isCustomFullWidth,
-                        label: window.siyuan.languages.default,
+                        label: window.scribli.languages.default,
                         click() {
                             fetchPost("/api/attr/setBlockAttrs", {
                                 id: protyle.block.rootID,
@@ -560,21 +560,21 @@ ${padHTML}
                     separatorPosition: "top",
                 });
             }
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "docInfo",
                 iconHTML: "",
                 type: "readonly",
                 // 不能换行，否则移动端间距过大
-                label: `<div class="fn__flex">${window.siyuan.languages.runeCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.runeCount}</div><div class="fn__flex">${window.siyuan.languages.wordCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.wordCount}</div><div class="fn__flex">${window.siyuan.languages.linkCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.linkCount}</div><div class="fn__flex">${window.siyuan.languages.imgCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.imageCount}</div><div class="fn__flex">${window.siyuan.languages.refCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.refCount}</div><div class="fn__flex">${window.siyuan.languages.blockCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.blockCount}</div>`,
+                label: `<div class="fn__flex">${window.scribli.languages.runeCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.runeCount}</div><div class="fn__flex">${window.scribli.languages.wordCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.wordCount}</div><div class="fn__flex">${window.scribli.languages.linkCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.linkCount}</div><div class="fn__flex">${window.scribli.languages.imgCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.imageCount}</div><div class="fn__flex">${window.scribli.languages.refCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.refCount}</div><div class="fn__flex">${window.scribli.languages.blockCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.blockCount}</div>`,
             }).element);
             /// #if MOBILE
-            window.siyuan.menus.menu.fullscreen();
+            window.scribli.menus.menu.fullscreen();
             /// #else
-            window.siyuan.menus.menu.popup(position);
+            window.scribli.menus.menu.popup(position);
             /// #endif
             const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
-            window.siyuan.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
+            window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
         });
     }
 
@@ -664,6 +664,6 @@ ${padHTML}
             return;
         }
         this.element.classList.add("protyle-breadcrumb__bar--hide");
-        window.siyuan.hideBreadcrumb = true;
+        window.scribli.hideBreadcrumb = true;
     }
 }

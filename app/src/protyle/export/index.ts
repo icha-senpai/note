@@ -26,16 +26,16 @@ const getPluginStyle = async () => {
 };
 
 const getIconScript = (servePath: string) => {
-    const isBuiltInIcon = ["litheness"].includes(window.siyuan.config.appearance.icon);
-    const html = isBuiltInIcon ? "" : `<script src="${servePath}appearance/icons/litheness/icon.js?v=${Constants.SIYUAN_VERSION}"></script>`;
-    return html + `<script src="${servePath}appearance/icons/${window.siyuan.config.appearance.icon}/icon.js?v=${Constants.SIYUAN_VERSION}"></script>`;
+    const isBuiltInIcon = ["litheness"].includes(window.scribli.config.appearance.icon);
+    const html = isBuiltInIcon ? "" : `<script src="${servePath}appearance/icons/litheness/icon.js?v=${Constants.SCRIBLI_VERSION}"></script>`;
+    return html + `<script src="${servePath}appearance/icons/${window.scribli.config.appearance.icon}/icon.js?v=${Constants.SCRIBLI_VERSION}"></script>`;
 };
 
 export const saveExport = (option: IExportOptions) => {
     /// #if BROWSER
     if (["html", "htmlmd"].includes(option.type)) {
         const startExport = () => {
-        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+        const msgId = showMessage(window.scribli.languages.exporting, -1);
         // 浏览器环境：先调用 API 生成资源文件，再在前端生成完整的 HTML
         const url = option.type === "htmlmd" ? "/api/export/exportMdHTML" : "/api/export/exportHTML";
         fetchPost(url, {
@@ -53,7 +53,7 @@ export const saveExport = (option: IExportOptions) => {
             }, zipResponse => {
                 if (zipResponse.code === -1) {
                     hideMessage(msgId);
-                    showMessage(window.siyuan.languages._kernel[14].replace("%s", zipResponse.msg), 0, "error");
+                    showMessage(window.scribli.languages._kernel[14].replace("%s", zipResponse.msg), 0, "error");
                     return;
                 }
                 // 与导出 .sy.zip/markdown.zip/图片一致，统一走 saveExportFile，以便移动端原生 App 调用 JSAndroid.saveExportFile 等接口保存到本地
@@ -63,7 +63,7 @@ export const saveExport = (option: IExportOptions) => {
         };
         fetchPost("/api/block/getBlockInfo", {id: option.id}, (response) => {
             if (response.code === 0 && isEncryptedBox(response.data.box)) {
-                confirmDialog("⚠️ " + window.siyuan.languages.export, window.siyuan.languages.encryptedExportRiskTip, startExport);
+                confirmDialog("⚠️ " + window.scribli.languages.export, window.scribli.languages.encryptedExportRiskTip, startExport);
                 return;
             }
             startExport();
@@ -72,36 +72,36 @@ export const saveExport = (option: IExportOptions) => {
     }
     /// #else
     if (option.type === "pdf") {
-        if (window.siyuan.config.appearance.mode === 1) {
-            confirmDialog(window.siyuan.languages.pdfTip, window.siyuan.languages.pdfConfirm, () => {
+        if (window.scribli.config.appearance.mode === 1) {
+            confirmDialog(window.scribli.languages.pdfTip, window.scribli.languages.pdfConfirm, () => {
                 renderPDF(option.id);
             });
         } else {
             renderPDF(option.id);
         }
     } else if (option.type === "word") {
-        const localData = window.siyuan.storage[Constants.LOCAL_EXPORTWORD];
+        const localData = window.scribli.storage[Constants.LOCAL_EXPORTWORD];
         const wordDialog = new Dialog({
-            title: "Word " + window.siyuan.languages.config,
+            title: "Word " + window.scribli.languages.config,
             content: `<div class="b3-dialog__content">
     <label class="fn__flex b3-label">
         <div class="fn__flex-1">
-            ${window.siyuan.languages.removeAssetsFolder}
+            ${window.scribli.languages.removeAssetsFolder}
         </div>
         <span class="fn__space"></span>
         <input id="removeAssets" class="b3-switch" type="checkbox" ${localData.removeAssets ? "checked" : ""}>
     </label>
     <label class="fn__flex b3-label">
         <div class="fn__flex-1">
-            ${window.siyuan.languages.mergeSubdocs}
+            ${window.scribli.languages.mergeSubdocs}
         </div>
         <span class="fn__space"></span>
         <input id="mergeSubdocs" class="b3-switch" type="checkbox" ${localData.mergeSubdocs ? "checked" : ""}>
     </label>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
             width: "520px",
         });
@@ -113,8 +113,8 @@ export const saveExport = (option: IExportOptions) => {
         btnsElement[1].addEventListener("click", () => {
             const removeAssets = (wordDialog.element.querySelector("#removeAssets") as HTMLInputElement).checked;
             const mergeSubdocs = (wordDialog.element.querySelector("#mergeSubdocs") as HTMLInputElement).checked;
-            window.siyuan.storage[Constants.LOCAL_EXPORTWORD] = {removeAssets, mergeSubdocs};
-            setStorageVal(Constants.LOCAL_EXPORTWORD, window.siyuan.storage[Constants.LOCAL_EXPORTWORD]);
+            window.scribli.storage[Constants.LOCAL_EXPORTWORD] = {removeAssets, mergeSubdocs};
+            setStorageVal(Constants.LOCAL_EXPORTWORD, window.scribli.storage[Constants.LOCAL_EXPORTWORD]);
             getExportPath(option, removeAssets, mergeSubdocs);
             wordDialog.destroy();
         });
@@ -146,23 +146,23 @@ const getSnippetJS = () => {
 
 /// #if !BROWSER
 const renderPDF = async (id: string) => {
-    const localData = window.siyuan.storage[Constants.LOCAL_EXPORTPDF];
+    const localData = window.scribli.storage[Constants.LOCAL_EXPORTPDF];
     if (typeof localData.paged === "undefined") {
         localData.paged = true;
     }
     const servePathWithoutTrailingSlash = window.location.protocol + "//" + window.location.host;
     const servePath = servePathWithoutTrailingSlash + "/";
-    const isDefault = (window.siyuan.config.appearance.mode === 1 && window.siyuan.config.appearance.themeDark === "midnight") || (window.siyuan.config.appearance.mode === 0 && window.siyuan.config.appearance.themeLight === "daylight");
+    const isDefault = (window.scribli.config.appearance.mode === 1 && window.scribli.config.appearance.themeDark === "midnight") || (window.scribli.config.appearance.mode === 0 && window.scribli.config.appearance.themeLight === "daylight");
     let themeStyle = "";
     if (!isDefault) {
-        themeStyle = `<link rel="stylesheet" type="text/css" id="themeStyle" href="${servePath}appearance/themes/${window.siyuan.config.appearance.themeLight}/theme.css?${Constants.SIYUAN_VERSION}"/>`;
+        themeStyle = `<link rel="stylesheet" type="text/css" id="themeStyle" href="${servePath}appearance/themes/${window.scribli.config.appearance.themeLight}/theme.css?${Constants.SCRIBLI_VERSION}"/>`;
     }
-    const currentWindowId = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+    const currentWindowId = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
         cmd: "getContentsId",
     });
     // data-theme-mode="light" https://github.com/siyuan-note/siyuan/issues/7379
     const html = `<!DOCTYPE html>
-<html lang="${window.siyuan.config.appearance.lang}" data-theme-mode="light" data-light-theme="${window.siyuan.config.appearance.themeLight}" data-dark-theme="${window.siyuan.config.appearance.themeDark}">
+<html lang="${window.scribli.config.appearance.lang}" data-theme-mode="light" data-light-theme="${window.scribli.config.appearance.themeLight}" data-dark-theme="${window.scribli.config.appearance.themeDark}">
 <head>
     <base href="${servePath}">
     <meta charset="utf-8">
@@ -170,11 +170,11 @@ const renderPDF = async (id: string) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <meta name="mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="stylesheet" type="text/css" id="baseStyle" href="${servePath}stage/build/export/base.css?v=${Constants.SIYUAN_VERSION}"/>
-    <link rel="stylesheet" type="text/css" id="themeDefaultStyle" href="${servePath}appearance/themes/daylight/theme.css?v=${Constants.SIYUAN_VERSION}"/>
-    <script src="${servePath}stage/protyle/js/protyle-html.js?v=${Constants.SIYUAN_VERSION}"></script>
+    <link rel="stylesheet" type="text/css" id="baseStyle" href="${servePath}stage/build/export/base.css?v=${Constants.SCRIBLI_VERSION}"/>
+    <link rel="stylesheet" type="text/css" id="themeDefaultStyle" href="${servePath}appearance/themes/daylight/theme.css?v=${Constants.SCRIBLI_VERSION}"/>
+    <script src="${servePath}stage/protyle/js/protyle-html.js?v=${Constants.SCRIBLI_VERSION}"></script>
     ${themeStyle}
-    <title>${window.siyuan.languages.export} PDF</title>
+    <title>${window.scribli.languages.export} PDF</title>
     <style>
         body {
           margin: 0;
@@ -260,7 +260,7 @@ const renderPDF = async (id: string) => {
     <div style="flex: 1;overflow-y:auto;overflow-x:hidden">
         <div class="b3-label">
             <div>
-                ${window.siyuan.languages.exportPDF0}
+                ${window.scribli.languages.exportPDF0}
             </div>
             <span class="fn__hr"></span>
             <select class="b3-select" id="pageSize">
@@ -274,53 +274,53 @@ const renderPDF = async (id: string) => {
         </div>
         <div class="b3-label">
             <div>
-                ${window.siyuan.languages.exportPDF2}
+                ${window.scribli.languages.exportPDF2}
             </div>
             <span class="fn__hr"></span>
             <select class="b3-select" id="marginsType">
-                <option ${localData.marginType === "default" ? "selected" : ""} value="default">${window.siyuan.languages.defaultMargin}</option>
-                <option ${localData.marginType === "none" ? "selected" : ""} value="none">${window.siyuan.languages.noneMargin}</option>
-                <option ${localData.marginType === "printableArea" ? "selected" : ""} value="printableArea">${window.siyuan.languages.minimalMargin}</option>
-                <option ${localData.marginType === "custom" ? "selected" : ""} value="custom">${window.siyuan.languages.customMargin}</option>
+                <option ${localData.marginType === "default" ? "selected" : ""} value="default">${window.scribli.languages.defaultMargin}</option>
+                <option ${localData.marginType === "none" ? "selected" : ""} value="none">${window.scribli.languages.noneMargin}</option>
+                <option ${localData.marginType === "printableArea" ? "selected" : ""} value="printableArea">${window.scribli.languages.minimalMargin}</option>
+                <option ${localData.marginType === "custom" ? "selected" : ""} value="custom">${window.scribli.languages.customMargin}</option>
             </select>
             <div class="${localData.marginType === "custom" ? "" : "fn__none"}">
                 <span class="fn__hr"></span>
-                <small>${window.siyuan.languages.marginTop}</small>
+                <small>${window.scribli.languages.marginTop}</small>
                 <div class="fn__hr--small"></div>
                 <div class="fn__flex">
                     <input id="marginsTop" class="b3-text-field fn__block" value="${localData.marginTop || 0}" type="number" min="0" step="0.01">
                     <span class="fn__space"></span>
-                    <small class="fn__flex-center" style="white-space: nowrap;">${window.siyuan.languages.unitInches}</small>
+                    <small class="fn__flex-center" style="white-space: nowrap;">${window.scribli.languages.unitInches}</small>
                 </div>
                 <div class="fn__hr"></div>
-                <small>${window.siyuan.languages.marginRight}</small>
+                <small>${window.scribli.languages.marginRight}</small>
                 <div class="fn__hr--small"></div>
                 <div class="fn__flex">
                     <input id="marginsRight" class="b3-text-field fn__block" value="${localData.marginRight || 0}" type="number" min="0" step="0.01">
                     <span class="fn__space"></span>
-                    <small class="fn__flex-center" style="white-space: nowrap;">${window.siyuan.languages.unitInches}</small>
+                    <small class="fn__flex-center" style="white-space: nowrap;">${window.scribli.languages.unitInches}</small>
                 </div>
                 <div class="fn__hr"></div>
-                <small>${window.siyuan.languages.marginBottom}</small>
+                <small>${window.scribli.languages.marginBottom}</small>
                 <div class="fn__hr--small"></div>
                 <div class="fn__flex">
                     <input id="marginsBottom" class="b3-text-field fn__block" value="${localData.marginBottom || 0}" type="number" min="0" step="0.01">
                     <span class="fn__space"></span>
-                    <small class="fn__flex-center" style="white-space: nowrap;">${window.siyuan.languages.unitInches}</small>
+                    <small class="fn__flex-center" style="white-space: nowrap;">${window.scribli.languages.unitInches}</small>
                 </div>
                 <div class="fn__hr"></div>
-                <small>${window.siyuan.languages.marginLeft}</small>
+                <small>${window.scribli.languages.marginLeft}</small>
                 <div class="fn__hr--small"></div>
                 <div class="fn__flex">
                     <input id="marginsLeft" class="b3-text-field fn__block" value="${localData.marginLeft || 0}" type="number" min="0" step="0.01">
                     <span class="fn__space"></span>
-                    <small class="fn__flex-center" style="white-space: nowrap;">${window.siyuan.languages.unitInches}</small>
+                    <small class="fn__flex-center" style="white-space: nowrap;">${window.scribli.languages.unitInches}</small>
                 </div>
             </div>
         </div>
         <div class="b3-label">
             <div>
-                ${window.siyuan.languages.exportPDF3}
+                ${window.scribli.languages.exportPDF3}
                 <span id="scaleTip" style="float: right;color: var(--b3-theme-on-background);">${localData.scale || 1}</span>
             </div>
             <span class="fn__hr"></span>
@@ -328,42 +328,42 @@ const renderPDF = async (id: string) => {
         </div>
         <label class="b3-label">
             <div>
-                ${window.siyuan.languages.exportPDF1}
+                ${window.scribli.languages.exportPDF1}
             </div>
             <span class="fn__hr"></span>
           <input id="landscape" class="b3-switch" type="checkbox" ${localData.landscape ? "checked" : ""}>
         </label>
         <label class="b3-label">
             <div>
-                ${window.siyuan.languages.exportPDF4}
+                ${window.scribli.languages.exportPDF4}
             </div>
             <span class="fn__hr"></span>
             <input id="removeAssets" class="b3-switch" type="checkbox" ${localData.removeAssets ? "checked" : ""}>
         </label>
         <label class="b3-label">
             <div>
-                ${window.siyuan.languages.exportPDF5}
+                ${window.scribli.languages.exportPDF5}
             </div>
             <span class="fn__hr"></span>
             <input id="keepFold" class="b3-switch" type="checkbox" ${localData.keepFold ? "checked" : ""}>
         </label>
         <label class="b3-label">
             <div>
-                ${window.siyuan.languages.mergeSubdocs}
+                ${window.scribli.languages.mergeSubdocs}
             </div>
             <span class="fn__hr"></span>
             <input id="mergeSubdocs" class="b3-switch" type="checkbox" ${localData.mergeSubdocs ? "checked" : ""}>
         </label>
         <label class="b3-label">
             <div>
-                ${window.siyuan.languages.export27}
+                ${window.scribli.languages.export27}
             </div>
             <span class="fn__hr"></span>
             <input id="watermark" class="b3-switch" type="checkbox" ${localData.watermark ? "checked" : ""}>
         </label>
         <label class="b3-label">
             <div>
-                ${window.siyuan.languages.paged}
+                ${window.scribli.languages.paged}
             </div>
             <span class="fn__hr"></span>
             <input id="paged" class="b3-switch" type="checkbox" ${localData.paged ? "checked" : ""}>
@@ -371,17 +371,17 @@ const renderPDF = async (id: string) => {
     </div>
     <div class="fn__flex" style="padding: 0 12px">
       <div class="fn__flex-1"></div>
-      <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button>
+      <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button>
       <div class="fn__space"></div>
-      <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+      <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
     </div>
 </div>
 <div style="zoom:${localData.scale || 1}" id="preview">
     <div class="fn__loading" style="left:0;height:100vh"><img width="48px" src="${servePath}stage/loading-pure.svg"></div>
 </div>
 ${getIconScript(servePath)}
-<script src="${servePath}stage/build/export/protyle-method.js?${Constants.SIYUAN_VERSION}"></script>
-<script src="${servePath}stage/protyle/js/lute/lute.min.js?${Constants.SIYUAN_VERSION}"></script>    
+<script src="${servePath}stage/build/export/protyle-method.js?${Constants.SCRIBLI_VERSION}"></script>
+<script src="${servePath}stage/protyle/js/lute/lute.min.js?${Constants.SCRIBLI_VERSION}"></script>    
 <script>
     const previewElement = document.getElementById('preview');
     const fixBlockWidth = () => {
@@ -500,7 +500,7 @@ ${getIconScript(servePath)}
         })
     }
     const renderPreview = (data) => {
-        previewElement.innerHTML = '<div style="padding:8px 0 0 0" class="protyle-wysiwyg${window.siyuan.config.editor.displayBookmarkIcon ? " protyle-wysiwyg--attr" : ""}">' + data.content + '</div>';
+        previewElement.innerHTML = '<div style="padding:8px 0 0 0" class="protyle-wysiwyg${window.scribli.config.editor.displayBookmarkIcon ? " protyle-wysiwyg--attr" : ""}">' + data.content + '</div>';
         const wysElement = previewElement.querySelector(".protyle-wysiwyg");
         wysElement.setAttribute("data-doc-type", data.type || "NodeDocument");
         Object.keys(data.attrs).forEach(key => {
@@ -531,22 +531,23 @@ ${getIconScript(servePath)}
             return;
         }
         document.title = response.data.name
-        window.siyuan = {
+        window.scribli = {
           config: {
-            appearance: { mode: 0, codeBlockThemeDark: "${window.siyuan.config.appearance.codeBlockThemeDark}", codeBlockThemeLight: "${window.siyuan.config.appearance.codeBlockThemeLight}" },
+            appearance: { mode: 0, codeBlockThemeDark: "${window.scribli.config.appearance.codeBlockThemeDark}", codeBlockThemeLight: "${window.scribli.config.appearance.codeBlockThemeLight}" },
             editor: { 
-              allowSVGScriptTip: ${window.siyuan.config.editor.allowSVGScript},
-              allowHTMLBLockScript: ${window.siyuan.config.editor.allowHTMLBLockScript},
-              fontSize: ${window.siyuan.config.editor.fontSize},
+              allowSVGScriptTip: ${window.scribli.config.editor.allowSVGScript},
+              allowHTMLBLockScript: ${window.scribli.config.editor.allowHTMLBLockScript},
+              fontSize: ${window.scribli.config.editor.fontSize},
               codeLineWrap: true,
-              codeLigatures: ${window.siyuan.config.editor.codeLigatures},
-              plantUMLServePath: "${window.siyuan.config.editor.plantUMLServePath}",
-              codeSyntaxHighlightLineNum: ${window.siyuan.config.editor.codeSyntaxHighlightLineNum},
-              katexMacros: decodeURI(\`${encodeURI(window.siyuan.config.editor.katexMacros)}\`),
+              codeLigatures: ${window.scribli.config.editor.codeLigatures},
+              plantUMLServePath: "${window.scribli.config.editor.plantUMLServePath}",
+              codeSyntaxHighlightLineNum: ${window.scribli.config.editor.codeSyntaxHighlightLineNum},
+              katexMacros: decodeURI(\`${encodeURI(window.scribli.config.editor.katexMacros)}\`),
             }
           },
-          languages: {copy:"${window.siyuan.languages.copy}"}
+          languages: {copy:"${window.scribli.languages.copy}"}
         };
+        window.siyuan = window.scribli;
         previewElement.addEventListener("click", (event) => {
             let target = event.target;
             while (target && !target.isEqualNode(previewElement)) {
@@ -629,14 +630,14 @@ ${getIconScript(servePath)}
         });
         actionElement.querySelector('.b3-button--cancel').addEventListener('click', () => {
             const {ipcRenderer}  = require("electron");
-            ipcRenderer.send("${Constants.SIYUAN_CMD}", "destroy")
+            ipcRenderer.send("${Constants.SCRIBLI_CMD}", "destroy")
         });
         const buildExportConfig = (unPagedPageSize) => {
             const pageSize = actionElement.querySelector("#pageSize").value;
             // https://www.electronjs.org/docs/latest/api/web-contents#contentsprinttopdfoptions
             // https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-printToPDF
             return {
-                title: "${window.siyuan.languages.export} PDF",
+                title: "${window.scribli.languages.export} PDF",
                 pdfOptions: {
                     printBackground: true,
                     landscape: actionElement.querySelector("#landscape").checked,
@@ -678,7 +679,7 @@ ${getIconScript(servePath)}
                     return pageSizes[actionElement.querySelector("#pageSize").value];
                 };
                 const previewHeight = Math.max(previewElement.scrollHeight / 96 - (parseFloat(document.querySelector("#marginsTop").value) || 0) - (parseFloat(document.querySelector("#marginsBottom").value) || 0), getPageSizeDimensions().height);
-                ipcRenderer.send("${Constants.SIYUAN_EXPORT_PDF}", buildExportConfig(actionElement.querySelector("#landscape").checked ? {
+                ipcRenderer.send("${Constants.SCRIBLI_EXPORT_PDF}", buildExportConfig(actionElement.querySelector("#landscape").checked ? {
                     height: getPageSizeDimensions().height,
                     width: previewHeight,
                 } : {
@@ -686,7 +687,7 @@ ${getIconScript(servePath)}
                     height: previewHeight,
                 }));
             } else {
-                ipcRenderer.send("${Constants.SIYUAN_EXPORT_PDF}", buildExportConfig());
+                ipcRenderer.send("${Constants.SCRIBLI_EXPORT_PDF}", buildExportConfig());
             }
             document.body.classList.add("exporting");
             previewElement.style.zoom = "";
@@ -699,7 +700,7 @@ ${getIconScript(servePath)}
         window.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 const {ipcRenderer}  = require("electron");
-                ipcRenderer.send("${Constants.SIYUAN_CMD}", "destroy")
+                ipcRenderer.send("${Constants.SCRIBLI_CMD}", "destroy")
                 event.preventDefault();
             }
         })
@@ -708,7 +709,7 @@ ${getIconScript(servePath)}
 ${getSnippetJS()}
 </body></html>`;
 	    fetchPost("/api/export/exportTempContent", {content: html, id}, (response) => {
-        ipcRenderer.send(Constants.SIYUAN_EXPORT_NEWWINDOW, response.data.url);
+        ipcRenderer.send(Constants.SCRIBLI_EXPORT_NEWWINDOW, response.data.url);
     });
 };
 
@@ -721,7 +722,7 @@ const getExportPath = (option: IExportOptions, removeAssets?: boolean, mergeSubd
             return;
         }
         if (!confirmed && isEncryptedBox(response.data.box)) {
-            confirmDialog("⚠️ " + window.siyuan.languages.export, window.siyuan.languages.encryptedExportRiskTip, () => {
+            confirmDialog("⚠️ " + window.scribli.languages.export, window.scribli.languages.encryptedExportRiskTip, () => {
                 getExportPath(option, removeAssets, mergeSubdocs, true);
             });
             return;
@@ -739,13 +740,13 @@ const getExportPath = (option: IExportOptions, removeAssets?: boolean, mergeSubd
                 break;
         }
 
-        const result = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+        const result = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
             cmd: "showOpenDialog",
-            title: window.siyuan.languages.export + " " + exportType,
+            title: window.scribli.languages.export + " " + exportType,
             properties: ["createDirectory", "openDirectory"],
         });
         if (!result.canceled) {
-            const msgId = showMessage(window.siyuan.languages.exporting, -1);
+            const msgId = showMessage(window.scribli.languages.exporting, -1);
             let url = "/api/export/exportHTML";
             if (option.type === "htmlmd") {
                 url = "/api/export/exportMdHTML";
@@ -781,16 +782,16 @@ const getExportPath = (option: IExportOptions, removeAssets?: boolean, mergeSubd
 /// #endif
 
 export const onExport = async (data: IWebSocketData, filePath: string, servePath: string, exportOption: IExportOptions, msgId?: string) => {
-    let themeName = window.siyuan.config.appearance.themeLight;
+    let themeName = window.scribli.config.appearance.themeLight;
     let mode = 0;
-    if (["html", "htmlmd"].includes(exportOption.type) && window.siyuan.config.appearance.mode === 1) {
-        themeName = window.siyuan.config.appearance.themeDark;
+    if (["html", "htmlmd"].includes(exportOption.type) && window.scribli.config.appearance.mode === 1) {
+        themeName = window.scribli.config.appearance.themeDark;
         mode = 1;
     }
-    const isDefault = (window.siyuan.config.appearance.mode === 1 && window.siyuan.config.appearance.themeDark === "midnight") || (window.siyuan.config.appearance.mode === 0 && window.siyuan.config.appearance.themeLight === "daylight");
+    const isDefault = (window.scribli.config.appearance.mode === 1 && window.scribli.config.appearance.themeDark === "midnight") || (window.scribli.config.appearance.mode === 0 && window.scribli.config.appearance.themeLight === "daylight");
     let themeStyle = "";
     if (!isDefault) {
-        themeStyle = `<link rel="stylesheet" type="text/css" id="themeStyle" href="${servePath}appearance/themes/${themeName}/theme.css?${Constants.SIYUAN_VERSION}"/>`;
+        themeStyle = `<link rel="stylesheet" type="text/css" id="themeStyle" href="${servePath}appearance/themes/${themeName}/theme.css?${Constants.SCRIBLI_VERSION}"/>`;
     }
     const screenWidth = getScreenWidth();
     const isInMobile = isInMobileApp();
@@ -800,7 +801,7 @@ export const onExport = async (data: IWebSocketData, filePath: string, servePath
 .protyle-wysiwyg {padding: 0; margin: 0;}`
     } : {js: "", css: ""};
     const html = `<!DOCTYPE html>
-<html lang="${window.siyuan.config.appearance.lang}" data-theme-mode="${isInMobile ? "light" : getThemeMode()}" data-light-theme="${window.siyuan.config.appearance.themeLight}" data-dark-theme="${window.siyuan.config.appearance.themeDark}">
+<html lang="${window.scribli.config.appearance.lang}" data-theme-mode="${isInMobile ? "light" : getThemeMode()}" data-light-theme="${window.scribli.config.appearance.themeLight}" data-dark-theme="${window.scribli.config.appearance.themeDark}">
 <head>
     <base href="${servePath}">
     <meta charset="utf-8">
@@ -808,12 +809,12 @@ export const onExport = async (data: IWebSocketData, filePath: string, servePath
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <meta name="mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="stylesheet" type="text/css" id="baseStyle" href="${servePath}stage/build/export/base.css?v=${Constants.SIYUAN_VERSION}"/>
-    <link rel="stylesheet" type="text/css" id="themeDefaultStyle" href="${servePath}appearance/themes/${themeName}/theme.css?v=${Constants.SIYUAN_VERSION}"/>
-    <script src="${servePath}stage/protyle/js/protyle-html.js?v=${Constants.SIYUAN_VERSION}"></script>
+    <link rel="stylesheet" type="text/css" id="baseStyle" href="${servePath}stage/build/export/base.css?v=${Constants.SCRIBLI_VERSION}"/>
+    <link rel="stylesheet" type="text/css" id="themeDefaultStyle" href="${servePath}appearance/themes/${themeName}/theme.css?v=${Constants.SCRIBLI_VERSION}"/>
+    <script src="${servePath}stage/protyle/js/protyle-html.js?v=${Constants.SCRIBLI_VERSION}"></script>
     ${themeStyle}
     <title>${data.data.name}</title>
-    <!-- Exported by Scribli v${Constants.SIYUAN_VERSION} -->
+    <!-- Exported by Scribli v${Constants.SCRIBLI_VERSION} -->
     <style>
         body {font-family: var(--b3-font-family);background-color: var(--b3-theme-background);color: var(--b3-theme-on-background)}
         ${await setInlineStyle(false, servePath)}
@@ -823,27 +824,28 @@ export const onExport = async (data: IWebSocketData, filePath: string, servePath
     ${getSnippetCSS()}
 </head>
 <body>
-<div class="${["htmlmd", "word"].includes(exportOption.type) ? "b3-typography" : "protyle-wysiwyg" + (window.siyuan.config.editor.displayBookmarkIcon ? " protyle-wysiwyg--attr" : "")}" 
+<div class="${["htmlmd", "word"].includes(exportOption.type) ? "b3-typography" : "protyle-wysiwyg" + (window.scribli.config.editor.displayBookmarkIcon ? " protyle-wysiwyg--attr" : "")}" 
 style="max-width: 800px;margin: 0 auto;" id="preview">${data.data.content}</div>
 ${getIconScript(servePath)}
-<script src="${servePath}stage/build/export/protyle-method.js?v=${Constants.SIYUAN_VERSION}"></script>
-<script src="${servePath}stage/protyle/js/lute/lute.min.js?v=${Constants.SIYUAN_VERSION}"></script>  
+<script src="${servePath}stage/build/export/protyle-method.js?v=${Constants.SCRIBLI_VERSION}"></script>
+<script src="${servePath}stage/protyle/js/lute/lute.min.js?v=${Constants.SCRIBLI_VERSION}"></script>  
 <script>
     ${mobileHtml.js}
-    window.siyuan = {
+    window.scribli = {
       config: {
-        appearance: { mode: ${mode}, codeBlockThemeDark: "${window.siyuan.config.appearance.codeBlockThemeDark}", codeBlockThemeLight: "${window.siyuan.config.appearance.codeBlockThemeLight}" },
+        appearance: { mode: ${mode}, codeBlockThemeDark: "${window.scribli.config.appearance.codeBlockThemeDark}", codeBlockThemeLight: "${window.scribli.config.appearance.codeBlockThemeLight}" },
         editor: { 
           codeLineWrap: true,
-          fontSize: ${window.siyuan.config.editor.fontSize},
-          codeLigatures: ${window.siyuan.config.editor.codeLigatures},
-          plantUMLServePath: "${window.siyuan.config.editor.plantUMLServePath}",
-          codeSyntaxHighlightLineNum: ${window.siyuan.config.editor.codeSyntaxHighlightLineNum},
-          katexMacros: decodeURI(\`${encodeURI(window.siyuan.config.editor.katexMacros)}\`),
+          fontSize: ${window.scribli.config.editor.fontSize},
+          codeLigatures: ${window.scribli.config.editor.codeLigatures},
+          plantUMLServePath: "${window.scribli.config.editor.plantUMLServePath}",
+          codeSyntaxHighlightLineNum: ${window.scribli.config.editor.codeSyntaxHighlightLineNum},
+          katexMacros: decodeURI(\`${encodeURI(window.scribli.config.editor.katexMacros)}\`),
         }
       },
-      languages: {copy:"${window.siyuan.languages.copy}"}
+      languages: {copy:"${window.scribli.languages.copy}"}
     };
+    window.siyuan = window.scribli;
     const previewElement = document.getElementById('preview');
     Protyle.highlightRender(previewElement, "stage/protyle");
     Protyle.mathRender(previewElement, "stage/protyle", ${exportOption.type === "pdf"});

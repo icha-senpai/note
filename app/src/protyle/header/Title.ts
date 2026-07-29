@@ -37,15 +37,15 @@ export class Title {
     constructor(protyle: IProtyle) {
         this.element = document.createElement("div");
         this.element.className = "protyle-title";
-        if (window.siyuan.config.editor.displayBookmarkIcon) {
+        if (window.scribli.config.editor.displayBookmarkIcon) {
             this.element.classList.add("protyle-wysiwyg--attr");
         }
         if (protyle.options.render?.titleShowTop) {
             this.element.innerHTML = '<div class="protyle-attr"></div>';
         } else {
             // 标题内需要一个空格，避免首次加载出现`请输入文档名`干扰
-            this.element.innerHTML = `<span aria-label="${isMac() ? window.siyuan.languages.gutterTip2 : window.siyuan.languages.gutterTip2.replace("⇧", "Shift+")}" data-position="west" class="protyle-title__icon ariaLabel"><svg><use xlink:href="#iconFile"></use></svg></span>
-<div contenteditable="true" spellcheck="${window.siyuan.config.editor.spellcheck}" class="protyle-title__input" data-tip="${window.siyuan.languages._kernel[16]}"> </div><div class="protyle-attr"></div>`;
+            this.element.innerHTML = `<span aria-label="${isMac() ? window.scribli.languages.gutterTip2 : window.scribli.languages.gutterTip2.replace("⇧", "Shift+")}" data-position="west" class="protyle-title__icon ariaLabel"><svg><use xlink:href="#iconFile"></use></svg></span>
+<div contenteditable="true" spellcheck="${window.scribli.config.editor.spellcheck}" class="protyle-title__input" data-tip="${window.scribli.languages._kernel[16]}"> </div><div class="protyle-attr"></div>`;
             this.editElement = this.element.querySelector(".protyle-title__input");
             this.editElement.addEventListener("paste", (event: ClipboardEvent) => {
                 event.stopPropagation();
@@ -120,7 +120,7 @@ export class Title {
                     }
                     return;
                 }
-                if (matchHotKey(window.siyuan.config.keymap.general.enterBack.custom, event)) {
+                if (matchHotKey(window.scribli.config.keymap.general.enterBack.custom, event)) {
                     const ids = protyle.path.split("/");
                     if (ids.length > 2) {
                         /// #if !MOBILE
@@ -175,7 +175,7 @@ export class Title {
                     }
                     event.preventDefault();
                     event.stopPropagation();
-                } else if (matchHotKey(window.siyuan.config.keymap.editor.general.attr.custom, event)) {
+                } else if (matchHotKey(window.scribli.config.keymap.editor.general.attr.custom, event)) {
                     const docInfoParam: IObject = {
                         id: protyle.block.rootID
                     };
@@ -195,7 +195,7 @@ export class Title {
             });
             const iconElement = this.element.querySelector(".protyle-title__icon") as HTMLElement;
             iconElement.addEventListener("click", (event) => {
-                // 不使用 window.siyuan.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 https://github.com/siyuan-note/siyuan/issues/15075
+                // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 https://github.com/siyuan-note/siyuan/issues/15075
                 if (event.shiftKey) {
                     const docInfoParam: IObject = {
                         id: protyle.block.rootID
@@ -220,24 +220,24 @@ export class Title {
                     return;
                 }
                 protyle.toolbar?.element.classList.add("fn__none");
-                window.siyuan.menus.menu.remove();
+                window.scribli.menus.menu.remove();
                 const range = getEditorRange(this.editElement);
                 if (range.toString() !== "") {
-                    window.siyuan.menus.menu.append(new MenuItem({
+                    window.scribli.menus.menu.append(new MenuItem({
                         id: "copy",
                         icon: "iconCopy",
                         accelerator: "⌘C",
-                        label: window.siyuan.languages.copy,
+                        label: window.scribli.languages.copy,
                         click: () => {
                             focusByRange(getEditorRange(this.editElement));
                             document.execCommand("copy");
                         }
                     }).element);
-                    window.siyuan.menus.menu.append(new MenuItem({
+                    window.scribli.menus.menu.append(new MenuItem({
                         id: "cut",
                         icon: "iconCut",
                         accelerator: "⌘X",
-                        label: window.siyuan.languages.cut,
+                        label: window.scribli.languages.cut,
                         click: () => {
                             focusByRange(getEditorRange(this.editElement));
                             document.execCommand("cut");
@@ -246,11 +246,11 @@ export class Title {
                             }, Constants.TIMEOUT_INPUT);
                         }
                     }).element);
-                    window.siyuan.menus.menu.append(new MenuItem({
+                    window.scribli.menus.menu.append(new MenuItem({
                         id: "delete",
                         icon: "iconTrashcan",
                         accelerator: "⌫",
-                        label: window.siyuan.languages.delete,
+                        label: window.scribli.languages.delete,
                         click: () => {
                             const range = getEditorRange(this.editElement);
                             range.extractContents();
@@ -261,9 +261,9 @@ export class Title {
                         }
                     }).element);
                 }
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "paste",
-                    label: window.siyuan.languages.paste,
+                    label: window.scribli.languages.paste,
                     icon: "iconPaste",
                     accelerator: "⌘V",
                     click: async () => {
@@ -281,9 +281,9 @@ export class Title {
                         }
                     }
                 }).element);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "pasteAsPlainText",
-                    label: window.siyuan.languages.pasteAsPlainText,
+                    label: window.scribli.languages.pasteAsPlainText,
                     accelerator: "⇧⌘V",
                     click: async () => {
                         let textPlain = await readText() || "";
@@ -299,9 +299,9 @@ export class Title {
                         this.rename(protyle);
                     }
                 }).element);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "selectAll",
-                    label: window.siyuan.languages.selectAll,
+                    label: window.scribli.languages.selectAll,
                     icon: "iconSelectAll",
                     accelerator: "⌘A",
                     click: () => {
@@ -309,7 +309,7 @@ export class Title {
                         focusByRange(range);
                     }
                 }).element);
-                window.siyuan.menus.menu.popup({x: event.clientX, y: event.clientY});
+                window.scribli.menus.menu.popup({x: event.clientX, y: event.clientY});
             });
         }
         this.element.querySelector(".protyle-attr").addEventListener("click", (event: MouseEvent & {

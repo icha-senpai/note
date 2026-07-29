@@ -21,7 +21,7 @@ export const newCardModel = (options: {
     let editor: Protyle;
     const customObj = new Custom({
         app: options.app,
-        type: "siyuan-card",
+        type: "scribli-card",
         tab: options.tab,
         data: options.data,
         async init() {

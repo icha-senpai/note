@@ -10,61 +10,61 @@ import {showPopover} from "../../block/popover";
 
 const matchKeymap = (keymap: Config.IKeys, key1: "general" | "editor", key2?: "general" | "insert" | "heading" | "list" | "table") => {
     if (key1 === "general") {
-        if (!window.siyuan.config.keymap[key1]) {
+        if (!window.scribli.config.keymap[key1]) {
             /// #if !BROWSER
-            ipcRenderer.send(Constants.SIYUAN_CMD, {
+            ipcRenderer.send(Constants.SCRIBLI_CMD, {
                 cmd: "writeLog",
-                msg: "window.siyuan.config.keymap.general is not found"
+                msg: "window.scribli.config.keymap.general is not found"
             });
             /// #endif
-            window.siyuan.config.keymap[key1] = keymap as Config.IKeymapGeneral;
+            window.scribli.config.keymap[key1] = keymap as Config.IKeymapGeneral;
             return false;
         }
     } else {
-        if (!window.siyuan.config.keymap[key1]) {
+        if (!window.scribli.config.keymap[key1]) {
             /// #if !BROWSER
-            ipcRenderer.send(Constants.SIYUAN_CMD, {
+            ipcRenderer.send(Constants.SCRIBLI_CMD, {
                 cmd: "writeLog",
-                msg: "window.siyuan.config.keymap.editor is not found"
+                msg: "window.scribli.config.keymap.editor is not found"
             });
             /// #endif
-            window.siyuan.config.keymap[key1] = JSON.parse(JSON.stringify(Constants.SIYUAN_KEYMAP.editor));
+            window.scribli.config.keymap[key1] = JSON.parse(JSON.stringify(Constants.SCRIBLI_KEYMAP.editor));
             return false;
         }
-        if (!window.siyuan.config.keymap[key1][key2]) {
+        if (!window.scribli.config.keymap[key1][key2]) {
             /// #if !BROWSER
-            ipcRenderer.send(Constants.SIYUAN_CMD, {
+            ipcRenderer.send(Constants.SCRIBLI_CMD, {
                 cmd: "writeLog",
-                msg: `window.siyuan.config.keymap.editor.${key2} is not found`
+                msg: `window.scribli.config.keymap.editor.${key2} is not found`
             });
             /// #endif
-            (window.siyuan.config.keymap[key1][key2] as Config.IKeymapEditor[typeof key2]) = keymap as Config.IKeymapEditor[typeof key2];
+            (window.scribli.config.keymap[key1][key2] as Config.IKeymapEditor[typeof key2]) = keymap as Config.IKeymapEditor[typeof key2];
             return false;
         }
     }
     let match = true;
     Object.keys(keymap).forEach(key => {
         if (key1 === "general") {
-            if (!window.siyuan.config.keymap[key1][key] || window.siyuan.config.keymap[key1][key].default !== keymap[key].default) {
+            if (!window.scribli.config.keymap[key1][key] || window.scribli.config.keymap[key1][key].default !== keymap[key].default) {
                 /// #if !BROWSER
-                ipcRenderer.send(Constants.SIYUAN_CMD, {
+                ipcRenderer.send(Constants.SCRIBLI_CMD, {
                     cmd: "writeLog",
-                    msg: `window.siyuan.config.keymap.${key1}.${key} is not found or match: ${window.siyuan.config.keymap[key1][key]?.default}`
+                    msg: `window.scribli.config.keymap.${key1}.${key} is not found or match: ${window.scribli.config.keymap[key1][key]?.default}`
                 });
                 /// #endif
                 match = false;
-                window.siyuan.config.keymap[key1][key] = keymap[key];
+                window.scribli.config.keymap[key1][key] = keymap[key];
             }
         } else {
-            if (!window.siyuan.config.keymap[key1][key2][key] || window.siyuan.config.keymap[key1][key2][key].default !== keymap[key].default) {
+            if (!window.scribli.config.keymap[key1][key2][key] || window.scribli.config.keymap[key1][key2][key].default !== keymap[key].default) {
                 /// #if !BROWSER
-                ipcRenderer.send(Constants.SIYUAN_CMD, {
+                ipcRenderer.send(Constants.SCRIBLI_CMD, {
                     cmd: "writeLog",
-                    msg: `window.siyuan.config.keymap.${key1}.${key2}.${key} is not found or match: ${window.siyuan.config.keymap[key1][key2][key]?.default}`
+                    msg: `window.scribli.config.keymap.${key1}.${key2}.${key} is not found or match: ${window.scribli.config.keymap[key1][key2][key]?.default}`
                 });
                 /// #endif
                 match = false;
-                window.siyuan.config.keymap[key1][key2][key] = keymap[key];
+                window.scribli.config.keymap[key1][key2][key] = keymap[key];
             }
         }
     });
@@ -74,20 +74,20 @@ const matchKeymap = (keymap: Config.IKeys, key1: "general" | "editor", key2?: "g
 const hasKeymap = (keymap: Record<string, IKeymapItem>, key1: "general" | "editor", key2?: "general" | "insert" | "heading" | "list" | "table") => {
     let match = true;
     if (key1 === "editor") {
-        if (Object.keys(window.siyuan.config.keymap[key1][key2]).length !== Object.keys(Constants.SIYUAN_KEYMAP[key1][key2]).length) {
-            Object.keys(window.siyuan.config.keymap[key1][key2]).forEach(item => {
-                if (!Constants.SIYUAN_KEYMAP[key1][key2][item]) {
+        if (Object.keys(window.scribli.config.keymap[key1][key2]).length !== Object.keys(Constants.SCRIBLI_KEYMAP[key1][key2]).length) {
+            Object.keys(window.scribli.config.keymap[key1][key2]).forEach(item => {
+                if (!Constants.SCRIBLI_KEYMAP[key1][key2][item]) {
                     match = false;
-                    delete window.siyuan.config.keymap[key1][key2][item];
+                    delete window.scribli.config.keymap[key1][key2][item];
                 }
             });
         }
     } else {
-        if (Object.keys(window.siyuan.config.keymap[key1]).length !== Object.keys(Constants.SIYUAN_KEYMAP[key1]).length) {
-            Object.keys(window.siyuan.config.keymap[key1]).forEach(item => {
-                if (!Constants.SIYUAN_KEYMAP[key1][item]) {
+        if (Object.keys(window.scribli.config.keymap[key1]).length !== Object.keys(Constants.SCRIBLI_KEYMAP[key1]).length) {
+            Object.keys(window.scribli.config.keymap[key1]).forEach(item => {
+                if (!Constants.SCRIBLI_KEYMAP[key1][item]) {
                     match = false;
-                    delete window.siyuan.config.keymap[key1][item];
+                    delete window.scribli.config.keymap[key1][item];
                 }
             });
         }
@@ -96,38 +96,38 @@ const hasKeymap = (keymap: Record<string, IKeymapItem>, key1: "general" | "edito
 };
 
 export const correctHotkey = (app: App) => {
-    if (!["darwin", "ios"].includes(window.siyuan.config.system.os)) {
+    if (!["darwin", "ios"].includes(window.scribli.config.system.os)) {
         ["fileTree", "outline", "bookmark", "tag", "dailyNote", "inbox", "backlinks",
             "graphView", "globalGraph", "riffCard"].forEach(key => {
-            Constants.SIYUAN_KEYMAP.general[key].custom = Constants.SIYUAN_KEYMAP.general[key].default =
-                Constants.SIYUAN_KEYMAP.general[key].default.replace("⌃", "⌥");
+            Constants.SCRIBLI_KEYMAP.general[key].custom = Constants.SCRIBLI_KEYMAP.general[key].default =
+                Constants.SCRIBLI_KEYMAP.general[key].default.replace("⌃", "⌥");
         });
-        Constants.SIYUAN_KEYMAP.editor.general.redo.custom = Constants.SIYUAN_KEYMAP.editor.general.redo.default = "⌘Y";
+        Constants.SCRIBLI_KEYMAP.editor.general.redo.custom = Constants.SCRIBLI_KEYMAP.editor.general.redo.default = "⌘Y";
     }
-    const matchKeymap1 = matchKeymap(Constants.SIYUAN_KEYMAP.general, "general");
-    const matchKeymap2 = matchKeymap(Constants.SIYUAN_KEYMAP.editor.general, "editor", "general");
-    const matchKeymap3 = matchKeymap(Constants.SIYUAN_KEYMAP.editor.insert, "editor", "insert");
-    const matchKeymap4 = matchKeymap(Constants.SIYUAN_KEYMAP.editor.heading, "editor", "heading");
-    const matchKeymap5 = matchKeymap(Constants.SIYUAN_KEYMAP.editor.list, "editor", "list");
-    const matchKeymap6 = matchKeymap(Constants.SIYUAN_KEYMAP.editor.table, "editor", "table");
+    const matchKeymap1 = matchKeymap(Constants.SCRIBLI_KEYMAP.general, "general");
+    const matchKeymap2 = matchKeymap(Constants.SCRIBLI_KEYMAP.editor.general, "editor", "general");
+    const matchKeymap3 = matchKeymap(Constants.SCRIBLI_KEYMAP.editor.insert, "editor", "insert");
+    const matchKeymap4 = matchKeymap(Constants.SCRIBLI_KEYMAP.editor.heading, "editor", "heading");
+    const matchKeymap5 = matchKeymap(Constants.SCRIBLI_KEYMAP.editor.list, "editor", "list");
+    const matchKeymap6 = matchKeymap(Constants.SCRIBLI_KEYMAP.editor.table, "editor", "table");
 
-    const hasKeymap1 = hasKeymap(Constants.SIYUAN_KEYMAP.general, "general");
-    const hasKeymap2 = hasKeymap(Constants.SIYUAN_KEYMAP.editor.general, "editor", "general");
-    const hasKeymap3 = hasKeymap(Constants.SIYUAN_KEYMAP.editor.insert, "editor", "insert");
-    const hasKeymap4 = hasKeymap(Constants.SIYUAN_KEYMAP.editor.heading, "editor", "heading");
-    const hasKeymap5 = hasKeymap(Constants.SIYUAN_KEYMAP.editor.list, "editor", "list");
-    const hasKeymap6 = hasKeymap(Constants.SIYUAN_KEYMAP.editor.table, "editor", "table");
-    if (!window.siyuan.config.readonly &&
+    const hasKeymap1 = hasKeymap(Constants.SCRIBLI_KEYMAP.general, "general");
+    const hasKeymap2 = hasKeymap(Constants.SCRIBLI_KEYMAP.editor.general, "editor", "general");
+    const hasKeymap3 = hasKeymap(Constants.SCRIBLI_KEYMAP.editor.insert, "editor", "insert");
+    const hasKeymap4 = hasKeymap(Constants.SCRIBLI_KEYMAP.editor.heading, "editor", "heading");
+    const hasKeymap5 = hasKeymap(Constants.SCRIBLI_KEYMAP.editor.list, "editor", "list");
+    const hasKeymap6 = hasKeymap(Constants.SCRIBLI_KEYMAP.editor.table, "editor", "table");
+    if (!window.scribli.config.readonly &&
         (!matchKeymap1 || !matchKeymap2 || !matchKeymap3 || !matchKeymap4 || !matchKeymap5 || !matchKeymap6 ||
             !hasKeymap1 || !hasKeymap2 || !hasKeymap3 || !hasKeymap4 || !hasKeymap5 || !hasKeymap6)) {
         /// #if !BROWSER
-        ipcRenderer.send(Constants.SIYUAN_CMD, {
+        ipcRenderer.send(Constants.SCRIBLI_CMD, {
             cmd: "writeLog",
             msg: "update keymap"
         });
         /// #endif
         fetchPost("/api/setting/setKeymap", {
-            data: window.siyuan.config.keymap
+            data: window.scribli.config.keymap
         }, () => {
             /// #if !BROWSER
             sendGlobalShortcut(app);
@@ -147,7 +147,7 @@ export const filterHotkey = (event: KeyboardEvent, app: App) => {
         !["INPUT", "TEXTAREA"].includes(target.tagName) &&
         ["0", "1", "2", "3", "4", "j", "k", "l", ";", "s", " ", "p", "enter", "a", "s", "d", "f", "q", "x"].includes(event.key.toLowerCase())) {
         let cardElement: Element;
-        window.siyuan.dialogs.find(item => {
+        window.scribli.dialogs.find(item => {
             if (item.element.getAttribute("data-key") === Constants.DIALOG_OPENCARD) {
                 cardElement = item.element;
                 return true;
@@ -174,35 +174,35 @@ export const filterHotkey = (event: KeyboardEvent, app: App) => {
 
     if (!event.altKey && !event.shiftKey && isOnlyMeta(event)) {
         if ((isMac() ? event.key === "Meta" : event.key === "Control") || isOnlyMeta(event)) {
-            window.siyuan.ctrlIsPressed = true;
+            window.scribli.ctrlIsPressed = true;
             if ((event.key === "Meta" || event.key === "Control") &&
-                window.siyuan.config.editor.floatWindowMode === 1 && !event.repeat) {
+                window.scribli.config.editor.floatWindowMode === 1 && !event.repeat) {
                 showPopover(app);
             }
         } else {
-            window.siyuan.ctrlIsPressed = false;
+            window.scribli.ctrlIsPressed = false;
         }
     }
 
     if (!event.altKey && event.shiftKey && isNotCtrl(event)) {
         if (event.key === "Shift") {
-            window.siyuan.shiftIsPressed = true;
+            window.scribli.shiftIsPressed = true;
             // 按下 Shift 时隐藏表格列宽调整手柄，以便 Shift+滚轮可以横向滚动表格 https://github.com/siyuan-note/siyuan/issues/13828
             document.body.classList.add("body--shift-pressed");
             if (!event.repeat) {
                 showPopover(app, true);
             }
         } else {
-            window.siyuan.shiftIsPressed = false;
+            window.scribli.shiftIsPressed = false;
             document.body.classList.remove("body--shift-pressed");
         }
     }
 
     if (event.altKey && !event.shiftKey && isNotCtrl(event)) {
         if (event.key === "Alt") {
-            window.siyuan.altIsPressed = true;
+            window.scribli.altIsPressed = true;
         } else {
-            window.siyuan.altIsPressed = false;
+            window.scribli.altIsPressed = false;
         }
     }
 };

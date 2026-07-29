@@ -147,13 +147,13 @@ class PDFFindBar {
         break;
       case FindState.NOT_FOUND:
         // NOTE
-        findMsgId = window.siyuan.languages.find_not_found
+        findMsgId = window.scribli.languages.find_not_found
         // findMsgId = "pdfjs-find-not-found";
         status = "notFound";
         break;
       case FindState.WRAPPED:
         // NOTE
-        findMsgId = window.siyuan.languages.find_not_found[`find_reached_${previous ? 'top' : 'bottom'}`]
+        findMsgId = window.scribli.languages.find_not_found[`find_reached_${previous ? 'top' : 'bottom'}`]
         // findMsgId = previous
         //   ? "pdfjs-find-reached-top"
         //   : "pdfjs-find-reached-bottom";
@@ -182,8 +182,8 @@ class PDFFindBar {
       const limit = MATCHES_COUNT_LIMIT;
       // NOTE
       findResultsCount.textContent = total > limit ?
-          window.siyuan.languages.find_match_count_limit.replace('{{limit}}', limit) :
-          window.siyuan.languages.find_match_count.replace('{{current}}', current).replace('{{total}}', total);
+          window.scribli.languages.find_match_count_limit.replace('{{limit}}', limit) :
+          window.scribli.languages.find_match_count.replace('{{current}}', current).replace('{{total}}', total);
       // findResultsCount.setAttribute(
       //   "data-l10n-id",
       //   total > limit

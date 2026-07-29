@@ -25,8 +25,8 @@ async function waitForPendingSave(id: string) {
 // 标识发起者 app，后端 saveSession/removeSession 据此排除自身、向其他实例广播会话变更。
 const APP_HEADER = {
     "Content-Type": "application/json",
-    "X-SiYuan-App-ID": Constants.SIYUAN_APPID,
-    "X-SiYuan-Agent-Checkpoint": "2",
+    "X-Scribli-App-ID": Constants.SCRIBLI_APPID,
+    "X-Scribli-Agent-Checkpoint": "2",
 };
 
 export interface SessionIndexItem {

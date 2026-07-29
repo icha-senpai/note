@@ -7,7 +7,7 @@ export const normalizeNumberInputValue = (el: HTMLInputElement): number => {
     const parseNum = (s: string) => (useFloat ? parseFloat(s) : parseInt(s, 10));
     let number = useFloat ? parseFloat(el.value) : parseInt(el.value, 10);
     if (Number.isNaN(number)) {
-        const raw = getAtPath(window.siyuan.config, el.id);
+        const raw = getAtPath(window.scribli.config, el.id);
         number = typeof raw === "number" && !Number.isNaN(raw) ? raw : 0;
     }
     const minRaw = el.getAttribute("min") ?? "";

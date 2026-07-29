@@ -300,15 +300,15 @@ func IsAssetLinkDest(dest []byte, includeServePath bool) bool {
 }
 
 var (
-	SiYuanAssetsImage = []string{".apng", ".ico", ".cur", ".jpg", ".jpe", ".jpeg", ".jfif", ".pjp", ".pjpeg", ".png", ".gif", ".webp", ".bmp", ".svg", ".avif"}
-	SiYuanAssetsAudio = []string{".mp3", ".wav", ".ogg", ".m4a", ".flac"}
-	SiYuanAssetsVideo = []string{".mov", ".weba", ".mkv", ".mp4", ".webm"}
+	ScribliAssetsImage = []string{".apng", ".ico", ".cur", ".jpg", ".jpe", ".jpeg", ".jfif", ".pjp", ".pjpeg", ".png", ".gif", ".webp", ".bmp", ".svg", ".avif"}
+	ScribliAssetsAudio = []string{".mp3", ".wav", ".ogg", ".m4a", ".flac"}
+	ScribliAssetsVideo = []string{".mov", ".weba", ".mkv", ".mp4", ".webm"}
 )
 
 func IsPossiblyImage(assetPath string) bool {
 	ext := strings.ToLower(filepath.Ext(assetPath))
 	if "" != ext {
-		return gulu.Str.Contains(ext, SiYuanAssetsImage)
+		return gulu.Str.Contains(ext, ScribliAssetsImage)
 	}
 
 	if strings.HasPrefix(assetPath, "https://") || strings.HasPrefix(assetPath, "http://") {
@@ -321,7 +321,7 @@ func IsPossiblyImage(assetPath string) bool {
 		if !ok {
 			return false
 		}
-		return gulu.Str.Contains(m.Extension(), SiYuanAssetsImage)
+		return gulu.Str.Contains(m.Extension(), ScribliAssetsImage)
 	}
 
 	if IsAssetLinkDest([]byte(assetPath), true) {
@@ -330,7 +330,7 @@ func IsPossiblyImage(assetPath string) bool {
 		if !ok {
 			return false
 		}
-		return gulu.Str.Contains(m.Extension(), SiYuanAssetsImage)
+		return gulu.Str.Contains(m.Extension(), ScribliAssetsImage)
 	}
 	return false
 }
@@ -340,13 +340,13 @@ func IsDisplayableAsset(p string) bool {
 	if "" == ext {
 		return false
 	}
-	if gulu.Str.Contains(ext, SiYuanAssetsImage) {
+	if gulu.Str.Contains(ext, ScribliAssetsImage) {
 		return true
 	}
-	if gulu.Str.Contains(ext, SiYuanAssetsAudio) {
+	if gulu.Str.Contains(ext, ScribliAssetsAudio) {
 		return true
 	}
-	if gulu.Str.Contains(ext, SiYuanAssetsVideo) {
+	if gulu.Str.Contains(ext, ScribliAssetsVideo) {
 		return true
 	}
 	return false

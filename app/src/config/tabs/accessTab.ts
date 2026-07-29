@@ -34,7 +34,7 @@ const updatePasswordStrength = (element: HTMLElement, password: string) => {
     const strength = getPasswordStrength(password);
     element.classList.remove("fn__none");
     element.setAttribute("data-strength", strength);
-    element.textContent = window.siyuan.languages[`passwordStrength${strength[0].toUpperCase()}${strength.slice(1)}`];
+    element.textContent = window.scribli.languages[`passwordStrength${strength[0].toUpperCase()}${strength.slice(1)}`];
 };
 
 const confirmWeakPassword = (password: string, confirm: () => void) => {
@@ -42,33 +42,33 @@ const confirmWeakPassword = (password: string, confirm: () => void) => {
         confirm();
         return;
     }
-    confirmDialog("⚠️ " + window.siyuan.languages.weakPasswordConfirmTitle, window.siyuan.languages.weakPasswordConfirmTip, confirm);
+    confirmDialog("⚠️ " + window.scribli.languages.weakPasswordConfirmTitle, window.scribli.languages.weakPasswordConfirmTip, confirm);
 };
 
 const registerAccessAuthGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("authentication", window.siyuan.languages.authentication);
+    const group = tab.group("authentication", window.scribli.languages.authentication);
     const onWeb = isBrowser() && !isInMobileApp();
 
-    if (!window.siyuan.config.readonly && !onWeb) {
+    if (!window.scribli.config.readonly && !onWeb) {
         group.button({
             id: "authCode",
-            title: window.siyuan.languages.about5,
-            desc: window.siyuan.languages.about6,
-            label: window.siyuan.languages.config,
+            title: window.scribli.languages.about5,
+            desc: window.scribli.languages.about6,
+            label: window.scribli.languages.config,
             icon: "iconLock",
             afterMount: mountAuthCodeButton,
         });
     }
-    if (window.siyuan.config.accessAuthCode && !onWeb) {
+    if (window.scribli.config.accessAuthCode && !onWeb) {
         group.switch("system.lockScreenMode", {
-            title: window.siyuan.languages.about7,
-            desc: window.siyuan.languages.about8,
+            title: window.scribli.languages.about7,
+            desc: window.scribli.languages.about8,
             save: (value) => sendAppSetting("system.lockScreenMode", value),
         });
     }
     group.text("api.token", {
-        title: window.siyuan.languages.about13,
-        desc: window.siyuan.languages.about14.replace("${token}", window.siyuan.config.api.token),
+        title: window.scribli.languages.about13,
+        desc: window.scribli.languages.about14.replace("${token}", window.scribli.config.api.token),
         save: (value) => sendAccessSetting("api.token", value),
         afterMount: bindApiTokenInput,
     });
@@ -77,14 +77,14 @@ const registerAccessAuthGroup = (tab: SettingTabBuilder) => {
 const mountAuthCodeButton = (root: HTMLElement) => {
     root.querySelector("#authCode")?.addEventListener("click", () => {
         const dialog = new Dialog({
-            title: window.siyuan.languages.about5,
+            title: window.scribli.languages.about5,
             content: `<div class="b3-dialog__content">
-    <input class="b3-text-field fn__block" placeholder="${window.siyuan.languages.about5}" value="${window.siyuan.config.accessAuthCode}">
-    <div class="b3-label__text">${window.siyuan.languages.about6}</div>
+    <input class="b3-text-field fn__block" placeholder="${window.scribli.languages.about5}" value="${window.scribli.config.accessAuthCode}">
+    <div class="b3-label__text">${window.scribli.languages.about6}</div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
             width: isMobile() ? "92vw" : "520px",
         });
@@ -126,26 +126,26 @@ const registerAccessServerGroup = (tab: SettingTabBuilder) => {
     if (hideOnWeb) {
         return;
     }
-    const group = tab.group("server", window.siyuan.languages.configGroupServer);
+    const group = tab.group("server", window.scribli.languages.configGroupServer);
 
     group.switch("system.networkServe", {
-        title: window.siyuan.languages.about11,
-        desc: window.siyuan.languages.about12,
+        title: window.scribli.languages.about11,
+        desc: window.scribli.languages.about12,
         save: (value) => sendAppSetting("system.networkServe", value),
     });
-    if (window.siyuan.config.system.networkServe) {
+    if (window.scribli.config.system.networkServe) {
         group.switch("system.networkServeTLS", {
-            title: window.siyuan.languages.networkServeTLS,
-            desc: `${window.siyuan.languages.networkServeTLSTip}<div class="fn__hr--small"></div>${window.siyuan.languages.networkServeTLSTip2}`,
+            title: window.scribli.languages.networkServeTLS,
+            desc: `${window.scribli.languages.networkServeTLSTip}<div class="fn__hr--small"></div>${window.scribli.languages.networkServeTLSTip2}`,
             save: (value) => sendAppSetting("system.networkServeTLS", value),
         });
     }
-    if (window.siyuan.config.system.networkServe && window.siyuan.config.system.networkServeTLS) {
+    if (window.scribli.config.system.networkServe && window.scribli.config.system.networkServeTLS) {
         group.button({
             id: "exportCACert",
-            title: window.siyuan.languages.exportCACert,
-            desc: window.siyuan.languages.exportCACertTip,
-            label: window.siyuan.languages.export,
+            title: window.scribli.languages.exportCACert,
+            desc: window.scribli.languages.exportCACertTip,
+            label: window.scribli.languages.export,
             icon: "iconUpload",
             afterMount: (root) => {
                 root.querySelector("#exportCACert")?.addEventListener("click", () => {
@@ -157,9 +157,9 @@ const registerAccessServerGroup = (tab: SettingTabBuilder) => {
         });
         group.button({
             id: "exportCABundle",
-            title: window.siyuan.languages.exportCABundle,
-            desc: window.siyuan.languages.exportCABundleTip,
-            label: window.siyuan.languages.export,
+            title: window.scribli.languages.exportCABundle,
+            desc: window.scribli.languages.exportCABundleTip,
+            label: window.scribli.languages.export,
             icon: "iconUpload",
             afterMount: (root) => {
                 root.querySelector("#exportCABundle")?.addEventListener("click", () => {
@@ -171,9 +171,9 @@ const registerAccessServerGroup = (tab: SettingTabBuilder) => {
         });
         group.button({
             id: "importCABundle",
-            title: window.siyuan.languages.importCABundle,
-            desc: window.siyuan.languages.importCABundleTip,
-            label: window.siyuan.languages.import,
+            title: window.scribli.languages.importCABundle,
+            desc: window.scribli.languages.importCABundleTip,
+            label: window.scribli.languages.import,
             icon: "iconDownload",
             afterMount: (root) => {
                 root.querySelector("#importCABundle")?.addEventListener("click", () => {
@@ -189,7 +189,7 @@ const registerAccessServerGroup = (tab: SettingTabBuilder) => {
                                 body: formData,
                             }).then(res => res.json()).then((response) => {
                                 if (response.code === 0) {
-                                    showMessage(window.siyuan.languages.importCABundleSuccess);
+                                    showMessage(window.scribli.languages.importCABundleSuccess);
                                 } else {
                                     showMessage(response.msg, 6000, "error");
                                 }
@@ -204,10 +204,10 @@ const registerAccessServerGroup = (tab: SettingTabBuilder) => {
     group.stack({
         key: "localServer",
         keywords: [
-            window.siyuan.languages.about2,
-            window.siyuan.languages.about3,
-            window.siyuan.languages.about4,
-            window.siyuan.languages.about18,
+            window.scribli.languages.about2,
+            window.scribli.languages.about3,
+            window.scribli.languages.about4,
+            window.scribli.languages.about18,
         ],
         afterMount: (root) => {
             root.querySelector("#openLocalServer")?.addEventListener("click", () => {
@@ -220,16 +220,16 @@ const registerAccessServerGroup = (tab: SettingTabBuilder) => {
             });
         },
     }, (stack) => {
-        stack.title(window.siyuan.languages.about2);
+        stack.title(window.scribli.languages.about2);
         stack.button({
             id: "openLocalServer",
-            label: window.siyuan.languages.about4,
+            label: window.scribli.languages.about4,
             icon: "iconLink",
         });
-        stack.desc(window.siyuan.languages.about3.replace("${port}", location.port));
+        stack.desc(window.scribli.languages.about3.replace("${port}", location.port));
         stack.desc((() => {
             const parts: string[] = [];
-            for (const serverAddr of window.siyuan.config.serverAddrs) {
+            for (const serverAddr of window.scribli.config.serverAddrs) {
                 if (!serverAddr.trim()) {
                     break;
                 }
@@ -237,21 +237,21 @@ const registerAccessServerGroup = (tab: SettingTabBuilder) => {
             }
             return parts.join(" ");
         })());
-        stack.desc(window.siyuan.languages.about18);
+        stack.desc(window.scribli.languages.about18);
     });
 };
 
 const registerAccessPublishGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("publish", window.siyuan.languages.configGroupPublish);
+    const group = tab.group("publish", window.scribli.languages.configGroupPublish);
 
     group.switch("publish.enable", {
-        title: window.siyuan.languages.publishService,
-        desc: window.siyuan.languages.publishServiceTip,
+        title: window.scribli.languages.publishService,
+        desc: window.scribli.languages.publishServiceTip,
         save: (value) => sendAccessSetting("publish.enable", value),
     });
     group.number("publish.port", {
-        title: window.siyuan.languages.publishServicePort,
-        desc: window.siyuan.languages.publishServicePortTip,
+        title: window.scribli.languages.publishServicePort,
+        desc: window.scribli.languages.publishServicePortTip,
         min: 0,
         max: 65535,
         save: (value) => sendAccessSetting("publish.port", value),
@@ -259,13 +259,13 @@ const registerAccessPublishGroup = (tab: SettingTabBuilder) => {
     group.slot({
         key: "publishAddresses",
         keywords: [
-            window.siyuan.languages.publishServiceAddresses,
-            window.siyuan.languages.publishServiceAddressesTip,
-            window.siyuan.languages.publishServiceNotStarted,
+            window.scribli.languages.publishServiceAddresses,
+            window.scribli.languages.publishServiceAddressesTip,
+            window.scribli.languages.publishServiceNotStarted,
         ],
         html: () => `<div class="b3-label config-item">
     <div class="fn__flex config-wrap">
-        ${genConfigItemMainHtml(window.siyuan.languages.publishServiceAddresses, window.siyuan.languages.publishServiceAddressesTip)}
+        ${genConfigItemMainHtml(window.scribli.languages.publishServiceAddresses, window.scribli.languages.publishServiceAddressesTip)}
         <div class="fn__space"></div>
     </div>
     <div id="publishAddresses" class="b3-label__text"></div>
@@ -277,19 +277,19 @@ const registerAccessPublishGroup = (tab: SettingTabBuilder) => {
         },
     });
     group.switch("publish.auth.enable", {
-        title: window.siyuan.languages.publishServiceAuth,
-        desc: window.siyuan.languages.publishServiceAuthTip,
+        title: window.scribli.languages.publishServiceAuth,
+        desc: window.scribli.languages.publishServiceAuthTip,
         save: (value) => sendAccessSetting("publish.auth.enable", value),
     });
     group.button({
         id: "publishAuthAccountAdd",
-        title: window.siyuan.languages.publishServiceAuthAccounts,
-        desc: window.siyuan.languages.publishServiceAuthAccountsTip,
-        label: window.siyuan.languages.publishServiceAuthAccountAdd,
+        title: window.scribli.languages.publishServiceAuthAccounts,
+        desc: window.scribli.languages.publishServiceAuthAccountsTip,
+        label: window.scribli.languages.publishServiceAuthAccountAdd,
         icon: "iconAdd",
         afterMount: (root) => {
             root.querySelector("#publishAuthAccountAdd")?.addEventListener("click", () => {
-                window.siyuan.config.publish.auth.accounts.push({
+                window.scribli.config.publish.auth.accounts.push({
                     username: "",
                     password: "",
                     memo: "",
@@ -301,10 +301,10 @@ const registerAccessPublishGroup = (tab: SettingTabBuilder) => {
     group.slot({
         key: "publishAuthAccounts",
         keywords: [
-            window.siyuan.languages.userName,
-            window.siyuan.languages.password,
-            window.siyuan.languages.memo,
-            window.siyuan.languages.delete,
+            window.scribli.languages.userName,
+            window.scribli.languages.password,
+            window.scribli.languages.memo,
+            window.scribli.languages.delete,
         ],
         html: () => '<div class="b3-label config-item"><div class="fn__flex-1" id="publishAuthAccounts" style="overflow: visible;"></div></div>',
         afterMount: mountPublishAuthAccounts,
@@ -322,8 +322,8 @@ const mountPublishAuthAccounts = (root: HTMLElement) => {
         if (li) {
             const index = parseInt(li.dataset.index);
             const name = input.dataset.name as keyof Config.IPublishAuthAccount;
-            if (name in window.siyuan.config.publish.auth.accounts[index]) {
-                window.siyuan.config.publish.auth.accounts[index][name] = input.value;
+            if (name in window.scribli.config.publish.auth.accounts[index]) {
+                window.scribli.config.publish.auth.accounts[index][name] = input.value;
                 savePublish(false);
             }
         }
@@ -333,7 +333,7 @@ const mountPublishAuthAccounts = (root: HTMLElement) => {
         const li = target.closest('[data-action="remove"]')?.closest("li");
         if (li) {
             const index = parseInt(li.dataset.index);
-            window.siyuan.config.publish.auth.accounts.splice(index, 1);
+            window.scribli.config.publish.auth.accounts.splice(index, 1);
             savePublish(true);
             return;
         }
@@ -354,27 +354,27 @@ export const registerAccessTab = (tab: SettingTabBuilder) => {
 };
 
 const registerEncryptedNotebookGroup = (tab: SettingTabBuilder) => {
-    if (window.siyuan.config.readonly) {
+    if (window.scribli.config.readonly) {
         return;
     }
-    const group = tab.group("encryptedNotebook", window.siyuan.languages.encryptedNotebook);
+    const group = tab.group("encryptedNotebook", window.scribli.languages.encryptedNotebook);
     group.slot({
         key: "encryptedNotebookStatus",
         keywords: [
-            window.siyuan.languages.encryptedNotebook,
-            window.siyuan.languages.enableEncryptedNotebook,
-            window.siyuan.languages.masterPassword,
-            window.siyuan.languages.changeMasterPassword,
+            window.scribli.languages.encryptedNotebook,
+            window.scribli.languages.enableEncryptedNotebook,
+            window.scribli.languages.masterPassword,
+            window.scribli.languages.changeMasterPassword,
         ],
         html: () =>
             // 开关行：结构与标准 group.switch 一致（label + config-item + b3-switch fn__flex-center）
             `<label class="fn__flex b3-label config-item">
-	    ${genConfigItemMainHtml(window.siyuan.languages.enableEncryptedNotebook, window.siyuan.languages.encryptedNotebookTip + "<br><span class=\"ft__error\">" + window.siyuan.languages.encryptedNotebookRiskTip + "</span><br>" + window.siyuan.languages.featurePreview)}
+	    ${genConfigItemMainHtml(window.scribli.languages.enableEncryptedNotebook, window.scribli.languages.encryptedNotebookTip + "<br><span class=\"ft__error\">" + window.scribli.languages.encryptedNotebookRiskTip + "</span><br>" + window.scribli.languages.featurePreview)}
     <span class="fn__space"></span>
     <input class="b3-switch fn__flex-center" id="encryptedNotebookSwitch" type="checkbox">
 </label>
 <div class="b3-label config-item fn__none" id="encryptedNotebookMigrationAlert">
-    <div class="ft__error">${window.siyuan.languages.masterPasswordMigrationPending}</div>
+    <div class="ft__error">${window.scribli.languages.masterPasswordMigrationPending}</div>
 </div>
 <div class="b3-label config-item fn__none" id="encryptedNotebookActions">
     <div class="fn__flex fn__flex-center config-wrap">
@@ -382,26 +382,26 @@ const registerEncryptedNotebookGroup = (tab: SettingTabBuilder) => {
         <div class="fn__flex fn__flex-center" id="encryptedNotebookEnabledActions">
             <button class="b3-button b3-button--outline fn__flex-center fn__size200" id="changeMasterPasswordBtn">
                 <svg class="svg"><use xlink:href="#iconLock"></use></svg>
-                ${window.siyuan.languages.changeMasterPassword}
+                ${window.scribli.languages.changeMasterPassword}
             </button>
             <span class="fn__space"></span>
             <button class="b3-button b3-button--outline fn__flex-center fn__size200" id="exportCryptoBackupBtn">
                 <svg class="svg"><use xlink:href="#iconDownload"></use></svg>
-                ${window.siyuan.languages.exportNotebookCryptoBackup}
+                ${window.scribli.languages.exportNotebookCryptoBackup}
             </button>
             <span class="fn__space"></span>
         </div>
         <button class="b3-button b3-button--outline fn__flex-center fn__size200" id="importCryptoBackupBtn">
             <svg class="svg"><use xlink:href="#iconUpload"></use></svg>
-            ${window.siyuan.languages.importNotebookCryptoBackup}
+            ${window.scribli.languages.importNotebookCryptoBackup}
         </button>
     </div>
 </div>`,
         afterMount: mountEncryptedNotebook,
     });
     group.number("notebookCrypto.autoLockMinutes", {
-        title: window.siyuan.languages.encryptedNotebookAutoLock,
-        desc: window.siyuan.languages.encryptedNotebookAutoLockDesc,
+        title: window.scribli.languages.encryptedNotebookAutoLock,
+        desc: window.scribli.languages.encryptedNotebookAutoLockDesc,
         min: 0,
         save: (value) => {
             fetchPost("/api/notebook/setNotebookCryptoAutoLock", {autoLockMinutes: value});
@@ -419,7 +419,7 @@ const mountEncryptedNotebook = (root: HTMLElement) => {
         fetchPost("/api/notebook/getEncryptedNotebookStatus", {}, (response) => {
             const enabled = response.data.enabled;
             switchElement.checked = enabled;
-            window.siyuan.config.notebookCrypto.enabled = enabled;
+            window.scribli.config.notebookCrypto.enabled = enabled;
             // 修改主密码/导出密钥仅在启用时可见；导入密钥仅在未启用时可见（详见设计 §4.1，
             // 已启用时导入会用导入备份的 MasterSalt/KEKVerifier 覆盖当前配置，孤立现有 WrappedDEK）
             enabledActionsElement.classList.toggle("fn__none", !enabled);
@@ -441,7 +441,7 @@ const mountEncryptedNotebook = (root: HTMLElement) => {
                 return;
             }
             await saveExportFile(response.data.file);
-            showMessage(window.siyuan.languages.exportNotebookCryptoBackupTip);
+            showMessage(window.scribli.languages.exportNotebookCryptoBackupTip);
         });
     });
 
@@ -457,14 +457,14 @@ const mountEncryptedNotebook = (root: HTMLElement) => {
             }
             // 导入前需输入主密码校验（备份文件不含密码，校验用导入备份对应的主密码）
             const passwordDialog = new Dialog({
-                title: window.siyuan.languages.masterPassword,
+                title: window.scribli.languages.masterPassword,
                 content: `<div class="b3-dialog__content">
-    <input type="password" placeholder="${window.siyuan.languages.masterPassword}" class="b3-text-field fn__block">
+    <input type="password" placeholder="${window.scribli.languages.masterPassword}" class="b3-text-field fn__block">
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button>
     <div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                 width: "520px",
             });
@@ -475,7 +475,7 @@ const mountEncryptedNotebook = (root: HTMLElement) => {
             passwordDialog.element.querySelector(".b3-button--text")?.addEventListener("click", () => {
                 const password = pwdInput.value.trim();
                 if (!password) {
-                    showMessage(window.siyuan.languages.masterPassword);
+                    showMessage(window.scribli.languages.masterPassword);
                     return;
                 }
                 const formData = new FormData();
@@ -489,7 +489,7 @@ const mountEncryptedNotebook = (root: HTMLElement) => {
                         showMessage(response.msg, 6000, "error");
                         return;
                     }
-                    showMessage(window.siyuan.languages.importNotebookCryptoBackupTip);
+                    showMessage(window.scribli.languages.importNotebookCryptoBackupTip);
                     passwordDialog.destroy();
                     refresh();
                 });
@@ -509,11 +509,11 @@ const mountEncryptedNotebook = (root: HTMLElement) => {
             // 切到 OFF：没有加密笔记本时允许关闭
             fetchPost("/api/notebook/getEncryptedNotebookStatus", {}, (response) => {
                 if (response.data.count > 0) {
-                    showMessage(window.siyuan.languages.encryptedNotebookDisableTip.replace("${x}", response.data.count), 4000);
+                    showMessage(window.scribli.languages.encryptedNotebookDisableTip.replace("${x}", response.data.count), 4000);
                     switchElement.checked = true;
                 } else if (response.data.hasHistoryDependency) {
                     // 已删除加密笔记本的历史仍依赖当前密钥备份，禁用会让其永久锁死（详见设计 §19）
-                    showMessage(window.siyuan.languages["_kernel"]["323"], 6000, "error");
+                    showMessage(window.scribli.languages["_kernel"]["323"], 6000, "error");
                     switchElement.checked = true;
                 } else {
                     // 用 sync 调用以便后端因任何原因拒绝时回滚开关，避免 UI 与后端状态不一致
@@ -522,7 +522,7 @@ const mountEncryptedNotebook = (root: HTMLElement) => {
                             switchElement.checked = true; // processMessage 已弹出错误，这里只回滚开关
                             return;
                         }
-                        showMessage(window.siyuan.languages.encryptedNotebookDisabled);
+                        showMessage(window.scribli.languages.encryptedNotebookDisabled);
                         refresh();
                     });
                 }
@@ -533,18 +533,18 @@ const mountEncryptedNotebook = (root: HTMLElement) => {
 
 const openEnableEncryptedDialog = (onSuccess: () => void, onCancel: () => void) => {
     const dialog = new Dialog({
-        title: "🔐 " + window.siyuan.languages.setMasterPassword,
+        title: "🔐 " + window.scribli.languages.setMasterPassword,
         content: `<div class="b3-dialog__content">
-    <input type="password" placeholder="${window.siyuan.languages.masterPassword}" class="b3-text-field fn__block">
+    <input type="password" placeholder="${window.scribli.languages.masterPassword}" class="b3-text-field fn__block">
     <div class="password-strength fn__none"></div>
     <div class="fn__hr"></div>
-    <input type="password" placeholder="${window.siyuan.languages.confirmMasterPassword}" class="b3-text-field fn__block">
+    <input type="password" placeholder="${window.scribli.languages.confirmMasterPassword}" class="b3-text-field fn__block">
     <div class="fn__hr--b"></div>
-    <label class="b3-label__text"><input type="checkbox" id="encRiskConfirm"> ${window.siyuan.languages.encryptedNotebookRiskTip}</label>
+    <label class="b3-label__text"><input type="checkbox" id="encRiskConfirm"> ${window.scribli.languages.encryptedNotebookRiskTip}</label>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text" disabled>${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text" disabled>${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
         destroyCallback: onCancel,
@@ -566,17 +566,17 @@ const openEnableEncryptedDialog = (onSuccess: () => void, onCancel: () => void) 
         const pwd1 = (inputs[0] as HTMLInputElement).value;
         const pwd2 = (inputs[1] as HTMLInputElement).value;
         if (!pwd1) {
-            showMessage(window.siyuan.languages.masterPassword);
+            showMessage(window.scribli.languages.masterPassword);
             return;
         }
         if (pwd1 !== pwd2) {
-            showMessage(window.siyuan.languages.passwordNoMatch);
+            showMessage(window.scribli.languages.passwordNoMatch);
             return;
         }
         confirmWeakPassword(pwd1, async () => {
             const response = await fetchSyncPost("/api/notebook/enableEncryptedNotebooks", {password: pwd1});
             if (response.code === 0) {
-                showMessage(window.siyuan.languages.encryptedNotebookEnabled);
+                showMessage(window.scribli.languages.encryptedNotebookEnabled);
                 dialog.destroy();
                 onSuccess();
             }
@@ -586,18 +586,18 @@ const openEnableEncryptedDialog = (onSuccess: () => void, onCancel: () => void) 
 
 const openChangeMasterPasswordDialog = (onChanged?: () => void) => {
     const dialog = new Dialog({
-        title: "🔐 " + window.siyuan.languages.changeMasterPassword,
+        title: "🔐 " + window.scribli.languages.changeMasterPassword,
         content: `<div class="b3-dialog__content">
-    <input type="password" placeholder="${window.siyuan.languages.oldMasterPassword}" class="b3-text-field fn__block">
+    <input type="password" placeholder="${window.scribli.languages.oldMasterPassword}" class="b3-text-field fn__block">
     <div class="fn__hr"></div>
-    <input type="password" placeholder="${window.siyuan.languages.newMasterPassword}" class="b3-text-field fn__block">
+    <input type="password" placeholder="${window.scribli.languages.newMasterPassword}" class="b3-text-field fn__block">
     <div class="password-strength fn__none"></div>
     <div class="fn__hr"></div>
-    <input type="password" placeholder="${window.siyuan.languages.confirmMasterPassword}" class="b3-text-field fn__block">
+    <input type="password" placeholder="${window.scribli.languages.confirmMasterPassword}" class="b3-text-field fn__block">
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
     });
@@ -616,7 +616,7 @@ const openChangeMasterPasswordDialog = (onChanged?: () => void) => {
             return;
         }
         if (newPwd !== confirmPwd) {
-            showMessage(window.siyuan.languages.passwordNoMatch);
+            showMessage(window.scribli.languages.passwordNoMatch);
             return;
         }
         confirmWeakPassword(newPwd, async () => {
@@ -625,7 +625,7 @@ const openChangeMasterPasswordDialog = (onChanged?: () => void) => {
                 newPassword: newPwd
             });
             if (response.code === 0) {
-                showMessage(window.siyuan.languages.changeMasterPasswordSuccessTip);
+                showMessage(window.scribli.languages.changeMasterPasswordSuccessTip);
                 dialog.destroy();
             } else {
                 showMessage(response.msg, 6000, "error");

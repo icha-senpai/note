@@ -48,7 +48,7 @@ export type SettingControl =
     | StringControl
     | TextBlockControl;
 
-const readConfigAt = (id: string): unknown => getAtPath(window.siyuan.config, id);
+const readConfigAt = (id: string): unknown => getAtPath(window.scribli.config, id);
 
 const coerceNumber = (raw: unknown, fallback: number): number =>
     typeof raw === "number" && !Number.isNaN(raw) ? raw : fallback;

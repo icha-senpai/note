@@ -6,7 +6,7 @@ export const openModel = (obj: {
 }) => {
     const modelElement = document.getElementById("model");
     modelElement.style.transform = "translateY(0px)";
-    modelElement.style.zIndex = (++window.siyuan.zIndex).toString();
+    modelElement.style.zIndex = (++window.scribli.zIndex).toString();
     const iconElement  = modelElement.querySelector(".toolbar__icon");
     if(obj.icon) {
         iconElement.classList.remove("fn__none");

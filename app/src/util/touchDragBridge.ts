@@ -188,7 +188,7 @@ const handleTouchMove = (e: TouchEvent) => {
 
     e.preventDefault();
     // 已进入拖拽：置标记使松手时 event.ts 的长按菜单判定提前返回，避免拖拽与菜单同时触发
-    window.siyuan.touchDragActive = true;
+    window.scribli.touchDragActive = true;
     const elementUnderFinger = document.elementFromPoint(touch.clientX, touch.clientY);
     if (elementUnderFinger) {
         elementUnderFinger.dispatchEvent(new MouseEvent("mousemove", {
@@ -259,8 +259,8 @@ const startTouchDrag = (touch: Touch) => {
 
     dragState.editorElement = dragState.draggableElement.closest(".protyle-wysiwyg") as HTMLElement;
 
-    window.siyuan.touchDragActive = true;
-    window.siyuan.touchDragGhost = null;
+    window.scribli.touchDragActive = true;
+    window.scribli.touchDragGhost = null;
 
     const dragStartEvent = new DragEvent("dragstart", {
         bubbles: true,
@@ -272,10 +272,10 @@ const startTouchDrag = (touch: Touch) => {
     });
     dragState.draggableElement.dispatchEvent(dragStartEvent);
 
-    dragState.ghostElement = window.siyuan.touchDragGhost || null;
+    dragState.ghostElement = window.scribli.touchDragGhost || null;
     if (dragState.ghostElement) {
         dragState.ghostElement.style.pointerEvents = "none";
-        dragState.ghostElement.style.zIndex = (++window.siyuan.zIndex).toString();
+        dragState.ghostElement.style.zIndex = (++window.scribli.zIndex).toString();
         // Position first, then show — avoids flash at wrong position
         positionGhost(touch.clientX, touch.clientY);
         dragState.ghostElement.style.opacity = "0.6";
@@ -384,8 +384,8 @@ const cleanupDrag = () => {
         dragState.ghostElement.remove();
     }
 
-    window.siyuan.touchDragActive = false;
-    window.siyuan.touchDragGhost = null;
+    window.scribli.touchDragActive = false;
+    window.scribli.touchDragGhost = null;
     dragState = null;
     lastDragOverElement = null;
 };
@@ -403,7 +403,7 @@ export const cancelManualTouch = () => {
         document.onmouseup(new MouseEvent("mouseup", {bubbles: true}));
     }
     manualState = null;
-    window.siyuan.touchDragActive = false;
+    window.scribli.touchDragActive = false;
 };
 
 export const initTouchDragBridge = () => {

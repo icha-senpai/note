@@ -7,8 +7,8 @@ const registerAboutVersionGroup = (tab: SettingTabBuilder) => {
     group.slot({
         key: "version",
         keywords: [
-            window.siyuan.languages.currentVer,
-            window.siyuan.languages.isMsStoreVerTip,
+            window.scribli.languages.currentVer,
+            window.scribli.languages.isMsStoreVerTip,
         ],
         html: genAboutVersionHtml,
         afterMount: mountAboutVersionSlot,
@@ -16,24 +16,24 @@ const registerAboutVersionGroup = (tab: SettingTabBuilder) => {
 };
 
 const genAboutVersionHtml = (): string => {
-    if (window.siyuan.config.system.isMicrosoftStore) {
+    if (window.scribli.config.system.isMicrosoftStore) {
         return `<div class="fn__flex b3-label config-item config-wrap">
     <div class="fn__flex-1">
-        <div class="config-name">${window.siyuan.languages.currentVer} v${Constants.SIYUAN_VERSION}<span id="isInsider"></span></div>
-        <div class="b3-label__text">${window.siyuan.languages.isMsStoreVerTip}</div>
+        <div class="config-name">${window.scribli.languages.currentVer} v${Constants.SCRIBLI_VERSION}<span id="isInsider"></span></div>
+        <div class="b3-label__text">${window.scribli.languages.isMsStoreVerTip}</div>
     </div>
 </div>`;
     }
     return `<div class="fn__flex b3-label config-item config-wrap">
     <div class="fn__flex-1">
-        <div class="config-name">${window.siyuan.languages.currentVer} v${Constants.SIYUAN_VERSION}<span id="isInsider"></span></div>
+        <div class="config-name">${window.scribli.languages.currentVer} v${Constants.SCRIBLI_VERSION}<span id="isInsider"></span></div>
     </div>
 </div>`;
 };
 
 const mountAboutVersionSlot = (root: HTMLElement) => {
     const isInsiderElement = root.querySelector("#isInsider");
-    if (window.siyuan.config.system.isInsider && isInsiderElement) {
+    if (window.scribli.config.system.isInsider && isInsiderElement) {
         isInsiderElement.innerHTML = " <span class='ft__secondary'>Insider Preview</span>";
     }
 };
@@ -43,22 +43,22 @@ const registerAboutInfoGroup = (tab: SettingTabBuilder) => {
     group.slot({
         key: "aboutLogo",
         keywords: [
-            window.siyuan.languages.siyuanNote,
-            window.siyuan.languages.slogan,
-            window.siyuan.languages.about1,
-            window.siyuan.languages.feedback,
+            window.scribli.languages.siyuanNote,
+            window.scribli.languages.slogan,
+            window.scribli.languages.about1,
+            window.scribli.languages.feedback,
         ],
         html: () => `<div class="fn__flex b3-label config-item config-wrap">
     <div class="fn__flex-1">
         <div class="config-about__logo">
             <img src="/stage/icon.png">
             <span class="fn__space"></span>
-            <span>${window.siyuan.languages.siyuanNote}</span>
+            <span>${window.scribli.languages.siyuanNote}</span>
             <span class="fn__space"></span>
-            <span class="ft__on-surface">${window.siyuan.languages.slogan}</span>
+            <span class="ft__on-surface">${window.scribli.languages.slogan}</span>
         </div>
         <div class='fn__hr'></div>
-        ${window.siyuan.languages.about1}${window.siyuan.config.system.container === "harmony" ? ` • ${window.siyuan.languages.feedback} 845765@qq.com` : ""}
+        ${window.scribli.languages.about1}${window.scribli.config.system.container === "harmony" ? ` • ${window.scribli.languages.feedback} 845765@qq.com` : ""}
     </div>
 </div>`,
     });

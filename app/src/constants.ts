@@ -1,7 +1,7 @@
-declare const SIYUAN_VERSION: string;
+declare const SCRIBLI_VERSION: string;
 declare const NODE_ENV: string;
 
-const _SIYUAN_VERSION = SIYUAN_VERSION;
+const _SCRIBLI_VERSION = SCRIBLI_VERSION;
 const _NODE_ENV = NODE_ENV;
 
 const getFunctionKey = () => {
@@ -13,9 +13,9 @@ const getFunctionKey = () => {
 };
 
 export abstract class Constants {
-    public static readonly SIYUAN_VERSION: string = _SIYUAN_VERSION;
+    public static readonly SCRIBLI_VERSION: string = _SCRIBLI_VERSION;
     public static readonly NODE_ENV: string = _NODE_ENV;
-    public static readonly SIYUAN_APPID: string = Math.random().toString(36).substring(8);
+    public static readonly SCRIBLI_APPID: string = Math.random().toString(36).substring(8);
 
     // 服务器地址
     public static readonly ASSETS_ADDRESS: string = "";
@@ -24,40 +24,40 @@ export abstract class Constants {
     public static readonly SERVICE_WORKER_PATH: string = "/service-worker.js";
 
     // drop 事件
-    public static readonly SIYUAN_DROP_FILE: string = "application/siyuan-file";
-    public static readonly SIYUAN_DROP_GUTTER: string = "application/siyuan-gutter";
-    public static readonly SIYUAN_DROP_BLOCK_REF: string = "application/siyuan-block-ref";
-    public static readonly SIYUAN_DROP_TAB: string = "application/siyuan-tab";
-    public static readonly SIYUAN_DROP_EDITOR: string = "application/siyuan-editor";
+    public static readonly SCRIBLI_DROP_FILE: string = "application/scribli-file";
+    public static readonly SCRIBLI_DROP_GUTTER: string = "application/scribli-gutter";
+    public static readonly SCRIBLI_DROP_BLOCK_REF: string = "application/scribli-block-ref";
+    public static readonly SCRIBLI_DROP_TAB: string = "application/scribli-tab";
+    public static readonly SCRIBLI_DROP_EDITOR: string = "application/scribli-editor";
 
     // 渲染进程调主进程
-    public static readonly SIYUAN_CMD: string = "scribli-cmd";
-    public static readonly SIYUAN_GET: string = "siyuan-get";
-    public static readonly SIYUAN_EVENT: string = "siyuan-event";
+    public static readonly SCRIBLI_CMD: string = "scribli-cmd";
+    public static readonly SCRIBLI_GET: string = "scribli-get";
+    public static readonly SCRIBLI_EVENT: string = "scribli-event";
 
-    public static readonly SIYUAN_CONFIG_TRAY: string = "siyuan-config-tray";
-    public static readonly SIYUAN_QUIT: string = "siyuan-quit";
-    public static readonly SIYUAN_INSTALL_UPDATE: string = "siyuan-install-update";
-    public static readonly SIYUAN_HOTKEY: string = "siyuan-hotkey";
-    public static readonly SIYUAN_INIT: string = "siyuan-init";
-    public static readonly SIYUAN_READY_TO_SHOW: string = "siyuan-ready-to-show";
-    public static readonly SIYUAN_SEND_WINDOWS: string = "siyuan-send-windows"; // 主窗口和各新窗口之间的通信，{cmd: "closetab"|"lockscreen"|"lockscreenByMode", data: {}})
-    public static readonly SIYUAN_SAVE_CLOSE: string = "siyuan-save-close";
-    public static readonly SIYUAN_AUTO_LAUNCH: string = "siyuan-auto-launch";
+    public static readonly SCRIBLI_CONFIG_TRAY: string = "scribli-config-tray";
+    public static readonly SCRIBLI_QUIT: string = "scribli-quit";
+    public static readonly SCRIBLI_INSTALL_UPDATE: string = "scribli-install-update";
+    public static readonly SCRIBLI_HOTKEY: string = "scribli-hotkey";
+    public static readonly SCRIBLI_INIT: string = "scribli-init";
+    public static readonly SCRIBLI_READY_TO_SHOW: string = "scribli-ready-to-show";
+    public static readonly SCRIBLI_SEND_WINDOWS: string = "scribli-send-windows"; // 主窗口和各新窗口之间的通信，{cmd: "closetab"|"lockscreen"|"lockscreenByMode", data: {}})
+    public static readonly SCRIBLI_SAVE_CLOSE: string = "scribli-save-close";
+    public static readonly SCRIBLI_AUTO_LAUNCH: string = "scribli-auto-launch";
 
-    public static readonly SIYUAN_OPEN_WORKSPACE: string = "siyuan-open-workspace";
-    public static readonly SIYUAN_OPEN_URL: string = "siyuan-open-url";
-    public static readonly SIYUAN_OPEN_WINDOW: string = "siyuan-open-window";
-    public static readonly SIYUAN_OPEN_FILE: string = "siyuan-open-file";
+    public static readonly SCRIBLI_OPEN_WORKSPACE: string = "scribli-open-workspace";
+    public static readonly SCRIBLI_OPEN_URL: string = "scribli-open-url";
+    public static readonly SCRIBLI_OPEN_WINDOW: string = "scribli-open-window";
+    public static readonly SCRIBLI_OPEN_FILE: string = "scribli-open-file";
 
-    public static readonly SIYUAN_EXPORT_PDF: string = "siyuan-export-pdf";
-    public static readonly SIYUAN_EXPORT_NEWWINDOW: string = "siyuan-export-newwindow";
+    public static readonly SCRIBLI_EXPORT_PDF: string = "scribli-export-pdf";
+    public static readonly SCRIBLI_EXPORT_NEWWINDOW: string = "scribli-export-newwindow";
 
-    public static readonly SIYUAN_CONTEXT_MENU: string = "siyuan-context-menu";
-    public static readonly SIYUAN_CONFIRM_DIALOG: string = "siyuan-confirm-dialog";
-    public static readonly SIYUAN_ALERT_DIALOG: string = "siyuan-alert-dialog";
+    public static readonly SCRIBLI_CONTEXT_MENU: string = "scribli-context-menu";
+    public static readonly SCRIBLI_CONFIRM_DIALOG: string = "scribli-confirm-dialog";
+    public static readonly SCRIBLI_ALERT_DIALOG: string = "scribli-alert-dialog";
 
-    public static readonly SIYUAN_SHOW_WINDOW: string = "siyuan-show-window";
+    public static readonly SCRIBLI_SHOW_WINDOW: string = "scribli-show-window";
 
     // custom
     public static readonly CUSTOM_REMINDER_WECHAT: string = "custom-reminder-wechat";
@@ -440,7 +440,7 @@ export abstract class Constants {
     // "⌘A", "⌘X", "⌘C", "⌘V", "⌘-", "⌘=", "⌘0", "⇧⌘V", "⌘/", "⇧↑", "⇧↓", "⇧→", "⇧←", "⇧⇥", "⌃D", "⇧⌘→", "⇧⌘←",
     // "⌘Home", "⌘End", "⇧↩", "↩", "PageUp", "PageDown", "⌫", "⌦", "Escape" 不可自定义
     // "⌥↩" 写死，但可自定义
-    public static readonly SIYUAN_KEYMAP: Config.IKeymap = {
+    public static readonly SCRIBLI_KEYMAP: Config.IKeymap = {
         general: {
             mainMenu: {default: "⌥\\", custom: "⌥\\"},
             commandPanel: {default: "⌥⇧P", custom: "⌥⇧P"},
@@ -623,7 +623,7 @@ export abstract class Constants {
         plugin: {},
     };
 
-    public static readonly SIYUAN_EMPTY_LAYOUT: Config.IUiLayout = {
+    public static readonly SCRIBLI_EMPTY_LAYOUT: Config.IUiLayout = {
         hideDock: false,
         layout: {
             "direction": "tb",
@@ -764,7 +764,7 @@ export abstract class Constants {
         }
     };
 
-    public static readonly SIYUAN_DEFAULT_REPLACETYPES: Required<Config.IUILayoutTabSearchConfigReplaceTypes> = {
+    public static readonly SCRIBLI_DEFAULT_REPLACETYPES: Required<Config.IUILayoutTabSearchConfigReplaceTypes> = {
         "text": true,
         "imgText": true,
         "imgTitle": true,
@@ -793,7 +793,7 @@ export abstract class Constants {
     };
 
     // image
-    public static readonly SIYUAN_IMAGE_SPONSOR: string = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+    public static readonly SCRIBLI_IMAGE_SPONSOR: string = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
 <path fill="#ffe43c" d="M6.4 0h19.2c4.268 0 6.4 2.132 6.4 6.4v19.2c0 4.268-2.132 6.4-6.4 6.4h-19.2c-4.268 0-6.4-2.132-6.4-6.4v-19.2c0-4.268 2.135-6.4 6.4-6.4z"></path>
 <path fill="#00f5d4" d="M25.6 0h-8.903c-7.762 1.894-14.043 7.579-16.697 15.113v10.487c0 3.533 2.867 6.4 6.4 6.4h19.2c3.533 0 6.4-2.867 6.4-6.4v-19.2c0-3.537-2.863-6.4-6.4-6.4z"></path>
 <path fill="#01beff" d="M25.6 0h-0.119c-12.739 2.754-20.833 15.316-18.079 28.054 0.293 1.35 0.702 2.667 1.224 3.946h16.974c3.533 0 6.4-2.867 6.4-6.4v-19.2c0-3.537-2.863-6.4-6.4-6.4z"></path>
@@ -813,16 +813,16 @@ export abstract class Constants {
 </svg>`;
 
     // assets
-    public static readonly SIYUAN_ASSETS_IMAGE: string[] = [".apng", ".ico", ".cur", ".jpg", ".jpe", ".jpeg", ".jfif", ".pjp", ".pjpeg", ".png", ".gif", ".webp", ".bmp", ".svg", ".avif", ".tiff", ".tif"];
-    public static readonly SIYUAN_ASSETS_AUDIO: string[] = [".mp3", ".wav", ".ogg", ".m4a", ".aac", ".flac"];
-    public static readonly SIYUAN_ASSETS_VIDEO: string[] = [".mov", ".weba", ".mkv", ".mp4", ".webm"];
-    public static readonly SIYUAN_ASSETS_EXTS: string[] = [".pdf"].concat(Constants.SIYUAN_ASSETS_IMAGE, Constants.SIYUAN_ASSETS_AUDIO, Constants.SIYUAN_ASSETS_VIDEO);
-    public static readonly SIYUAN_ASSETS_SEARCH: string[] = [".txt", ".md", ".markdown", ".docx", ".xlsx", ".pptx", ".pdf", ".json", ".log", ".sql", ".html", ".xml", ".java", ".h", ".c",
+    public static readonly SCRIBLI_ASSETS_IMAGE: string[] = [".apng", ".ico", ".cur", ".jpg", ".jpe", ".jpeg", ".jfif", ".pjp", ".pjpeg", ".png", ".gif", ".webp", ".bmp", ".svg", ".avif", ".tiff", ".tif"];
+    public static readonly SCRIBLI_ASSETS_AUDIO: string[] = [".mp3", ".wav", ".ogg", ".m4a", ".aac", ".flac"];
+    public static readonly SCRIBLI_ASSETS_VIDEO: string[] = [".mov", ".weba", ".mkv", ".mp4", ".webm"];
+    public static readonly SCRIBLI_ASSETS_EXTS: string[] = [".pdf"].concat(Constants.SCRIBLI_ASSETS_IMAGE, Constants.SCRIBLI_ASSETS_AUDIO, Constants.SCRIBLI_ASSETS_VIDEO);
+    public static readonly SCRIBLI_ASSETS_SEARCH: string[] = [".txt", ".md", ".markdown", ".docx", ".xlsx", ".pptx", ".pdf", ".json", ".log", ".sql", ".html", ".xml", ".java", ".h", ".c",
         ".cpp", ".go", ".rs", ".swift", ".kt", ".py", ".php", ".js", ".css", ".ts", ".sh", ".bat", ".cmd", ".ini", ".yaml",
         ".rst", ".adoc", ".textile", ".opml", ".org", ".wiki", ".epub", ".cs"];
 
     // protyle
-    public static readonly SIYUAN_CONFIG_APPEARANCE_DARK_CODE: string[] = ["a11y-dark", "agate", "an-old-hope", "androidstudio",
+    public static readonly SCRIBLI_CONFIG_APPEARANCE_DARK_CODE: string[] = ["a11y-dark", "agate", "an-old-hope", "androidstudio",
         "arta", "atom-one-dark", "atom-one-dark-reasonable", "base16/3024", "base16/apathy", "base16/apprentice", "base16/ashes",
         "base16/atelier-cave", "base16/atelier-dune", "base16/atelier-estuary", "base16/atelier-forest", "base16/atelier-heath",
         "base16/atelier-lakeside", "base16/atelier-plateau", "base16/atelier-savanna", "base16/atelier-seaside", "base16/atelier-sulphurpool",
@@ -852,7 +852,7 @@ export abstract class Constants {
         "paraiso-dark", "pojoaque", "qtcreator-dark", "rainbow", "rose-pine", "rose-pine-moon", "shades-of-purple", "srcery",
         "stackoverflow-dark", "sunburst", "tomorrow-night-blue", "tomorrow-night-bright", "tokyo-night-dark", "vs-dark", "vs2015", "xt256"
     ];
-    public static readonly SIYUAN_CONFIG_APPEARANCE_LIGHT_CODE: string[] = ["ant-design",
+    public static readonly SCRIBLI_CONFIG_APPEARANCE_LIGHT_CODE: string[] = ["ant-design",
         "1c-light", "a11y-light", "arduino-light", "ascetic", "atom-one-light", "base16/atelier-cave-light", "base16/atelier-dune-light",
         "base16/atelier-estuary-light", "base16/atelier-forest-light", "base16/atelier-heath-light", "base16/atelier-lakeside-light",
         "base16/atelier-plateau-light", "base16/atelier-savanna-light", "base16/atelier-seaside-light", "base16/atelier-sulphurpool-light",
@@ -877,7 +877,7 @@ export abstract class Constants {
     public static readonly ALIAS_CODE_LANGUAGES: string[] = [
         "js", "ts", "html", "toml", "c#", "bat"
     ];
-    public static readonly SIYUAN_RENDER_CODE_LANGUAGES: string[] = [
+    public static readonly SCRIBLI_RENDER_CODE_LANGUAGES: string[] = [
         "abc", "plantuml", "mermaid", "flowchart", "echarts", "mindmap", "graphviz", "math"
     ];
 }

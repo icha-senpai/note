@@ -86,7 +86,7 @@ export const setDefRefCount = (data: {
 
     let liElement;
     /// #if MOBILE
-    liElement = window.siyuan.mobile.docks.file.element.querySelector(`li[data-node-id="${data.rootID}"]`);
+    liElement = window.scribli.mobile.docks.file.element.querySelector(`li[data-node-id="${data.rootID}"]`);
     /// #else
     liElement = (getDockByType("file")?.data["file"] as Files)?.element.querySelector(`li[data-node-id="${data.rootID}"]`);
     /// #endif
@@ -99,13 +99,13 @@ export const setDefRefCount = (data: {
                 counterElement.textContent = data.rootRefCount.toString();
             }
         } else if (data.rootRefCount > 0) {
-            liElement.insertAdjacentHTML("beforeend", `<span class="popover__block counter b3-tooltips b3-tooltips__nw" aria-label="${window.siyuan.languages.ref}">${data.rootRefCount}</span>`);
+            liElement.insertAdjacentHTML("beforeend", `<span class="popover__block counter b3-tooltips b3-tooltips__nw" aria-label="${window.scribli.languages.ref}">${data.rootRefCount}</span>`);
         }
     }
 };
 
 export const lockScreen = async (app: App) => {
-    if (window.siyuan.config.readonly || window.siyuan.isPublish) {
+    if (window.scribli.config.readonly || window.scribli.isPublish) {
         return;
     }
     app.plugins.forEach(item => {
@@ -119,8 +119,8 @@ export const lockScreen = async (app: App) => {
         }
     });
     /// #else
-    if (window.siyuan.mobile.editor) {
-        await saveScroll(window.siyuan.mobile.editor.protyle);
+    if (window.scribli.mobile.editor) {
+        await saveScroll(window.scribli.mobile.editor.protyle);
         fetchPost("/api/system/logoutAuth");
     }
     /// #endif
@@ -131,7 +131,7 @@ export const lockScreen = async (app: App) => {
 // 移动端原生容器）退出。浏览器/Docker 等纯 Web 环境无宿主可调，只能关闭当前页。
 export const forceQuit = () => {
     /// #if !BROWSER
-    ipcRenderer.send(Constants.SIYUAN_QUIT, location.port);
+    ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
     /// #else
     if (isInAndroid()) {
         window.JSAndroid.exit();
@@ -151,19 +151,19 @@ export const forceQuit = () => {
 
 const installNewVersion = (installPkgPath: string, setCurrentWorkspace: boolean) => {
     if (!installPkgPath) {
-        showMessage(window.siyuan.languages._kernel[104], 7000, "error");
+        showMessage(window.scribli.languages._kernel[104], 7000, "error");
         return;
     }
     /// #if !BROWSER
-    ipcRenderer.invoke(Constants.SIYUAN_INSTALL_UPDATE, {
+    ipcRenderer.invoke(Constants.SCRIBLI_INSTALL_UPDATE, {
         port: location.port,
         setCurrentWorkspace,
     }).then((accepted: boolean) => {
         if (!accepted) {
-            showMessage(window.siyuan.languages._kernel[104], 7000, "error");
+            showMessage(window.scribli.languages._kernel[104], 7000, "error");
         }
     }).catch(() => {
-        showMessage(window.siyuan.languages._kernel[104], 7000, "error");
+        showMessage(window.scribli.languages._kernel[104], 7000, "error");
     });
     /// #else
     fetchPost("/api/system/exit", {
@@ -186,11 +186,11 @@ const installNewVersion = (installPkgPath: string, setCurrentWorkspace: boolean)
     /// #endif
 };
 
-export const exitSiYuan = async (setCurrentWorkspace = true) => {
+export const exitScribli = async (setCurrentWorkspace = true) => {
     hideAllElements(["util"]);
     /// #if MOBILE
-    if (window.siyuan.mobile.editor) {
-        await saveScroll(window.siyuan.mobile.editor.protyle);
+    if (window.scribli.mobile.editor) {
+        await saveScroll(window.scribli.mobile.editor.protyle);
     }
     /// #endif
     fetchPost("/api/system/exit", {force: false, setCurrentWorkspace}, (response) => {
@@ -205,7 +205,7 @@ export const exitSiYuan = async (setCurrentWorkspace = true) => {
                     }
                     fetchPost("/api/system/exit", {force: true, setCurrentWorkspace}, () => {
                         /// #if !BROWSER
-                        ipcRenderer.send(Constants.SIYUAN_QUIT, location.port);
+                        ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
                         /// #else
                         if (isInAndroid()) {
                             window.JSAndroid.exit();
@@ -227,12 +227,12 @@ export const exitSiYuan = async (setCurrentWorkspace = true) => {
             hideMessage();
 
             /// #if !BROWSER
-            if ("std" === window.siyuan.config.system.container) {
-                ipcRenderer.send(Constants.SIYUAN_SHOW_WINDOW);
+            if ("std" === window.scribli.config.system.container) {
+                ipcRenderer.send(Constants.SCRIBLI_SHOW_WINDOW);
             }
             /// #endif
 
-            confirmDialog(window.siyuan.languages.updateVersion, response.msg, () => {
+            confirmDialog(window.scribli.languages.updateVersion, response.msg, () => {
                 installNewVersion(response.data.installPkgPath, setCurrentWorkspace);
             }, () => {
                 fetchPost("/api/system/exit", {
@@ -241,13 +241,13 @@ export const exitSiYuan = async (setCurrentWorkspace = true) => {
                     execInstallPkg: 1 // 0：默认检查新版本，1：不返回安装包，2：返回安装包路径并退出
                 }, () => {
                     /// #if !BROWSER
-                    ipcRenderer.send(Constants.SIYUAN_QUIT, location.port);
+                    ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
                     /// #endif
                 });
             });
         } else { // 正常退出
             /// #if !BROWSER
-            ipcRenderer.send(Constants.SIYUAN_QUIT, location.port);
+            ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
             /// #else
             if (isInAndroid()) {
                 window.JSAndroid.exit();
@@ -273,15 +273,15 @@ export const transactionError = (msg?: string) => {
     }
     const dialog = new Dialog({
         disableClose: true,
-        title: `${window.siyuan.languages.stateExcepted} v${Constants.SIYUAN_VERSION}`,
+        title: `${window.scribli.languages.stateExcepted} v${Constants.SCRIBLI_VERSION}`,
         content: `<div class="b3-dialog__content" style="max-height: calc(100vh - 182px)" id="transactionError">
-    ${window.siyuan.languages.rebuildIndexTip}
+    ${window.scribli.languages.rebuildIndexTip}
     ${msg ? `<div class="fn__hr"></div>${escapeHtml(msg.trim())}` : ""}
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--text">${window.siyuan.languages._kernel[97]}</button>
+    <button class="b3-button b3-button--text">${window.scribli.languages._kernel[97]}</button>
     <div class="fn__space"></div>
-    <button class="b3-button">${window.siyuan.languages.rebuildDataIndex}</button>
+    <button class="b3-button">${window.scribli.languages.rebuildDataIndex}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
     });
@@ -289,11 +289,11 @@ export const transactionError = (msg?: string) => {
     const btnsElement = dialog.element.querySelectorAll(".b3-button");
     btnsElement[0].addEventListener("click", () => {
         /// #if MOBILE
-        exitSiYuan();
+        exitScribli();
         /// #else
         exportLayout({
             errorExit: true,
-            cb: exitSiYuan
+            cb: exitScribli
         });
         /// #endif
     });
@@ -304,8 +304,8 @@ export const transactionError = (msg?: string) => {
 };
 
 export const refreshFileTree = (cb?: () => void) => {
-    window.siyuan.storage[Constants.LOCAL_FILEPOSITION] = {};
-    setStorageVal(Constants.LOCAL_FILEPOSITION, window.siyuan.storage[Constants.LOCAL_FILEPOSITION]);
+    window.scribli.storage[Constants.LOCAL_FILEPOSITION] = {};
+    setStorageVal(Constants.LOCAL_FILEPOSITION, window.scribli.storage[Constants.LOCAL_FILEPOSITION]);
     fetchPost("/api/system/rebuildDataIndex", {}, () => {
         if (cb) {
             cb();
@@ -328,7 +328,7 @@ export const progressStatus = (data: IWebSocketData) => {
 export const progressLoading = (data: IWebSocketData) => {
     let progressElement = document.getElementById("progress");
     if (!progressElement) {
-        document.body.insertAdjacentHTML("beforeend", `<div id="progress" style="z-index: ${++window.siyuan.zIndex}"></div>`);
+        document.body.insertAdjacentHTML("beforeend", `<div id="progress" style="z-index: ${++window.scribli.zIndex}"></div>`);
         progressElement = document.getElementById("progress");
     }
     // code 0: 有进度；1: 无进度；2: 关闭
@@ -363,9 +363,9 @@ export const progressBackgroundTask = (tasks: { action: string }[]) => {
     }
     if (tasks.length === 0) {
         backgroundTaskElement.classList.add("fn__none");
-        if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-            window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_STATUS_BACKGROUND_TASK) {
-            window.siyuan.menus.menu.remove();
+        if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+            window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_STATUS_BACKGROUND_TASK) {
+            window.scribli.menus.menu.remove();
         }
     } else {
         backgroundTaskElement.classList.remove("fn__none");
@@ -379,11 +379,11 @@ export const bootSync = () => {
         if (response.code === 1) {
             const dialog = new Dialog({
                 width: isMobile() ? "92vw" : "50vw",
-                title: "🌩️ " + window.siyuan.languages.bootSyncFailed,
+                title: "🌩️ " + window.scribli.languages.bootSyncFailed,
                 content: `<div class="b3-dialog__content">${response.msg}</div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.syncNow}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.syncNow}</button>
 </div>`
             });
             dialog.element.setAttribute("data-key", Constants.DIALOG_BOOTSYNCFAILED);
@@ -415,7 +415,7 @@ export const processSync = (data?: IWebSocketData, plugins?: Plugin[]) => {
     const menuSyncUseElement = document.querySelector("#menuSyncNow use");
     const barSyncUseElement = document.querySelector("#toolbarSync use");
     if (!data) {
-        if (!window.siyuan.config.sync.enabled || (0 === window.siyuan.config.sync.provider && !hasFeatureAccess())) {
+        if (!window.scribli.config.sync.enabled || (0 === window.scribli.config.sync.provider && !hasFeatureAccess())) {
             menuSyncUseElement?.setAttribute("xlink:href", "#iconCloudOff");
             barSyncUseElement.setAttribute("xlink:href", "#iconCloudOff");
         } else {
@@ -446,7 +446,7 @@ export const processSync = (data?: IWebSocketData, plugins?: Plugin[]) => {
     const useElement = iconElement.querySelector("use");
     if (!data) {
         iconElement.classList.remove("toolbar__item--active");
-        if (!window.siyuan.config.sync.enabled || (0 === window.siyuan.config.sync.provider && !hasFeatureAccess())) {
+        if (!window.scribli.config.sync.enabled || (0 === window.scribli.config.sync.provider && !hasFeatureAccess())) {
             useElement.setAttribute("xlink:href", "#iconCloudOff");
         } else {
             useElement.setAttribute("xlink:href", "#iconCloudSucc");

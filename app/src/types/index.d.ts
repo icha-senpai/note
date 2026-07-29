@@ -2,7 +2,7 @@ type TPluginDockPosition = "LeftTop" | "LeftBottom" | "RightTop" | "RightBottom"
 type TDockPosition = "Left" | "Right" | "Bottom"
 type TWS = "main" | "filetree" | "protyle" | "backlink" | "bookmark" | "graph" | "outline" | "tag" | "agentChat"
 type TDock = "file" | "outline" | "inbox" | "bookmark" | "tag" | "graph" | "globalGraph" | "backlink" | "agentChat"
-type TTab = "Outline" | "Graph" | "Backlink" | "Asset" | "Editor" | "Search" | "siyuan-card"
+type TTab = "Outline" | "Graph" | "Backlink" | "Asset" | "Editor" | "Search" | "scribli-card"
 type TOperation =
     "insert"
     | "restoreCreatedDoc"
@@ -86,7 +86,7 @@ type TEventBus = "ws-main" | "sync-start" | "sync-end" | "sync-fail" |
     "open-noneditableblock" |
     "open-menu-blockref" | "open-menu-fileannotationref" | "open-menu-tag" | "open-menu-link" | "open-menu-image" |
     "open-menu-av" | "open-menu-content" | "open-menu-breadcrumbmore" | "open-menu-doctree" | "open-menu-inbox" |
-    "open-siyuan-url-plugin" | "open-siyuan-url-block" | "opened-notebook" |
+    "open-scribli-url-plugin" | "open-scribli-url-block" | "opened-notebook" |
     "closed-notebook" |
     "paste" |
     "input-search" |
@@ -273,7 +273,8 @@ interface Window {
         toCanvas: (element: Element, options?: IHtmlToImageOptions) => Promise<HTMLCanvasElement>
         toBlob: (element: Element, options?: IHtmlToImageOptions) => Promise<Blob>
     };
-    siyuan: ISiyuan;
+    scribli: IScribli;
+    siyuan: IScribli;
     JSAndroid: {
         returnDesktop(): void
         openExternal(url: string): void
@@ -527,7 +528,7 @@ interface INotebook {
     encrypted?: boolean;
 }
 
-interface ISiyuan {
+interface IScribli {
     zIndex: number
     storage?: {
         [key: string]: any
@@ -1299,7 +1300,7 @@ interface IKernelPluginRpc {
 /**
  * Scribli URI 块信息接口，用于描述通过 Scribli URI 协议传递的块信息
  */
-interface ISiYuanUriBlockInfo {
+interface IScribliUriBlockInfo {
     /**
      * 块 ID
      */

@@ -57,18 +57,18 @@ export class Files extends Model {
         });
         options.tab.panelElement.classList.add("fn__flex-column", "file-tree", "sy__file", "dockPanel");
         options.tab.panelElement.innerHTML = `<div class="block__icons">
-    <div class="block__logo fn__flex-1">${window.siyuan.languages.fileTree}</div>
-    <span data-type="focus" class="block__icon ariaLabel" data-position="north" aria-label="${window.siyuan.languages.selectOpen1}${updateHotkeyAfterTip(window.siyuan.config.keymap.general.selectOpen1.custom)}"><svg><use xlink:href='#iconFocus'></use></svg></span>
+    <div class="block__logo fn__flex-1">${window.scribli.languages.fileTree}</div>
+    <span data-type="focus" class="block__icon ariaLabel" data-position="north" aria-label="${window.scribli.languages.selectOpen1}${updateHotkeyAfterTip(window.scribli.config.keymap.general.selectOpen1.custom)}"><svg><use xlink:href='#iconFocus'></use></svg></span>
     <span class="fn__space"></span>
-    <span data-type="collapse" class="block__icon ariaLabel" data-position="north" aria-label="${window.siyuan.languages.collapse}${updateHotkeyAfterTip(window.siyuan.config.keymap.editor.general.collapse.custom)}">
+    <span data-type="collapse" class="block__icon ariaLabel" data-position="north" aria-label="${window.scribli.languages.collapse}${updateHotkeyAfterTip(window.scribli.config.keymap.editor.general.collapse.custom)}">
         <svg><use xlink:href="#iconContract"></use></svg>
     </span>
-    <div class="fn__space${window.siyuan.config.readonly ? " fn__none" : ""}"></div>
-    <div data-type="more" class="ariaLabel block__icon${window.siyuan.config.readonly ? " fn__none" : ""}" data-position="north" aria-label="${window.siyuan.languages.more}">
+    <div class="fn__space${window.scribli.config.readonly ? " fn__none" : ""}"></div>
+    <div data-type="more" class="ariaLabel block__icon${window.scribli.config.readonly ? " fn__none" : ""}" data-position="north" aria-label="${window.scribli.languages.more}">
         <svg><use xlink:href="#iconMore"></use></svg>
     </div> 
     <span class="fn__space"></span>
-    <span data-type="min" class="block__icon ariaLabel" data-position="north" aria-label="${window.siyuan.languages.min}${updateHotkeyAfterTip(window.siyuan.config.keymap.general.closeTab.custom)}"><svg><use xlink:href='#iconMin'></use></svg></span>
+    <span data-type="min" class="block__icon ariaLabel" data-position="north" aria-label="${window.scribli.languages.min}${updateHotkeyAfterTip(window.scribli.config.keymap.general.closeTab.custom)}"><svg><use xlink:href='#iconMin'></use></svg></span>
 </div>
 <div class="fn__flex-1" style="padding-top: 2px;"></div>
 <ul class="b3-list fn__flex-column" style="min-height: auto;height:30px;transition: height  .2s cubic-bezier(0, 0, .2, 1) 0ms">
@@ -76,7 +76,7 @@ export class Files extends Model {
         <span class="b3-list-item__toggle">
             <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
         </span>
-        <span class="b3-list-item__text">${window.siyuan.languages.closeNotebook}</span>
+        <span class="b3-list-item__text">${window.scribli.languages.closeNotebook}</span>
         <span class="counter" style="cursor: auto"></span>
     </li>
     <ul class="fn__none fn__flex-1"></ul>
@@ -111,7 +111,7 @@ export class Files extends Model {
                         svgElement.classList.add("b3-list-item__arrow--open");
                         this.closeElement.lastElementChild.classList.remove("fn__none");
                     }
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.stopPropagation();
                     event.preventDefault();
                     break;
@@ -126,7 +126,7 @@ export class Files extends Model {
                             notebook: notebookId
                         });
                     }
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.stopPropagation();
                     event.preventDefault();
                     break;
@@ -144,7 +144,7 @@ export class Files extends Model {
                     liElement.nextElementSibling.remove();
                 }
             });
-            window.siyuan.storage[Constants.LOCAL_FILESPATHS] = [];
+            window.scribli.storage[Constants.LOCAL_FILESPATHS] = [];
             setStorageVal(Constants.LOCAL_FILESPATHS, []);
         });
         this.actionsElement.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
@@ -156,7 +156,7 @@ export class Files extends Model {
                     getDockByType("file").toggleModel("file", false, true);
                     event.preventDefault();
                     event.stopPropagation();
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     isFocus = false;
                     break;
                 } else if (type === "focus") {
@@ -177,7 +177,7 @@ export class Files extends Model {
         });
         this.element.addEventListener("mousedown", (event) => {
             // 点击鼠标滚轮关闭
-            if (event.button !== 1 || !window.siyuan.config.fileTree.openFilesUseCurrentTab) {
+            if (event.button !== 1 || !window.scribli.config.fileTree.openFilesUseCurrentTab) {
                 return;
             }
             let target = event.target as HTMLElement;
@@ -207,13 +207,13 @@ export class Files extends Model {
             if (ulElement) {
                 const notebookId = ulElement.getAttribute("data-url");
                 while (target && !target.isEqualNode(this.element)) {
-                    if (isNotCtrl(event) && target.classList.contains("b3-list-item__icon") && window.siyuan.config.system.container !== "ios") {
+                    if (isNotCtrl(event) && target.classList.contains("b3-list-item__icon") && window.scribli.config.system.container !== "ios") {
                         event.preventDefault();
                         event.stopPropagation();
                         const liElement = target.parentElement;
                         const isFile = liElement.getAttribute("data-type") === "navigation-file";
                         const isBoxDoc = liElement.getAttribute("data-type") === "navigation-root" && liElement.getAttribute("data-node-id");
-                        if ((isFile || isBoxDoc) && window.siyuan.config.fileTree.docIconClickExpand) {
+                        if ((isFile || isBoxDoc) && window.scribli.config.fileTree.docIconClickExpand) {
                             if (Number(liElement.getAttribute("data-count")) > 0) {
                                 this.getLeaf(liElement, notebookId);
                             } else {
@@ -260,7 +260,7 @@ export class Files extends Model {
                         }
                         event.preventDefault();
                         event.stopPropagation();
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                         break;
                     } else if (target.classList.contains("b3-list-item__switch")) {
                         event.preventDefault();
@@ -285,7 +285,7 @@ export class Files extends Model {
                     } else if (isNotCtrl(event) && target.classList.contains("b3-list-item__action")) {
                         const type = target.getAttribute("data-type");
                         const pathString = target.parentElement.getAttribute("data-path");
-                        if (!window.siyuan.config.readonly) {
+                        if (!window.scribli.config.readonly) {
                             if (type === "new") {
                                 newFileInTree(options.app, notebookId, pathString);
                             } else if (type === "more-root") {
@@ -308,12 +308,12 @@ export class Files extends Model {
                         target.classList.contains("b3-list-item__text") &&
                         (target.parentElement.getAttribute("data-type") === "navigation-file" ||
                             (target.parentElement.getAttribute("data-type") === "navigation-root" && target.parentElement.getAttribute("data-node-id"))) &&
-                        window.siyuan.config.fileTree.parentDocClickExpand &&
+                        window.scribli.config.fileTree.parentDocClickExpand &&
                         Number(target.parentElement.getAttribute("data-count")) > 0) {
                         this.getLeaf(target.parentElement, notebookId);
                         event.preventDefault();
                         event.stopPropagation();
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                         break;
                     } else if (target.tagName === "LI") {
                         if (isOnlyMeta(event) && !event.altKey && !event.shiftKey) {
@@ -380,7 +380,7 @@ export class Files extends Model {
                                             target.removeAttribute("data-opening");
                                         }
                                     });
-                                } else if (window.siyuan.config.fileTree.openFilesUseCurrentTab &&
+                                } else if (window.scribli.config.fileTree.openFilesUseCurrentTab &&
                                     event.altKey && isOnlyMeta(event) && !event.shiftKey) {
                                     openFileById({
                                         app: options.app,
@@ -407,7 +407,7 @@ export class Files extends Model {
                         }
                         this.element.querySelector('[select-end="true"]')?.removeAttribute("select-end");
                         this.element.querySelector('[select-start="true"]')?.removeAttribute("select-start");
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                         event.stopPropagation();
                         event.preventDefault();
                         break;
@@ -420,7 +420,7 @@ export class Files extends Model {
             }
         });
         this.element.addEventListener("dragstart", (event: DragEvent & { target: HTMLElement }) => {
-            if (window.siyuan.config.readonly) return;
+            if (window.scribli.config.readonly) return;
             window.getSelection().removeAllRanges();
             hideTooltip();
             const liElement = hasClosestByTag(event.target, "LI");
@@ -451,10 +451,10 @@ export class Files extends Model {
                 ghostElement.setAttribute("style", `width: 219px;position: fixed;top:-${selectElements.length * 30}px`);
                 ghostElement.setAttribute("class", "b3-list b3-list--background");
                 document.body.append(ghostElement);
-                if (window.siyuan.touchDragActive) {
+                if (window.scribli.touchDragActive) {
                     // 触屏保留 DOM ghost 供 touchDragBridge 跟随手指
                     event.dataTransfer.setDragImage(ghostElement, 16, 16);
-                    window.siyuan.touchDragGhost = ghostElement;
+                    window.scribli.touchDragGhost = ghostElement;
                 } else {
                     // 桌面端隐藏原生 ghost，改用自定义双区跟随框
                     const transparentImg = new Image();
@@ -464,11 +464,11 @@ export class Files extends Model {
                         ghostElement.remove();
                     });
                 }
-                event.dataTransfer.setData(Constants.SIYUAN_DROP_FILE, ids);
+                event.dataTransfer.setData(Constants.SCRIBLI_DROP_FILE, ids);
                 event.dataTransfer.dropEffect = "move";
-                window.siyuan.dragTitle = (selectElements[0] as HTMLElement)?.querySelector(".b3-list-item__text")?.textContent?.trim() || "";
-                window.siyuan.dragElement = document.createElement("div");
-                window.siyuan.dragElement.innerText = ids;
+                window.scribli.dragTitle = (selectElements[0] as HTMLElement)?.querySelector(".b3-list-item__text")?.textContent?.trim() || "";
+                window.scribli.dragElement = document.createElement("div");
+                window.scribli.dragElement.innerText = ids;
             }
         });
         const dragOverLastObj: {
@@ -504,11 +504,11 @@ export class Files extends Model {
                     }
                 }
             });
-            window.siyuan.dragElement = undefined;
+            window.scribli.dragElement = undefined;
             hideDragTip();
-            window.siyuan.dragTitle = "";
+            window.scribli.dragTitle = "";
             /// #if !BROWSER
-            ipcRenderer.send(Constants.SIYUAN_SEND_WINDOWS, {cmd: "resetTabsStyle", data: "rmDragStyle"});
+            ipcRenderer.send(Constants.SCRIBLI_SEND_WINDOWS, {cmd: "resetTabsStyle", data: "rmDragStyle"});
             /// #else
             document.querySelectorAll(".layout-tab-bars--drag").forEach(item => {
                 item.classList.remove("layout-tab-bars--drag");
@@ -516,7 +516,7 @@ export class Files extends Model {
             /// #endif
         });
         this.element.addEventListener("dragover", (event: DragEvent & { target: HTMLElement }) => {
-            if (window.siyuan.config.readonly || !window.siyuan.dragElement || event.dataTransfer.types.includes(Constants.SIYUAN_DROP_TAB)) {
+            if (window.scribli.config.readonly || !window.scribli.dragElement || event.dataTransfer.types.includes(Constants.SCRIBLI_DROP_TAB)) {
                 event.preventDefault();
                 return;
             }
@@ -526,14 +526,14 @@ export class Files extends Model {
             }
             let gutterType = "";
             for (const item of event.dataTransfer.items) {
-                if (item.type.startsWith(Constants.SIYUAN_DROP_GUTTER)) {
+                if (item.type.startsWith(Constants.SCRIBLI_DROP_GUTTER)) {
                     gutterType = item.type;
                 }
             }
             // 标题/列表项等块标源拖到文档树的提示在下方 rAF 回调中根据高亮类判定
             // 其余无法转换的块标源（如段落）不显示提示
             if (gutterType) {
-                const gutterTypes = gutterType.replace(Constants.SIYUAN_DROP_GUTTER, "").split(Constants.ZWSP);
+                const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
                 if (!["nodelistitem", "nodeheading"].includes(gutterTypes[0])) {
                     hideDragTip();
                 }
@@ -556,7 +556,7 @@ export class Files extends Model {
                     dragOverLastObj.element?.classList.remove("dragover", "dragover__bottom", "dragover__top");
                     if (gutterType) {
                         // 块标拖拽
-                        const gutterTypes = gutterType.replace(Constants.SIYUAN_DROP_GUTTER, "").split(Constants.ZWSP);
+                        const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
                         if (!["nodelistitem", "nodeheading"].includes(gutterTypes[0])) {
                             event.preventDefault();
                             return;
@@ -592,9 +592,9 @@ export class Files extends Model {
                         return;
                     }
                     const notebookSort = notebookElement.getAttribute("data-sortmode");
-                    if ((dragOverLastObj.sourceOnlyRoot && targetType === "navigation-root" && window.siyuan.config.fileTree.sort === 6) ||
+                    if ((dragOverLastObj.sourceOnlyRoot && targetType === "navigation-root" && window.scribli.config.fileTree.sort === 6) ||
                         (!dragOverLastObj.sourceOnlyRoot && targetType !== "navigation-root" &&
-                            (notebookSort === "6" || (window.siyuan.config.fileTree.sort === 6 && notebookSort === "15")))
+                            (notebookSort === "6" || (window.scribli.config.fileTree.sort === 6 && notebookSort === "15")))
                     ) {
                         const nodeRect = liElement.getBoundingClientRect();
                         const dragHeight = nodeRect.height * .2;
@@ -625,29 +625,29 @@ export class Files extends Model {
                 // 文档→文档拖拽：依据当前高亮类显示对应操作提示（带目标文档名）
                 if (!gutterType) {
                     const name = liElement.querySelector(".b3-list-item__text")?.textContent || "";
-                    const title = window.siyuan.dragTitle || "";
+                    const title = window.scribli.dragTitle || "";
                     if (liElement.classList.contains("dragover__top")) {
-                        showDragTip(title, window.siyuan.languages.dragTipMoveBefore.replace("${x}", name), event.clientX, event.clientY);
+                        showDragTip(title, window.scribli.languages.dragTipMoveBefore.replace("${x}", name), event.clientX, event.clientY);
                     } else if (liElement.classList.contains("dragover__bottom")) {
-                        showDragTip(title, window.siyuan.languages.dragTipMoveAfter.replace("${x}", name), event.clientX, event.clientY);
+                        showDragTip(title, window.scribli.languages.dragTipMoveAfter.replace("${x}", name), event.clientX, event.clientY);
                     } else if (liElement.classList.contains("dragover")) {
-                        showDragTip(title, window.siyuan.languages.dragTipMoveChild.replace("${x}", name), event.clientX, event.clientY);
+                        showDragTip(title, window.scribli.languages.dragTipMoveChild.replace("${x}", name), event.clientX, event.clientY);
                     } else {
                         hideDragTip();
                     }
                 } else {
                     // 块标（标题/列表项）→文档树：结合“转换为文档”和位置（带目标文档名）
-                    const gutterTypes = gutterType.replace(Constants.SIYUAN_DROP_GUTTER, "").split(Constants.ZWSP);
+                    const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
                     if (["nodelistitem", "nodeheading"].includes(gutterTypes[0])) {
                         const name = liElement.querySelector(".b3-list-item__text")?.textContent || "";
-                        const title = window.siyuan.dragTitle || "";
+                        const title = window.scribli.dragTitle || "";
                         let action: string;
                         if (liElement.classList.contains("dragover__top")) {
-                            action = window.siyuan.languages.dragTip2DocBefore.replace("${x}", name);
+                            action = window.scribli.languages.dragTip2DocBefore.replace("${x}", name);
                         } else if (liElement.classList.contains("dragover__bottom")) {
-                            action = window.siyuan.languages.dragTip2DocAfter.replace("${x}", name);
+                            action = window.scribli.languages.dragTip2DocAfter.replace("${x}", name);
                         } else {
-                            action = window.siyuan.languages.dragTip2DocChild.replace("${x}", name);
+                            action = window.scribli.languages.dragTip2DocChild.replace("${x}", name);
                         }
                         showDragTip(title, action, event.clientX, event.clientY);
                     }
@@ -673,7 +673,7 @@ export class Files extends Model {
         this.element.addEventListener("drop", async (event: DragEvent & { target: HTMLElement }) => {
             counter = 0;
             hideDragTip();
-            window.siyuan.dragTitle = "";
+            window.scribli.dragTitle = "";
             const newElement = this.element.querySelector(".dragover, .dragover__bottom, .dragover__top");
             if (!newElement) {
                 return;
@@ -687,13 +687,13 @@ export class Files extends Model {
             const toPath = newElement.getAttribute("data-path");
             let gutterType = "";
             for (const item of event.dataTransfer.items) {
-                if (item.type.startsWith(Constants.SIYUAN_DROP_GUTTER)) {
+                if (item.type.startsWith(Constants.SCRIBLI_DROP_GUTTER)) {
                     gutterType = item.type;
                 }
             }
             // 块标拖拽
             if (gutterType) {
-                const gutterTypes = gutterType.replace(Constants.SIYUAN_DROP_GUTTER, "").split(Constants.ZWSP);
+                const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
                 if (["nodelistitem", "nodeheading"].includes(gutterTypes[0])) {
                     const toDocOptions: {
                         targetNoteBook: string;
@@ -730,11 +730,11 @@ export class Files extends Model {
                     }
                 }
                 newElement.classList.remove("dragover", "dragover__bottom", "dragover__top");
-                window.siyuan.dragElement = undefined;
+                window.scribli.dragElement = undefined;
                 return;
             }
-            window.siyuan.dragElement = undefined;
-            if (!event.dataTransfer.getData(Constants.SIYUAN_DROP_FILE)) {
+            window.scribli.dragElement = undefined;
+            if (!event.dataTransfer.getData(Constants.SCRIBLI_DROP_FILE)) {
                 newElement.classList.remove("dragover", "dragover__bottom", "dragover__top");
                 return;
             }
@@ -772,7 +772,7 @@ export class Files extends Model {
             }
             if (newElement.classList.contains("dragover__bottom") || newElement.classList.contains("dragover__top")) {
                 const ulSort = newUlElement.getAttribute("data-sortmode");
-                if (window.siyuan.config.fileTree.sort === 6 && selectRootElements.length > 0 &&
+                if (window.scribli.config.fileTree.sort === 6 && selectRootElements.length > 0 &&
                     newElement.getAttribute("data-path") === "/") {
                     if (newElement.classList.contains("dragover__top")) {
                         selectRootElements.forEach(item => {
@@ -790,7 +790,7 @@ export class Files extends Model {
                     fetchPost("/api/notebook/changeSortNotebook", {
                         notebooks,
                     });
-                } else if ((ulSort === "6" || (window.siyuan.config.fileTree.sort === 6 && ulSort === "15")) && selectFileElements.length > 0) {
+                } else if ((ulSort === "6" || (window.scribli.config.fileTree.sort === 6 && ulSort === "15")) && selectFileElements.length > 0) {
                     let hasMove = false;
                     const toDir = pathPosix().dirname(toPath);
                     const newElementClassList = newElement.getAttribute("class");
@@ -847,10 +847,10 @@ export class Files extends Model {
                             fetchPost("/api/filetree/listDocsByPath", {
                                 notebook: toURL,
                                 path: toDir === "/" ? "/" : toDir + ".sy",
-                                app: Constants.SIYUAN_APPID,
+                                app: Constants.SCRIBLI_APPID,
                             }, response => {
                                 if (response.data.path === "/" && response.data.files.length === 0) {
-                                    showMessage(window.siyuan.languages.emptyContent);
+                                    showMessage(window.scribli.languages.emptyContent);
                                     return;
                                 }
                                 this.onLsHTML(response.data, oldScrollTop);
@@ -940,7 +940,7 @@ export class Files extends Model {
                     this.selectItem(data.data.box.id, data.data.path);
                     break;
                 case "renamenotebook": {
-                    const notebook = window.siyuan.notebooks.find((item) => item.id === data.data.box);
+                    const notebook = window.scribli.notebooks.find((item) => item.id === data.data.box);
                     if (notebook) {
                         notebook.name = data.data.name;
                     }
@@ -955,8 +955,8 @@ export class Files extends Model {
     }
 
     private updateDocInfo(data: IWebSocketData) {
-        const notebook = window.siyuan.notebooks.find((item) => item.id === data.data.rootID);
-        const subFileCount = notebook && window.siyuan.isPublish ? notebook.subFileCount : data.data.subFileCount;
+        const notebook = window.scribli.notebooks.find((item) => item.id === data.data.rootID);
+        const subFileCount = notebook && window.scribli.isPublish ? notebook.subFileCount : data.data.subFileCount;
         if (notebook) {
             notebook.subFileCount = subFileCount;
         }
@@ -995,17 +995,17 @@ export class Files extends Model {
         const isBoxDoc = liElement.getAttribute("data-type") === "navigation-root" &&
             Boolean(liElement.getAttribute("data-node-id"));
         const hasChildren = (isFile || isBoxDoc) && Number(liElement.getAttribute("data-count")) > 0;
-        const iconUsesDocAction = window.siyuan.config.fileTree.docIconClickExpand && (isFile || isBoxDoc);
+        const iconUsesDocAction = window.scribli.config.fileTree.docIconClickExpand && (isFile || isBoxDoc);
         const editingPublishAccess = this.element.classList.contains("file-tree__publish-access--active");
         iconElement.setAttribute("aria-label", iconUsesDocAction ?
-            (hasChildren ? window.siyuan.languages.docIconClickExpand : window.siyuan.languages.openDocument) :
-            window.siyuan.languages.changeIcon);
+            (hasChildren ? window.scribli.languages.docIconClickExpand : window.scribli.languages.openDocument) :
+            window.scribli.languages.changeIcon);
         liElement.classList.toggle("file-tree__item--icon-expand", hasChildren && iconUsesDocAction &&
             !editingPublishAccess);
         liElement.classList.toggle("file-tree__item--icon-open", (isFile || isBoxDoc) && !hasChildren && iconUsesDocAction &&
             !editingPublishAccess);
         liElement.classList.toggle("file-tree__item--title-expand", hasChildren &&
-            window.siyuan.config.fileTree.parentDocClickExpand);
+            window.scribli.config.fileTree.parentDocClickExpand);
     }
 
     public updateDocActions() {
@@ -1055,18 +1055,18 @@ export class Files extends Model {
         // 加密笔记本关闭（锁定）时用 🔒 提示需解锁；打开（解锁）后恢复正常 emoji
         const iconContent = (item.encrypted && item.closed)
             ? "🔒️"
-            : unicode2Emoji(item.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].note);
-        const isBoxDoc = !item.closed && window.siyuan.config.fileTree.boxDocEnabled;
+            : unicode2Emoji(item.icon || window.scribli.storage[Constants.LOCAL_IMAGES].note);
+        const isBoxDoc = !item.closed && window.scribli.config.fileTree.boxDocEnabled;
         const hasChildren = isBoxDoc && item.subFileCount > 0;
-        const iconUsesDocAction = isBoxDoc && window.siyuan.config.fileTree.docIconClickExpand;
+        const iconUsesDocAction = isBoxDoc && window.scribli.config.fileTree.docIconClickExpand;
         const iconAriaLabel = iconUsesDocAction ?
-            (hasChildren ? window.siyuan.languages.docIconClickExpand : window.siyuan.languages.openDocument) :
-            window.siyuan.languages.changeIcon;
+            (hasChildren ? window.scribli.languages.docIconClickExpand : window.scribli.languages.openDocument) :
+            window.scribli.languages.changeIcon;
         const actionClasses = `${iconUsesDocAction && hasChildren && !editingPublishAccess ? " file-tree__item--icon-expand" : ""}${
             iconUsesDocAction && !hasChildren && !editingPublishAccess ? " file-tree__item--icon-open" : ""}${
-            hasChildren && window.siyuan.config.fileTree.parentDocClickExpand ? " file-tree__item--title-expand" : ""}`;
+            hasChildren && window.scribli.config.fileTree.parentDocClickExpand ? " file-tree__item--title-expand" : ""}`;
         const emojiHTML = `<span class="b3-list-item__icon ariaLabel${isBoxDoc ? " popover__block" : ""}${editingPublishAccess ? " fn__none" : ""}" data-position="8east"${isBoxDoc ? ` data-id="${item.id}"` : ""} aria-label="${iconAriaLabel}">${iconContent}</span>`;
-        const switchHTML = `<span class="b3-list-item__switch b3-tooltips b3-tooltips__e${editingPublishAccess ? "" : " fn__none"}" aria-label="${window.siyuan.languages.publishAccess}">${getPublishAccessOptionByLevel("public").iconHTML}</span>`;
+        const switchHTML = `<span class="b3-list-item__switch b3-tooltips b3-tooltips__e${editingPublishAccess ? "" : " fn__none"}" aria-label="${window.scribli.languages.publishAccess}">${getPublishAccessOptionByLevel("public").iconHTML}</span>`;
         if (item.closed) {
             return `<li data-url="${item.id}" class="b3-list-item b3-list-item--hide-action"${item.encrypted ? ' data-encrypted="true"' : ""}>
     <span class="b3-list-item__toggle fn__hidden">
@@ -1075,25 +1075,25 @@ export class Files extends Model {
     ${emojiHTML}
     ${switchHTML}
     <span class="b3-list-item__text" style="cursor: default;">${escapeHtml(item.name)}</span>
-    <span data-type="open" data-url="${item.id}" class="b3-list-item__action b3-tooltips b3-tooltips__w${(window.siyuan.config.readonly) ? " fn__none" : ""}" aria-label="${window.siyuan.languages.openBy}">
+    <span data-type="open" data-url="${item.id}" class="b3-list-item__action b3-tooltips b3-tooltips__w${(window.scribli.config.readonly) ? " fn__none" : ""}" aria-label="${window.scribli.languages.openBy}">
         <svg><use xlink:href="#iconOpen"></use></svg>
     </span>
 </li>`;
         } else {
             return `<ul class="b3-list b3-list--background" data-url="${item.id}" data-sort="${item.sort}" data-sortmode="${item.sortMode}">
-<li class="b3-list-item b3-list-item--hide-action${actionClasses}" ${window.siyuan.config.fileTree.sort === 6 ? 'draggable="true"' : ""}
+<li class="b3-list-item b3-list-item--hide-action${actionClasses}" ${window.scribli.config.fileTree.sort === 6 ? 'draggable="true"' : ""}
 style="--file-toggle-width:22px;--file-action-offset:22px"
-data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}" data-node-id="${window.siyuan.config.fileTree.boxDocEnabled ? item.id : ""}">
+data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}" data-node-id="${window.scribli.config.fileTree.boxDocEnabled ? item.id : ""}">
     <span class="b3-list-item__toggle b3-list-item__toggle--hl${isBoxDoc && !hasChildren ? " fn__hidden" : ""}">
         <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
     </span>
     ${emojiHTML}
     ${switchHTML}
     <span class="b3-list-item__text ariaLabel" data-position="parentE">${escapeHtml(item.name)}</span>
-    <span data-type="more-root" class="b3-list-item__action b3-tooltips b3-tooltips__w${(window.siyuan.config.readonly) ? " fn__none" : ""}" aria-label="${window.siyuan.languages.more}">
+    <span data-type="more-root" class="b3-list-item__action b3-tooltips b3-tooltips__w${(window.scribli.config.readonly) ? " fn__none" : ""}" aria-label="${window.scribli.languages.more}">
         <svg><use xlink:href="#iconMore"></use></svg>
     </span>
-    <span data-type="new" class="b3-list-item__action b3-tooltips b3-tooltips__w${(window.siyuan.config.readonly) ? " fn__none" : ""}" aria-label="${window.siyuan.languages.newSubDoc}">
+    <span data-type="new" class="b3-list-item__action b3-tooltips b3-tooltips__w${(window.scribli.config.readonly) ? " fn__none" : ""}" aria-label="${window.scribli.languages.newSubDoc}">
         <svg><use xlink:href="#iconAdd"></use></svg>
     </span>
 </li></ul>`;
@@ -1105,7 +1105,7 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
         let closeHtml = "";
         let closeCounter = 0;
         const scrollTop = this.element.scrollTop;
-        window.siyuan.notebooks.forEach((item) => {
+        window.scribli.notebooks.forEach((item) => {
             if (item.closed) {
                 closeCounter++;
                 closeHtml += this.genNotebook(item);
@@ -1122,7 +1122,7 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
         } else {
             this.closeElement.classList.add("fn__none");
         }
-        window.siyuan.storage[Constants.LOCAL_FILESPATHS].forEach(async (item: IFilesPath) => {
+        window.scribli.storage[Constants.LOCAL_FILESPATHS].forEach(async (item: IFilesPath) => {
             for (const openPath of item.openPaths) {
                 await this.selectItem(item.notebookId, openPath, undefined, false, false);
             }
@@ -1197,8 +1197,8 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
                         parentElement.setAttribute("data-count", "0");
                         this.updateDocActionElement(parentElement);
                         const emojiElement = iconElement.parentElement.nextElementSibling;
-                        if (emojiElement.innerHTML === unicode2Emoji(window.siyuan.storage[Constants.LOCAL_IMAGES].folder)) {
-                            emojiElement.innerHTML = unicode2Emoji(window.siyuan.storage[Constants.LOCAL_IMAGES].file);
+                        if (emojiElement.innerHTML === unicode2Emoji(window.scribli.storage[Constants.LOCAL_IMAGES].folder)) {
+                            emojiElement.innerHTML = unicode2Emoji(window.scribli.storage[Constants.LOCAL_IMAGES].file);
                         }
                     }
                     targetElement.parentElement.remove();
@@ -1276,8 +1276,8 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
                     parentLiElement.setAttribute("data-count", "0");
                     this.updateDocActionElement(parentLiElement);
                     const emojiElement = parentLiElement.querySelector(".b3-list-item__icon");
-                    if (emojiElement.innerHTML === unicode2Emoji(window.siyuan.storage[Constants.LOCAL_IMAGES].folder)) {
-                        emojiElement.innerHTML = unicode2Emoji(window.siyuan.storage[Constants.LOCAL_IMAGES].file);
+                    if (emojiElement.innerHTML === unicode2Emoji(window.scribli.storage[Constants.LOCAL_IMAGES].folder)) {
+                        emojiElement.innerHTML = unicode2Emoji(window.scribli.storage[Constants.LOCAL_IMAGES].file);
                     }
                 }
                 sourceElement.parentElement.remove();
@@ -1300,8 +1300,8 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
                 this.updateDocActionElement(newElement);
             }
             const emojiElement = newElement.querySelector(".b3-list-item__icon");
-            if (emojiElement.innerHTML === unicode2Emoji(window.siyuan.storage[Constants.LOCAL_IMAGES].file)) {
-                emojiElement.innerHTML = unicode2Emoji(window.siyuan.storage[Constants.LOCAL_IMAGES].folder);
+            if (emojiElement.innerHTML === unicode2Emoji(window.scribli.storage[Constants.LOCAL_IMAGES].file)) {
+                emojiElement.innerHTML = unicode2Emoji(window.scribli.storage[Constants.LOCAL_IMAGES].folder);
             }
             const arrowElement = newElement.querySelector(".b3-list-item__arrow");
             if (arrowElement.classList.contains("b3-list-item__arrow--open") && response.callback !== Constants.CB_MOVE_NOLIST) {
@@ -1380,8 +1380,8 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
         arrowElement.classList.add("b3-list-item__arrow--open");
         arrowElement.parentElement.classList.remove("fn__hidden");
         const emojiElement = liElement.querySelector(".b3-list-item__icon");
-        if (emojiElement.textContent === unicode2Emoji(window.siyuan.storage[Constants.LOCAL_IMAGES].file)) {
-            emojiElement.textContent = unicode2Emoji(window.siyuan.storage[Constants.LOCAL_IMAGES].folder);
+        if (emojiElement.textContent === unicode2Emoji(window.scribli.storage[Constants.LOCAL_IMAGES].file)) {
+            emojiElement.textContent = unicode2Emoji(window.scribli.storage[Constants.LOCAL_IMAGES].folder);
         }
         liElement.insertAdjacentHTML("afterend", `<ul>${fileHTML}</ul>`);
         let newLiElement;
@@ -1393,7 +1393,7 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
                 const response = await fetchSyncPost("/api/filetree/listDocsByPath", {
                     notebook: data.box,
                     path: item.path,
-                    app: Constants.SIYUAN_APPID,
+                    app: Constants.SCRIBLI_APPID,
                 });
                 newLiElement = await this.selectItem(response.data.box, filePath, response.data, setStorage, isSetCurrent);
             }
@@ -1442,7 +1442,7 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
         fetchPost("/api/filetree/listDocsByPath", {
             notebook: notebookId,
             path: liElement.getAttribute("data-path"),
-            app: Constants.SIYUAN_APPID,
+            app: Constants.SCRIBLI_APPID,
         }, response => {
             if (response.data.path === "/" && response.data.files.length === 0) {
                 newFileInTree(this.app, notebookId, "/");
@@ -1464,7 +1464,7 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
             // 有文件树和编辑器的布局初始化时，文件树还未挂载
             return;
         }
-        const boxDocID = window.siyuan.config.fileTree.boxDocEnabled ? notebookId : "";
+        const boxDocID = window.scribli.config.fileTree.boxDocEnabled ? notebookId : "";
         if (boxDocID && filePath === `/${boxDocID}.sy`) {
             const boxDocElement = treeElement.querySelector("[data-type=\"navigation-root\"]") as HTMLElement;
             if (isSetCurrent) {
@@ -1507,7 +1507,7 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
             const response = await fetchSyncPost("/api/filetree/listDocsByPath", {
                 notebook: notebookId,
                 path: currentPath,
-                app: Constants.SIYUAN_APPID,
+                app: Constants.SCRIBLI_APPID,
             });
             liElement = await this.onLsSelect(response.data, filePath, setStorage, isSetCurrent);
         }
@@ -1546,29 +1546,29 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
                 filesPaths.push(notebookPaths);
             }
         });
-        window.siyuan.storage[Constants.LOCAL_FILESPATHS] = filesPaths;
+        window.scribli.storage[Constants.LOCAL_FILESPATHS] = filesPaths;
         setStorageVal(Constants.LOCAL_FILESPATHS, filesPaths);
     }
 
     private genDocAriaLabel(item: IFile, escapeMethod: (text: string) => string) {
-        return `${escapeMethod(getDocDisplayName(item.name, item.titleEmpty))} <small class='ft__on-surface'>${item.hSize}</small>${item.bookmark ? "<br>" + window.siyuan.languages.bookmark + " " + escapeMethod(item.bookmark) : ""}${item.name1 ? "<br>" + window.siyuan.languages.name + " " + escapeMethod(item.name1) : ""}${item.alias ? "<br>" + window.siyuan.languages.alias + " " + escapeMethod(item.alias) : ""}${item.memo ? "<br>" + window.siyuan.languages.memo + " " + escapeMethod(item.memo) : ""}${item.subFileCount !== 0 ? window.siyuan.languages.includeSubFile.replace("x", item.subFileCount) : ""}<br>${window.siyuan.languages.modifiedAt} ${item.hMtime}<br>${window.siyuan.languages.createdAt} ${item.hCtime}`;
+        return `${escapeMethod(getDocDisplayName(item.name, item.titleEmpty))} <small class='ft__on-surface'>${item.hSize}</small>${item.bookmark ? "<br>" + window.scribli.languages.bookmark + " " + escapeMethod(item.bookmark) : ""}${item.name1 ? "<br>" + window.scribli.languages.name + " " + escapeMethod(item.name1) : ""}${item.alias ? "<br>" + window.scribli.languages.alias + " " + escapeMethod(item.alias) : ""}${item.memo ? "<br>" + window.scribli.languages.memo + " " + escapeMethod(item.memo) : ""}${item.subFileCount !== 0 ? window.scribli.languages.includeSubFile.replace("x", item.subFileCount) : ""}<br>${window.scribli.languages.modifiedAt} ${item.hMtime}<br>${window.scribli.languages.createdAt} ${item.hCtime}`;
     }
 
     private genFileHTML(item: IFile) {
         let countHTML = "";
         if (item.count && item.count > 0) {
-            countHTML = `<span class="popover__block counter b3-tooltips b3-tooltips__nw" aria-label="${window.siyuan.languages.ref}">${item.count}</span>`;
+            countHTML = `<span class="popover__block counter b3-tooltips b3-tooltips__nw" aria-label="${window.scribli.languages.ref}">${item.count}</span>`;
         }
         const ariaLabel = this.genDocAriaLabel(item, escapeAriaLabel);
         const paddingLeft = (item.path.split("/").length - 1) * 18;
         const editingPublishAccess = this.element.classList.contains("file-tree__publish-access--active");
-        const iconExpands = window.siyuan.config.fileTree.docIconClickExpand;
+        const iconExpands = window.scribli.config.fileTree.docIconClickExpand;
         const iconAriaLabel = iconExpands ?
-            (item.subFileCount > 0 ? window.siyuan.languages.docIconClickExpand : window.siyuan.languages.openDocument) :
-            window.siyuan.languages.changeIcon;
+            (item.subFileCount > 0 ? window.scribli.languages.docIconClickExpand : window.scribli.languages.openDocument) :
+            window.scribli.languages.changeIcon;
         const actionClasses = `${iconExpands && item.subFileCount > 0 && !editingPublishAccess ? " file-tree__item--icon-expand" : ""}${
             iconExpands && item.subFileCount === 0 && !editingPublishAccess ? " file-tree__item--icon-open" : ""}${
-            window.siyuan.config.fileTree.parentDocClickExpand && item.subFileCount > 0 ? " file-tree__item--title-expand" : ""}`;
+            window.scribli.config.fileTree.parentDocClickExpand && item.subFileCount > 0 ? " file-tree__item--title-expand" : ""}`;
         return `<li data-node-id="${item.id}" data-name="${Lute.EscapeHTMLStr(item.name)}" draggable="true" data-count="${item.subFileCount}" 
 data-type="navigation-file" 
 style="--file-toggle-width:${paddingLeft + 18}px;--file-action-offset:${paddingLeft + 20}px"
@@ -1576,14 +1576,14 @@ class="b3-list-item b3-list-item--hide-action${actionClasses}" data-path="${item
     <span style="padding-left: ${paddingLeft}px" class="b3-list-item__toggle b3-list-item__toggle--hl${item.subFileCount === 0 ? " fn__hidden" : ""}">
         <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
     </span>
-    <span class="b3-list-item__icon ariaLabel popover__block${editingPublishAccess ? " fn__none" : ""}" data-position="8east" data-id="${item.id}" aria-label="${iconAriaLabel}">${unicode2Emoji(item.icon || (item.subFileCount === 0 ? window.siyuan.storage[Constants.LOCAL_IMAGES].file : window.siyuan.storage[Constants.LOCAL_IMAGES].folder))}</span>
-    <span class="b3-list-item__switch b3-tooltips b3-tooltips__n${editingPublishAccess ? "" : " fn__none"}" aria-label="${window.siyuan.languages.publishAccess}">${getPublishAccessOptionByLevel("public").iconHTML}</span>
+    <span class="b3-list-item__icon ariaLabel popover__block${editingPublishAccess ? " fn__none" : ""}" data-position="8east" data-id="${item.id}" aria-label="${iconAriaLabel}">${unicode2Emoji(item.icon || (item.subFileCount === 0 ? window.scribli.storage[Constants.LOCAL_IMAGES].file : window.scribli.storage[Constants.LOCAL_IMAGES].folder))}</span>
+    <span class="b3-list-item__switch b3-tooltips b3-tooltips__n${editingPublishAccess ? "" : " fn__none"}" aria-label="${window.scribli.languages.publishAccess}">${getPublishAccessOptionByLevel("public").iconHTML}</span>
     <span class="b3-list-item__text ariaLabel" data-delay="200" data-position="parentE"
 aria-label="${ariaLabel}">${getDocDisplayName(item.name, item.titleEmpty, true)}</span>
-    <span data-type="more-file" class="b3-list-item__action b3-tooltips b3-tooltips__nw" aria-label="${window.siyuan.languages.more}">
+    <span data-type="more-file" class="b3-list-item__action b3-tooltips b3-tooltips__nw" aria-label="${window.scribli.languages.more}">
         <svg><use xlink:href="#iconMore"></use></svg>
     </span>
-    <span data-type="new" class="b3-list-item__action b3-tooltips b3-tooltips__nw${window.siyuan.config.readonly ? " fn__none" : ""}" aria-label="${window.siyuan.languages.newSubDoc}">
+    <span data-type="new" class="b3-list-item__action b3-tooltips b3-tooltips__nw${window.scribli.config.readonly ? " fn__none" : ""}" aria-label="${window.scribli.languages.newSubDoc}">
         <svg><use xlink:href="#iconAdd"></use></svg>
     </span>
     ${countHTML}
@@ -1591,28 +1591,28 @@ aria-label="${ariaLabel}">${getDocDisplayName(item.name, item.titleEmpty, true)}
     }
 
     private initMoreMenu() {
-        window.siyuan.menus.menu.remove();
-        if (!window.siyuan.config.readonly) {
-            window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.remove();
+        if (!window.scribli.config.readonly) {
+            window.scribli.menus.menu.append(new MenuItem({
                 icon: "iconNewNoteBook",
-                label: window.siyuan.languages.newNotebook,
+                label: window.scribli.languages.newNotebook,
                 click: () => {
                     newNotebook();
                 }
             }).element);
-            if (window.siyuan.config.notebookCrypto?.enabled) {
-                window.siyuan.menus.menu.append(new MenuItem({
+            if (window.scribli.config.notebookCrypto?.enabled) {
+                window.scribli.menus.menu.append(new MenuItem({
                     icon: "iconLock",
-                    label: window.siyuan.languages.newEncryptedNotebook,
+                    label: window.scribli.languages.newEncryptedNotebook,
                     click: () => {
                         newEncryptedNotebook();
                     }
                 }).element);
             }
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             icon: "iconRefresh",
-            label: window.siyuan.languages.rebuildDataIndex,
+            label: window.scribli.languages.rebuildDataIndex,
             click: () => {
                 if (!this.element.getAttribute("disabled")) {
                     this.element.setAttribute("disabled", "disabled");
@@ -1623,29 +1623,29 @@ aria-label="${ariaLabel}">${getDocDisplayName(item.name, item.titleEmpty, true)}
                 }
             }
         }).element);
-        if (!window.siyuan.config.readonly) {
-            const subMenu = sortMenu("notebooks", window.siyuan.config.fileTree.sort, (sort: number) => {
+        if (!window.scribli.config.readonly) {
+            const subMenu = sortMenu("notebooks", window.scribli.config.fileTree.sort, (sort: number) => {
                 fetchPost("/api/setting/setFiletree", {
-                    ...window.siyuan.config.fileTree,
+                    ...window.scribli.config.fileTree,
                     sort,
                 }, (response) => {
-                    window.siyuan.config.fileTree = response.data;
+                    window.scribli.config.fileTree = response.data;
                     setNoteBook(() => {
                         this.init(false);
                     });
                 });
             });
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 icon: "iconSort",
-                label: window.siyuan.languages.sort,
+                label: window.scribli.languages.sort,
                 type: "submenu",
                 submenu: subMenu,
             }).element);
         }
-        if (!window.siyuan.config.readonly && window.siyuan.config.publish.enable) {
-            window.siyuan.menus.menu.append(new MenuItem({
+        if (!window.scribli.config.readonly && window.scribli.config.publish.enable) {
+            window.scribli.menus.menu.append(new MenuItem({
                 icon: "iconEye",
-                label: window.siyuan.languages.publishAccess,
+                label: window.scribli.languages.publishAccess,
                 checked: this.element.classList.contains("file-tree__publish-access--active"),
                 click: () => {
                     this.element.classList.toggle("file-tree__publish-access--active");
@@ -1659,11 +1659,11 @@ aria-label="${ariaLabel}">${getDocDisplayName(item.name, item.titleEmpty, true)}
                 }
             }).element);
         }
-        return window.siyuan.menus.menu;
+        return window.scribli.menus.menu;
     }
 
     private refreshPublishAccessSwitch() {
-        if (window.siyuan.config.readonly || window.siyuan.isPublish ||
+        if (window.scribli.config.readonly || window.scribli.isPublish ||
             !this.element.classList.contains("file-tree__publish-access--active")) {
             return;
         }

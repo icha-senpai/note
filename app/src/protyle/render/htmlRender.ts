@@ -10,7 +10,7 @@ export const htmlRender = (element: Element) => {
     }
     htmlElements.forEach((e) => {
         e.setAttribute("data-render", "true");
-        e.firstElementChild.firstElementChild.setAttribute("aria-label", window.siyuan.languages.edit);
-        e.firstElementChild.lastElementChild.setAttribute("aria-label", window.siyuan.languages.more);
+        e.firstElementChild.firstElementChild.setAttribute("aria-label", window.scribli.languages.edit);
+        e.firstElementChild.lastElementChild.setAttribute("aria-label", window.scribli.languages.more);
     });
 };

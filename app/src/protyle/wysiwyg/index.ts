@@ -108,8 +108,8 @@ import {updateCalloutType} from "./callout";
 import {nbsp2space, removeZWJ} from "../util/normalizeText";
 import {setFold} from "../util/blockFold";
 import {BlockPanel} from "../../block/Panel";
-import {isEncryptedBox, parseSiYuanUriInfo} from "../../util/pathName";
-import {processSiYuanUri} from "../../util/uri";
+import {isEncryptedBox, parseScribliUriInfo} from "../../util/pathName";
+import {processScribliUri} from "../../util/uri";
 
 export class WYSIWYG {
     public lastHTMLs: { [key: string]: string } = {};
@@ -158,7 +158,7 @@ export class WYSIWYG {
         } else {
             this.element.setAttribute("contenteditable", "true");
         }
-        if (window.siyuan.config.editor.displayBookmarkIcon) {
+        if (window.scribli.config.editor.displayBookmarkIcon) {
             this.element.classList.add("protyle-wysiwyg--attr");
         }
         this.bindCommonEvent(protyle);
@@ -173,7 +173,7 @@ export class WYSIWYG {
     public renderCustom(ial: Record<string, string>) {
         let isFullWidth = ial[Constants.CUSTOM_SY_FULLWIDTH];
         if (!isFullWidth) {
-            isFullWidth = window.siyuan.config.editor.fullWidth ? "true" : "false";
+            isFullWidth = window.scribli.config.editor.fullWidth ? "true" : "false";
         }
         if (isFullWidth === "true") {
             this.element.parentElement.setAttribute("data-fullwidth", "true");
@@ -296,7 +296,7 @@ export class WYSIWYG {
 
     private bindCommonEvent(protyle: IProtyle) {
         this.element.addEventListener("copy", async (event: ClipboardEvent & { target: HTMLElement }) => {
-            window.siyuan.ctrlIsPressed = false; // https://github.com/siyuan-note/siyuan/issues/6373
+            window.scribli.ctrlIsPressed = false; // https://github.com/siyuan-note/siyuan/issues/6373
             // https://github.com/siyuan-note/siyuan/issues/4600
             if (event.target.tagName === "PROTYLE-HTML" || event.target.localName === "input") {
                 event.stopPropagation();
@@ -738,7 +738,7 @@ export class WYSIWYG {
                         const ids: string[] = [];
                         if (!hasSelectClassElement && protyle.scroll && !protyle.scroll.element.classList.contains("fn__none") && !protyle.scroll.keepLazyLoad &&
                             (startElement.getBoundingClientRect().top < -protyle.contentElement.clientHeight * 2 || endElement.getBoundingClientRect().bottom > protyle.contentElement.clientHeight * 2)) {
-                            showMessage(window.siyuan.languages.crossKeepLazyLoad);
+                            showMessage(window.scribli.languages.crossKeepLazyLoad);
                         }
                         selectElements.forEach(item => {
                             if (!hasClosestByClassName(item, "protyle-wysiwyg--select")) {
@@ -1278,7 +1278,7 @@ export class WYSIWYG {
                 tableBlockElement = nodeElement;
                 if (tableBlockElement) {
                     tableBlockElement.querySelector(".table__select").removeAttribute("style");
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     hideElements(["toolbar"], protyle);
                     if (target.classList.contains("table__select")) {
                         target = document.elementFromPoint(event.clientX, event.clientY) as HTMLElement;
@@ -1689,11 +1689,11 @@ export class WYSIWYG {
                         if (getSelection().rangeCount > 0) {
                             getSelection().getRangeAt(0).collapse(false);
                         }
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                         if (!protyle.disabled) {
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "mergeCell",
-                                label: window.siyuan.languages.mergeCell,
+                                label: window.scribli.languages.mergeCell,
                                 click: () => {
                                     if (tableBlockElement) {
                                         const selectCellElements: HTMLTableCellElement[] = [];
@@ -1819,15 +1819,15 @@ export class WYSIWYG {
                                     }
                                 }
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "separator_1",
                                 type: "separator"
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "alignLeft",
                                 icon: "iconAlignLeft",
-                                accelerator: window.siyuan.config.keymap.editor.general.alignLeft.custom,
-                                label: window.siyuan.languages.alignLeft,
+                                accelerator: window.scribli.config.keymap.editor.general.alignLeft.custom,
+                                label: window.scribli.languages.alignLeft,
                                 click: () => {
                                     if (tableBlockElement) {
                                         const selectCellElements: HTMLTableCellElement[] = [];
@@ -1849,11 +1849,11 @@ export class WYSIWYG {
                                     }
                                 }
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "alignCenter",
                                 icon: "iconAlignCenter",
-                                accelerator: window.siyuan.config.keymap.editor.general.alignCenter.custom,
-                                label: window.siyuan.languages.alignCenter,
+                                accelerator: window.scribli.config.keymap.editor.general.alignCenter.custom,
+                                label: window.scribli.languages.alignCenter,
                                 click: () => {
                                     if (tableBlockElement) {
                                         const selectCellElements: HTMLTableCellElement[] = [];
@@ -1875,11 +1875,11 @@ export class WYSIWYG {
                                     }
                                 }
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "alignRight",
                                 icon: "iconAlignRight",
-                                accelerator: window.siyuan.config.keymap.editor.general.alignRight.custom,
-                                label: window.siyuan.languages.alignRight,
+                                accelerator: window.scribli.config.keymap.editor.general.alignRight.custom,
+                                label: window.scribli.languages.alignRight,
                                 click: () => {
                                     if (tableBlockElement) {
                                         const selectCellElements: HTMLTableCellElement[] = [];
@@ -1900,10 +1900,10 @@ export class WYSIWYG {
                                     }
                                 }
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "useDefaultAlign",
                                 icon: "",
-                                label: window.siyuan.languages.useDefaultAlign,
+                                label: window.scribli.languages.useDefaultAlign,
                                 click: () => {
                                     if (tableBlockElement) {
                                         const selectCellElements: HTMLTableCellElement[] = [];
@@ -1925,14 +1925,14 @@ export class WYSIWYG {
                                     }
                                 }
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "separator_2",
                                 type: "separator"
                             }).element);
                         }
-                        window.siyuan.menus.menu.append(new MenuItem({
+                        window.scribli.menus.menu.append(new MenuItem({
                             id: "copyPlainText",
-                            label: window.siyuan.languages.copyPlainText,
+                            label: window.scribli.languages.copyPlainText,
                             click() {
                                 if (tableBlockElement) {
                                     const selectCellElements: HTMLTableCellElement[] = [];
@@ -1962,11 +1962,11 @@ export class WYSIWYG {
                                 }
                             }
                         }).element);
-                        window.siyuan.menus.menu.append(new MenuItem({
+                        window.scribli.menus.menu.append(new MenuItem({
                             id: "copy",
                             icon: "iconCopy",
                             accelerator: "⌘C",
-                            label: window.siyuan.languages.copy,
+                            label: window.scribli.languages.copy,
                             click() {
                                 if (tableBlockElement) {
                                     focusByRange(getEditorRange(tableBlockElement));
@@ -1975,11 +1975,11 @@ export class WYSIWYG {
                             }
                         }).element);
                         if (!protyle.disabled) {
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "cut",
                                 icon: "iconCut",
                                 accelerator: "⌘X",
-                                label: window.siyuan.languages.cut,
+                                label: window.scribli.languages.cut,
                                 click() {
                                     if (tableBlockElement) {
                                         focusByRange(getEditorRange(tableBlockElement));
@@ -1987,18 +1987,18 @@ export class WYSIWYG {
                                     }
                                 }
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "clear",
-                                label: window.siyuan.languages.clear,
+                                label: window.scribli.languages.clear,
                                 icon: "iconTrashcan",
                                 accelerator: "⌦",
                                 click() {
                                     clearTableCell(protyle, tableBlockElement as HTMLElement);
                                 }
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
+                            window.scribli.menus.menu.append(new MenuItem({
                                 id: "paste",
-                                label: window.siyuan.languages.paste,
+                                label: window.scribli.languages.paste,
                                 icon: "iconPaste",
                                 accelerator: "⌘V",
                                 async click() {
@@ -2015,7 +2015,7 @@ export class WYSIWYG {
                                 }
                             }).element);
                         }
-                        window.siyuan.menus.menu.popup({x: mouseUpEvent.clientX - 8, y: mouseUpEvent.clientY - 16});
+                        window.scribli.menus.menu.popup({x: mouseUpEvent.clientX - 8, y: mouseUpEvent.clientY - 16});
                     }
                 }
 
@@ -2029,7 +2029,7 @@ export class WYSIWYG {
                 if (getSelection().rangeCount > 0) {
                     const range = getSelection().getRangeAt(0);
                     if (range.toString() === "" ||
-                        window.siyuan.shiftIsPressed  // https://ld246.com/article/1650096678723
+                        window.scribli.shiftIsPressed  // https://ld246.com/article/1650096678723
                     ) {
                         if (event.detail > 2) {
                             // table 前或最后一个 cell 三击状态不对
@@ -2110,7 +2110,7 @@ export class WYSIWYG {
         });
 
         this.element.addEventListener("cut", async (event: ClipboardEvent & { target: HTMLElement }) => {
-            window.siyuan.ctrlIsPressed = false; // https://github.com/siyuan-note/siyuan/issues/6373
+            window.scribli.ctrlIsPressed = false; // https://github.com/siyuan-note/siyuan/issues/6373
             if (protyle.disabled) {
                 return;
             }
@@ -2480,7 +2480,7 @@ export class WYSIWYG {
                 // 多选块
                 hideElements(["util"], protyle);
                 protyle.gutter.renderMenu(protyle, selectElements[0]);
-                window.siyuan.menus.menu.popup({x, y});
+                window.scribli.menus.menu.popup({x, y});
                 return;
             }
             const target = event.detail.target || event.target as HTMLElement;
@@ -2491,9 +2491,9 @@ export class WYSIWYG {
                 }
                 protyle.gutter.renderMenu(protyle, embedElement);
                 /// #if MOBILE
-                window.siyuan.menus.menu.fullscreen();
+                window.scribli.menus.menu.fullscreen();
                 /// #else
-                window.siyuan.menus.menu.popup({x, y});
+                window.scribli.menus.menu.popup({x, y});
                 /// #endif
                 return false;
             }
@@ -2580,7 +2580,7 @@ export class WYSIWYG {
                         id: avTabHeaderElement.parentElement.querySelector(".item--focus").getAttribute("data-id"),
                         avID: nodeElement.getAttribute("data-av-id"),
                     }]);
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     openViewMenu({
                         protyle,
                         blockElement: nodeElement,
@@ -2622,8 +2622,8 @@ export class WYSIWYG {
                     return false;
                 } else if (types.includes("a")) {
                     linkMenu(protyle, target);
-                    if (window.siyuan.config.editor.floatWindowMode === 0 &&
-                        parseSiYuanUriInfo(target.getAttribute("data-href"))) {
+                    if (window.scribli.config.editor.floatWindowMode === 0 &&
+                        parseScribliUriInfo(target.getAttribute("data-href"))) {
                         // 阻止 popover
                         target.setAttribute("prevent-popover", "true");
                         setTimeout(() => {
@@ -2651,7 +2651,7 @@ export class WYSIWYG {
             ) {
                 if ((!isMobile() || protyle.toolbar?.element.classList.contains("fn__none")) && !nodeElement.classList.contains("av")) {
                     contentMenu(protyle, nodeElement);
-                    window.siyuan.menus.menu.popup({x, y: y + 13, h: 26});
+                    window.scribli.menus.menu.popup({x, y: y + 13, h: 26});
                     protyle.toolbar?.element.classList.add("fn__none");
                     if (nodeElement.classList.contains("table")) {
                         nodeElement.querySelector(".table__select").removeAttribute("style");
@@ -2663,9 +2663,9 @@ export class WYSIWYG {
                     protyle.gutter.renderMenu(protyle, nodeElement);
                 }
                 /// #if MOBILE
-                window.siyuan.menus.menu.fullscreen();
+                window.scribli.menus.menu.fullscreen();
                 /// #else
-                window.siyuan.menus.menu.popup({x, y});
+                window.scribli.menus.menu.popup({x, y});
                 /// #endif
                 protyle.toolbar?.element.classList.add("fn__none");
             }
@@ -2712,7 +2712,7 @@ export class WYSIWYG {
                     const getDocParam: IObject = {
                         id: protyle.wysiwyg.element.firstElementChild.getAttribute("data-node-id"),
                         mode: 1,
-                        size: window.siyuan.config.editor.dynamicLoadBlocks,
+                        size: window.scribli.config.editor.dynamicLoadBlocks,
                     };
                     if (isEncryptedBox(protyle.notebookId)) {
                         getDocParam.notebook = protyle.notebookId;
@@ -2732,7 +2732,7 @@ export class WYSIWYG {
                     const getDocParam: IObject = {
                         id: protyle.wysiwyg.element.lastElementChild.getAttribute("data-node-id"),
                         mode: 2,
-                        size: window.siyuan.config.editor.dynamicLoadBlocks,
+                        size: window.scribli.config.editor.dynamicLoadBlocks,
                     };
                     if (isEncryptedBox(protyle.notebookId)) {
                         getDocParam.notebook = protyle.notebookId;
@@ -2757,7 +2757,7 @@ export class WYSIWYG {
                 const tableSelectElement = tableElement.querySelector(".table__select") as HTMLElement;
                 if (tableSelectElement?.style.width) {
                     tableSelectElement.removeAttribute("style");
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                 }
             }
         }, {passive: true});
@@ -2772,7 +2772,7 @@ export class WYSIWYG {
                 event.preventDefault();
                 return;
             }
-            window.siyuan.ctrlIsPressed = false; // https://github.com/siyuan-note/siyuan/issues/6373
+            window.scribli.ctrlIsPressed = false; // https://github.com/siyuan-note/siyuan/issues/6373
             // https://github.com/siyuan-note/siyuan/issues/4600
             if (event.target.tagName === "PROTYLE-HTML" || event.target.localName === "input") {
                 event.stopPropagation();
@@ -2874,9 +2874,9 @@ export class WYSIWYG {
             }
             if (event.inputType === "historyUndo") {
                 /// #if !BROWSER
-                ipcRenderer.send(Constants.SIYUAN_CMD, "redo");
+                ipcRenderer.send(Constants.SCRIBLI_CMD, "redo");
                 /// #endif
-                window.siyuan.menus.menu.remove();
+                window.scribli.menus.menu.remove();
                 return;
             }
             const range = getEditorRange(this.element);
@@ -2950,7 +2950,7 @@ export class WYSIWYG {
 
             if (event.eventPhase !== 3 && !event.shiftKey && (event.key.indexOf("Arrow") > -1 || event.key === "Home" || event.key === "End" || event.key === "PageUp" || event.key === "PageDown") && !event.isComposing) {
                 if (nodeElement && protyle.hint.element.classList.contains("fn__none") &&
-                    window.siyuan.menus.menu.element.classList.contains("fn__none")) {
+                    window.scribli.menus.menu.element.classList.contains("fn__none")) {
                     clearSelect(["img", "av"], protyle.wysiwyg.element);
                     this.setEmptyOutline(protyle, nodeElement);
                     if (range.toString() === "" && !nodeElement.classList.contains("protyle-wysiwyg--select")) {
@@ -3134,15 +3134,15 @@ export class WYSIWYG {
             }
 
             const blockRefElement = hasClosestByAttribute(event.target, "data-type", "block-ref");
-            const siyuanURIInfo = parseSiYuanUriInfo(aLink);
-            if (siyuanURIInfo?.avItemID && (range.toString() === "" || event.shiftKey)) {
+            const scribliURIInfo = parseScribliUriInfo(aLink);
+            if (scribliURIInfo?.avItemID && (range.toString() === "" || event.shiftKey)) {
                 event.stopPropagation();
                 event.preventDefault();
                 hideElements(["dialog", "toolbar"], protyle);
-                processSiYuanUri(protyle.app, aLink);
+                processScribliUri(protyle.app, aLink);
                 return;
             }
-            if (blockRefElement || siyuanURIInfo) {
+            if (blockRefElement || scribliURIInfo) {
                 event.stopPropagation();
                 event.preventDefault();
                 hideElements(["dialog", "toolbar"], protyle);
@@ -3150,8 +3150,8 @@ export class WYSIWYG {
                     let refBlockId: string;
                     if (blockRefElement) {
                         refBlockId = blockRefElement.getAttribute("data-id");
-                    } else if (siyuanURIInfo) {
-                        refBlockId = siyuanURIInfo.id;
+                    } else if (scribliURIInfo) {
+                        refBlockId = scribliURIInfo.id;
                     }
                     checkFold(refBlockId, (zoomIn, action, isRoot) => {
                         // 块引用跳转后需要短暂高亮目标块 https://github.com/siyuan-note/siyuan/issues/11542
@@ -3297,7 +3297,7 @@ export class WYSIWYG {
                 return;
             }
 
-            if (window.siyuan.isPublish) {
+            if (window.scribli.isPublish) {
                 const passwordButtonElement = hasClosestByClassName(event.target, "protyle-password__button");
                 if (passwordButtonElement) {
                     fetchPost("/api/filetree/authFilePublishAccess", {
@@ -3398,7 +3398,7 @@ export class WYSIWYG {
                 /// #if MOBILE
                 openMobileFileById(protyle.app, id, [Constants.CB_GET_HL, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL]);
                 /// #else
-                window.siyuan.blockPanels.push(new BlockPanel({
+                window.scribli.blockPanels.push(new BlockPanel({
                     app: protyle.app,
                     isBacklink: false,
                     targetElement: openFloatElement,
@@ -3414,10 +3414,10 @@ export class WYSIWYG {
             if (menuElement) {
                 protyle.gutter.renderMenu(protyle, menuElement.parentElement.parentElement);
                 /// #if MOBILE
-                window.siyuan.menus.menu.fullscreen();
+                window.scribli.menus.menu.fullscreen();
                 /// #else
                 const rect = menuElement.getBoundingClientRect();
-                window.siyuan.menus.menu.popup({
+                window.scribli.menus.menu.popup({
                     x: rect.left,
                     y: rect.top,
                     isLeft: true
@@ -3511,7 +3511,7 @@ export class WYSIWYG {
                             if (!protyle.disabled) {
                                 toggleTaskListItem(protyle, actionElement.parentElement);
                             }
-                        } else if (window.siyuan.config.editor.listItemDotNumberClickFocus) {
+                        } else if (window.scribli.config.editor.listItemDotNumberClickFocus) {
                             if (protyle.block.showAll && protyle.block.id === actionId) {
                                 enterBack(protyle, actionId);
                             } else {

@@ -17,7 +17,7 @@ export class MobileBookmarks {
         this.element.innerHTML = `<div class="toolbar toolbar--border toolbar--dark">
     <div class="fn__space"></div>
     <div class="toolbar__text">
-        ${window.siyuan.languages.bookmark}
+        ${window.scribli.languages.bookmark}
     </div>
     <span class="fn__space"></span>
     <svg data-type="expand" class="toolbar__icon"><use xlink:href="#iconExpand"></use></svg>

@@ -22,7 +22,7 @@ export const onlyProtyleCommand = (options: {
         let fullWidth;
         const adjustWidth = options.protyle.wysiwyg.element.getAttribute(Constants.CUSTOM_SY_FULLWIDTH);
         if (!adjustWidth) {
-            fullWidth = window.siyuan.config.editor.fullWidth ? "false" : "true";
+            fullWidth = window.scribli.config.editor.fullWidth ? "false" : "true";
         } else {
             fullWidth = adjustWidth === "true" ? "false" : "true";
         }

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Scribli repository guide. Scribli is a local-first fork of SiYuan. The inherited Go module path is still `github.com/siyuan-note/siyuan/kernel`; do not rename it casually because Go imports, generated assets, and upstream dependency history still depend on it. License: AGPL-3.0.
+Scribli repository guide. Scribli is a local-first fork of SiYuan. The inherited Go module path is still `github.com/siyuan-note/siyuan/kernel` until a dedicated module-path migration is implemented and tested. License: AGPL-3.0.
 
 Scribli must present itself as Scribli in public project surfaces and application metadata while preserving inherited upstream copyright notices in source files.
 
@@ -33,6 +33,7 @@ The main README is now the public Scribli surface. Keep it focused on Scribli's 
 6. Build-time mirrors and upstream publishing are disabled. Do not add `npmmirror`, Aliyun mirrors, upstream Docker publishing, upstream AUR publishing, upstream GitHub release publishing, or auto-update publishing until Scribli owns that pipeline.
 7. Electron builder config must keep `publish: null`, and package scripts must keep `--publish=never` unless a Scribli-owned signed release process exists.
 8. Do not claim Scribli LLC unless that legal entity exists. Use `Scribli contributors` or another accurate author value.
+9. Phase out inherited SiYuan identifiers in favor of Scribli. Do not use blind global replacement; follow `docs/INTERNAL-NAMING.md`, classify each name, and migrate risky compatibility or stored-data surfaces with tests.
 
 ---
 
@@ -175,8 +176,23 @@ If a dependency must be tested locally, use a temporary `replace` in `kernel/go.
 
 Rebuilding `lute.min.js` requires the upstream Lute build process; do not edit the generated file in this repo.
 
+Do not fork every `github.com/siyuan-note/*` dependency just because of its namespace. First determine whether it performs network requests, whether it is a general local library, whether it is maintained and secure, and whether Scribli needs independent behavior. Fork only for a concrete behavior, security, or service-coupling reason.
+
 ---
 
-## 11. Response Style
+## 11. Internal Naming Cleanup
+
+Use `docs/INTERNAL-NAMING.md` as the policy for phasing out legacy names. In short:
+
+- Rename user-visible branding and private implementation names to Scribli.
+- Remove or disable upstream official service identifiers and calls.
+- Migrate Electron IPC channels, internal constants, and private helpers to Scribli names when both sides live in this repository.
+- Stored workspace names such as `.siyuan`, `siyuan.db`, and encrypted database names must be migrated with backup-safe, tested data migrations.
+- Public compatibility identifiers such as `window.siyuan`, inherited MIME types, plugin APIs, and public API fields are temporary legacy surfaces. Replace them with Scribli names only with aliases, deprecation notes, and tests first, then remove the old names in a later breaking pass when Boss approves.
+- Keep the Go module path `github.com/siyuan-note/siyuan/kernel` until a dedicated module detachment project is planned, implemented, and tested.
+
+---
+
+## 12. Response Style
 
 Match Boss's language and keep answers direct. Explain root cause, what changed, what was verified, and what remains uncertain. Do not pretend a build, install, package, or runtime smoke test happened unless it actually did.

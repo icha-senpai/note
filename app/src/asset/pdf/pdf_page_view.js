@@ -204,7 +204,7 @@ class PDFPageView {
     div.setAttribute("data-page-number", this.id);
     div.setAttribute("role", "region");
     // NOTE
-    div.setAttribute('aria-label', window.siyuan.languages.thumbPageTitle.replace('{{page}}', this.id))
+    div.setAttribute('aria-label', window.scribli.languages.thumbPageTitle.replace('{{page}}', this.id))
     // div.setAttribute("data-l10n-id", "pdfjs-page-landmark");
     // div.setAttribute("data-l10n-args", JSON.stringify({ page: this.id }));
     this.div = div;

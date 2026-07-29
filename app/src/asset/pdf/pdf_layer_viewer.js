@@ -106,7 +106,7 @@ class PDFLayerViewer extends BaseTreeViewer {
       return;
     }
     // NOTE
-    element.textContent = window.siyuan.languages.additionalLayers
+    element.textContent = window.scribli.languages.additionalLayers
     // element.setAttribute("data-l10n-id", "pdfjs-additional-layers");
     element.style.fontStyle = "italic";
     // Trigger translation manually, since translation is paused when

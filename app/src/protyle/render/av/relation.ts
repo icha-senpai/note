@@ -43,11 +43,11 @@ const genSearchList = (element: Element, keyword: string, avId?: string, exclude
     <span class="fn__space--small"></span>
     <div class="b3-list-item--two fn__flex-1">
         <div class="b3-list-item__first">
-            <span class="b3-list-item__text">${escapeHtml(item.avName || window.siyuan.languages._kernel[267])}</span>
+            <span class="b3-list-item__text">${escapeHtml(item.avName || window.scribli.languages._kernel[267])}</span>
         </div>
         <div class="b3-list-item__meta b3-list-item__showall">${escapeLessThans(item.hPath)}</div>
     </div>
-    <svg aria-label="${window.siyuan.languages.thisDatabase}" style="margin: 0 0 0 4px" class="b3-list-item__hinticon ariaLabel${item.avID === avId ? "" : " fn__none"}"><use xlink:href="#iconInfo"></use></svg>
+    <svg aria-label="${window.scribli.languages.thisDatabase}" style="margin: 0 0 0 4px" class="b3-list-item__hinticon ariaLabel${item.avID === avId ? "" : " fn__none"}"><use xlink:href="#iconInfo"></use></svg>
 </div>`;
             if (hasChildren) {
                 html += '<div class="fn__none">';
@@ -71,7 +71,7 @@ const genSearchList = (element: Element, keyword: string, avId?: string, exclude
 const setDatabase = (avId: string, element: HTMLElement, item: HTMLElement) => {
     element.dataset.avId = item.dataset.avId;
     element.dataset.blockId = item.dataset.blockId;
-    element.querySelector(".b3-menu__accelerator").textContent = item.querySelector(".b3-list-item__hinticon").classList.contains("fn__none") ? item.querySelector(".b3-list-item__text").textContent : window.siyuan.languages.thisDatabase;
+    element.querySelector(".b3-menu__accelerator").textContent = item.querySelector(".b3-list-item__hinticon").classList.contains("fn__none") ? item.querySelector(".b3-list-item__text").textContent : window.scribli.languages.thisDatabase;
     const menuElement = hasClosestByClassName(element, "b3-menu__items");
     if (menuElement) {
         toggleUpdateRelationBtn(menuElement, avId, true);
@@ -79,7 +79,7 @@ const setDatabase = (avId: string, element: HTMLElement, item: HTMLElement) => {
 };
 
 export const openSearchAV = (avId: string, target: HTMLElement, cb?: (element: HTMLElement) => void, excludes = true, blockID?: string) => {
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
     const menu = new Menu();
     menu.addItem({
         iconHTML: "",
@@ -108,7 +108,7 @@ export const openSearchAV = (avId: string, target: HTMLElement, cb?: (element: H
                     } else {
                         setDatabase(avId, target, listItemElement);
                     }
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                 }
             });
             inputElement.addEventListener("input", (event: InputEvent) => {
@@ -143,7 +143,7 @@ export const openSearchAV = (avId: string, target: HTMLElement, cb?: (element: H
                         } else {
                             setDatabase(avId, target, clickTarget);
                         }
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                         break;
                     }
                     clickTarget = clickTarget.parentElement;
@@ -281,11 +281,11 @@ const genSelectItemHTML = (options: {
     if (options.type === "empty") {
         if (options.newName) {
             return `<button class="b3-menu__item" data-type="setRelationCell">
-    <span class="b3-menu__label fn__ellipsis">${window.siyuan.languages.newRowInRelation.replace("${x}", options.text).replace("${y}", options.newName)}</span>
+    <span class="b3-menu__label fn__ellipsis">${window.scribli.languages.newRowInRelation.replace("${x}", options.text).replace("${y}", options.newName)}</span>
 </button>`;
         }
         return `<button class="b3-menu__item">
-    <span class="b3-menu__label">${window.siyuan.languages.emptyContent}</span>
+    <span class="b3-menu__label">${window.scribli.languages.emptyContent}</span>
 </button>`;
     }
     if (options.type == "unselect") {
@@ -314,7 +314,7 @@ draggable="true">${genSelectItemHTML({
                 type: "selected",
                 id: item.dataset.id,
                 isDetached: !item.classList.contains("av__celltext--ref"),
-                text: Lute.EscapeHTMLStr(item.textContent || window.siyuan.languages.untitled)
+                text: Lute.EscapeHTMLStr(item.textContent || window.scribli.languages.untitled)
             })}</button>`;
         });
         cells.forEach((item) => {
@@ -324,7 +324,7 @@ draggable="true">${genSelectItemHTML({
                     rowId: item.blockID,
                     id: item.block.id,
                     isDetached: item.isDetached,
-                    text: Lute.EscapeHTMLStr(item.block.content || window.siyuan.languages.untitled)
+                    text: Lute.EscapeHTMLStr(item.block.content || window.scribli.languages.untitled)
                 });
             }
         });
@@ -364,7 +364,7 @@ draggable="true">${genSelectItemHTML({
                 type: "selected",
                 id: item.dataset.id,
                 isDetached: !item.classList.contains("av__celltext--ref"),
-                text: Lute.EscapeHTMLStr(item.textContent || window.siyuan.languages.untitled)
+                text: Lute.EscapeHTMLStr(item.textContent || window.scribli.languages.untitled)
             })}</button>`;
         });
         cells.forEach((item) => {
@@ -374,7 +374,7 @@ draggable="true">${genSelectItemHTML({
                     rowId: item.blockID,
                     id: item.block.id,
                     isDetached: item.isDetached,
-                    text: Lute.EscapeHTMLStr(item.block.content || window.siyuan.languages.untitled)
+                    text: Lute.EscapeHTMLStr(item.block.content || window.scribli.languages.untitled)
                 });
             }
         });
@@ -430,7 +430,7 @@ ${html || genSelectItemHTML({type: "empty"})}`;
             });
             if (copyText) {
                 writeText(copyText.trimEnd());
-                showMessage(window.siyuan.languages.copied);
+                showMessage(window.scribli.languages.copied);
             }
         });
     });
@@ -449,7 +449,7 @@ export const getRelationHTML = (data: IAV, cellElements?: HTMLElement[]) => {
 <div class="b3-menu__item" data-type="nobg">
     <div class="b3-form__icona fn__flex-1" style="overflow: visible">
         <input class="b3-text-field fn__block" style="min-width: 190px"/>
-        <svg class="b3-form__icona-icon ariaLabel fn__none" data-position="north" data-type="copyRelatedItems" aria-label="${window.siyuan.languages.copy} ${window.siyuan.languages.relatedItems}"><use xlink:href="#iconCopy"></use></svg>
+        <svg class="b3-form__icona-icon ariaLabel fn__none" data-position="north" data-type="copyRelatedItems" aria-label="${window.scribli.languages.copy} ${window.scribli.languages.relatedItems}"><use xlink:href="#iconCopy"></use></svg>
     </div>
     <span class="fn__space"></span>
     <span style="color: var(--b3-protyle-inline-blockref-color);max-width: 200px" data-id="" class="popover__block fn__pointer fn__ellipsis"></span>

@@ -7,7 +7,7 @@ import {escapeHtml} from "../util/escape";
 import {Constants} from "../constants";
 
 export const deleteFile = (notebookId: string, pathString: string) => {
-    if (window.siyuan.config.fileTree.removeDocWithoutConfirm) {
+    if (window.scribli.config.fileTree.removeDocWithoutConfirm) {
         fetchPost("/api/filetree/removeDoc", {
             notebook: notebookId,
             path: pathString
@@ -22,15 +22,15 @@ export const deleteFile = (notebookId: string, pathString: string) => {
     }
     fetchPost("/api/block/getDocInfo", docInfoParam, (response) => {
         const fileName = escapeHtml(response.data.name);
-        let tip = `${window.siyuan.languages.confirmDeleteTip.replace("${x}", fileName)}
+        let tip = `${window.scribli.languages.confirmDeleteTip.replace("${x}", fileName)}
 <div class="fn__hr"></div>
-<div class="ft__smaller ft__on-surface">${window.siyuan.languages.rollbackTip.replace("${x}", window.siyuan.config.editor.historyRetentionDays)}</div>`;
+<div class="ft__smaller ft__on-surface">${window.scribli.languages.rollbackTip.replace("${x}", window.scribli.config.editor.historyRetentionDays)}</div>`;
         if (response.data.subFileCount > 0) {
-            tip = `${window.siyuan.languages.andSubFile.replace("${x}", fileName).replace("${y}", response.data.subFileCount)}
+            tip = `${window.scribli.languages.andSubFile.replace("${x}", fileName).replace("${y}", response.data.subFileCount)}
 <div class="fn__hr"></div>
-<div class="ft__smaller ft__on-surface">${window.siyuan.languages.rollbackTip.replace("${x}", window.siyuan.config.editor.historyRetentionDays)}</div>`;
+<div class="ft__smaller ft__on-surface">${window.scribli.languages.rollbackTip.replace("${x}", window.scribli.config.editor.historyRetentionDays)}</div>`;
         }
-        confirmDialog(window.siyuan.languages.deleteOpConfirm, tip, () => {
+        confirmDialog(window.scribli.languages.deleteOpConfirm, tip, () => {
             fetchPost("/api/filetree/removeDoc", {
                 notebook: notebookId,
                 path: pathString
@@ -48,10 +48,10 @@ export const deleteFiles = (liElements: Element[]) => {
                 deleteFile(itemNotebookId, liElements[0].getAttribute("data-path"));
             } else {
                 const isHelpNotebook = Object.values(Constants.HELP_PATH).includes(itemNotebookId);
-                confirmDialog(isHelpNotebook ? "" : window.siyuan.languages.deleteOpConfirm,
-                    isHelpNotebook ? "" : `${window.siyuan.languages.confirmDeleteTip.replace("${x}", Lute.EscapeHTMLStr(getNotebookName(itemNotebookId)))}
+                confirmDialog(isHelpNotebook ? "" : window.scribli.languages.deleteOpConfirm,
+                    isHelpNotebook ? "" : `${window.scribli.languages.confirmDeleteTip.replace("${x}", Lute.EscapeHTMLStr(getNotebookName(itemNotebookId)))}
 <div class="fn__hr"></div>
-<div class="ft__smaller ft__on-surface">${window.siyuan.languages.rollbackTip.replace("${x}", window.siyuan.config.editor.historyRetentionDays)}</div>`, () => {
+<div class="ft__smaller ft__on-surface">${window.scribli.languages.rollbackTip.replace("${x}", window.scribli.config.editor.historyRetentionDays)}</div>`, () => {
                         fetchPost("/api/notebook/removeNotebook", {
                             notebook: itemNotebookId,
                         });
@@ -67,13 +67,13 @@ export const deleteFiles = (liElements: Element[]) => {
             }
         });
         if (paths.length === 0) {
-            showMessage(window.siyuan.languages.notBatchRemove);
+            showMessage(window.scribli.languages.notBatchRemove);
             return;
         }
-        confirmDialog(window.siyuan.languages.deleteOpConfirm,
-            `${window.siyuan.languages.confirmRemoveAll.replace("${count}", paths.length)}
+        confirmDialog(window.scribli.languages.deleteOpConfirm,
+            `${window.scribli.languages.confirmRemoveAll.replace("${count}", paths.length)}
 <div class="fn__hr"></div>
-<div class="ft__smaller ft__on-surface">${window.siyuan.languages.rollbackTip.replace("${x}", window.siyuan.config.editor.historyRetentionDays)}</div>`, () => {
+<div class="ft__smaller ft__on-surface">${window.scribli.languages.rollbackTip.replace("${x}", window.scribli.config.editor.historyRetentionDays)}</div>`, () => {
                 fetchPost("/api/filetree/removeDocs", {
                     paths
                 });

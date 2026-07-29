@@ -16,5 +16,5 @@ export const closeWindow = async (app: App) => {
             console.error(e);
         }
     }
-    ipcRenderer.send(Constants.SIYUAN_CMD, "destroy");
+    ipcRenderer.send(Constants.SCRIBLI_CMD, "destroy");
 };

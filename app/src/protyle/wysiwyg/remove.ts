@@ -289,7 +289,7 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
         if (!sideElement) {
             const backlinkElement = hasClosestByClassName(protyle.element, "sy__backlink", true);
             if (backlinkElement) {
-                const backLinkTab = getInstanceById(backlinkElement.getAttribute("data-id"), window.siyuan.layout.layout);
+                const backLinkTab = getInstanceById(backlinkElement.getAttribute("data-id"), window.scribli.layout.layout);
                 if (backLinkTab instanceof Tab && backLinkTab.model instanceof Backlink) {
                     const editors = backLinkTab.model.editors;
                     editors.find((item, index) => {
@@ -317,7 +317,7 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
                 const getDocParam: IObject = {
                     id: protyle.wysiwyg.element.lastElementChild.getAttribute("data-node-id"),
                     mode: 2,
-                    size: window.siyuan.config.editor.dynamicLoadBlocks,
+                    size: window.scribli.config.editor.dynamicLoadBlocks,
                 };
                 if (isEncryptedBox(protyle.notebookId)) {
                     getDocParam.notebook = protyle.notebookId;

@@ -9,7 +9,7 @@ import {saveExportFile} from "../util/compatibility";
 
 // 导出参数对话框 https://github.com/siyuan-note/siyuan/issues/17031
 // 通用部分（8 项）可被各导出格式复用，Markdown 专属部分仅 Markdown 导出使用。
-// 默认值一律取自全局 window.siyuan.config.export，确认后本次导出生效，不修改全局设置、不记忆上次选择。
+// 默认值一律取自全局 window.scribli.config.export，确认后本次导出生效，不修改全局设置、不记忆上次选择。
 
 // 类型别名：约束字段 key 与 Config.IExport 的字段类型对应，避免用 string 索引报错
 type BoolKey = "addTitle" | "inlineMemo" | "includeSubDocs" | "includeRelatedDocs" | "markdownYFM" | "removeAssetsID";
@@ -25,7 +25,7 @@ interface IExportMdOptions {
 // openExportOptionsDialog 渲染「通用 + Markdown 专属」两组开关，确认时回调 onConfirm 传出全部 13 项。
 // showSubDocs/showRelatedDocs 控制是否显示「包含子文档/关联文档」项（单文档无对应内容时隐藏）。
 export const openExportOptionsDialog = (onConfirm: (options: IExportMdOptionsPayload) => void, showSubDocs = true, showRelatedDocs = true) => {
-    const conf = window.siyuan.config.export;
+    const conf = window.scribli.config.export;
     const bool = (id: BoolKey) => `<input id="${id}" class="b3-switch fn__flex-center" type="checkbox" ${conf[id] ? "checked" : ""}>`;
     // 渲染 select：复用设置面板的标准 class（fn__flex-center fn__size200），value 为当前全局值时标记 selected
     const select = (id: IntKey, options: {value: number; label: string}[]) => {
@@ -50,40 +50,40 @@ export const openExportOptionsDialog = (onConfirm: (options: IExportMdOptionsPay
         <input id="${rightId}" class="b3-text-field fn__flex-center fn__size96" value="${conf[rightId] ?? ""}">`;
 
     const dialog = new Dialog({
-        title: window.siyuan.languages.export + " Markdown",
+        title: window.scribli.languages.export + " Markdown",
         content: `<div class="b3-dialog__content export-md__content">
     <!-- 常用 -->
-    ${row(window.siyuan.languages.export17, window.siyuan.languages.export18, bool("addTitle"))}
-    ${showSubDocs ? row(window.siyuan.languages.includeSubDocs, window.siyuan.languages.includeSubDocsTip, bool("includeSubDocs")) : ""}
-    ${showRelatedDocs ? row(window.siyuan.languages.includeRelatedDocs, window.siyuan.languages.includeRelatedDocsTip, bool("includeRelatedDocs")) : ""}
-    ${row(window.siyuan.languages.export23, window.siyuan.languages.export24, bool("markdownYFM"))}
-    ${row(window.siyuan.languages.removeAssetsID, window.siyuan.languages.removeAssetsIDTip, bool("removeAssetsID"))}
+    ${row(window.scribli.languages.export17, window.scribli.languages.export18, bool("addTitle"))}
+    ${showSubDocs ? row(window.scribli.languages.includeSubDocs, window.scribli.languages.includeSubDocsTip, bool("includeSubDocs")) : ""}
+    ${showRelatedDocs ? row(window.scribli.languages.includeRelatedDocs, window.scribli.languages.includeRelatedDocsTip, bool("includeRelatedDocs")) : ""}
+    ${row(window.scribli.languages.export23, window.scribli.languages.export24, bool("markdownYFM"))}
+    ${row(window.scribli.languages.removeAssetsID, window.scribli.languages.removeAssetsIDTip, bool("removeAssetsID"))}
     <!-- 其他 -->
-    ${row(window.siyuan.languages.export31, window.siyuan.languages.export32, bool("inlineMemo"))}
-    ${row(window.siyuan.languages.ref, window.siyuan.languages.export11,
+    ${row(window.scribli.languages.export31, window.scribli.languages.export32, bool("inlineMemo"))}
+    ${row(window.scribli.languages.ref, window.scribli.languages.export11,
         select("blockRefMode", [
-            {value: 2, label: window.siyuan.languages.export2},
-            {value: 3, label: window.siyuan.languages.export3},
-            {value: 4, label: window.siyuan.languages.export4},
+            {value: 2, label: window.scribli.languages.export2},
+            {value: 3, label: window.scribli.languages.export3},
+            {value: 4, label: window.scribli.languages.export4},
         ]))}
-    ${row(window.siyuan.languages.blockEmbed, window.siyuan.languages.export12,
+    ${row(window.scribli.languages.blockEmbed, window.scribli.languages.export12,
         select("blockEmbedMode", [
-            {value: 0, label: window.siyuan.languages.export0},
-            {value: 1, label: window.siyuan.languages.export1},
+            {value: 0, label: window.scribli.languages.export0},
+            {value: 1, label: window.scribli.languages.export1},
         ]))}
-    ${row(window.siyuan.languages.export5, window.siyuan.languages.export6,
+    ${row(window.scribli.languages.export5, window.scribli.languages.export6,
         select("fileAnnotationRefMode", [
-            {value: 0, label: window.siyuan.languages.export7},
-            {value: 1, label: window.siyuan.languages.export8},
+            {value: 0, label: window.scribli.languages.export7},
+            {value: 1, label: window.scribli.languages.export8},
         ]))}
-    ${row(window.siyuan.languages.export13, window.siyuan.languages.export14,
+    ${row(window.scribli.languages.export13, window.scribli.languages.export14,
         textPair("blockRefTextLeft", "blockRefTextRight"))}
-    ${row(window.siyuan.languages.export15, window.siyuan.languages.export16,
+    ${row(window.scribli.languages.export15, window.scribli.languages.export16,
         textPair("tagOpenMarker", "tagCloseMarker"))}
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: "520px",
         height: isMobile() ? "70vh" : "60vh",
@@ -156,7 +156,7 @@ export const exportMarkdownZip = async(options: IExportMdOptions) => {
     }
     openExportOptionsDialog(params => {
         const exportMarkdown = () => {
-        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+        const msgId = showMessage(window.scribli.languages.exporting, -1);
         const cb = (response: IWebSocketData) => saveExportFile(response.data.zip, msgId);
         if (options.id) {
             fetchPost("/api/export/exportMd", {id: options.id, ...params}, cb);
@@ -167,7 +167,7 @@ export const exportMarkdownZip = async(options: IExportMdOptions) => {
         }
         };
         if (encrypted) {
-            confirmDialog("⚠️ " + window.siyuan.languages.export, window.siyuan.languages.encryptedExportRiskTip, exportMarkdown);
+            confirmDialog("⚠️ " + window.scribli.languages.export, window.scribli.languages.encryptedExportRiskTip, exportMarkdown);
             return;
         }
         exportMarkdown();

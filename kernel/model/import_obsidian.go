@@ -1922,7 +1922,7 @@ func escapeObsidianMarkdownText(text string) string {
 
 func isObsidianImage(filePath string) bool {
 	ext := strings.ToLower(path.Ext(filePath))
-	for _, imageExt := range util.SiYuanAssetsImage {
+	for _, imageExt := range util.ScribliAssetsImage {
 		if ext == imageExt {
 			return true
 		}

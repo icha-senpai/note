@@ -35,31 +35,31 @@ const settingTabs = {
     editor: setting.tab({
         id: "editor",
         icon: "iconEdit",
-        title: () => window.siyuan.languages.editor,
+        title: () => window.scribli.languages.editor,
         defaultSave: editorConfigApi.patch,
     }, registerEditorTab),
     file: setting.tab({
         id: "file",
         icon: "iconFiles",
-        title: () => window.siyuan.languages.fileTree,
+        title: () => window.scribli.languages.fileTree,
         defaultSave: fileConfigApi.patch,
     }, registerFileTab),
     appearance: setting.tab({
         id: "appearance",
         icon: "iconTheme",
-        title: () => window.siyuan.languages.appearance,
+        title: () => window.scribli.languages.appearance,
         defaultSave: appearanceConfigApi.patch,
     }, registerAppearanceTab),
     flashcard: setting.tab({
         id: "flashcard",
         icon: "iconRiffCard",
-        title: () => window.siyuan.languages.riffCard,
+        title: () => window.scribli.languages.riffCard,
         defaultSave: flashcardConfigApi.patch,
     }, registerFlashcardTab),
     ai: setting.tab({
         id: "ai",
         icon: "iconSparkles",
-        title: () => window.siyuan.languages.ai,
+        title: () => window.scribli.languages.ai,
         defaultSave: aiConfigApi.patch,
         /// #if MOBILE
         hidden: () => isHuawei() || isDisabledFeature("ai"),
@@ -68,33 +68,33 @@ const settingTabs = {
     secretsVariables: setting.tab({
         id: "secretsVariables",
         icon: "iconSquareAsterisk",
-        title: () => window.siyuan.languages.secretsVariables,
+        title: () => window.scribli.languages.secretsVariables,
         defaultSave: secretsConfigApi.patch,
     }, registerSecretsVariablesTab),
     assets: setting.panel({
         id: "assets",
         icon: "iconImage",
-        title: () => window.siyuan.languages.assets,
+        title: () => window.scribli.languages.assets,
         searchStrings: collectAssetsTabSearchStrings,
         mount: mountAssetsTab,
     }),
     export: setting.tab({
         id: "export",
         icon: "iconUpload",
-        title: () => window.siyuan.languages.export,
+        title: () => window.scribli.languages.export,
         defaultSave: exportConfigApi.patch,
     }, registerExportTab),
     search: setting.tab({
         id: "search",
         icon: "iconSearch",
-        title: () => window.siyuan.languages.search,
+        title: () => window.scribli.languages.search,
         defaultSave: searchConfigApi.patch,
     }, registerSearchTab),
     /// #if !MOBILE
     keymap: setting.panel({
         id: "keymap",
         icon: "iconKeymap",
-        title: () => window.siyuan.languages.keymap,
+        title: () => window.scribli.languages.keymap,
         searchStrings: collectKeymapTabSearchStrings,
         mount: mountKeymapTab,
     }),
@@ -102,25 +102,25 @@ const settingTabs = {
     sync: setting.tab({
         id: "sync",
         icon: "iconCloud",
-        title: () => window.siyuan.languages.settingsAndSync,
+        title: () => window.scribli.languages.settingsAndSync,
         defaultSave: patchSyncConfig,
         afterMount: mountSyncTabExtras,
     }, registerSyncTab),
     access: setting.tab({
         id: "access",
         icon: "iconLock",
-        title: () => window.siyuan.languages.authentication,
+        title: () => window.scribli.languages.authentication,
         afterMount: mountAccessTab,
     }, registerAccessTab),
     app: setting.tab({
         id: "app",
         icon: "iconLayoutGrid",
-        title: () => window.siyuan.languages.application,
+        title: () => window.scribli.languages.application,
     }, registerAppTab),
     about: setting.tab({
         id: "about",
         icon: "iconInfo",
-        title: () => window.siyuan.languages.about,
+        title: () => window.scribli.languages.about,
     }, registerAboutTab),
 };
 

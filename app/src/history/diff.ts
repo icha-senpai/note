@@ -15,7 +15,7 @@ import {confirmDialog} from "../dialog/confirmDialog";
 
 const genItem = (data: [], data2?: { title: string, fileID: string }[], hasUndo = true) => {
     if (!data || data.length === 0) {
-        return `<li style="padding-left: 40px;" class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+        return `<li style="padding-left: 40px;" class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
     }
     let html = "";
     data.forEach((item: { title: string, fileID: string, path: string, hSize: string, updated: number }, index) => {
@@ -26,7 +26,7 @@ const genItem = (data: [], data2?: { title: string, fileID: string }[], hasUndo 
         html += `<li style="padding-left: 40px;" class="b3-list-item b3-list-item--hide-action" ${id2} data-created="${item.updated}" data-id="${item.fileID}">
     <span class="b3-list-item__text" title="${escapeAttr(item.path)} ${item.hSize}">${escapeHtml(item.title)}</span>
     <span class="fn__space"></span>
-    <span class="b3-list-item__action ariaLabel${hasUndo ? "" : " fn__none"}" data-type="rollback" data-position="6south" aria-label="${window.siyuan.languages.rollback}">
+    <span class="b3-list-item__action ariaLabel${hasUndo ? "" : " fn__none"}" data-type="rollback" data-position="6south" aria-label="${window.scribli.languages.rollback}">
         <svg><use xlink:href="#iconUndo"></use></svg>
     </span>
 </li>`;
@@ -86,7 +86,7 @@ const renderCompare = (app: App, element: HTMLElement) => {
         const textElement = leftElement.querySelector("textarea");
         const type = pathPosix().extname(response.data.content).toLowerCase();
         const titleElement = leftElement.querySelector(".protyle-title__input");
-        if (Constants.SIYUAN_ASSETS_IMAGE.concat(Constants.SIYUAN_ASSETS_AUDIO).concat(Constants.SIYUAN_ASSETS_VIDEO).includes(type)) {
+        if (Constants.SCRIBLI_ASSETS_IMAGE.concat(Constants.SCRIBLI_ASSETS_AUDIO).concat(Constants.SCRIBLI_ASSETS_VIDEO).includes(type)) {
             textElement.previousElementSibling.innerHTML = renderAssetsPreview(response.data.content);
             textElement.previousElementSibling.classList.remove("fn__none");
             textElement.classList.add("fn__none");
@@ -117,7 +117,7 @@ const renderCompare = (app: App, element: HTMLElement) => {
             const textElement = rightElement.querySelector("textarea");
             const type = pathPosix().extname(response.data.content).toLowerCase();
             const titleElement = rightElement.querySelector(".protyle-title__input");
-            if (Constants.SIYUAN_ASSETS_IMAGE.concat(Constants.SIYUAN_ASSETS_AUDIO).concat(Constants.SIYUAN_ASSETS_VIDEO).includes(type)) {
+            if (Constants.SCRIBLI_ASSETS_IMAGE.concat(Constants.SCRIBLI_ASSETS_AUDIO).concat(Constants.SCRIBLI_ASSETS_VIDEO).includes(type)) {
                 textElement.previousElementSibling.innerHTML = renderAssetsPreview(response.data.content);
                 textElement.previousElementSibling.classList.remove("fn__none");
                 textElement.classList.add("fn__none");
@@ -161,7 +161,7 @@ export const showDiff = (app: App, data: { id: string, time: string }[]) => {
     }
 
     const dialog = new Dialog({
-        title: window.siyuan.languages.compare,
+        title: window.scribli.languages.compare,
         content: "",
         width: isMobile() ? "92vw" : "90vw",
         height: "80vh",
@@ -209,8 +209,8 @@ export const showDiff = (app: App, data: { id: string, time: string }[]) => {
                 event.stopPropagation();
                 break;
             } else if (target.getAttribute("data-type") == "rollback") {
-                confirmDialog("⚠️ " + window.siyuan.languages.rollback,
-                    window.siyuan.languages.rollbackConfirm.replace("${name}", target.parentElement.textContent).replace("${time}", dayjs(parseInt(target.parentElement.dataset.created)).format("YYYY-MM-DD HH:mm:ss")),
+                confirmDialog("⚠️ " + window.scribli.languages.rollback,
+                    window.scribli.languages.rollbackConfirm.replace("${name}", target.parentElement.textContent).replace("${time}", dayjs(parseInt(target.parentElement.dataset.created)).format("YYYY-MM-DD HH:mm:ss")),
                     () => {
                         fetchPost("/api/repo/rollbackRepoSnapshotFile", {id: target.parentElement.dataset.id});
                     });
@@ -237,7 +237,7 @@ const genHTML = (left: string, right: string, dialog: Dialog, direct: string) =>
     ${isPhone ? "" : '<span class="fn__space"></span>'}
     ${dayjs(response.data.left.created).format("YYYY-MM-DD HH:mm")}
     <span class="fn__space"></span>
-    <span class="block__icon block__icon--show b3-tooltips b3-tooltips__s" aria-label="${window.siyuan.languages.switchDirect}" data-direct="${direct}"><svg><use xlink:href="#iconScrollHoriz"></use></svg></span>
+    <span class="block__icon block__icon--show b3-tooltips b3-tooltips__s" aria-label="${window.scribli.languages.switchDirect}" data-direct="${direct}"><svg><use xlink:href="#iconScrollHoriz"></use></svg></span>
     <span class="fn__space"></span>
     <code class="fn__code${isPhone ? " fn__none" : ""}" data-snapshot="${right}">${right.substring(0, 7)}</code>
     ${isPhone ? "" : '<span class="fn__space"></span>'}
@@ -245,13 +245,13 @@ const genHTML = (left: string, right: string, dialog: Dialog, direct: string) =>
     <span class="fn__flex-1"></span>
 </div>`;
         headElement.nextElementSibling.innerHTML = `<div class="fn__flex history__panel" style="height: 100%">
-    <div class="history__side" ${isMobile() ? "" : `style="width: ${window.siyuan.storage[Constants.LOCAL_HISTORY].sideDiffWidth}"`}>
+    <div class="history__side" ${isMobile() ? "" : `style="width: ${window.scribli.storage[Constants.LOCAL_HISTORY].sideDiffWidth}"`}>
         <ul class="b3-list b3-list--background">
             <li class="b3-list-item">
                 <span class="b3-list-item__toggle b3-list-item__toggle--hl">
                     <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
                 </span>
-                <span style="padding-left: 4px" class="b3-list-item__text">${window.siyuan.languages.update}</span>
+                <span style="padding-left: 4px" class="b3-list-item__text">${window.scribli.languages.update}</span>
                 <span class="counter${response.data.updatesLeft.length === 0 ? " fn__none" : ""}">${response.data.updatesLeft.length}</span>
             </li>
             <ul class="fn__none">${genItem(response.data.updatesLeft, response.data.updatesRight)}</ul>
@@ -261,7 +261,7 @@ const genHTML = (left: string, right: string, dialog: Dialog, direct: string) =>
                 <span class="b3-list-item__toggle b3-list-item__toggle--hl">
                     <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
                 </span>
-                <span style="padding-left: 4px" class="b3-list-item__text">${window.siyuan.languages.addAttr}</span>
+                <span style="padding-left: 4px" class="b3-list-item__text">${window.scribli.languages.addAttr}</span>
                 <span class="counter${response.data.addsLeft.length === 0 ? " fn__none" : ""}">${response.data.addsLeft.length}</span>
             </li>
             <ul class="fn__none" data-type="update">${genItem(response.data.addsLeft, undefined, false)}</ul>
@@ -271,7 +271,7 @@ const genHTML = (left: string, right: string, dialog: Dialog, direct: string) =>
                 <span class="b3-list-item__toggle b3-list-item__toggle--hl">
                     <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
                 </span>
-                <span style="padding-left: 4px" class="b3-list-item__text">${window.siyuan.languages.remove}</span>
+                <span style="padding-left: 4px" class="b3-list-item__text">${window.scribli.languages.remove}</span>
                 <span class="counter${response.data.removesRight.length === 0 ? " fn__none" : ""}">${response.data.removesRight.length}</span>
             </li>
             <ul class="fn__none">${genItem(response.data.removesRight)}</ul>

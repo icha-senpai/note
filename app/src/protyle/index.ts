@@ -62,7 +62,7 @@ export class Protyle {
      * @param options Protyle 参数
      */
     constructor(app: App, id: HTMLElement, options: IProtyleOptions) {
-        this.version = Constants.SIYUAN_VERSION;
+        this.version = Constants.SCRIBLI_VERSION;
         let pluginsOptions: IProtyleOptions = options;
         app.plugins.forEach(item => {
             if (item.protyleOptions) {
@@ -112,7 +112,7 @@ export class Protyle {
         this.protyle.element.innerHTML = "";
         this.protyle.element.classList.add("protyle");
         // 启用 RTL 时给 .protyle 元素添加 .rtl 类名，方便主题开发者判断 RTL 方向
-        if (window.siyuan.config.editor.rtl) {
+        if (window.scribli.config.editor.rtl) {
             this.protyle.element.classList.add("rtl");
         }
         if (mergedOptions.render.breadcrumb) {
@@ -169,7 +169,7 @@ export class Protyle {
                             }
                             /// #if !MOBILE
                             getAllModels().custom.forEach((item) => {
-                                if (item.type === "siyuan-database-row" && (item.data.avID === data.data.id ||
+                                if (item.type === "scribli-database-row" && (item.data.avID === data.data.id ||
                                     item.element.querySelector(`[data-av-id="${data.data.id}"]`))) {
                                     item.update?.();
                                 }
@@ -188,7 +188,7 @@ export class Protyle {
                             this.onTransaction(data);
                             break;
                         case "readonly":
-                            window.siyuan.config.editor.readOnly = data.data;
+                            window.scribli.config.editor.readOnly = data.data;
                             setReadonlyByConfig(this.protyle, true);
                             break;
                         case "heading2doc":
@@ -197,7 +197,7 @@ export class Protyle {
                                 if (this.protyle.block.showAll && data.cmd === "heading2doc" && !this.protyle.options.backlinkData) {
                                     const getDocParam: IObject = {
                                         id: this.protyle.block.rootID,
-                                        size: window.siyuan.config.editor.dynamicLoadBlocks,
+                                        size: window.scribli.config.editor.dynamicLoadBlocks,
                                     };
                                     if (isEncryptedBox(this.protyle.notebookId)) {
                                         getDocParam.notebook = this.protyle.notebookId;
@@ -230,7 +230,7 @@ export class Protyle {
                                 if (this.protyle.background) {
                                     this.protyle.background.ial.title = data.data.title;
                                 }
-                                if (window.siyuan.config.export.addTitle &&
+                                if (window.scribli.config.export.addTitle &&
                                     !this.protyle.preview.element.classList.contains("fn__none")) {
                                     this.protyle.preview.render(this.protyle);
                                 }
@@ -283,8 +283,8 @@ export class Protyle {
                                     this.protyle.model.parent.parent.removeTab(this.protyle.model.parent.id);
                                 }
                                 /// #endif
-                                delete window.siyuan.storage[Constants.LOCAL_FILEPOSITION][this.protyle.block.rootID];
-                                setStorageVal(Constants.LOCAL_FILEPOSITION, window.siyuan.storage[Constants.LOCAL_FILEPOSITION]);
+                                delete window.scribli.storage[Constants.LOCAL_FILEPOSITION][this.protyle.block.rootID];
+                                setStorageVal(Constants.LOCAL_FILEPOSITION, window.scribli.storage[Constants.LOCAL_FILEPOSITION]);
                             }
                             break;
                     }
@@ -304,7 +304,7 @@ export class Protyle {
             }
 
             if (this.protyle.options.mode !== "preview" &&
-                options.rootId && window.siyuan.storage[Constants.LOCAL_FILEPOSITION][options.rootId] &&
+                options.rootId && window.scribli.storage[Constants.LOCAL_FILEPOSITION][options.rootId] &&
                 (
                     mergedOptions.action.includes(Constants.CB_GET_SCROLL) ||
                     (mergedOptions.action.includes(Constants.CB_GET_ROOTSCROLL) && options.rootId === options.blockId)
@@ -312,7 +312,7 @@ export class Protyle {
             ) {
                 getDocByScroll({
                     protyle: this.protyle,
-                    scrollAttr: window.siyuan.storage[Constants.LOCAL_FILEPOSITION][options.rootId],
+                    scrollAttr: window.scribli.storage[Constants.LOCAL_FILEPOSITION][options.rootId],
                     mergedOptions,
                     cb: () => {
                         this.afterOnGet(mergedOptions);
@@ -412,7 +412,7 @@ export class Protyle {
             originalRefBlockIDs: mergedOptions.originalRefBlockIDs,
             // 0: 仅当前 ID（默认值），1：向上 2：向下，3：上下都加载，4：加载最后
             mode: (mergedOptions.action && mergedOptions.action.includes(Constants.CB_GET_CONTEXT)) ? 3 : 0,
-            size: mergedOptions.action?.includes(Constants.CB_GET_ALL) ? Constants.SIZE_GET_MAX : window.siyuan.config.editor.dynamicLoadBlocks,
+            size: mergedOptions.action?.includes(Constants.CB_GET_ALL) ? Constants.SIZE_GET_MAX : window.scribli.config.editor.dynamicLoadBlocks,
         };
         if (isEncryptedBox(this.protyle.notebookId)) {
             getDocParam.notebook = this.protyle.notebookId;

@@ -34,7 +34,7 @@ export const newDatabaseRowModel = (options: {
     const model = new Custom({
         app: options.app,
         tab: options.tab,
-        type: "siyuan-database-row",
+        type: "scribli-database-row",
         data: options.data,
         init(custom) {
             customModel = custom;
@@ -46,7 +46,7 @@ export const newDatabaseRowModel = (options: {
         </div>
     </div>
 </div>`;
-            custom.element.querySelector(".protyle-db-row__title span").textContent = options.data.title || window.siyuan.languages.untitled;
+            custom.element.querySelector(".protyle-db-row__title span").textContent = options.data.title || window.scribli.languages.untitled;
             ghostProtyle = new Protyle(options.app, document.createElement("div"), {
                 blockId: options.data.blockID,
                 notebookId: options.data.notebookId,

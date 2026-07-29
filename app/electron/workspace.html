@@ -353,7 +353,7 @@
             btn.textContent = langData.open
             btn.dataset.path = p
             btn.addEventListener("click", () => {
-                ipcRenderer.send("siyuan-select-workspace", {
+                ipcRenderer.send("scribli-select-workspace", {
                     workspace: p,
                     lang: currentLang,
                 })
@@ -402,14 +402,14 @@
         }
         document.querySelector(".crash-tip").classList.remove("fn__none");
         safeModeButton.addEventListener("click", () => {
-            ipcRenderer.send("siyuan-select-workspace", {
+            ipcRenderer.send("scribli-select-workspace", {
                 workspace: crashWorkspace,
                 lang: currentLang,
                 safeMode: true,
             });
         });
         normalButton.addEventListener("click", () => {
-            ipcRenderer.send("siyuan-select-workspace", {
+            ipcRenderer.send("scribli-select-workspace", {
                 workspace: crashWorkspace,
                 lang: currentLang,
                 safeMode: false,
@@ -436,7 +436,7 @@
             normalButton.disabled = false;
             return;
         }
-        ipcRenderer.send("siyuan-select-workspace", {
+        ipcRenderer.send("scribli-select-workspace", {
             workspace: initPath,
             lang: currentLang,
         });

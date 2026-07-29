@@ -9,17 +9,17 @@ import {ipcRenderer} from "electron";
 
 /** 编辑器 Tab：各组注册实现（由 setting/tabs.ts 调用） */
 const registerEditorBehaviorGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("behavior", window.siyuan.languages.configGroupBehavior);
-    const readOnlyKeymap = window.siyuan.config.keymap.general.editReadonly.custom;
+    const group = tab.group("behavior", window.scribli.languages.configGroupBehavior);
+    const readOnlyKeymap = window.scribli.config.keymap.general.editReadonly.custom;
     group.switch("editor.readOnly", {
         title: isMobile()
-            ? window.siyuan.languages.editReadonly
-            : `${window.siyuan.languages.editReadonly} <code class="fn__code${readOnlyKeymap ? "" : " fn__none"}">${updateHotkeyTip(readOnlyKeymap)}</code>`,
-        desc: window.siyuan.languages.editReadonlyTip,
+            ? window.scribli.languages.editReadonly
+            : `${window.scribli.languages.editReadonly} <code class="fn__code${readOnlyKeymap ? "" : " fn__none"}">${updateHotkeyTip(readOnlyKeymap)}</code>`,
+        desc: window.scribli.languages.editReadonlyTip,
     });
     group.switch("editor.spellcheck", {
-        title: window.siyuan.languages.spellcheck,
-        desc: isBrowser() ? window.siyuan.languages.spellcheckTip : window.siyuan.languages.spellcheckTip2,
+        title: window.scribli.languages.spellcheck,
+        desc: isBrowser() ? window.scribli.languages.spellcheckTip : window.scribli.languages.spellcheckTip2,
         /// #if !BROWSER
         afterMount: bindSpellcheckLanguagesVisibility,
         /// #endif
@@ -28,35 +28,35 @@ const registerEditorBehaviorGroup = (tab: SettingTabBuilder) => {
     group.slot({
         key: "spellcheckLanguages",
         keywords: [
-            window.siyuan.languages.spellcheck,
-            window.siyuan.languages.spellcheckTip2,
+            window.scribli.languages.spellcheck,
+            window.scribli.languages.spellcheckTip2,
         ],
         html: () => '<div class="fn__flex b3-label config-item fn__none"><div class="b3-chips" id="editor.spellcheckLanguages"></div></div>',
         afterMount: bindSpellcheckLanguagesChips,
     });
     /// #endif
     group.range("editor.codeTabSpaces", {
-        title: window.siyuan.languages.md29,
-        desc: window.siyuan.languages.md30,
+        title: window.scribli.languages.md29,
+        desc: window.scribli.languages.md30,
         min: 0,
         max: 8,
         step: 2,
     });
     group.switch("editor.listLogicalOutdent", {
-        title: window.siyuan.languages.outlineOutdent,
-        desc: window.siyuan.languages.outlineOutdentTip,
+        title: window.scribli.languages.outlineOutdent,
+        desc: window.scribli.languages.outlineOutdentTip,
     });
     group.switch("editor.listItemDotNumberClickFocus", {
-        title: window.siyuan.languages.listItemDotNumberClickFocus,
-        desc: window.siyuan.languages.listItemDotNumberClickFocusTip,
+        title: window.scribli.languages.listItemDotNumberClickFocus,
+        desc: window.scribli.languages.listItemDotNumberClickFocusTip,
     });
     group.switch("editor.pasteURLAutoConvert", {
-        title: window.siyuan.languages.pasteURLAutoConvert,
-        desc: window.siyuan.languages.pasteURLAutoConvertTip,
+        title: window.scribli.languages.pasteURLAutoConvert,
+        desc: window.scribli.languages.pasteURLAutoConvertTip,
     });
     group.number("editor.dynamicLoadBlocks", {
-        title: window.siyuan.languages.dynamicLoadBlocks,
-        desc: window.siyuan.languages.dynamicLoadBlocksTip,
+        title: window.scribli.languages.dynamicLoadBlocks,
+        desc: window.scribli.languages.dynamicLoadBlocksTip,
         min: 48,
     });
 };
@@ -79,18 +79,18 @@ const bindSpellcheckLanguagesChips = async (root: HTMLElement) => {
     if (!el) {
         return;
     }
-    const languages: string[] = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+    const languages: string[] = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
         cmd: "availableSpellCheckerLanguages",
     });
     el.innerHTML = languages.map((item) =>
-        `<div class="fn__pointer b3-chip b3-chip--middle${window.siyuan.config.editor.spellcheckLanguages.includes(item) ? " b3-chip--current" : ""}">${item}</div>`
+        `<div class="fn__pointer b3-chip b3-chip--middle${window.scribli.config.editor.spellcheckLanguages.includes(item) ? " b3-chip--current" : ""}">${item}</div>`
     ).join("");
     el.addEventListener("click", (event) => {
         const target = event.target as Element;
         if (target.classList.contains("b3-chip")) {
             target.classList.toggle("b3-chip--current");
             const selected = Array.from(el.querySelectorAll(".b3-chip--current")).map((chip) => chip.textContent || "");
-            ipcRenderer.send(Constants.SIYUAN_CMD, {
+            ipcRenderer.send(Constants.SCRIBLI_CMD, {
                 cmd: "setSpellCheckerLanguages",
                 languages: selected,
             });
@@ -101,148 +101,148 @@ const bindSpellcheckLanguagesChips = async (root: HTMLElement) => {
 /// #endif
 
 const registerEditorBlockFeaturesGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("blockFeatures", window.siyuan.languages.configGroupBlockFeatures);
+    const group = tab.group("blockFeatures", window.scribli.languages.configGroupBlockFeatures);
     group.switch("editor.displayNetImgMark", {
-        title: window.siyuan.languages.md7,
-        desc: window.siyuan.languages.md8,
+        title: window.scribli.languages.md7,
+        desc: window.scribli.languages.md8,
     });
     group.switch("editor.displayBookmarkIcon", {
-        title: window.siyuan.languages.md12,
-        desc: window.siyuan.languages.md16,
+        title: window.scribli.languages.md12,
+        desc: window.scribli.languages.md16,
     });
     group.switch("editor.embedBlockBreadcrumb", {
-        title: window.siyuan.languages.embedBlockBreadcrumb,
-        desc: window.siyuan.languages.embedBlockBreadcrumbTip,
+        title: window.scribli.languages.embedBlockBreadcrumb,
+        desc: window.scribli.languages.embedBlockBreadcrumbTip,
     });
     group.select("editor.databaseAttrViewMode", {
-        title: window.siyuan.languages.databaseAttrViewMode,
-        desc: window.siyuan.languages.databaseAttrViewModeTip,
+        title: window.scribli.languages.databaseAttrViewMode,
+        desc: window.scribli.languages.databaseAttrViewModeTip,
         options: [
-            {value: 0, label: window.siyuan.languages.expand},
-            {value: 1, label: window.siyuan.languages.collapse},
+            {value: 0, label: window.scribli.languages.expand},
+            {value: 1, label: window.scribli.languages.collapse},
         ],
     });
     group.select("editor.headingEmbedMode", {
-        title: window.siyuan.languages.headingEmbedMode,
-        desc: window.siyuan.languages.headingEmbedModeTip,
+        title: window.scribli.languages.headingEmbedMode,
+        desc: window.scribli.languages.headingEmbedModeTip,
         options: [
-            {value: 0, label: window.siyuan.languages.showHeadingWithBlocks},
-            {value: 1, label: window.siyuan.languages.showHeadingOnlyTitle},
-            {value: 2, label: window.siyuan.languages.showHeadingOnlyBlocks},
+            {value: 0, label: window.scribli.languages.showHeadingWithBlocks},
+            {value: 1, label: window.scribli.languages.showHeadingOnlyTitle},
+            {value: 2, label: window.scribli.languages.showHeadingOnlyBlocks},
         ],
     });
     group.switch("editor.codeLineWrap", {
-        title: window.siyuan.languages.md31,
-        desc: window.siyuan.languages.md32,
+        title: window.scribli.languages.md31,
+        desc: window.scribli.languages.md32,
     });
     group.switch("editor.codeLigatures", {
-        title: window.siyuan.languages.md2,
-        desc: window.siyuan.languages.md3,
+        title: window.scribli.languages.md2,
+        desc: window.scribli.languages.md3,
     });
     group.switch("editor.codeSyntaxHighlightLineNum", {
-        title: window.siyuan.languages.md27,
-        desc: window.siyuan.languages.md28,
+        title: window.scribli.languages.md27,
+        desc: window.scribli.languages.md28,
     });
 };
 
 const registerEditorBidirectionalGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("bidirectional", window.siyuan.languages.configGroupBidirectionalLinks);
+    const group = tab.group("bidirectional", window.scribli.languages.configGroupBidirectionalLinks);
     group.switch("editor.onlySearchForDoc", {
-        title: window.siyuan.languages.onlySearchForDoc,
-        desc: window.siyuan.languages.onlySearchForDocTip,
+        title: window.scribli.languages.onlySearchForDoc,
+        desc: window.scribli.languages.onlySearchForDocTip,
     });
     group.number("editor.blockRefDynamicAnchorTextMaxLen", {
-        title: window.siyuan.languages.md37,
-        desc: window.siyuan.languages.md38,
+        title: window.scribli.languages.md37,
+        desc: window.scribli.languages.md38,
         min: 1,
         max: 5120,
     });
     group.switch("editor.virtualBlockRef", {
-        title: window.siyuan.languages.md33,
-        desc: window.siyuan.languages.md34,
+        title: window.scribli.languages.md33,
+        desc: window.scribli.languages.md34,
     });
     group.textBlock("editor.virtualBlockRefInclude", {
-        title: window.siyuan.languages.md9,
-        desc: window.siyuan.languages.md36,
+        title: window.scribli.languages.md9,
+        desc: window.scribli.languages.md36,
         mode: "textarea",
     });
     group.textBlock("editor.virtualBlockRefExclude", {
-        title: window.siyuan.languages.md35,
-        desc: window.siyuan.languages.md41,
+        title: window.scribli.languages.md35,
+        desc: window.scribli.languages.md41,
         mode: "textarea",
     });
     group.switch("editor.backlinkContainChildren", {
-        title: window.siyuan.languages.backlinkContainChildren,
-        desc: window.siyuan.languages.backlinkContainChildrenTip,
+        title: window.scribli.languages.backlinkContainChildren,
+        desc: window.scribli.languages.backlinkContainChildrenTip,
     });
     group.number("editor.backlinkExpandCount", {
-        title: window.siyuan.languages.backlinkExpand,
-        desc: window.siyuan.languages.backlinkExpandTip,
+        title: window.scribli.languages.backlinkExpand,
+        desc: window.scribli.languages.backlinkExpandTip,
         min: 0,
         max: 512,
     });
     group.number("editor.backmentionExpandCount", {
-        title: window.siyuan.languages.backmentionExpand,
-        desc: window.siyuan.languages.backmentionExpandTip,
+        title: window.scribli.languages.backmentionExpand,
+        desc: window.scribli.languages.backmentionExpandTip,
         min: -1,
         max: 512,
     });
 };
 
 const registerEditorMarkdownInlineGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("markdownInline", window.siyuan.languages.configGroupMarkdownInlineSyntax);
+    const group = tab.group("markdownInline", window.scribli.languages.configGroupMarkdownInlineSyntax);
     group.switch("editor.markdown.inlineAsterisk", {
-        title: window.siyuan.languages.editorMarkdownInlineAsterisk,
-        desc: window.siyuan.languages.editorMarkdownInlineAsteriskTip,
+        title: window.scribli.languages.editorMarkdownInlineAsterisk,
+        desc: window.scribli.languages.editorMarkdownInlineAsteriskTip,
     });
     group.switch("editor.markdown.inlineUnderscore", {
-        title: window.siyuan.languages.editorMarkdownInlineUnderscore,
-        desc: window.siyuan.languages.editorMarkdownInlineUnderscoreTip,
+        title: window.scribli.languages.editorMarkdownInlineUnderscore,
+        desc: window.scribli.languages.editorMarkdownInlineUnderscoreTip,
     });
     group.switch("editor.markdown.inlineSup", {
-        title: window.siyuan.languages.editorMarkdownInlineSup,
-        desc: window.siyuan.languages.editorMarkdownInlineSupTip,
+        title: window.scribli.languages.editorMarkdownInlineSup,
+        desc: window.scribli.languages.editorMarkdownInlineSupTip,
     });
     group.switch("editor.markdown.inlineSub", {
-        title: window.siyuan.languages.editorMarkdownInlineSub,
-        desc: window.siyuan.languages.editorMarkdownInlineSubTip,
+        title: window.scribli.languages.editorMarkdownInlineSub,
+        desc: window.scribli.languages.editorMarkdownInlineSubTip,
     });
     group.switch("editor.markdown.inlineTag", {
-        title: window.siyuan.languages.editorMarkdownInlineTag,
-        desc: window.siyuan.languages.editorMarkdownInlineTagTip,
+        title: window.scribli.languages.editorMarkdownInlineTag,
+        desc: window.scribli.languages.editorMarkdownInlineTagTip,
     });
     group.switch("editor.markdown.inlineMath", {
-        title: window.siyuan.languages.editorMarkdownInlineMath,
-        desc: window.siyuan.languages.editorMarkdownInlineMathTip,
+        title: window.scribli.languages.editorMarkdownInlineMath,
+        desc: window.scribli.languages.editorMarkdownInlineMathTip,
     });
     group.switch("editor.markdown.inlineStrikethrough", {
-        title: window.siyuan.languages.editorMarkdownInlineStrikethrough,
-        desc: window.siyuan.languages.editorMarkdownInlineStrikethroughTip,
+        title: window.scribli.languages.editorMarkdownInlineStrikethrough,
+        desc: window.scribli.languages.editorMarkdownInlineStrikethroughTip,
     });
     group.switch("editor.markdown.inlineMark", {
-        title: window.siyuan.languages.editorMarkdownInlineMark,
-        desc: window.siyuan.languages.editorMarkdownInlineMarkTip,
+        title: window.scribli.languages.editorMarkdownInlineMark,
+        desc: window.scribli.languages.editorMarkdownInlineMarkTip,
     });
 };
 
 const registerEditorAdvancedGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("advanced", window.siyuan.languages.configGroupAdvanced);
+    const group = tab.group("advanced", window.scribli.languages.configGroupAdvanced);
     group.text("editor.plantUMLServePath", {
-        title: window.siyuan.languages.md39,
-        desc: window.siyuan.languages.md40,
+        title: window.scribli.languages.md39,
+        desc: window.scribli.languages.md40,
     });
     group.textBlock("editor.katexMacros", {
-        title: window.siyuan.languages.katexMacros,
-        desc: window.siyuan.languages.katexMacrosTip,
+        title: window.scribli.languages.katexMacros,
+        desc: window.scribli.languages.katexMacrosTip,
         mode: "textarea",
     });
     group.switch("editor.allowSVGScript", {
-        title: window.siyuan.languages.allowSVGScript,
-        desc: window.siyuan.languages.allowSVGScriptTip,
+        title: window.scribli.languages.allowSVGScript,
+        desc: window.scribli.languages.allowSVGScriptTip,
     });
     group.switch("editor.allowHTMLBLockScript", {
-        title: window.siyuan.languages.allowHTMLBLockScript,
-        desc: window.siyuan.languages.allowHTMLBLockScriptTip,
+        title: window.scribli.languages.allowHTMLBLockScript,
+        desc: window.scribli.languages.allowHTMLBLockScriptTip,
     });
 };
 

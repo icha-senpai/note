@@ -175,8 +175,8 @@ export const requestUndo = async (protyle: IProtyle) => {
         protyle.wysiwyg.element.addEventListener("keydown", blockInput, true);
         protyle.wysiwyg.element.addEventListener("beforeinput", blockInput, true);
         const confirmed = await new Promise<boolean>((resolve) => {
-            confirmDialog(`⚠️ ${window.siyuan.languages.undo}`,
-                `${window.siyuan.languages.undoCrossDocConfirm}<div style="margin-top: 8px;">${names.map(n => `• ${n}`).join("<br>")}</div>`,
+            confirmDialog(`⚠️ ${window.scribli.languages.undo}`,
+                `${window.scribli.languages.undoCrossDocConfirm}<div style="margin-top: 8px;">${names.map(n => `• ${n}`).join("<br>")}</div>`,
                 () => resolve(true),
                 () => resolve(false));
         });
@@ -190,7 +190,7 @@ export const requestUndo = async (protyle: IProtyle) => {
 
     fetchPost("/api/transactions/undo", {
         rootID,
-        app: Constants.SIYUAN_APPID,
+        app: Constants.SCRIBLI_APPID,
         session: protyle.id,
     }, (response) => {
         isUndoing = false;
@@ -248,7 +248,7 @@ export const requestRedo = async (protyle: IProtyle) => {
     await waitForPendingTransactions(protyle);
     fetchPost("/api/transactions/redo", {
         rootID,
-        app: Constants.SIYUAN_APPID,
+        app: Constants.SCRIBLI_APPID,
         session: protyle.id,
     }, (response) => {
         isUndoing = false;

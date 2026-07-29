@@ -94,29 +94,30 @@ func EnableExtendModules(p *KernelPlugin, rt *goja.Runtime) (err error) {
 	return
 }
 
-// EnableSiyuanModule injects all siyuan.* APIs into the plugin's goja global context.
-func EnableSiyuanModule(p *KernelPlugin, rt *goja.Runtime) (err error) {
+// EnableScribliModule injects all scribli.* APIs into the plugin's goja global context.
+func EnableScribliModule(p *KernelPlugin, rt *goja.Runtime) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("failed to inject global context: %v", r)
 		}
 	}()
 
-	siyuan := rt.NewObject()
+	scribli := rt.NewObject()
 
-	lo.Must0(injectPlugin(p, rt, siyuan))
-	lo.Must0(injectEvent(p, rt, siyuan))
-	lo.Must0(injectLogger(p, rt, siyuan))
-	lo.Must0(injectStorage(p, rt, siyuan))
-	lo.Must0(injectRpc(p, rt, siyuan))
-	lo.Must0(injectMcp(p, rt, siyuan))
-	lo.Must0(injectClient(p, rt, siyuan))
-	lo.Must0(injectServer(p, rt, siyuan))
-	lo.Must0(injectSecretsVars(p, rt, siyuan))
+	lo.Must0(injectPlugin(p, rt, scribli))
+	lo.Must0(injectEvent(p, rt, scribli))
+	lo.Must0(injectLogger(p, rt, scribli))
+	lo.Must0(injectStorage(p, rt, scribli))
+	lo.Must0(injectRpc(p, rt, scribli))
+	lo.Must0(injectMcp(p, rt, scribli))
+	lo.Must0(injectClient(p, rt, scribli))
+	lo.Must0(injectServer(p, rt, scribli))
+	lo.Must0(injectSecretsVars(p, rt, scribli))
 
-	lo.Must0(ObjectFreeze(rt, siyuan))
+	lo.Must0(ObjectFreeze(rt, scribli))
 
-	lo.Must0(rt.GlobalObject().Set("siyuan", siyuan))
+	lo.Must0(rt.GlobalObject().Set("scribli", scribli))
+	lo.Must0(rt.GlobalObject().Set("siyuan", scribli))
 	return
 }
 
@@ -321,7 +322,7 @@ func getJsContextValue(rt *goja.Runtime, paths []any) (value goja.Value, err err
 	return
 }
 
-// dispatchEvent calls the globalThis.siyuan.event.on hook with the given event object.
+// dispatchEvent calls the globalThis.scribli.event.on hook with the given event object.
 func dispatchEvent(p *KernelPlugin, rt *goja.Runtime, e any) (async bool, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -329,22 +330,22 @@ func dispatchEvent(p *KernelPlugin, rt *goja.Runtime, e any) (async bool, err er
 		}
 	}()
 
-	event, err := getJsContextValue(rt, []any{"siyuan", "event"})
+	event, err := getJsContextValue(rt, []any{"scribli", "event"})
 	if err != nil {
 		return
 	}
 	if event == nil {
-		err = fmt.Errorf("globalThis.siyuan.event not found")
+		err = fmt.Errorf("globalThis.scribli.event not found")
 		return
 	}
 	if goja.IsUndefined(event) || goja.IsNull(event) {
-		err = fmt.Errorf("globalThis.siyuan.event is %s", event.String())
+		err = fmt.Errorf("globalThis.scribli.event is %s", event.String())
 		return
 	}
 
 	eventObj := event.ToObject(rt)
 	if eventObj == nil {
-		err = fmt.Errorf("globalThis.siyuan.event is not an object")
+		err = fmt.Errorf("globalThis.scribli.event is not an object")
 		return
 	}
 
@@ -492,8 +493,8 @@ func jsValueToBytes(rt *goja.Runtime, value goja.Value) (data []byte, err error)
 
 // getRequestHandler retrieves the handler function and its containing object for a given scope and request type from the plugin's JS context.
 func getRequestHandler(rt *goja.Runtime, scope AccessScope, requestType RequestType) (handler goja.Callable, handlerObj *goja.Object, err error) {
-	// Get handler object: siyuan.server[scope][requestType]
-	handlerObjValue, getObjErr := getJsContextValue(rt, []any{"siyuan", "server", string(scope), string(requestType)})
+	// Get handler object: scribli.server[scope][requestType]
+	handlerObjValue, getObjErr := getJsContextValue(rt, []any{"scribli", "server", string(scope), string(requestType)})
 	if getObjErr != nil {
 		err = getObjErr
 		return
@@ -501,20 +502,20 @@ func getRequestHandler(rt *goja.Runtime, scope AccessScope, requestType RequestT
 
 	handlerObj = handlerObjValue.ToObject(rt)
 	if handlerObj == nil {
-		err = fmt.Errorf("globalThis.siyuan.server[%s][%s] is not an object", scope, requestType)
+		err = fmt.Errorf("globalThis.scribli.server[%s][%s] is not an object", scope, requestType)
 		return
 	}
 
-	// Get handler: siyuan.server[scope][requestType].handler
+	// Get handler: scribli.server[scope][requestType].handler
 	handlerValue := handlerObj.Get("handler")
 	if !isJsValueNotNull(handlerValue) {
-		err = fmt.Errorf("siyuan.server[%s][%s].handler is not set", scope, requestType)
+		err = fmt.Errorf("scribli.server[%s][%s].handler is not set", scope, requestType)
 		return
 	}
 
 	handler, ok := goja.AssertFunction(handlerValue)
 	if !ok {
-		err = fmt.Errorf("siyuan.server[%s][%s].handler is not a function", scope, requestType)
+		err = fmt.Errorf("scribli.server[%s][%s].handler is not a function", scope, requestType)
 		return
 	}
 

@@ -84,7 +84,7 @@ export class Options {
             actions: ["desktop", "tablet", "mobile", "mp-wechat", "zhihu", "yuque"],
             delay: 0,
             markdown: {
-                paragraphBeginningSpace: window.siyuan.config.export.paragraphBeginningSpace,
+                paragraphBeginningSpace: window.scribli.config.export.paragraphBeginningSpace,
                 listStyle: false,
                 sanitize: true,
             },

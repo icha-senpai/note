@@ -1,12 +1,12 @@
-import {Menu as SiyuanMenu} from "../menus/Menu";
+import {Menu as InternalMenu} from "../menus/Menu";
 
 export class Menu {
-    private menu: SiyuanMenu;
+    private menu: InternalMenu;
     public isOpen: boolean;
     public element: HTMLElement;
 
     constructor(id?: string, closeCB?: () => void) {
-        this.menu = window.siyuan.menus.menu;
+        this.menu = window.scribli.menus.menu;
         this.isOpen = false;
         this.element = this.menu.element;
 

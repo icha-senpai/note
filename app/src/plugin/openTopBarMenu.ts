@@ -20,21 +20,21 @@ export const openTopBarMenu = (app: App, target?: Element) => {
                 i--;
                 continue;
             }
-            const hasUnpin = window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(item.id);
+            const hasUnpin = window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(item.id);
             const submenu = [{
                 id: hasUnpin ? "pin" : "unpin",
                 icon: hasUnpin ? "iconPin" : "iconUnpin",
-                label: hasUnpin ? window.siyuan.languages.pin : window.siyuan.languages.unpin,
+                label: hasUnpin ? window.scribli.languages.pin : window.scribli.languages.unpin,
                 click() {
                     if (hasUnpin) {
-                        window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN].splice(window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN].indexOf(item.id), 1);
+                        window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN].splice(window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN].indexOf(item.id), 1);
                         item.classList.remove("fn__none");
                     } else {
-                        window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN].push(item.id);
-                        window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN] = Array.from(new Set(window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN]));
+                        window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN].push(item.id);
+                        window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN] = Array.from(new Set(window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN]));
                         item.classList.add("fn__none");
                     }
-                    setStorageVal(Constants.LOCAL_PLUGINTOPUNPIN, window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN]);
+                    setStorageVal(Constants.LOCAL_PLUGINTOPUNPIN, window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN]);
                     /// #if !MOBILE
                     setTabPosition(true);
                     /// #endif
@@ -44,7 +44,7 @@ export const openTopBarMenu = (app: App, target?: Element) => {
                 submenu.push({
                     id: "config",
                     icon: "iconSettings",
-                    label: window.siyuan.languages.config,
+                    label: window.scribli.languages.config,
                     click() {
                         plugin.openSetting();
                     },
@@ -97,13 +97,13 @@ export const openTopBarMenu = (app: App, target?: Element) => {
     });
     if (!hasPlugin) {
         if (target) {
-            window.siyuan.menus.menu.element.querySelector(".b3-menu__separator")?.remove();
+            window.scribli.menus.menu.element.querySelector(".b3-menu__separator")?.remove();
         } else {
             menu.addItem({
                 id: "emptyContent",
                 iconHTML: "",
                 type: "readonly",
-                label: window.siyuan.languages.emptyContent,
+                label: window.scribli.languages.emptyContent,
             });
         }
     }

@@ -23,14 +23,14 @@ declare interface INotebookConf {
 export const genNotebookOption = (id: string, notebookId?: string, noCurrent?: boolean) => {
     let html = "";
     if (!noCurrent) {
-        html = `<option value="">${window.siyuan.languages.currentNotebook}</option>`;
+        html = `<option value="">${window.scribli.languages.currentNotebook}</option>`;
     }
     const helpIds: string[] = [];
     Object.keys(Constants.HELP_PATH).forEach((key: "zh-CN") => {
         helpIds.push(Constants.HELP_PATH[key]);
     });
     let firstNotebookId = "";
-    window.siyuan.notebooks.forEach((item) => {
+    window.scribli.notebooks.forEach((item) => {
         if (helpIds.includes(item.id) || item.id === notebookId) {
             return;
         }
@@ -50,11 +50,11 @@ export const onGetnotebookconf = (data: INotebookConf) => {
     const titleHTML = `<div class="fn__flex">
 <div class="fn__ellipsis" style="white-space: nowrap">${escapeHtml(data.name)}</div>
 <div class="fn__space"></div>
-<button class="b3-button b3-button--small fn__flex-center">${window.siyuan.languages.copy} ID</button></div>`;
+<button class="b3-button b3-button--small fn__flex-center">${window.scribli.languages.copy} ID</button></div>`;
     const contentHTML = `<div class="b3-dialog__content">
 <div class="b3-label config-item config-item--save-path">
-    <div class="config-name">${window.siyuan.languages.fileTree12}</div>
-    <div class="b3-label__text">${window.siyuan.languages.fileTree13}</div>
+    <div class="config-name">${window.scribli.languages.fileTree12}</div>
+    <div class="b3-label__text">${window.scribli.languages.fileTree13}</div>
     <span class="fn__hr"></span>
     <div class="fn__flex config-wrap">
         <select class="b3-select fn__size200" id="docCreateSaveBox">${genNotebookOption(data.conf.docCreateSaveBox, data.box)}</select>
@@ -63,8 +63,8 @@ export const onGetnotebookconf = (data: INotebookConf) => {
     </div>
 </div>
 <div class="b3-label config-item config-item--save-path">
-    <div class="config-name">${window.siyuan.languages.fileTree5}</div>
-    <div class="b3-label__text">${window.siyuan.languages.fileTree6}</div>
+    <div class="config-name">${window.scribli.languages.fileTree5}</div>
+    <div class="b3-label__text">${window.scribli.languages.fileTree6}</div>
     <span class="fn__hr"></span>
     <div class="fn__flex config-wrap">
         <select class="b3-select fn__size200" id="refCreateSaveBox">${genNotebookOption(data.conf.refCreateSaveBox, data.box)}</select>
@@ -73,12 +73,12 @@ export const onGetnotebookconf = (data: INotebookConf) => {
     </div>
 </div>
 <div class="b3-label config-item">
-    <div class="config-name">${window.siyuan.languages.fileTree11}</div>
-    <div class="b3-label__text">${window.siyuan.languages.fileTree14}</div>
+    <div class="config-name">${window.scribli.languages.fileTree11}</div>
+    <div class="b3-label__text">${window.scribli.languages.fileTree14}</div>
     <div class="fn__hr"></div>
     <input class="b3-text-field fn__flex-center fn__block" id="dailyNoteSavePath" value="">
     <div class="fn__hr"></div>
-    <div class="b3-label__text">${window.siyuan.languages.fileTree15}</div>
+    <div class="b3-label__text">${window.scribli.languages.fileTree15}</div>
     <div class="fn__hr"></div>
     <input class="b3-text-field fn__flex-center fn__block" id="dailyNoteTemplatePath" value="${data.conf.dailyNoteTemplatePath}">
 </div></div>`;
@@ -105,7 +105,7 @@ export const onGetnotebookconf = (data: INotebookConf) => {
 const bindSettingEvent = (contentElement: Element, data: INotebookConf) => {
     contentElement.querySelector(".b3-button--small").addEventListener("click", () => {
         writeText(data.box);
-        showMessage(window.siyuan.languages.copied);
+        showMessage(window.scribli.languages.copied);
     });
     const dailyNoteSavePathElement = contentElement.querySelector("#dailyNoteSavePath") as HTMLInputElement;
     dailyNoteSavePathElement.value = data.conf.dailyNoteSavePath;

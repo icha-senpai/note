@@ -18,13 +18,13 @@ import {setEditMode} from "../protyle/util/setEditMode";
 export const exportAsset = (src: string) => {
     return {
         id: "export",
-        label: window.siyuan.languages.export,
+        label: window.scribli.languages.export,
         icon: "iconUpload",
         async click() {
             /// #if BROWSER
             saveExportFile(src);
             /// #else
-            const result = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+            const result = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
                 cmd: "showSaveDialog",
                 defaultPath: getAssetName(src) + pathPosix().extname(src),
                 properties: ["showOverwriteConfirmation"],
@@ -32,7 +32,7 @@ export const exportAsset = (src: string) => {
             if (!result.canceled) {
                 fetchPost("/api/file/copyFile", {src, dest: result.filePath}, (response) => {
                     if (response.code === 0) {
-                        showMessage(window.siyuan.languages.exported);
+                        showMessage(window.scribli.languages.exported);
                     }
                 });
             }
@@ -44,14 +44,14 @@ export const exportAsset = (src: string) => {
 // 复制资源文件到系统剪贴板，在文件资源管理器中可粘贴为文件（仅 Windows、macOS 桌面端支持）
 export const writeAssetToClipboard = (src: string) => {
     /// #if !BROWSER
-    if (["windows", "darwin"].includes(window.siyuan.config.system.os)) {
+    if (["windows", "darwin"].includes(window.scribli.config.system.os)) {
         return {
             id: "copyFile",
-            label: window.siyuan.languages.copyFile,
+            label: window.scribli.languages.copyFile,
             icon: "iconFile",
             click: () => {
                 fetchPost("/api/clipboard/writeFilePath", {path: src}, () => {
-                    showMessage(window.siyuan.languages.copied);
+                    showMessage(window.scribli.languages.copied);
                 });
             }
         };
@@ -68,8 +68,8 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
     const openSubmenus: IMenu[] = [{
         id: "insertRight",
         icon: "iconLayoutRight",
-        label: window.siyuan.languages.insertRight,
-        accelerator: ids.length === 1 ? `${updateHotkeyTip(window.siyuan.config.keymap.editor.general.insertRight.custom)}/${updateHotkeyTip("⌥" + window.siyuan.languages.click)}` : undefined,
+        label: window.scribli.languages.insertRight,
+        accelerator: ids.length === 1 ? `${updateHotkeyTip(window.scribli.config.keymap.editor.general.insertRight.custom)}/${updateHotkeyTip("⌥" + window.scribli.languages.click)}` : undefined,
         click: () => {
             if (notebookId) {
                 openFileById({
@@ -95,8 +95,8 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
     }, {
         id: "insertBottom",
         icon: "iconLayoutBottom",
-        label: window.siyuan.languages.insertBottom,
-        accelerator: ids.length === 1 ? "⇧⌘" + window.siyuan.languages.click : "",
+        label: window.scribli.languages.insertBottom,
+        accelerator: ids.length === 1 ? "⇧⌘" + window.scribli.languages.click : "",
         click: () => {
             if (notebookId) {
                 openFileById({
@@ -120,11 +120,11 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
             }
         }
     }];
-    if (window.siyuan.config.fileTree.openFilesUseCurrentTab) {
+    if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
         openSubmenus.push({
             id: "openInNewTab",
-            label: window.siyuan.languages.openInNewTab,
-            accelerator: ids.length === 1 ? "⌥⌘" + window.siyuan.languages.click : undefined,
+            label: window.scribli.languages.openInNewTab,
+            accelerator: ids.length === 1 ? "⌥⌘" + window.scribli.languages.click : undefined,
             click: () => {
                 if (notebookId) {
                     openFileById({
@@ -152,7 +152,7 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
     /// #if !BROWSER
     openSubmenus.push({
         id: "openByNewWindow",
-        label: window.siyuan.languages.openByNewWindow,
+        label: window.scribli.languages.openByNewWindow,
         icon: "iconOpenWindow",
         click() {
             openNewWindowById(ids);
@@ -163,7 +163,7 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
     openSubmenus.push({
         id: "preview",
         icon: "iconPreview",
-        label: window.siyuan.languages.preview,
+        label: window.scribli.languages.preview,
         click: () => {
             ids.forEach((id) => {
                 openFileById({
@@ -179,14 +179,14 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
     openSubmenus.push({
         id: "showInFolder",
         icon: "iconFolder",
-        label: window.siyuan.languages.showInFolder,
+        label: window.scribli.languages.showInFolder,
         click: () => {
             if (notebookId) {
-                useShell("showItemInFolder", path.join(window.siyuan.config.system.dataDir, notebookId, pathString));
+                useShell("showItemInFolder", path.join(window.scribli.config.system.dataDir, notebookId, pathString));
             } else {
                 ids.forEach((id) => {
                     fetchPost("/api/block/getBlockInfo", {id}, (response) => {
-                        useShell("showItemInFolder", path.join(window.siyuan.config.system.dataDir, response.data.box, response.data.path));
+                        useShell("showItemInFolder", path.join(window.scribli.config.system.dataDir, response.data.box, response.data.path));
                     });
                 });
             }
@@ -196,9 +196,9 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
     if (onlyGetMenus) {
         return openSubmenus;
     }
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "openBy",
-        label: window.siyuan.languages.openBy,
+        label: window.scribli.languages.openBy,
         icon: "iconOpen",
         submenu: openSubmenus,
     }).element);
@@ -220,11 +220,11 @@ export const copyPNGByLink = (link: string) => {
                     ["image/png"]: blob
                 })
             ]).catch(() => {
-                showMessage(window.siyuan.languages.clipboardPermissionDenied);
+                showMessage(window.scribli.languages.clipboardPermissionDenied);
             });
         } catch (e) {
             // http 等非安全上下文下 navigator.clipboard 可能为 undefined，这里会同步抛错
-            showMessage(window.siyuan.languages.clipboardPermissionDenied);
+            showMessage(window.scribli.languages.clipboardPermissionDenied);
         }
     };
     // 把任意图片 blob 画进 canvas 再导出为 PNG；blob URL 为同源，不会污染 canvas

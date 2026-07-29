@@ -4,7 +4,7 @@ import {shell} from "electron";
 /// #endif
 import {getSearch} from "../util/functions";
 import {Constants} from "../constants";
-import {processSiYuanUri} from "../util/uri";
+import {processScribliUri} from "../util/uri";
 /// #if !MOBILE
 import {openAsset, openBy} from "./util";
 /// #endif
@@ -25,14 +25,14 @@ export const openLink = (app: App, aLink: string, event?: MouseEvent, ctrlIsPres
             linkAddress = linkAddress.split("?page")[0];
         }
     }
-    if (processSiYuanUri(app, linkAddress)) {
+    if (processScribliUri(app, linkAddress)) {
         return;
     }
     /// #if MOBILE
     openByMobile(linkAddress);
     /// #else
     if (isLocalPath(linkAddress)) {
-        if (Constants.SIYUAN_ASSETS_EXTS.includes(pathPosix().extname(linkAddress)) &&
+        if (Constants.SCRIBLI_ASSETS_EXTS.includes(pathPosix().extname(linkAddress)) &&
             (
                 !linkAddress.endsWith(".pdf") ||
                 // 本地 pdf 仅 assets/ 开头的才使用 siyuan 打开
@@ -54,7 +54,7 @@ export const openLink = (app: App, aLink: string, event?: MouseEvent, ctrlIsPres
                 openByMobile(linkAddress);
                 /// #endif
             } else {
-                openAsset(app, linkAddress, pdfParams, !window.siyuan.config.fileTree.noSplitScreenWhenOpenTab ? "right" : null);
+                openAsset(app, linkAddress, pdfParams, !window.scribli.config.fileTree.noSplitScreenWhenOpenTab ? "right" : null);
             }
         } else {
             /// #if !BROWSER
@@ -88,7 +88,7 @@ export const openByMobile = (uri: string) => {
     if (!uri) {
         return;
     }
-    if (processSiYuanUri(window.siyuan.ws.app, uri)) {
+    if (processScribliUri(window.scribli.ws.app, uri)) {
         return;
     }
     if (isInIOS()) {

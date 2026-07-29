@@ -1,4 +1,4 @@
-import {isSiYuanUriProtocol, parseSiYuanUriInfo} from "./pathName";
+import {isScribliUriProtocol, parseScribliUriInfo} from "./pathName";
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -13,8 +13,8 @@ import {openMobileFileById} from "../mobile/editor";
 import type {App} from "../index";
 import {activateQueuedAVLocate, queueAVLocateRequest} from "../protyle/render/av/locate";
 
-const processSiYuanUriBlocks = (app: App, uriObj: URL): boolean => {
-    const blockInfo = parseSiYuanUriInfo(uriObj);
+const processScribliUriBlocks = (app: App, uriObj: URL): boolean => {
+    const blockInfo = parseScribliUriInfo(uriObj);
     if (blockInfo != null) {
         const {id, focus} = blockInfo;
         if (blockInfo.avItemID) {
@@ -24,7 +24,7 @@ const processSiYuanUriBlocks = (app: App, uriObj: URL): boolean => {
                 groupID: blockInfo.avGroupID,
             });
         }
-        window.siyuan.editorIsFullscreen = blockInfo.fullscreen;
+        window.scribli.editorIsFullscreen = blockInfo.fullscreen;
         fetchPost("/api/block/checkBlockExist", { id }, existResponse => {
             if (existResponse.data) {
                 checkFold(id, (zoomIn) => {
@@ -49,11 +49,11 @@ const processSiYuanUriBlocks = (app: App, uriObj: URL): boolean => {
                     /// #endif
                 });
                 /// #if !BROWSER
-                ipcRenderer.send(Constants.SIYUAN_CMD, "show");
+                ipcRenderer.send(Constants.SCRIBLI_CMD, "show");
                 /// #endif
             }
             app.plugins.forEach(plugin => {
-                plugin.eventBus.emit("open-siyuan-url-block", {
+                plugin.eventBus.emit("open-scribli-url-block", {
                     url: uriObj.href,
                     id,
                     focus,
@@ -66,7 +66,7 @@ const processSiYuanUriBlocks = (app: App, uriObj: URL): boolean => {
     return false;
 };
 
-const processSiYuanUriPlugins = (app: App, uriObj: URL): boolean => {
+const processScribliUriPlugins = (app: App, uriObj: URL): boolean => {
     const pluginNameOrTabType: string | null = (() => {
         const name = uriObj.pathname.split("/")[1];
         if (!name) {
@@ -86,7 +86,7 @@ const processSiYuanUriPlugins = (app: App, uriObj: URL): boolean => {
     const plugin = app.plugins.find(plugin => pluginNameOrTabType === plugin.name);
     if (plugin) {
         // scribli://plugins/plugin-name/foo?bar=baz
-        plugin.eventBus.emit("open-siyuan-url-plugin", { url: uriObj.href });
+        plugin.eventBus.emit("open-scribli-url-plugin", { url: uriObj.href });
     } else {
         if (!app.plugins.some(item => item.models[pluginNameOrTabType])) {
             return false;
@@ -120,11 +120,11 @@ const processSiYuanUriPlugins = (app: App, uriObj: URL): boolean => {
     return true;
 };
 
-export const processSiYuanUri = (app: App, uri: string) => {
+export const processScribliUri = (app: App, uri: string) => {
     let uriObj: URL;
     try {
         uriObj = new URL(uri);
-        if (!isSiYuanUriProtocol(uriObj)) {
+        if (!isScribliUriProtocol(uriObj)) {
             return false;
         }
     } catch (error) {
@@ -132,9 +132,9 @@ export const processSiYuanUri = (app: App, uri: string) => {
     }
     switch (uriObj.hostname) {
         case "blocks":
-            return processSiYuanUriBlocks(app, uriObj);
+            return processScribliUriBlocks(app, uriObj);
         case "plugins":
-            return processSiYuanUriPlugins(app, uriObj);
+            return processScribliUriPlugins(app, uriObj);
         default:
             break;
     }

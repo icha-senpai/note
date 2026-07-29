@@ -111,17 +111,17 @@ export class Background {
         this.element.innerHTML = `<div class="protyle-background__img">
     <img src="${this.transparentData}">
     <div class="protyle-icons">
-        <span class="protyle-icon protyle-icon--first" style="position: relative;overflow: hidden"><input aria-label="${window.siyuan.languages.upload}" class="ariaLabel b3-form__upload" type="file"><svg><use xlink:href="#iconUpload"></use></svg></span>
-        <span class="protyle-icon ariaLabel" data-type="link" aria-label="${window.siyuan.languages.link}"><svg><use xlink:href="#iconLink"></use></svg></span>
-        <span class="protyle-icon ariaLabel" data-type="asset" aria-label="${window.siyuan.languages.assets}"><svg><use xlink:href="#iconImage"></use></svg></span>
-        <span class="protyle-icon ariaLabel" data-type="show-random" aria-label="${window.siyuan.languages.builtIn}"><svg><use xlink:href="#iconRefresh"></use></svg></span>
-        <span class="protyle-icon ariaLabel fn__none" data-type="position" aria-label="${window.siyuan.languages.dragPosition}"><svg><use xlink:href="#iconMove"></use></svg></span>
-        <span class="protyle-icon protyle-icon--last ariaLabel" data-type="remove" aria-label="${window.siyuan.languages.remove}"><svg><use xlink:href="#iconTrashcan"></use></svg></span>
+        <span class="protyle-icon protyle-icon--first" style="position: relative;overflow: hidden"><input aria-label="${window.scribli.languages.upload}" class="ariaLabel b3-form__upload" type="file"><svg><use xlink:href="#iconUpload"></use></svg></span>
+        <span class="protyle-icon ariaLabel" data-type="link" aria-label="${window.scribli.languages.link}"><svg><use xlink:href="#iconLink"></use></svg></span>
+        <span class="protyle-icon ariaLabel" data-type="asset" aria-label="${window.scribli.languages.assets}"><svg><use xlink:href="#iconImage"></use></svg></span>
+        <span class="protyle-icon ariaLabel" data-type="show-random" aria-label="${window.scribli.languages.builtIn}"><svg><use xlink:href="#iconRefresh"></use></svg></span>
+        <span class="protyle-icon ariaLabel fn__none" data-type="position" aria-label="${window.scribli.languages.dragPosition}"><svg><use xlink:href="#iconMove"></use></svg></span>
+        <span class="protyle-icon protyle-icon--last ariaLabel" data-type="remove" aria-label="${window.scribli.languages.remove}"><svg><use xlink:href="#iconTrashcan"></use></svg></span>
     </div>
-    <div class="protyle-icons fn__none"><span class="protyle-icon protyle-icon--text">${window.siyuan.languages.dragPosition}</span></div>
+    <div class="protyle-icons fn__none"><span class="protyle-icon protyle-icon--text">${window.scribli.languages.dragPosition}</span></div>
     <div class="protyle-icons fn__none" style="opacity: .86;">
-        <span class="protyle-icon protyle-icon--first" data-type="cancel">${window.siyuan.languages.cancel}</span>
-        <span class="protyle-icon protyle-icon--last" data-type="confirm">${window.siyuan.languages.confirm}</span>
+        <span class="protyle-icon protyle-icon--first" data-type="cancel">${window.scribli.languages.cancel}</span>
+        <span class="protyle-icon protyle-icon--last" data-type="confirm">${window.scribli.languages.confirm}</span>
     </div>
 </div>
 <div class="protyle-background__ia">
@@ -130,15 +130,15 @@ export class Background {
     <div class="protyle-background__action">
         <button class="b3-button b3-button--cancel" data-menu="true" data-type="tag">
             <svg><use xlink:href="#iconTags"></use></svg>
-            ${window.siyuan.languages.addTag}
+            ${window.scribli.languages.addTag}
         </button>
         <button class="b3-button b3-button--cancel" data-type="icon">
             <svg><use xlink:href="#iconEmoji"></use></svg>
-            ${window.siyuan.languages.addIcon}
+            ${window.scribli.languages.addIcon}
         </button>
         <button class="b3-button b3-button--cancel" data-type="random">
             <svg><use xlink:href="#iconImage"></use></svg>
-            ${window.siyuan.languages.titleBg}
+            ${window.scribli.languages.titleBg}
         </button>
     </div>
 </div>`;
@@ -224,7 +224,7 @@ export class Background {
                         event.stopPropagation();
                     }
                     // 点击题头图菜单无法消失
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     break;
                 } else if (type === "position" && !protyle.disabled) {
                     const iconElements = this.element.firstElementChild.querySelectorAll(".protyle-icons");
@@ -268,7 +268,7 @@ export class Background {
                 } else if (type === "show-random" && !protyle.disabled) {
                     // 内置题头图对话框：优先展示封面图片，加载失败时回退到 CSS 图案
                     const dialog = new Dialog({
-                        title: window.siyuan.languages.builtIn,
+                        title: window.scribli.languages.builtIn,
                         content: `<div class="b3-cards" style="padding:16px;justify-content:center;align-items:center;min-height:200px">
             <img src="/stage/loading-pure.svg" style="width:64px;height:64px">
         </div>`,
@@ -316,7 +316,7 @@ export class Background {
                         };
 
                         const buildTabs = (activeCategory: string): string => {
-                            let tabs = `<span class="b3-chip b3-chip--hover${activeCategory === "all" ? " b3-chip--current" : ""}" data-category="all">${window.siyuan.languages.coverAll}</span>`;
+                            let tabs = `<span class="b3-chip b3-chip--hover${activeCategory === "all" ? " b3-chip--current" : ""}" data-category="all">${window.scribli.languages.coverAll}</span>`;
                             for (const cat of categories) {
                                 tabs += `<span class="b3-chip b3-chip--hover${activeCategory === cat ? " b3-chip--current" : ""}" data-category="${cat}">${getCategoryLabel(cat)}</span>`;
                             }
@@ -413,9 +413,9 @@ export class Background {
                             attrs: {"title-img": this.ial["title-img"]}
                         });
                         /// #if MOBILE
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                         /// #endif
-                    }, Constants.SIYUAN_ASSETS_IMAGE);
+                    }, Constants.SCRIBLI_ASSETS_IMAGE);
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -460,14 +460,14 @@ export class Background {
                     break;
                 } else if (type === "link" && !protyle.disabled) {
                     const dialog = new Dialog({
-                        title: window.siyuan.languages.link,
+                        title: window.scribli.languages.link,
                         width: isMobile() ? "92vw" : "520px",
                         content: `<div class="b3-dialog__content">
         <input class="b3-text-field fn__block" value="${this.imgElement.src.startsWith("data:") ? "" : this.imgElement.getAttribute("src")}">
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                     });
                     dialog.element.setAttribute("data-key", Constants.DIALOG_BACKGROUNDLINK);
@@ -491,7 +491,7 @@ export class Background {
                     break;
                 } else if (type === "open-search") {
                     /// #if !MOBILE
-                    openGlobalSearch(protyle.app, `#${target.textContent}#`, !window.siyuan.ctrlIsPressed, {method: 0});
+                    openGlobalSearch(protyle.app, `#${target.textContent}#`, !window.scribli.ctrlIsPressed, {method: 0});
                     /// #else
                     popSearch(protyle.app, {
                         hasReplace: false,
@@ -683,7 +683,7 @@ export class Background {
             });
             this.tagsElement.innerHTML = `${html}
 <div class="protyle-background__action fn__flex-center">
-    <button class="b3-button b3-button--cancel" style="margin-bottom: 8px" data-menu="true" data-type="tag"><svg><use xlink:href="#iconAdd"></use></svg>${window.siyuan.languages.addTag}</button>
+    <button class="b3-button b3-button--cancel" style="margin-bottom: 8px" data-menu="true" data-type="tag"><svg><use xlink:href="#iconAdd"></use></svg>${window.scribli.languages.addTag}</button>
 </div>`;
             this.tagsElement.classList.remove("fn__none");
             this.actionElements[0].classList.add("fn__none");
@@ -737,13 +737,13 @@ export class Background {
     }
 
     private openTag(protyle: IProtyle, target: HTMLElement) {
-        window.siyuan.menus.menu.remove();
+        window.scribli.menus.menu.remove();
         const menu = new Menu();
         menu.addItem({
             iconHTML: "",
             type: "empty",
             label: `<div class="fn__flex-column b3-menu__filter">
-    <input class="b3-text-field fn__flex-shrink" placeholder="${window.siyuan.languages.tag}"/>
+    <input class="b3-text-field fn__flex-shrink" placeholder="${window.scribli.languages.tag}"/>
     <div class="fn__hr"></div>
     <div class="b3-list fn__flex-1 b3-list--background">
         <img style="margin: 0 auto;display: block;width: 64px;height: 64px" src="/stage/loading-pure.svg">
@@ -780,7 +780,7 @@ export class Background {
                             inputElement.dispatchEvent(new CustomEvent("input"));
                         });
                     } else if (event.key === "Escape") {
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                     }
                 });
                 inputElement.addEventListener("input", (event) => {
@@ -801,7 +801,7 @@ export class Background {
                             }
                         });
                         if (!hasKey && response.data.k) {
-                            searchHTML = `<div data-type="new" class="b3-list-item b3-list-item--narrow${searchHTML ? "" : " b3-list-item--focus"}"><div class="fn__flex-1">${window.siyuan.languages.new} <mark>${escapeHtml(response.data.k)}</mark></div></div>` + searchHTML;
+                            searchHTML = `<div data-type="new" class="b3-list-item b3-list-item--narrow${searchHTML ? "" : " b3-list-item--focus"}"><div class="fn__flex-1">${window.scribli.languages.new} <mark>${escapeHtml(response.data.k)}</mark></div></div>` + searchHTML;
                         }
                         listElement.innerHTML = searchHTML;
                     });

@@ -13,11 +13,11 @@ export const updateCalloutType = (blockElements: HTMLElement[], protyle: IProtyl
     const range = getSelection().rangeCount > 0 ? getSelection().getRangeAt(0) : null;
     const blockCalloutElement = blockElements[0].querySelector(".callout-icon");
     const dialog = new Dialog({
-        title: window.siyuan.languages.callout,
+        title: window.scribli.languages.callout,
         content: `<div class="b3-dialog__content">
     <label class="fn__flex">
         <div class="fn__flex-center">
-            ${window.siyuan.languages.icon}
+            ${window.scribli.languages.icon}
         </div>
         <span class="fn__space"></span>
         <div class="protyle-wysiwyg" style="padding: 0;font-size: 16px" data-readonly="false">
@@ -27,7 +27,7 @@ export const updateCalloutType = (blockElements: HTMLElement[], protyle: IProtyl
     <div class="fn__hr"></div>
     <label class="fn__flex">
         <div class="fn__flex-center">
-            ${window.siyuan.languages.type}
+            ${window.scribli.languages.type}
         </div>
         <span class="fn__space"></span>
         <div class="b3-form__icona fn__flex-1" style="overflow: visible">
@@ -38,15 +38,15 @@ export const updateCalloutType = (blockElements: HTMLElement[], protyle: IProtyl
     <div class="fn__hr"></div>
     <label class="fn__flex">
         <div class="fn__flex-center">
-            ${window.siyuan.languages.title}
+            ${window.scribli.languages.title}
         </div>
         <span class="fn__space"></span>
         <input class="b3-text-field fn__flex-1" type="text">
     </label>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
         destroyCallback() {

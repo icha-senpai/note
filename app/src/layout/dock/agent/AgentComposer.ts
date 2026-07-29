@@ -52,7 +52,7 @@ const hintSkill = (key: string, protyle: IProtyle): IHintData[] => {
                     (s.description ? '<div class="b3-list-item__meta b3-list-item__showall">' + escapeHtml(s.description) + "</div>" : ""),
             }));
         if (dataList.length === 0) {
-            dataList.push({value: "", html: window.siyuan.languages.emptyContent});
+            dataList.push({value: "", html: window.scribli.languages.emptyContent});
         }
         protyle.hint.genHTML(dataList, protyle, false, "hint");
     });
@@ -128,9 +128,9 @@ class ComposerHistory {
 
 export function mountComposer(host: HTMLElement, onSend: () => void, onChange?: OnChangeCallback): ComposerHandle {
     const history = new ComposerHistory();
-    const L = window.siyuan.languages;
+    const L = window.scribli.languages;
 
-    const app: App = window.siyuan.ws.app;
+    const app: App = window.scribli.ws.app;
     const protyle = new Protyle(app, host, {
         lite: true,
         blockId: "",

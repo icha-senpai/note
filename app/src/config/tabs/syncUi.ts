@@ -16,7 +16,7 @@ export const refreshSyncModeRelatedItems = (root: Element) => {
 };
 
 const setSyncConfigItemVisible = (root: Element) => {
-    const visible = window.siyuan.config.sync.provider !== 0 && hasFeatureAccess();
+    const visible = window.scribli.config.sync.provider !== 0 && hasFeatureAccess();
     [
         "sync.enabled",
         "sync.generateConflictDoc",
@@ -36,7 +36,7 @@ const setSyncModeRelatedConfigItemVisible = (root: Element) => {
         return;
     }
     const syncMode: Config.ISync["mode"] = Number(syncModeElement.value);
-    const isAutoSync = syncMode === 1 && window.siyuan.config.sync.provider !== 0;
+    const isAutoSync = syncMode === 1 && window.scribli.config.sync.provider !== 0;
     root.querySelector(`#${CSS.escape("sync.interval")}`)?.closest(".config-item")?.classList.toggle("fn__none", !isAutoSync);
     root.querySelector(`#${CSS.escape("sync.perception")}`)?.closest(".config-item")?.classList.add("fn__none");
 };
@@ -72,25 +72,25 @@ const isThirdPartySyncProviderDef = (def: SyncProviderDef): def is SyncThirdPart
 
 const genThirdPartyUnavailableIntro = (): string => {
     return `<div>
-    ${window.siyuan.languages.cloudConfigTip}
+    ${window.scribli.languages.cloudConfigTip}
 </div>`;
 };
 
 const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
     0: {
         isProviderConfigAllowed: () => false,
-        genIntro: () => `<div class="b3-label b3-label--inner">${window.siyuan.languages.cloudConfigTip}</div>`,
-        genUnavailableIntro: () => `<div class="b3-label b3-label--inner">${window.siyuan.languages.cloudConfigTip}</div>`,
+        genIntro: () => `<div class="b3-label b3-label--inner">${window.scribli.languages.cloudConfigTip}</div>`,
+        genUnavailableIntro: () => `<div class="b3-label b3-label--inner">${window.scribli.languages.cloudConfigTip}</div>`,
     },
     2: {
         isProviderConfigAllowed: hasFeatureAccess,
         configKey: "s3",
         api: "/api/sync/setSyncProviderS3",
-        getConfig: () => window.siyuan.config.sync.s3,
+        getConfig: () => window.scribli.config.sync.s3,
         genIntro: () => `<div class="b3-label b3-label--inner">
-    ${window.siyuan.languages.syncThirdPartyProviderS3Intro}
+    ${window.scribli.languages.syncThirdPartyProviderS3Intro}
     <div class="fn__hr"></div>
-    ${window.siyuan.languages.syncThirdPartyProviderTip}
+    ${window.scribli.languages.syncThirdPartyProviderTip}
 </div>`,
         genUnavailableIntro: genThirdPartyUnavailableIntro,
         fields: [
@@ -115,11 +115,11 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
         isProviderConfigAllowed: hasFeatureAccess,
         configKey: "webdav",
         api: "/api/sync/setSyncProviderWebDAV",
-        getConfig: () => window.siyuan.config.sync.webdav,
+        getConfig: () => window.scribli.config.sync.webdav,
         genIntro: () => `<div class="b3-label b3-label--inner">
-    ${window.siyuan.languages.syncThirdPartyProviderWebDAVIntro}
+    ${window.scribli.languages.syncThirdPartyProviderWebDAVIntro}
     <div class="fn__hr"></div>
-    ${window.siyuan.languages.syncThirdPartyProviderTip}
+    ${window.scribli.languages.syncThirdPartyProviderTip}
 </div>`,
         genUnavailableIntro: genThirdPartyUnavailableIntro,
         fields: [
@@ -138,17 +138,17 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
         isProviderConfigAllowed: hasFeatureAccess,
         configKey: "local",
         api: "/api/sync/setSyncProviderLocal",
-        getConfig: () => window.siyuan.config.sync.local,
+        getConfig: () => window.scribli.config.sync.local,
         genIntro: () => `<div class="b3-label b3-label--inner">
     <div class="ft__error">
-        ${window.siyuan.languages.mobileNotSupport}
+        ${window.scribli.languages.mobileNotSupport}
     </div>
     <div class="fn__hr"></div>
-    ${window.siyuan.languages.syncThirdPartyProviderLocalIntro}
+    ${window.scribli.languages.syncThirdPartyProviderLocalIntro}
 </div>`,
         genUnavailableIntro: () => `${genThirdPartyUnavailableIntro()}<div class="ft__error">
     <div class="fn__hr--b"></div>
-    ${window.siyuan.languages.mobileNotSupport}
+    ${window.scribli.languages.mobileNotSupport}
 </div>`,
         fields: [
             {type: "input", label: "Endpoint", id: "endpoint"},
@@ -161,16 +161,16 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
 const buildProviderConfigKeywords = (): string[] => {
     return [
         // 服务不可用 / 本地等提示
-        window.siyuan.languages.cloudConfigTip,
-        window.siyuan.languages.mobileNotSupport,
+        window.scribli.languages.cloudConfigTip,
+        window.scribli.languages.mobileNotSupport,
         // S3 / WebDAV / 本地第三方
-        window.siyuan.languages.syncThirdPartyProviderS3Intro,
-        window.siyuan.languages.syncThirdPartyProviderWebDAVIntro,
-        window.siyuan.languages.syncThirdPartyProviderLocalIntro,
-        window.siyuan.languages.syncThirdPartyProviderTip,
+        window.scribli.languages.syncThirdPartyProviderS3Intro,
+        window.scribli.languages.syncThirdPartyProviderWebDAVIntro,
+        window.scribli.languages.syncThirdPartyProviderLocalIntro,
+        window.scribli.languages.syncThirdPartyProviderTip,
         // 操作按钮
-        window.siyuan.languages.import,
-        window.siyuan.languages.export,
+        window.scribli.languages.import,
+        window.scribli.languages.export,
         // 表单标签与选项（硬编码英文）
         "Endpoint",
         "Access Key",
@@ -196,7 +196,7 @@ const renderProviderConfig = (root: Element) => {
         return;
     }
 
-    const def = SYNC_PROVIDER_DEFS[window.siyuan.config.sync.provider];
+    const def = SYNC_PROVIDER_DEFS[window.scribli.config.sync.provider];
     let html = "";
     if (def) {
         if (!def.isProviderConfigAllowed()) {
@@ -255,11 +255,11 @@ const genProviderActionButtons = (dataType: SyncProviderConfigKey) => {
     <div class="fn__flex-1"></div>
     <button class="b3-button b3-button--outline fn__size200" style="position: relative">
         <input id="importSyncConfig" class="b3-form__upload" type="file" data-type="${dataType}">
-        <svg><use xlink:href="#iconDownload"></use></svg>${window.siyuan.languages.import}
+        <svg><use xlink:href="#iconDownload"></use></svg>${window.scribli.languages.import}
     </button>
     <div class="fn__space"></div>
     <button class="b3-button b3-button--outline fn__size200" id="exportSyncConfig" data-type="${dataType}">
-        <svg><use xlink:href="#iconUpload"></use></svg>${window.siyuan.languages.export}
+        <svg><use xlink:href="#iconUpload"></use></svg>${window.scribli.languages.export}
     </button>
 </div>`;
 };
@@ -282,12 +282,12 @@ const bindProviderConfigEvent = (configElement: Element, root: Element) => {
         const isS3 = importElement.getAttribute("data-type") === "s3";
         fetchPost(isS3 ? "/api/sync/importSyncProviderS3" : "/api/sync/importSyncProviderWebDAV", formData, (response) => {
             if (isS3) {
-                window.siyuan.config.sync.s3 = response.data.s3;
+                window.scribli.config.sync.s3 = response.data.s3;
             } else {
-                window.siyuan.config.sync.webdav = response.data.webdav;
+                window.scribli.config.sync.webdav = response.data.webdav;
             }
             renderProviderConfig(root);
-            showMessage(window.siyuan.languages.imported);
+            showMessage(window.scribli.languages.imported);
         });
     });
 
@@ -298,7 +298,7 @@ const bindProviderConfigEvent = (configElement: Element, root: Element) => {
         });
     });
 
-    const provider = window.siyuan.config.sync.provider;
+    const provider = window.scribli.config.sync.provider;
     const def = SYNC_PROVIDER_DEFS[provider];
     if (!isThirdPartySyncProviderDef(def) || !def.isProviderConfigAllowed()) {
         return;
@@ -318,7 +318,7 @@ const bindProviderConfigEvent = (configElement: Element, root: Element) => {
 };
 
 const saveSyncProviderConfigValues = (configElement: Element) => {
-    const provider = window.siyuan.config.sync.provider;
+    const provider = window.scribli.config.sync.provider;
     const def = SYNC_PROVIDER_DEFS[provider];
     if (!isThirdPartySyncProviderDef(def)) {
         return;
@@ -329,7 +329,7 @@ const saveSyncProviderConfigValues = (configElement: Element) => {
     fetchSyncPost(def.api, {[configKey]: data})
         .then((response) => {
             if (response.code === 0 && response.data?.[configKey]) {
-                window.siyuan.config.sync[configKey] = response.data[configKey];
+                window.scribli.config.sync[configKey] = response.data[configKey];
             }
         })
         .finally(() => {
@@ -339,7 +339,7 @@ const saveSyncProviderConfigValues = (configElement: Element) => {
 };
 
 const fillSyncProviderConfigValues = (configElement: Element) => {
-    const provider = window.siyuan.config.sync.provider;
+    const provider = window.scribli.config.sync.provider;
     const def = SYNC_PROVIDER_DEFS[provider];
     if (!isThirdPartySyncProviderDef(def)) {
         return;

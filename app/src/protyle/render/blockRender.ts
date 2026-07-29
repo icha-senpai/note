@@ -39,7 +39,7 @@ export const blockRender = (protyle: IProtyle, element: Element, top?: number, o
         if (breadcrumb) {
             breadcrumb = breadcrumb === "true";
         } else {
-            breadcrumb = window.siyuan.config.editor.embedBlockBreadcrumb;
+            breadcrumb = window.scribli.config.editor.embedBlockBreadcrumb;
         }
 
         if (content.startsWith("//!js")) {
@@ -56,7 +56,7 @@ export const blockRender = (protyle: IProtyle, element: Element, top?: number, o
                             fetchPost("/api/search/getEmbedBlock", {
                                 embedBlockID: item.getAttribute("data-node-id"),
                                 includeIDs: promiseIds,
-                                headingMode: ["0", "1", "2"].includes(item.getAttribute("custom-heading-mode")) ? parseInt(item.getAttribute("custom-heading-mode")) : window.siyuan.config.editor.headingEmbedMode,
+                                headingMode: ["0", "1", "2"].includes(item.getAttribute("custom-heading-mode")) ? parseInt(item.getAttribute("custom-heading-mode")) : window.scribli.config.editor.headingEmbedMode,
                                 breadcrumb
                             }, (response) => {
                                 renderEmbed(response.data.blocks || [], protyle, item, top, undefined, onEmbedRender);
@@ -71,7 +71,7 @@ export const blockRender = (protyle: IProtyle, element: Element, top?: number, o
                     fetchPost("/api/search/getEmbedBlock", {
                         embedBlockID: item.getAttribute("data-node-id"),
                         includeIDs,
-                        headingMode: ["0", "1", "2"].includes(item.getAttribute("custom-heading-mode")) ? parseInt(item.getAttribute("custom-heading-mode")) : window.siyuan.config.editor.headingEmbedMode,
+                        headingMode: ["0", "1", "2"].includes(item.getAttribute("custom-heading-mode")) ? parseInt(item.getAttribute("custom-heading-mode")) : window.scribli.config.editor.headingEmbedMode,
                         breadcrumb
                     }, (response) => {
                         renderEmbed(response.data.blocks || [], protyle, item, top, undefined, onEmbedRender);
@@ -86,7 +86,7 @@ export const blockRender = (protyle: IProtyle, element: Element, top?: number, o
             fetchPost("/api/search/searchEmbedBlock", {
                 embedBlockID: item.getAttribute("data-node-id"),
                 stmt: content,
-                headingMode: ["0", "1", "2"].includes(item.getAttribute("custom-heading-mode")) ? parseInt(item.getAttribute("custom-heading-mode")) : window.siyuan.config.editor.headingEmbedMode,
+                headingMode: ["0", "1", "2"].includes(item.getAttribute("custom-heading-mode")) ? parseInt(item.getAttribute("custom-heading-mode")) : window.scribli.config.editor.headingEmbedMode,
                 excludeIDs: [item.getAttribute("data-node-id"), protyle.block.rootID],
                 breadcrumb,
                 notebook: isEncryptedBox(protyle.notebookId) ? protyle.notebookId : ""
@@ -114,7 +114,7 @@ const renderEmbed = (blocks: {
         }
         let popover = "";
         if (index !== 0) {
-            popover = `<div class="protyle-icons"><span data-id="${blocksItem.block.id}" data-action="openFloat" aria-label="${window.siyuan.languages.refPopover}" data-position="4north" class="ariaLabel protyle-icon protyle-icon--last protyle-icon--first"><svg><use xlink:href="#iconPictureInPicture"></use></svg></span></div>`;
+            popover = `<div class="protyle-icons"><span data-id="${blocksItem.block.id}" data-action="openFloat" aria-label="${window.scribli.languages.refPopover}" data-position="4north" class="ariaLabel protyle-icon protyle-icon--last protyle-icon--first"><svg><use xlink:href="#iconPictureInPicture"></use></svg></span></div>`;
         } else {
             const popoverElement = item.querySelectorAll(".protyle-icon")[2];
             if (popoverElement) {
@@ -130,7 +130,7 @@ ${popover}${breadcrumbHTML}${blocksItem.block.content}
         item.firstElementChild.insertAdjacentHTML("afterend", html);
         improveBreadcrumbAppearance(item.querySelector(".protyle-wysiwyg__embed"));
     } else {
-        item.firstElementChild.insertAdjacentHTML("afterend", `<div class="protyle-wysiwyg__embed ft__smaller ft__secondary b3-form__space--small" contenteditable="false">${errorTip || window.siyuan.languages.refExpired}</div>`);
+        item.firstElementChild.insertAdjacentHTML("afterend", `<div class="protyle-wysiwyg__embed ft__smaller ft__secondary b3-form__space--small" contenteditable="false">${errorTip || window.scribli.languages.refExpired}</div>`);
     }
 
     processRender(item);

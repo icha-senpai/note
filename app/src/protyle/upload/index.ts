@@ -40,12 +40,12 @@ const validateFile = (protyle: IProtyle, files: File[]) => {
         let validate = true;
 
         if (!file.name) {
-            errorTip += `<li>${window.siyuan.languages.nameEmpty}</li>`;
+            errorTip += `<li>${window.scribli.languages.nameEmpty}</li>`;
             validate = false;
         }
 
         if (file.size > protyle.options.upload.max) {
-            errorTip += `<li>${file.name} ${window.siyuan.languages.over} ${protyle.options.upload.max / 1024 / 1024}M</li>`;
+            errorTip += `<li>${file.name} ${window.scribli.languages.over} ${protyle.options.upload.max / 1024 / 1024}M</li>`;
             validate = false;
         }
 
@@ -69,14 +69,14 @@ const validateFile = (protyle: IProtyle, files: File[]) => {
             });
 
             if (!isAccept) {
-                errorTip += `<li>${file.name} ${window.siyuan.languages.fileTypeError}</li>`;
+                errorTip += `<li>${file.name} ${window.scribli.languages.fileTypeError}</li>`;
                 validate = false;
             }
         }
 
         if (validate) {
             uploadFileList.push(file);
-            uploadingStr += `<li>${filename} ${window.siyuan.languages.uploading}</li>`;
+            uploadingStr += `<li>${filename} ${window.scribli.languages.uploading}</li>`;
         }
     }
     let msgId;
@@ -100,7 +100,7 @@ const genUploadedLabel = async (responseText: string, protyle: IProtyle) => {
         response.data.errFiles.forEach((data: string) => {
             const lastIndex = data.lastIndexOf(".");
             const filename = lastIndex === -1 ? data : (protyle.options.upload.filename(data.substr(0, lastIndex)) + data.substr(lastIndex));
-            errorTip += `<li>${filename} ${window.siyuan.languages.uploadError}</li>`;
+            errorTip += `<li>${filename} ${window.scribli.languages.uploadError}</li>`;
         });
         errorTip += "</ul>";
     }
@@ -139,14 +139,14 @@ const genUploadedLabel = async (responseText: string, protyle: IProtyle) => {
         const type = pathPosix().extname(key).toLowerCase();
         const filename = protyle.options.upload.filename(key);
         const name = filename.substring(0, filename.length - type.length);
-        hasImage = Constants.SIYUAN_ASSETS_IMAGE.includes(type);
+        hasImage = Constants.SCRIBLI_ASSETS_IMAGE.includes(type);
         avAssets.push({
-            type: Constants.SIYUAN_ASSETS_IMAGE.includes(type) ? "image" : "file",
+            type: Constants.SCRIBLI_ASSETS_IMAGE.includes(type) ? "image" : "file",
             content: path,
             name: name
         });
         successFileText += genAssetHTML(type, path, name, filename);
-        if (!Constants.SIYUAN_ASSETS_AUDIO.includes(type) && !Constants.SIYUAN_ASSETS_VIDEO.includes(type) &&
+        if (!Constants.SCRIBLI_ASSETS_AUDIO.includes(type) && !Constants.SCRIBLI_ASSETS_VIDEO.includes(type) &&
             keys.length - 1 !== index) {
             if (nodeElement && nodeElement.classList.contains("table")) {
                 successFileText += "<br>";
@@ -260,13 +260,13 @@ export const uploadLocalFiles = (files: ILocalFiles[], protyle: IProtyle, isUplo
     const assetPaths: string[] = [];
     files.forEach(item => {
         if (item.size && Constants.SIZE_UPLOAD_TIP_SIZE <= item.size) {
-            msg += window.siyuan.languages.uploadFileTooLarge.replace("${x}", item.path).replace("${y}", filesize(item.size, {standard: "iec"})) + "<br>";
+            msg += window.scribli.languages.uploadFileTooLarge.replace("${x}", item.path).replace("${y}", filesize(item.size, {standard: "iec"})) + "<br>";
         }
         assetPaths.push(item.path);
     });
 
-    confirmDialog(msg ? window.siyuan.languages.upload : "", msg, () => {
-        const msgId = showMessage(window.siyuan.languages.uploading, 0);
+    confirmDialog(msg ? window.scribli.languages.upload : "", msg, () => {
+        const msgId = showMessage(window.scribli.languages.uploading, 0);
         fetchPost("/api/asset/insertLocalAssets", {
             assetPaths,
             isUpload,
@@ -280,7 +280,7 @@ export const uploadLocalFiles = (files: ILocalFiles[], protyle: IProtyle, isUplo
                 }
             });
             if (tip) {
-                showMessage(window.siyuan.languages.dndFolderTip.replace("${x}", `<b>${tip.substring(0, tip.length - 2)}</b>`));
+                showMessage(window.scribli.languages.dndFolderTip.replace("${x}", `<b>${tip.substring(0, tip.length - 2)}</b>`));
             }
             genUploadedLabel(JSON.stringify(response), protyle);
         });
@@ -351,7 +351,7 @@ export const uploadFiles = (protyle: IProtyle, files: FileList | DataTransferIte
     for (let i = 0, iMax = validateResult.files.length; i < iMax; i++) {
         formData.append(protyle.options.upload.fieldName, validateResult.files[i]);
         if (Constants.SIZE_UPLOAD_TIP_SIZE <= validateResult.files[i].size) {
-            msg += window.siyuan.languages.uploadFileTooLarge.replace("${x}", validateResult.files[i].name).replace("${y}", filesize(validateResult.files[i].size, {standard: "iec"})) + "<br>";
+            msg += window.scribli.languages.uploadFileTooLarge.replace("${x}", validateResult.files[i].name).replace("${y}", filesize(validateResult.files[i].size, {standard: "iec"})) + "<br>";
         }
     }
     if (protyle.lite) {
@@ -359,7 +359,7 @@ export const uploadFiles = (protyle: IProtyle, files: FileList | DataTransferIte
     } else {
         formData.append("id", protyle.block?.rootID);
     }
-    confirmDialog(msg ? window.siyuan.languages.upload : "", msg, () => {
+    confirmDialog(msg ? window.scribli.languages.upload : "", msg, () => {
         const xhr = new XMLHttpRequest();
         xhr.open("POST", protyle.options.upload.url);
         if (protyle.options.upload.token) {
@@ -392,7 +392,7 @@ export const uploadFiles = (protyle: IProtyle, files: FileList | DataTransferIte
                         genUploadedLabel(responseText, protyle);
                     }
                 } else if (xhr.status === 0) {
-                    showMessage(window.siyuan.languages["_kernel"][28]);
+                    showMessage(window.scribli.languages["_kernel"][28]);
                 } else {
                     if (protyle.options.upload.error) {
                         protyle.options.upload.error(xhr.responseText);

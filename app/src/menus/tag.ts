@@ -8,27 +8,27 @@ import {Tag} from "../layout/dock/Tag";
 import {Constants} from "../constants";
 
 export const openTagMenu = (element: HTMLElement, event: MouseEvent, labelName: string) => {
-    if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-        window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_TAG) {
-        window.siyuan.menus.menu.remove();
+    if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+        window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_TAG) {
+        window.scribli.menus.menu.remove();
         return;
     }
-    window.siyuan.menus.menu.remove();
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.remove();
+    window.scribli.menus.menu.append(new MenuItem({
         icon: "iconEdit",
-        label: window.siyuan.languages.rename,
+        label: window.scribli.languages.rename,
         click: () => {
             renameTag(labelName);
         }
     }).element);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         icon: "iconTrashcan",
-        label: window.siyuan.languages.remove,
+        label: window.scribli.languages.remove,
         click: () => {
-            confirmDialog(window.siyuan.languages.deleteOpConfirm, `${window.siyuan.languages.confirmDelete} <b>${escapeHtml(labelName)}</b>?`, () => {
+            confirmDialog(window.scribli.languages.deleteOpConfirm, `${window.scribli.languages.confirmDelete} <b>${escapeHtml(labelName)}</b>?`, () => {
                 fetchPost("/api/tag/removeTag", {label: labelName}, () => {
                     /// #if MOBILE
-                    window.siyuan.mobile.docks.tag.update();
+                    window.scribli.mobile.docks.tag.update();
                     /// #else
                     const dockTag = getDockByType("tag");
                     (dockTag.data.tag as Tag).update();
@@ -37,6 +37,6 @@ export const openTagMenu = (element: HTMLElement, event: MouseEvent, labelName: 
             }, undefined, true);
         }
     }).element);
-    window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_TAG);
-    window.siyuan.menus.menu.popup({x: event.clientX - 11, y: event.clientY + 11, h: 22, w: 12});
+    window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_TAG);
+    window.scribli.menus.menu.popup({x: event.clientX - 11, y: event.clientY + 11, h: 22, w: 12});
 };

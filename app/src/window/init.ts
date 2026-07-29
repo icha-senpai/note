@@ -21,21 +21,21 @@ import {getAllEditor} from "../layout/getAll";
 
 
 export const init = (app: App) => {
-    webFrame.setZoomFactor(window.siyuan.storage[Constants.LOCAL_ZOOM]);
-    const position = Constants.SIZE_ZOOM.find((item) => item.zoom === window.siyuan.storage[Constants.LOCAL_ZOOM]).position;
-    ipcRenderer.send(Constants.SIYUAN_CMD, {
+    webFrame.setZoomFactor(window.scribli.storage[Constants.LOCAL_ZOOM]);
+    const position = Constants.SIZE_ZOOM.find((item) => item.zoom === window.scribli.storage[Constants.LOCAL_ZOOM]).position;
+    ipcRenderer.send(Constants.SCRIBLI_CMD, {
         cmd: "setTrafficLightPosition",
-        zoom: window.siyuan.storage[Constants.LOCAL_ZOOM],
+        zoom: window.scribli.storage[Constants.LOCAL_ZOOM],
         position
     });
     initWindowEvent(app);
     fetchPost("/api/system/getEmojiConf", {}, response => {
-        window.siyuan.emojis = response.data as IEmoji[];
+        window.scribli.emojis = response.data as IEmoji[];
 
         const layout = JSON.parse(sessionStorage.getItem("layout") || "{}");
         if (layout.layout) {
             JSONToCenter(app, layout.layout);
-            window.siyuan.layout.centerLayout = window.siyuan.layout.layout;
+            window.scribli.layout.centerLayout = window.scribli.layout.layout;
         } else {
             const tabsJSON = JSON.parse(getSearch("json"));
             tabsJSON[tabsJSON.length - 1].active = true;
@@ -50,8 +50,8 @@ export const init = (app: App) => {
                     children: tabsJSON
                 }]
             });
-            window.siyuan.layout.centerLayout = window.siyuan.layout.layout;
-            adjustLayout(window.siyuan.layout.centerLayout);
+            window.scribli.layout.centerLayout = window.scribli.layout.layout;
+            adjustLayout(window.scribli.layout.centerLayout);
         }
         afterLayout(app);
         // 等待 dock 面板动画结束
@@ -65,7 +65,7 @@ export const init = (app: App) => {
     /// #if !BROWSER
     initNativeDialogOverride();
     /// #endif
-    appearanceConfigApi.apply(window.siyuan.config.appearance);
+    appearanceConfigApi.apply(window.scribli.config.appearance);
     initAssets();
     setInlineStyle();
     renderSnippet();
@@ -73,9 +73,9 @@ export const init = (app: App) => {
     window.addEventListener("resize", () => {
         window.clearTimeout(resizeTimeout);
         resizeTimeout = window.setTimeout(() => {
-            adjustLayout(window.siyuan.layout.centerLayout);
+            adjustLayout(window.scribli.layout.centerLayout);
             resizeTabs();
-            window.siyuan.menus.menu.resetPosition();
+            window.scribli.menus.menu.resetPosition();
             if (getSelection().rangeCount > 0) {
                 const range = getSelection().getRangeAt(0);
                 getAllEditor().forEach(item => {
@@ -84,7 +84,7 @@ export const init = (app: App) => {
                     }
                 });
             }
-            window.siyuan.dialogs.forEach(item => {
+            window.scribli.dialogs.forEach(item => {
                 item.resize();
             });
         }, Constants.TIMEOUT_RESIZE);

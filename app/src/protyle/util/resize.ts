@@ -28,7 +28,7 @@ export const recordBeforeResizeTop = () => {
             const contentRect = item.editor.protyle.contentElement.getBoundingClientRect();
             let topElement = document.elementFromPoint(contentRect.left + (contentRect.width / 2), contentRect.top);
             if (hasClosestByClassName(topElement, "b3-menu")) {
-                window.siyuan.menus.menu.remove();
+                window.scribli.menus.menu.remove();
                 topElement = document.elementFromPoint(contentRect.left + (contentRect.width / 2), contentRect.top);
             }
             if (!topElement) {

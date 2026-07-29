@@ -23,38 +23,38 @@ export const reloadSync = (
         hideMessage();
     }
     /// #if MOBILE
-    if (window.siyuan.mobile.popEditor && window.siyuan.mobile.popEditor.protyle) {
-        if (data.removeRootIDs.includes(window.siyuan.mobile.popEditor.protyle.block.rootID)) {
+    if (window.scribli.mobile.popEditor && window.scribli.mobile.popEditor.protyle) {
+        if (data.removeRootIDs.includes(window.scribli.mobile.popEditor.protyle.block.rootID)) {
             hideElements(["dialog"]);
         } else {
-            window.siyuan.mobile.popEditor.reload(false, updateReadonly);
+            window.scribli.mobile.popEditor.reload(false, updateReadonly);
         }
     }
     if (document.getElementById("empty").classList.contains("fn__none") &&
-        window.siyuan.mobile.editor && window.siyuan.mobile.editor.protyle) {
-        if (data.removeRootIDs.includes(window.siyuan.mobile.editor.protyle.block.rootID)) {
+        window.scribli.mobile.editor && window.scribli.mobile.editor.protyle) {
+        if (data.removeRootIDs.includes(window.scribli.mobile.editor.protyle.block.rootID)) {
             setEmpty(app);
         } else {
-            window.siyuan.mobile.editor.reload(false, updateReadonly);
+            window.scribli.mobile.editor.reload(false, updateReadonly);
             const docInfoParam: IObject = {
-                id: window.siyuan.mobile.editor.protyle.block.rootID
+                id: window.scribli.mobile.editor.protyle.block.rootID
             };
-            if (isEncryptedBox(window.siyuan.mobile.editor.protyle.notebookId)) {
-                docInfoParam.notebook = window.siyuan.mobile.editor.protyle.notebookId;
+            if (isEncryptedBox(window.scribli.mobile.editor.protyle.notebookId)) {
+                docInfoParam.notebook = window.scribli.mobile.editor.protyle.notebookId;
             }
             fetchPost("/api/block/getDocInfo", docInfoParam, (response) => {
                 setTitle(response.data.name);
-                window.siyuan.mobile.editor.protyle.title.setTitle(response.data.name, response.data.ial[Constants.CUSTOM_SY_TITLE_EMPTY] === "true");
+                window.scribli.mobile.editor.protyle.title.setTitle(response.data.name, response.data.ial[Constants.CUSTOM_SY_TITLE_EMPTY] === "true");
             });
             // 同步刷新移动端大纲，避免大纲与重载后的编辑器数据不一致
-            const outline = window.siyuan.mobile.docks.outline;
+            const outline = window.scribli.mobile.docks.outline;
             if (outline) {
                 outline.reload();
             }
         }
     }
     setNoteBook(() => {
-        window.siyuan.mobile.docks.file.init(false);
+        window.scribli.mobile.docks.file.init(false);
     });
     /// #else
     const allModels = getAllModels();
@@ -88,8 +88,8 @@ export const reloadSync = (
             });
         } else if (data.removeRootIDs.includes(item.editor.protyle.block.rootID)) {
             item.parent.parent.removeTab(item.parent.id, false, false);
-            delete window.siyuan.storage[Constants.LOCAL_FILEPOSITION][item.editor.protyle.block.rootID];
-            setStorageVal(Constants.LOCAL_FILEPOSITION, window.siyuan.storage[Constants.LOCAL_FILEPOSITION]);
+            delete window.scribli.storage[Constants.LOCAL_FILEPOSITION][item.editor.protyle.block.rootID];
+            setStorageVal(Constants.LOCAL_FILEPOSITION, window.scribli.storage[Constants.LOCAL_FILEPOSITION]);
         }
     });
     allModels.graph.forEach(item => {

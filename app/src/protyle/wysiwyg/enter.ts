@@ -84,13 +84,13 @@ export const enter = async (blockElement: HTMLElement, range: Range, protyle: IP
             blockElement = protyle.wysiwyg.element.querySelector(`[data-node-id="${blockElement.getAttribute("data-node-id")}"]`);
             const languageElement = blockElement.querySelector(".protyle-action__language");
             if (languageElement) {
-                if (window.siyuan.storage[Constants.LOCAL_CODELANG] && languageElement.textContent === "") {
-                    languageElement.textContent = window.siyuan.storage[Constants.LOCAL_CODELANG];
-                } else if (!Constants.SIYUAN_RENDER_CODE_LANGUAGES.includes(languageElement.textContent)) {
-                    window.siyuan.storage[Constants.LOCAL_CODELANG] = languageElement.textContent;
-                    setStorageVal(Constants.LOCAL_CODELANG, window.siyuan.storage[Constants.LOCAL_CODELANG]);
+                if (window.scribli.storage[Constants.LOCAL_CODELANG] && languageElement.textContent === "") {
+                    languageElement.textContent = window.scribli.storage[Constants.LOCAL_CODELANG];
+                } else if (!Constants.SCRIBLI_RENDER_CODE_LANGUAGES.includes(languageElement.textContent)) {
+                    window.scribli.storage[Constants.LOCAL_CODELANG] = languageElement.textContent;
+                    setStorageVal(Constants.LOCAL_CODELANG, window.scribli.storage[Constants.LOCAL_CODELANG]);
                 }
-                if (Constants.SIYUAN_RENDER_CODE_LANGUAGES.includes(languageElement.textContent)) {
+                if (Constants.SCRIBLI_RENDER_CODE_LANGUAGES.includes(languageElement.textContent)) {
                     blockElement.dataset.content = "";
                     blockElement.dataset.subtype = languageElement.textContent;
                     blockElement.className = "render-node";

@@ -22,9 +22,9 @@ export interface IDatabaseRowOpenData {
 
 /// #if MOBILE
 const closeMobileDatabaseRow = () => {
-    for (let i = window.siyuan.dialogs.length - 1; i >= 0; i--) {
-        if (window.siyuan.dialogs[i].element.querySelector(".protyle-db-row--mobile")) {
-            window.siyuan.dialogs[i].destroy();
+    for (let i = window.scribli.dialogs.length - 1; i >= 0; i--) {
+        if (window.scribli.dialogs[i].element.querySelector(".protyle-db-row--mobile")) {
+            window.scribli.dialogs[i].destroy();
             break;
         }
     }
@@ -81,7 +81,7 @@ const getDatabaseRowPreviewTab = (blockID: string) => {
 /// #endif
 
 export const openDatabaseRowByData = (protyle: IProtyle, data: IDatabaseRowOpenData) => {
-    const title = data.title || window.siyuan.languages.untitled;
+    const title = data.title || window.scribli.languages.untitled;
     /// #if MOBILE
     if (data.isDetached) {
         openMobileDetachedDatabaseRow(protyle, data, title);
@@ -91,7 +91,7 @@ export const openDatabaseRowByData = (protyle: IProtyle, data: IDatabaseRowOpenD
         return;
     }
     closeMobileDatabaseRow();
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
     openMobileFileById(protyle.app, data.boundBlockID, [Constants.CB_GET_ALL, Constants.CB_GET_FOCUS],
         undefined, undefined, (editorProtyle) => {
             editorProtyle.element.dataset.databaseRowId = data.boundBlockID;
@@ -108,7 +108,7 @@ export const openDatabaseRowByData = (protyle: IProtyle, data: IDatabaseRowOpenD
             position: "right",
             removeCurrentTab: false,
             custom: {
-                id: "siyuan-database-row",
+                id: "scribli-database-row",
                 icon: "iconDatabase",
                 title,
                 data: {

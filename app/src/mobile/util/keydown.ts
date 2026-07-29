@@ -9,8 +9,8 @@ export const mobileKeydown = (app: App, event: KeyboardEvent) => {
     if (!event.key || filterHotkey(event, app)) {
         return;
     }
-    const matchGeneral = Object.keys(window.siyuan.config.keymap.general).find((key) => {
-        if (matchHotKey(window.siyuan.config.keymap.general[key].custom, event)) {
+    const matchGeneral = Object.keys(window.scribli.config.keymap.general).find((key) => {
+        if (matchHotKey(window.scribli.config.keymap.general[key].custom, event)) {
             const protyle = getCurrentEditor()?.protyle;
             if (protyle) {
                 execByCommand({command: key, app, protyle, previousRange: protyle.toolbar.range});

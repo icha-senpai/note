@@ -100,8 +100,8 @@ const BLOCK_TYPE_LANG_KEYS: { [key: string]: string } = {
 // 根据块 data-type 返回本地化的类型名，用于块标拖拽提示「拖拽 ${x} 移动位置」
 const getBlockTypeName = (type: string) => {
     const langKey = BLOCK_TYPE_LANG_KEYS[type];
-    if (langKey && (window.siyuan.languages as { [key: string]: string })[langKey]) {
-        return (window.siyuan.languages as { [key: string]: string })[langKey];
+    if (langKey && (window.scribli.languages as { [key: string]: string })[langKey]) {
+        return (window.scribli.languages as { [key: string]: string })[langKey];
     }
     // 未知类型兜底，与拖拽 ghost 文案保持一致
     return getLangByType(type);
@@ -115,19 +115,19 @@ export class Gutter {
 
     constructor(protyle: IProtyle) {
         if (isMac()) {
-            this.gutterTip = window.siyuan.languages.gutterTip.replace("⌥→", updateHotkeyAfterTip(window.siyuan.config.keymap.general.enter.custom, "/"));
-            this.gutterTipBacklink = window.siyuan.languages.gutterTipBacklink.replace("⌥→", updateHotkeyAfterTip(window.siyuan.config.keymap.general.enter.custom, "/"));
+            this.gutterTip = window.scribli.languages.gutterTip.replace("⌥→", updateHotkeyAfterTip(window.scribli.config.keymap.general.enter.custom, "/"));
+            this.gutterTipBacklink = window.scribli.languages.gutterTipBacklink.replace("⌥→", updateHotkeyAfterTip(window.scribli.config.keymap.general.enter.custom, "/"));
         } else {
-            this.gutterTip = window.siyuan.languages.gutterTip.replace("⌥→", updateHotkeyAfterTip(window.siyuan.config.keymap.general.enter.custom, "/"))
+            this.gutterTip = window.scribli.languages.gutterTip.replace("⌥→", updateHotkeyAfterTip(window.scribli.config.keymap.general.enter.custom, "/"))
                 .replace(/⌘/g, "Ctrl+").replace(/⌥/g, "Alt+").replace(/⇧/g, "Shift+").replace(/⌃/g, "Ctrl+");
-            this.gutterTipBacklink = window.siyuan.languages.gutterTipBacklink.replace("⌥→", updateHotkeyAfterTip(window.siyuan.config.keymap.general.enter.custom, "/"))
+            this.gutterTipBacklink = window.scribli.languages.gutterTipBacklink.replace("⌥→", updateHotkeyAfterTip(window.scribli.config.keymap.general.enter.custom, "/"))
                 .replace(/⌘/g, "Ctrl+").replace(/⌥/g, "Alt+").replace(/⇧/g, "Shift+").replace(/⌃/g, "Ctrl+");
         }
         this.element = document.createElement("div");
         this.element.className = "protyle-gutters";
         this.element.addEventListener("dragstart", (event: DragEvent & { target: HTMLElement }) => {
             hideTooltip();
-            window.siyuan.menus.menu.remove();
+            window.scribli.menus.menu.remove();
             const buttonElement = event.target.parentElement;
             if (buttonElement.dataset.embedId) {
                 event.preventDefault();
@@ -217,7 +217,7 @@ export class Gutter {
             document.body.append(ghostElement);
             // 普通块（段落/标题/列表块/引用块等）拖拽时隐藏原生 ghost 并改用自定义双区跟随框；AV 行保留原生 ghost
             const isBlockDrag = !buttonElement.dataset.rowId;
-            if (isBlockDrag && !window.siyuan.touchDragActive) {
+            if (isBlockDrag && !window.scribli.touchDragActive) {
                 const transparentImg = new Image();
                 transparentImg.src = transparentImgSrc;
                 event.dataTransfer.setDragImage(transparentImg, 0, 0);
@@ -226,8 +226,8 @@ export class Gutter {
                 });
             } else {
                 event.dataTransfer.setDragImage(ghostElement, 0, 0);
-                if (window.siyuan.touchDragActive) {
-                    window.siyuan.touchDragGhost = ghostElement;
+                if (window.scribli.touchDragActive) {
+                    window.scribli.touchDragGhost = ghostElement;
                 } else {
                     setTimeout(() => {
                         ghostElement.remove();
@@ -240,21 +240,21 @@ export class Gutter {
                 let title = text;
                 if (!title && buttonElement.getAttribute("data-type") === "NodeAttributeView") {
                     title = (selectElements[0] as HTMLElement)?.querySelector(".av__views .item--focus")?.textContent?.trim() ||
-                        window.siyuan.languages.database;
+                        window.scribli.languages.database;
                 }
-                window.siyuan.dragTitle = title;
+                window.scribli.dragTitle = title;
             }
             buttonElement.style.opacity = "0.38";
-            window.siyuan.dragElement = avElement as HTMLElement || protyle.wysiwyg.element;
-            event.dataTransfer.setData(`${Constants.SIYUAN_DROP_GUTTER}${buttonElement.getAttribute("data-type")}${Constants.ZWSP}${buttonElement.getAttribute("data-subtype")}${Constants.ZWSP}${selectIds}${Constants.ZWSP}${window.siyuan.config.system.workspaceDir}`,
+            window.scribli.dragElement = avElement as HTMLElement || protyle.wysiwyg.element;
+            event.dataTransfer.setData(`${Constants.SCRIBLI_DROP_GUTTER}${buttonElement.getAttribute("data-type")}${Constants.ZWSP}${buttonElement.getAttribute("data-subtype")}${Constants.ZWSP}${selectIds}${Constants.ZWSP}${window.scribli.config.system.workspaceDir}`,
                 protyle.wysiwyg.element.innerHTML);
         });
         this.element.addEventListener("dragend", () => {
             this.element.querySelectorAll("button").forEach((item) => {
                 item.style.opacity = "";
             });
-            window.siyuan.dragElement = undefined;
-            window.siyuan.dragTitle = "";
+            window.scribli.dragElement = undefined;
+            window.scribli.dragTitle = "";
         });
         this.element.addEventListener("click", (event: MouseEvent & { target: HTMLInputElement }) => {
             const buttonElement = hasClosestByTag(event.target, "BUTTON");
@@ -277,7 +277,7 @@ export class Gutter {
                                 this.getNodeElement(protyle, activeBlockButton) || protyle.wysiwyg.element.firstElementChild);
                         }
                         /// #if !MOBILE
-                        window.siyuan.menus.menu.popup({x: br.left, y: br.bottom, isLeft: true});
+                        window.scribli.menus.menu.popup({x: br.left, y: br.bottom, isLeft: true});
                         focusByRange(protyle.toolbar.range);
                         /// #endif
                     }
@@ -350,7 +350,7 @@ export class Gutter {
                     }
                 }
                 hideElements(["select"], protyle);
-                window.siyuan.menus.menu.remove();
+                window.scribli.menus.menu.remove();
                 return;
             }
             const gutterRect = buttonElement.getBoundingClientRect();
@@ -500,9 +500,9 @@ export class Gutter {
                 }
                 foldElement.classList.remove("protyle-wysiwyg--hl");
             } else if (event.shiftKey && !protyle.disabled && !isEncryptedBox(protyle.notebookId)) {
-                // 不使用 window.siyuan.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 https://github.com/siyuan-note/siyuan/issues/15075
+                // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 https://github.com/siyuan-note/siyuan/issues/15075
                 openAttr(this.getNodeElement(protyle, buttonElement), "bookmark", protyle);
-            } else if (!window.siyuan.ctrlIsPressed && !window.siyuan.altIsPressed && !window.siyuan.shiftIsPressed) {
+            } else if (!window.scribli.ctrlIsPressed && !window.scribli.altIsPressed && !window.scribli.shiftIsPressed) {
                 this.renderMenu(protyle, buttonElement);
                 // https://ld246.com/article/1648433751993
                 if (!protyle.toolbar.range) {
@@ -510,11 +510,11 @@ export class Gutter {
                         this.getNodeElement(protyle, buttonElement) || protyle.wysiwyg.element.firstElementChild);
                 }
                 /// #if MOBILE
-                window.siyuan.menus.menu.fullscreen();
+                window.scribli.menus.menu.fullscreen();
                 /// #else
-                window.siyuan.menus.menu.popup({x: gutterRect.left, y: gutterRect.bottom, isLeft: true});
+                window.scribli.menus.menu.popup({x: gutterRect.left, y: gutterRect.bottom, isLeft: true});
                 const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
-                window.siyuan.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
+                window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
                 focusByRange(protyle.toolbar.range);
                 /// #endif
             }
@@ -524,7 +524,7 @@ export class Gutter {
             if (!buttonElement || buttonElement.getAttribute("data-type") === "fold") {
                 return;
             }
-            if (!window.siyuan.ctrlIsPressed && !window.siyuan.altIsPressed && !window.siyuan.shiftIsPressed) {
+            if (!window.scribli.ctrlIsPressed && !window.scribli.altIsPressed && !window.scribli.shiftIsPressed) {
                 hideTooltip();
                 clearSelect(["cell", "img"], protyle.wysiwyg.element);
                 const gutterRect = buttonElement.getBoundingClientRect();
@@ -551,11 +551,11 @@ export class Gutter {
                             protyle.wysiwyg.element.firstElementChild);
                     }
                     /// #if MOBILE
-                    window.siyuan.menus.menu.fullscreen();
+                    window.scribli.menus.menu.fullscreen();
                     /// #else
-                    window.siyuan.menus.menu.popup({x: gutterRect.left, y: gutterRect.bottom, isLeft: true});
+                    window.scribli.menus.menu.popup({x: gutterRect.left, y: gutterRect.bottom, isLeft: true});
                     const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
-                    window.siyuan.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
+                    window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
                     focusByRange(protyle.toolbar.range);
                     /// #endif
                 }
@@ -638,8 +638,8 @@ export class Gutter {
             const rect = buttonElement.getBoundingClientRect();
             const compressed = this.element.style.width === "24px";
             // 竖排时不显示+号提示（清空 aria-label 避免触发 tooltip），横排时恢复
-            plusBefore.setAttribute("aria-label", compressed ? "" : window.siyuan.languages.insertBefore);
-            plusAfter.setAttribute("aria-label", compressed ? "" : window.siyuan.languages.insertAfter);
+            plusBefore.setAttribute("aria-label", compressed ? "" : window.scribli.languages.insertBefore);
+            plusAfter.setAttribute("aria-label", compressed ? "" : window.scribli.languages.insertAfter);
             plusBefore.style.display = "none";
             plusAfter.style.display = "none";
             if (compressed) {
@@ -718,7 +718,7 @@ export class Gutter {
         const itemRect = item.getBoundingClientRect();
         // 原本为4，由于 https://github.com/siyuan-note/siyuan/issues/12166 改为 6
         let gutterTop = this.element.getBoundingClientRect().top + 6;
-        if (itemRect.height < Math.floor(window.siyuan.config.editor.fontSize * 1.625) + 8) {
+        if (itemRect.height < Math.floor(window.scribli.config.editor.fontSize * 1.625) + 8) {
             gutterTop = gutterTop - (itemRect.height - this.element.clientHeight) / 2;
         }
         return itemRect.top <= gutterTop && itemRect.bottom >= gutterTop;
@@ -824,17 +824,17 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsIntoOne({
                     menuId: "list",
                     icon: "iconList",
-                    label: window.siyuan.languages.list,
+                    label: window.scribli.languages.list,
                     protyle,
-                    accelerator: window.siyuan.config.keymap.editor.insert.list.custom,
+                    accelerator: window.scribli.config.keymap.editor.insert.list.custom,
                     selectsElement,
                     type: "Blocks2ULs"
                 }));
                 turnIntoSubmenu.push(this.turnsIntoOne({
                     menuId: "orderedList",
                     icon: "iconOrderedList",
-                    label: window.siyuan.languages["ordered-list"],
-                    accelerator: window.siyuan.config.keymap.editor.insert["ordered-list"].custom,
+                    label: window.scribli.languages["ordered-list"],
+                    accelerator: window.scribli.config.keymap.editor.insert["ordered-list"].custom,
                     protyle,
                     selectsElement,
                     type: "Blocks2OLs"
@@ -842,8 +842,8 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsIntoOne({
                     menuId: "check",
                     icon: "iconCheck",
-                    label: window.siyuan.languages.check,
-                    accelerator: window.siyuan.config.keymap.editor.insert.check.custom,
+                    label: window.scribli.languages.check,
+                    accelerator: window.scribli.config.keymap.editor.insert.check.custom,
                     protyle,
                     selectsElement,
                     type: "Blocks2TLs"
@@ -851,8 +851,8 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsIntoOne({
                     menuId: "quote",
                     icon: "iconQuote",
-                    label: window.siyuan.languages.quote,
-                    accelerator: window.siyuan.config.keymap.editor.insert.quote.custom,
+                    label: window.scribli.languages.quote,
+                    accelerator: window.scribli.config.keymap.editor.insert.quote.custom,
                     protyle,
                     selectsElement,
                     type: "Blocks2Blockquote"
@@ -860,7 +860,7 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsIntoOne({
                     menuId: "callout",
                     icon: "iconCallout",
-                    label: window.siyuan.languages.callout,
+                    label: window.scribli.languages.callout,
                     protyle,
                     selectsElement,
                     type: "Blocks2Callout"
@@ -869,8 +869,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "paragraph",
                 icon: "iconParagraph",
-                label: window.siyuan.languages.paragraph,
-                accelerator: window.siyuan.config.keymap.editor.heading.paragraph.custom,
+                label: window.scribli.languages.paragraph,
+                accelerator: window.scribli.config.keymap.editor.heading.paragraph.custom,
                 protyle,
                 selectsElement,
                 type: "Blocks2Ps",
@@ -879,8 +879,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading1",
                 icon: "iconH1",
-                label: window.siyuan.languages.heading1,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading1.custom,
+                label: window.scribli.languages.heading1,
+                accelerator: window.scribli.config.keymap.editor.heading.heading1.custom,
                 protyle,
                 selectsElement,
                 level: 1,
@@ -890,8 +890,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading2",
                 icon: "iconH2",
-                label: window.siyuan.languages.heading2,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading2.custom,
+                label: window.scribli.languages.heading2,
+                accelerator: window.scribli.config.keymap.editor.heading.heading2.custom,
                 protyle,
                 selectsElement,
                 level: 2,
@@ -901,8 +901,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading3",
                 icon: "iconH3",
-                label: window.siyuan.languages.heading3,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading3.custom,
+                label: window.scribli.languages.heading3,
+                accelerator: window.scribli.config.keymap.editor.heading.heading3.custom,
                 protyle,
                 selectsElement,
                 level: 3,
@@ -912,8 +912,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading4",
                 icon: "iconH4",
-                label: window.siyuan.languages.heading4,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading4.custom,
+                label: window.scribli.languages.heading4,
+                accelerator: window.scribli.config.keymap.editor.heading.heading4.custom,
                 protyle,
                 selectsElement,
                 level: 4,
@@ -923,8 +923,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading5",
                 icon: "iconH5",
-                label: window.siyuan.languages.heading5,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading5.custom,
+                label: window.scribli.languages.heading5,
+                accelerator: window.scribli.config.keymap.editor.heading.heading5.custom,
                 protyle,
                 selectsElement,
                 level: 5,
@@ -934,32 +934,32 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading6",
                 icon: "iconH6",
-                label: window.siyuan.languages.heading6,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading6.custom,
+                label: window.scribli.languages.heading6,
+                accelerator: window.scribli.config.keymap.editor.heading.heading6.custom,
                 protyle,
                 selectsElement,
                 level: 6,
                 type: "Blocks2Hs",
                 isContinue
             }));
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "turnInto",
                 icon: "iconTurnInto",
-                label: window.siyuan.languages.turnInto,
+                label: window.scribli.languages.turnInto,
                 type: "submenu",
                 submenu: turnIntoSubmenu
             }).element);
             if (isContinue && !(selectsElement[0].parentElement.classList.contains("sb") &&
                 selectsElement.length + 1 === selectsElement[0].parentElement.childElementCount)) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "mergeSuperBlock",
                     icon: "iconSuper",
-                    label: window.siyuan.languages.merge + " " + window.siyuan.languages.superBlock,
+                    label: window.scribli.languages.merge + " " + window.scribli.languages.superBlock,
                     type: "submenu",
                     submenu: [this.turnsIntoOne({
                         menuId: "hLayout",
-                        label: window.siyuan.languages.hLayout,
-                        accelerator: window.siyuan.config.keymap.editor.general.hLayout.custom,
+                        label: window.scribli.languages.hLayout,
+                        accelerator: window.scribli.config.keymap.editor.general.hLayout.custom,
                         icon: "iconSplitLR",
                         protyle,
                         selectsElement,
@@ -967,8 +967,8 @@ export class Gutter {
                         level: "col"
                     }), this.turnsIntoOne({
                         menuId: "vLayout",
-                        label: window.siyuan.languages.vLayout,
-                        accelerator: window.siyuan.config.keymap.editor.general.vLayout.custom,
+                        label: window.scribli.languages.vLayout,
+                        accelerator: window.scribli.config.keymap.editor.general.vLayout.custom,
                         icon: "iconSplitTB",
                         protyle,
                         selectsElement,
@@ -979,11 +979,11 @@ export class Gutter {
             }
         }
         if (!protyle.disabled) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "ai",
                 icon: "iconSparkles",
-                label: window.siyuan.languages.aiEdit,
-                accelerator: window.siyuan.config.keymap.editor.general.ai.custom,
+                label: window.scribli.languages.aiEdit,
+                accelerator: window.scribli.config.keymap.editor.general.ai.custom,
                 click() {
                     AIActions(selectsElement, protyle);
                 }
@@ -992,8 +992,8 @@ export class Gutter {
         const copyMenu: IMenu[] = (copySubMenu(Array.from(selectsElement).map(item => item.getAttribute("data-node-id")), true, selectsElement[0]) as IMenu[]).concat([{
             id: "copyPlainText",
             iconHTML: "",
-            label: window.siyuan.languages.copyPlainText,
-            accelerator: window.siyuan.config.keymap.editor.general.copyPlainText.custom,
+            label: window.scribli.languages.copyPlainText,
+            accelerator: window.scribli.config.keymap.editor.general.copyPlainText.custom,
             click() {
                 let html = "";
                 selectsElement.forEach((item: HTMLElement) => {
@@ -1005,7 +1005,7 @@ export class Gutter {
         }, {
             id: "copy",
             iconHTML: "",
-            label: window.siyuan.languages.copy,
+            label: window.scribli.languages.copy,
             accelerator: "⌘C",
             click() {
                 if (isNotEditBlock(selectsElement[0])) {
@@ -1024,24 +1024,24 @@ export class Gutter {
             copyMenu.push({
                 id: "duplicate",
                 iconHTML: "",
-                label: window.siyuan.languages.duplicate,
-                accelerator: window.siyuan.config.keymap.editor.general.duplicate.custom,
+                label: window.scribli.languages.duplicate,
+                accelerator: window.scribli.config.keymap.editor.general.duplicate.custom,
                 click() {
                     duplicateBlock(selectsElement, protyle);
                 }
             });
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "copy",
-            label: window.siyuan.languages.copy,
+            label: window.scribli.languages.copy,
             icon: "iconCopy",
             type: "submenu",
             submenu: copyMenu,
         }).element);
         if (!protyle.disabled) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "cut",
-                label: window.siyuan.languages.cut,
+                label: window.scribli.languages.cut,
                 accelerator: "⌘X",
                 icon: "iconCut",
                 click: () => {
@@ -1049,10 +1049,10 @@ export class Gutter {
                     document.execCommand("cut");
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "move",
-                label: window.siyuan.languages.move,
-                accelerator: window.siyuan.config.keymap.general.move.custom,
+                label: window.scribli.languages.move,
+                accelerator: window.scribli.config.keymap.general.move.custom,
                 icon: "iconMove",
                 click: () => {
                     movePathTo({
@@ -1063,10 +1063,10 @@ export class Gutter {
                     });
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "addToDatabase",
-                label: window.siyuan.languages.addToDatabase,
-                accelerator: window.siyuan.config.keymap.general.addToDatabase.custom,
+                label: window.scribli.languages.addToDatabase,
+                accelerator: window.scribli.config.keymap.general.addToDatabase.custom,
                 icon: "iconDatabase",
                 click: () => {
                     addEditorToDatabase(protyle, getEditorRange(selectsElement[0]));
@@ -1075,19 +1075,19 @@ export class Gutter {
             /// #if !MOBILE
             // 加密笔记本中的块不暴露该菜单：避免把受保护内容引入智能体会话。
             if (!isEncryptedBox(protyle.notebookId)) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "addToAgent",
                     icon: "iconSend",
-                    label: window.siyuan.languages.addToAgent,
+                    label: window.scribli.languages.addToAgent,
                     click: () => {
                         addBlockToAgent(Array.from(selectsElement).map(item => item.getAttribute("data-node-id")));
                     }
                 }).element);
             }
             /// #endif
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "delete",
-                label: window.siyuan.languages.delete,
+                label: window.scribli.languages.delete,
                 icon: "iconTrashcan",
                 accelerator: "⌫",
                 click: () => {
@@ -1096,12 +1096,12 @@ export class Gutter {
                 }
             }).element);
 
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_appearance", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_appearance", type: "separator"}).element);
             const appearanceElement = new MenuItem({
                 id: "appearance",
-                label: window.siyuan.languages.appearance,
+                label: window.scribli.languages.appearance,
                 icon: "iconFont",
-                accelerator: window.siyuan.config.keymap.editor.insert.appearance.custom,
+                accelerator: window.scribli.config.keymap.editor.insert.appearance.custom,
                 click: () => {
                     /// #if MOBILE
                     this.showMobileAppearance(protyle);
@@ -1111,7 +1111,7 @@ export class Gutter {
                     protyle.toolbar.subElement.style.width = "";
                     protyle.toolbar.subElement.style.padding = "";
                     protyle.toolbar.subElement.append(appearanceMenu(protyle, selectsElement));
-                    protyle.toolbar.subElement.style.zIndex = (++window.siyuan.zIndex).toString();
+                    protyle.toolbar.subElement.style.zIndex = (++window.scribli.zIndex).toString();
                     protyle.toolbar.subElement.classList.remove("fn__none");
                     protyle.toolbar.subElementCloseCB = undefined;
                     const position = selectsElement[0].getBoundingClientRect();
@@ -1119,7 +1119,7 @@ export class Gutter {
                     /// #endif
                 }
             }).element;
-            window.siyuan.menus.menu.append(appearanceElement);
+            window.scribli.menus.menu.append(appearanceElement);
             if (!isMobile()) {
                 appearanceElement.lastElementChild.classList.add("b3-menu__submenu--row");
             }
@@ -1127,26 +1127,26 @@ export class Gutter {
             this.genWidths(selectsElement, protyle);
             // this.genHeights(selectsElement, protyle);
         }
-        if (!window.siyuan.config.readonly && !isEncryptedBox(protyle.notebookId)) {
-            window.siyuan.menus.menu.append(new MenuItem({
+        if (!window.scribli.config.readonly && !isEncryptedBox(protyle.notebookId)) {
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "separator_quickMakeCard",
                 type: "separator"
             }).element);
             const allCardsMade = !selectsElement.some(item => !item.hasAttribute(Constants.CUSTOM_RIFF_DECKS) && item.getAttribute("data-type") !== "NodeThematicBreak");
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: allCardsMade ? "removeCard" : "quickMakeCard",
-                label: allCardsMade ? window.siyuan.languages.removeCard : window.siyuan.languages.quickMakeCard,
-                accelerator: window.siyuan.config.keymap.editor.general.quickMakeCard.custom,
+                label: allCardsMade ? window.scribli.languages.removeCard : window.scribli.languages.quickMakeCard,
+                accelerator: window.scribli.config.keymap.editor.general.quickMakeCard.custom,
                 icon: "iconRiffCard",
                 click() {
                     quickMakeCard(protyle, selectsElement);
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "addToDeck",
-                label: window.siyuan.languages.addToDeck,
+                label: window.scribli.languages.addToDeck,
                 icon: "iconRiffCard",
-                ignore: !window.siyuan.config.flashcard.deck,
+                ignore: !window.scribli.config.flashcard.deck,
                 click() {
                     const ids: string[] = [];
                     selectsElement.forEach(item => {
@@ -1172,7 +1172,7 @@ export class Gutter {
             });
         }
 
-        return window.siyuan.menus.menu;
+        return window.scribli.menus.menu;
     }
 
     public getNodeElement(protyle: IProtyle, element: Element) {
@@ -1205,7 +1205,7 @@ export class Gutter {
             return;
         }
         hideElements(["util", "toolbar", "hint"], protyle);
-        window.siyuan.menus.menu.remove();
+        window.scribli.menus.menu.remove();
         if (isMobile()) {
             activeBlur();
         }
@@ -1217,7 +1217,7 @@ export class Gutter {
         const embedContext = getEmbedChildOperationContext(nodeElement);
         const selectsElement = protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select");
         if (!embedContext && selectsElement.length > 1) {
-            window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_BLOCK_MULTI);
+            window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_BLOCK_MULTI);
             const match = Array.from(selectsElement).find(item => {
                 if (id === item.getAttribute("data-node-id")) {
                     return true;
@@ -1227,7 +1227,7 @@ export class Gutter {
                 return this.renderMultipleMenu(protyle, Array.from(selectsElement));
             }
         } else {
-            window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_BLOCK_SINGLE);
+            window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_BLOCK_SINGLE);
         }
 
         const isEmbedMenu = !!embedContext;
@@ -1250,8 +1250,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsIntoOne({
                 menuId: "list",
                 icon: "iconList",
-                label: window.siyuan.languages.list,
-                accelerator: window.siyuan.config.keymap.editor.insert.list.custom,
+                label: window.scribli.languages.list,
+                accelerator: window.scribli.config.keymap.editor.insert.list.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2ULs"
@@ -1259,8 +1259,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsIntoOne({
                 menuId: "orderedList",
                 icon: "iconOrderedList",
-                label: window.siyuan.languages["ordered-list"],
-                accelerator: window.siyuan.config.keymap.editor.insert["ordered-list"].custom,
+                label: window.scribli.languages["ordered-list"],
+                accelerator: window.scribli.config.keymap.editor.insert["ordered-list"].custom,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2OLs"
@@ -1268,8 +1268,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsIntoOne({
                 menuId: "check",
                 icon: "iconCheck",
-                label: window.siyuan.languages.check,
-                accelerator: window.siyuan.config.keymap.editor.insert.check.custom,
+                label: window.scribli.languages.check,
+                accelerator: window.scribli.config.keymap.editor.insert.check.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2TLs"
@@ -1277,8 +1277,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsIntoOne({
                 menuId: "quote",
                 icon: "iconQuote",
-                label: window.siyuan.languages.quote,
-                accelerator: window.siyuan.config.keymap.editor.insert.quote.custom,
+                label: window.scribli.languages.quote,
+                accelerator: window.scribli.config.keymap.editor.insert.quote.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2Blockquote"
@@ -1286,7 +1286,7 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsIntoOne({
                 menuId: "callout",
                 icon: "iconCallout",
-                label: window.siyuan.languages.callout,
+                label: window.scribli.languages.callout,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2Callout"
@@ -1294,8 +1294,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading1",
                 icon: "iconH1",
-                label: window.siyuan.languages.heading1,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading1.custom,
+                label: window.scribli.languages.heading1,
+                accelerator: window.scribli.config.keymap.editor.heading.heading1.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 level: 1,
@@ -1304,8 +1304,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading2",
                 icon: "iconH2",
-                label: window.siyuan.languages.heading2,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading2.custom,
+                label: window.scribli.languages.heading2,
+                accelerator: window.scribli.config.keymap.editor.heading.heading2.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 level: 2,
@@ -1314,8 +1314,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading3",
                 icon: "iconH3",
-                label: window.siyuan.languages.heading3,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading3.custom,
+                label: window.scribli.languages.heading3,
+                accelerator: window.scribli.config.keymap.editor.heading.heading3.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 level: 3,
@@ -1324,8 +1324,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading4",
                 icon: "iconH4",
-                label: window.siyuan.languages.heading4,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading4.custom,
+                label: window.scribli.languages.heading4,
+                accelerator: window.scribli.config.keymap.editor.heading.heading4.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 level: 4,
@@ -1334,8 +1334,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading5",
                 icon: "iconH5",
-                label: window.siyuan.languages.heading5,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading5.custom,
+                label: window.scribli.languages.heading5,
+                accelerator: window.scribli.config.keymap.editor.heading.heading5.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 level: 5,
@@ -1344,8 +1344,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "heading6",
                 icon: "iconH6",
-                label: window.siyuan.languages.heading6,
-                accelerator: window.siyuan.config.keymap.editor.heading.heading6.custom,
+                label: window.scribli.languages.heading6,
+                accelerator: window.scribli.config.keymap.editor.heading.heading6.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 level: 6,
@@ -1355,8 +1355,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsInto({
                 menuId: "paragraph",
                 icon: "iconParagraph",
-                label: window.siyuan.languages.paragraph,
-                accelerator: window.siyuan.config.keymap.editor.heading.paragraph.custom,
+                label: window.scribli.languages.paragraph,
+                accelerator: window.scribli.config.keymap.editor.heading.paragraph.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2Ps",
@@ -1364,8 +1364,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsIntoOne({
                 menuId: "quote",
                 icon: "iconQuote",
-                label: window.siyuan.languages.quote,
-                accelerator: window.siyuan.config.keymap.editor.insert.quote.custom,
+                label: window.scribli.languages.quote,
+                accelerator: window.scribli.config.keymap.editor.insert.quote.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2Blockquote"
@@ -1373,7 +1373,7 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsIntoOne({
                 menuId: "callout",
                 icon: "iconCallout",
-                label: window.siyuan.languages.callout,
+                label: window.scribli.languages.callout,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2Callout"
@@ -1382,8 +1382,8 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsInto({
                     menuId: "heading1",
                     icon: "iconH1",
-                    label: window.siyuan.languages.heading1,
-                    accelerator: window.siyuan.config.keymap.editor.heading.heading1.custom,
+                    label: window.scribli.languages.heading1,
+                    accelerator: window.scribli.config.keymap.editor.heading.heading1.custom,
                     protyle,
                     selectsElement: [nodeElement],
                     level: 1,
@@ -1394,8 +1394,8 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsInto({
                     menuId: "heading2",
                     icon: "iconH2",
-                    label: window.siyuan.languages.heading2,
-                    accelerator: window.siyuan.config.keymap.editor.heading.heading2.custom,
+                    label: window.scribli.languages.heading2,
+                    accelerator: window.scribli.config.keymap.editor.heading.heading2.custom,
                     protyle,
                     selectsElement: [nodeElement],
                     level: 2,
@@ -1406,8 +1406,8 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsInto({
                     menuId: "heading3",
                     icon: "iconH3",
-                    label: window.siyuan.languages.heading3,
-                    accelerator: window.siyuan.config.keymap.editor.heading.heading3.custom,
+                    label: window.scribli.languages.heading3,
+                    accelerator: window.scribli.config.keymap.editor.heading.heading3.custom,
                     protyle,
                     selectsElement: [nodeElement],
                     level: 3,
@@ -1418,8 +1418,8 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsInto({
                     menuId: "heading4",
                     icon: "iconH4",
-                    label: window.siyuan.languages.heading4,
-                    accelerator: window.siyuan.config.keymap.editor.heading.heading4.custom,
+                    label: window.scribli.languages.heading4,
+                    accelerator: window.scribli.config.keymap.editor.heading.heading4.custom,
                     protyle,
                     selectsElement: [nodeElement],
                     level: 4,
@@ -1430,8 +1430,8 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsInto({
                     menuId: "heading5",
                     icon: "iconH5",
-                    label: window.siyuan.languages.heading5,
-                    accelerator: window.siyuan.config.keymap.editor.heading.heading5.custom,
+                    label: window.scribli.languages.heading5,
+                    accelerator: window.scribli.config.keymap.editor.heading.heading5.custom,
                     protyle,
                     selectsElement: [nodeElement],
                     level: 5,
@@ -1442,8 +1442,8 @@ export class Gutter {
                 turnIntoSubmenu.push(this.turnsInto({
                     menuId: "heading6",
                     icon: "iconH6",
-                    label: window.siyuan.languages.heading6,
-                    accelerator: window.siyuan.config.keymap.editor.heading.heading6.custom,
+                    label: window.scribli.languages.heading6,
+                    accelerator: window.scribli.config.keymap.editor.heading.heading6.custom,
                     protyle,
                     selectsElement: [nodeElement],
                     level: 6,
@@ -1455,8 +1455,8 @@ export class Gutter {
                 menuId: "paragraph",
                 id,
                 icon: "iconParagraph",
-                label: window.siyuan.languages.paragraph,
-                accelerator: window.siyuan.config.keymap.editor.heading.paragraph.custom,
+                label: window.scribli.languages.paragraph,
+                accelerator: window.scribli.config.keymap.editor.heading.paragraph.custom,
                 protyle,
                 nodeElement,
                 type: "CancelList"
@@ -1464,8 +1464,8 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsIntoOne({
                 menuId: "quote",
                 icon: "iconQuote",
-                label: window.siyuan.languages.quote,
-                accelerator: window.siyuan.config.keymap.editor.insert.quote.custom,
+                label: window.scribli.languages.quote,
+                accelerator: window.scribli.config.keymap.editor.insert.quote.custom,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2Blockquote"
@@ -1473,7 +1473,7 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsIntoOne({
                 menuId: "callout",
                 icon: "iconCallout",
-                label: window.siyuan.languages.callout,
+                label: window.scribli.languages.callout,
                 protyle,
                 selectsElement: [nodeElement],
                 type: "Blocks2Callout"
@@ -1483,8 +1483,8 @@ export class Gutter {
                     menuId: "list",
                     id,
                     icon: "iconList",
-                    label: window.siyuan.languages.list,
-                    accelerator: window.siyuan.config.keymap.editor.insert.list.custom,
+                    label: window.scribli.languages.list,
+                    accelerator: window.scribli.config.keymap.editor.insert.list.custom,
                     protyle,
                     nodeElement,
                     type: "OL2UL"
@@ -1493,8 +1493,8 @@ export class Gutter {
                     menuId: "check",
                     id,
                     icon: "iconCheck",
-                    label: window.siyuan.languages.check,
-                    accelerator: window.siyuan.config.keymap.editor.insert.check.custom,
+                    label: window.scribli.languages.check,
+                    accelerator: window.scribli.config.keymap.editor.insert.check.custom,
                     protyle,
                     nodeElement,
                     type: "UL2TL"
@@ -1504,8 +1504,8 @@ export class Gutter {
                     menuId: "list",
                     id,
                     icon: "iconList",
-                    label: window.siyuan.languages.list,
-                    accelerator: window.siyuan.config.keymap.editor.insert.list.custom,
+                    label: window.scribli.languages.list,
+                    accelerator: window.scribli.config.keymap.editor.insert.list.custom,
                     protyle,
                     nodeElement,
                     type: "TL2UL"
@@ -1514,8 +1514,8 @@ export class Gutter {
                     menuId: "orderedList",
                     id,
                     icon: "iconOrderedList",
-                    label: window.siyuan.languages["ordered-list"],
-                    accelerator: window.siyuan.config.keymap.editor.insert["ordered-list"].custom,
+                    label: window.scribli.languages["ordered-list"],
+                    accelerator: window.scribli.config.keymap.editor.insert["ordered-list"].custom,
                     protyle,
                     nodeElement,
                     type: "TL2OL"
@@ -1525,8 +1525,8 @@ export class Gutter {
                     menuId: "orderedList",
                     id,
                     icon: "iconOrderedList",
-                    label: window.siyuan.languages["ordered-list"],
-                    accelerator: window.siyuan.config.keymap.editor.insert["ordered-list"].custom,
+                    label: window.scribli.languages["ordered-list"],
+                    accelerator: window.scribli.config.keymap.editor.insert["ordered-list"].custom,
                     protyle,
                     nodeElement,
                     type: "UL2OL"
@@ -1535,8 +1535,8 @@ export class Gutter {
                     menuId: "check",
                     id,
                     icon: "iconCheck",
-                    label: window.siyuan.languages.check,
-                    accelerator: window.siyuan.config.keymap.editor.insert.check.custom,
+                    label: window.scribli.languages.check,
+                    accelerator: window.scribli.config.keymap.editor.insert.check.custom,
                     protyle,
                     nodeElement,
                     type: "OL2TL"
@@ -1547,8 +1547,8 @@ export class Gutter {
                 menuId: "paragraph",
                 id,
                 icon: "iconParagraph",
-                label: window.siyuan.languages.paragraph,
-                accelerator: window.siyuan.config.keymap.editor.heading.paragraph.custom,
+                label: window.scribli.languages.paragraph,
+                accelerator: window.scribli.config.keymap.editor.heading.paragraph.custom,
                 protyle,
                 nodeElement,
                 type: "CancelBlockquote"
@@ -1556,7 +1556,7 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsOneInto({
                 id,
                 icon: "iconCallout",
-                label: window.siyuan.languages.callout,
+                label: window.scribli.languages.callout,
                 protyle,
                 nodeElement,
                 type: "Blockquote2Callout"
@@ -1566,8 +1566,8 @@ export class Gutter {
                 menuId: "paragraph",
                 id,
                 icon: "iconParagraph",
-                label: window.siyuan.languages.paragraph,
-                accelerator: window.siyuan.config.keymap.editor.heading.paragraph.custom,
+                label: window.scribli.languages.paragraph,
+                accelerator: window.scribli.config.keymap.editor.heading.paragraph.custom,
                 protyle,
                 nodeElement,
                 type: "CancelCallout"
@@ -1575,27 +1575,27 @@ export class Gutter {
             turnIntoSubmenu.push(this.turnsOneInto({
                 id,
                 icon: "iconQuote",
-                label: window.siyuan.languages.quote,
+                label: window.scribli.languages.quote,
                 protyle,
                 nodeElement,
                 type: "Callout2Blockquote"
             }));
         }
         if (turnIntoSubmenu.length > 0 && allowStructuralMutation) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "turnInto",
                 icon: "iconTurnInto",
-                label: window.siyuan.languages.turnInto,
+                label: window.scribli.languages.turnInto,
                 type: "submenu",
                 submenu: turnIntoSubmenu
             }).element);
         }
         if (!isEmbedMenu && !protyle.disabled && !nodeElement.classList.contains("hr")) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "ai",
                 icon: "iconSparkles",
-                label: window.siyuan.languages.aiEdit,
-                accelerator: window.siyuan.config.keymap.editor.general.ai.custom,
+                label: window.scribli.languages.aiEdit,
+                accelerator: window.scribli.config.keymap.editor.general.ai.custom,
                 click() {
                     AIActions([nodeElement], protyle);
                 }
@@ -1604,10 +1604,10 @@ export class Gutter {
 
         this.appendCopyMenu(protyle, nodeElement, allowStructuralMutation);
         if (allowRemoval) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "cut",
                 icon: "iconCut",
-                label: window.siyuan.languages.cut,
+                label: window.scribli.languages.cut,
                 accelerator: "⌘X",
                 click: () => {
                     focusBlock(nodeElement);
@@ -1616,11 +1616,11 @@ export class Gutter {
             }).element);
         }
         if (!isEmbedMenu && !protyle.disabled) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "move",
                 icon: "iconMove",
-                label: window.siyuan.languages.move,
-                accelerator: window.siyuan.config.keymap.general.move.custom,
+                label: window.scribli.languages.move,
+                accelerator: window.scribli.config.keymap.general.move.custom,
                 click: () => {
                     movePathTo({
                         cb: (toPath) => {
@@ -1636,10 +1636,10 @@ export class Gutter {
             /// #if !MOBILE
             // 加密笔记本中的块不暴露该菜单：避免把受保护内容引入智能体会话。
             if (!isEncryptedBox(protyle.notebookId)) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "addToAgent",
                     icon: "iconSend",
-                    label: window.siyuan.languages.addToAgent,
+                    label: window.scribli.languages.addToAgent,
                     click: () => {
                         addBlockToAgent([nodeElement.getAttribute("data-node-id")]);
                     }
@@ -1648,10 +1648,10 @@ export class Gutter {
             /// #endif
         }
         if (allowRemoval) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "delete",
                 icon: "iconTrashcan",
-                label: window.siyuan.languages.delete,
+                label: window.scribli.languages.delete,
                 accelerator: "⌫",
                 click: () => {
                     protyle.breadcrumb?.hide();
@@ -1660,16 +1660,16 @@ export class Gutter {
             }).element);
         }
         if (type === "NodeSuperBlock" && !protyle.disabled) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "separator_cancelSuperBlock",
                 type: "separator"
             }).element);
             const isCol = nodeElement.getAttribute("data-sb-layout") === "col";
             if (allowStructuralMutation) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "cancelSuperBlock",
-                    label: window.siyuan.languages.cancel + " " + window.siyuan.languages.superBlock,
-                    accelerator: window.siyuan.config.keymap.editor.general[isCol ? "hLayout" : "vLayout"].custom,
+                    label: window.scribli.languages.cancel + " " + window.scribli.languages.superBlock,
+                    accelerator: window.scribli.config.keymap.editor.general[isCol ? "hLayout" : "vLayout"].custom,
                     async click() {
                         const sbData = await cancelSB(protyle, nodeElement);
                         transaction(protyle, sbData.doOperations, sbData.undoOperations);
@@ -1679,10 +1679,10 @@ export class Gutter {
                     }
                 }).element);
             }
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "turnInto" + (isCol ? "VLayout" : "HLayout"),
-                accelerator: window.siyuan.config.keymap.editor.general[isCol ? "vLayout" : "hLayout"].custom,
-                label: window.siyuan.languages.turnInto + " " + window.siyuan.languages[isCol ? "vLayout" : "hLayout"],
+                accelerator: window.scribli.config.keymap.editor.general[isCol ? "vLayout" : "hLayout"].custom,
+                label: window.scribli.languages.turnInto + " " + window.scribli.languages[isCol ? "vLayout" : "hLayout"],
                 click() {
                     const oldHTML = nodeElement.outerHTML;
                     if (isCol) {
@@ -1697,22 +1697,22 @@ export class Gutter {
                 }
             }).element);
         } else if (type === "NodeCodeBlock" && !nodeElement.getAttribute("data-subtype")) {
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_code", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_code", type: "separator"}).element);
             const linewrap = nodeElement.getAttribute("linewrap");
             const ligatures = nodeElement.getAttribute("ligatures");
             const linenumber = nodeElement.getAttribute("linenumber");
 
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "code",
                 type: "submenu",
                 icon: "iconCode",
-                label: window.siyuan.languages.code,
+                label: window.scribli.languages.code,
                 submenu: [{
                     id: "md31",
                     iconHTML: "",
                     ignore: protyle.disabled,
-                    label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.siyuan.languages.md31}</span><span class="fn__space fn__flex-1"></span>
-<input type="checkbox" class="b3-switch fn__flex-center"${linewrap === "true" ? " checked" : ((window.siyuan.config.editor.codeLineWrap && linewrap !== "false") ? " checked" : "")}></div>`,
+                    label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.scribli.languages.md31}</span><span class="fn__space fn__flex-1"></span>
+<input type="checkbox" class="b3-switch fn__flex-center"${linewrap === "true" ? " checked" : ((window.scribli.config.editor.codeLineWrap && linewrap !== "false") ? " checked" : "")}></div>`,
                     bind(element) {
                         element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
                             const inputElement = element.querySelector("input");
@@ -1726,15 +1726,15 @@ export class Gutter {
                                 id,
                                 attrs: {linewrap: inputElement.checked.toString()}
                             });
-                            window.siyuan.menus.menu.remove();
+                            window.scribli.menus.menu.remove();
                         });
                     }
                 }, {
                     id: "md2",
                     iconHTML: "",
                     ignore: protyle.disabled,
-                    label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.siyuan.languages.md2}</span><span class="fn__space fn__flex-1"></span>
-<input type="checkbox" class="b3-switch fn__flex-center"${ligatures === "true" ? " checked" : ((window.siyuan.config.editor.codeLigatures && ligatures !== "false") ? " checked" : "")}></div>`,
+                    label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.scribli.languages.md2}</span><span class="fn__space fn__flex-1"></span>
+<input type="checkbox" class="b3-switch fn__flex-center"${ligatures === "true" ? " checked" : ((window.scribli.config.editor.codeLigatures && ligatures !== "false") ? " checked" : "")}></div>`,
                     bind(element) {
                         element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
                             const inputElement = element.querySelector("input");
@@ -1748,15 +1748,15 @@ export class Gutter {
                                 id,
                                 attrs: {ligatures: inputElement.checked.toString()}
                             });
-                            window.siyuan.menus.menu.remove();
+                            window.scribli.menus.menu.remove();
                         });
                     }
                 }, {
                     id: "md27",
                     iconHTML: "",
                     ignore: protyle.disabled,
-                    label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.siyuan.languages.md27}</span><span class="fn__space fn__flex-1"></span>
-<input type="checkbox" class="b3-switch fn__flex-center"${linenumber === "true" ? " checked" : ((window.siyuan.config.editor.codeSyntaxHighlightLineNum && linenumber !== "false") ? " checked" : "")}></div>`,
+                    label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.scribli.languages.md27}</span><span class="fn__space fn__flex-1"></span>
+<input type="checkbox" class="b3-switch fn__flex-center"${linenumber === "true" ? " checked" : ((window.scribli.config.editor.codeSyntaxHighlightLineNum && linenumber !== "false") ? " checked" : "")}></div>`,
                     bind(element) {
                         element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
                             const inputElement = element.querySelector("input");
@@ -1770,15 +1770,15 @@ export class Gutter {
                                 id,
                                 attrs: {linenumber: inputElement.checked.toString()}
                             });
-                            window.siyuan.menus.menu.remove();
+                            window.scribli.menus.menu.remove();
                         });
                     }
                 }, {
                     id: "saveCodeBlockAsFile",
                     iconHTML: "",
-                    label: window.siyuan.languages.saveCodeBlockAsFile,
+                    label: window.scribli.languages.saveCodeBlockAsFile,
                     click() {
-                        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
                         fetchPost("/api/export/exportCodeBlock", {id}, (response) => {
                             saveExportFile(response.data.path, msgId);
                         });
@@ -1786,18 +1786,18 @@ export class Gutter {
                 }]
             }).element);
         } else if (type === "NodeCodeBlock" && !protyle.disabled && ["echarts", "mindmap"].includes(nodeElement.getAttribute("data-subtype"))) {
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_chart", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_chart", type: "separator"}).element);
             const height = (nodeElement as HTMLElement).style.height;
             let html = nodeElement.outerHTML;
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "chart",
-                label: window.siyuan.languages.chart,
+                label: window.scribli.languages.chart,
                 icon: "iconCode",
                 submenu: [{
                     id: "height",
                     iconHTML: "",
                     type: "readonly",
-                    label: `<div class="fn__flex"><input class="b3-text-field fn__flex-1" value="${height ? parseInt(height) : "420"}" step="1" min="148" style="margin: 4px 8px 4px 0" placeholder="${window.siyuan.languages.height}"><span class="fn__flex-center">px</span></div>`,
+                    label: `<div class="fn__flex"><input class="b3-text-field fn__flex-1" value="${height ? parseInt(height) : "420"}" step="1" min="148" style="margin: 4px 8px 4px 0" placeholder="${window.scribli.languages.height}"><span class="fn__flex-center">px</span></div>`,
                     bind: (element) => {
                         element.querySelector("input").addEventListener("change", (event) => {
                             const newHeight = ((event.target as HTMLInputElement).value || "420") + "px";
@@ -1817,7 +1817,7 @@ export class Gutter {
                     }
                 }, {
                     id: "update",
-                    label: window.siyuan.languages.update,
+                    label: window.scribli.languages.update,
                     icon: "iconEdit",
                     click() {
                         protyle.toolbar.showRender(protyle, nodeElement);
@@ -1833,21 +1833,21 @@ export class Gutter {
             const cellElement = hasClosestByTag(range.startContainer, "TD") ||
                 hasClosestByTag(range.startContainer, "TH") || nodeElement.querySelector("th, td");
             if (cellElement) {
-                window.siyuan.menus.menu.append(new MenuItem({id: "separator_table", type: "separator"}).element);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({id: "separator_table", type: "separator"}).element);
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "table",
                     type: "submenu",
                     icon: "iconTable",
-                    label: window.siyuan.languages.table,
+                    label: window.scribli.languages.table,
                     submenu: tableMenu(protyle, nodeElement, cellElement as HTMLTableCellElement, range).menus as IMenu[]
                 }).element);
             }
         } else if (type === "NodeAttributeView") {
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_exportCSV", type: "separator"}).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_exportCSV", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "exportCSV",
                 icon: "iconDatabase",
-                label: window.siyuan.languages.export + " CSV",
+                label: window.scribli.languages.export + " CSV",
                 click() {
                     fetchPost("/api/export/exportAttributeView", {
                         id: nodeElement.getAttribute("data-av-id"),
@@ -1857,41 +1857,41 @@ export class Gutter {
                     });
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "showDatabaseInFolder",
                 icon: "iconFolder",
-                label: window.siyuan.languages.showInFolder,
+                label: window.scribli.languages.showInFolder,
                 click() {
                     const avId = nodeElement.getAttribute("data-av-id");
                     const notebookId = protyle.notebookId;
                     // 加密笔记本的 AV 定义存笔记本级路径
                     const avDir = isEncryptedBox(notebookId)
-                        ? path.join(window.siyuan.config.system.dataDir, notebookId, "storage", "av")
-                        : path.join(window.siyuan.config.system.dataDir, "storage", "av");
+                        ? path.join(window.scribli.config.system.dataDir, notebookId, "storage", "av")
+                        : path.join(window.scribli.config.system.dataDir, "storage", "av");
                     useShell("showItemInFolder", path.join(avDir, avId) + ".json");
                 }
             }).element);
         } else if ((type === "NodeVideo" || type === "NodeAudio") && !protyle.disabled) {
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_VideoOrAudio", type: "separator"}).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_VideoOrAudio", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({
                 id: type === "NodeVideo" ? "assetVideo" : "assetAudio",
                 type: "submenu",
                 icon: type === "NodeVideo" ? "iconVideo" : "iconRecord",
-                label: window.siyuan.languages.assets,
+                label: window.scribli.languages.assets,
                 submenu: videoMenu(protyle, nodeElement, type)
             }).element);
         } else if (type === "NodeIFrame" && !protyle.disabled) {
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_IFrame", type: "separator"}).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_IFrame", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "assetIFrame",
                 type: "submenu",
                 icon: "iconGlobe",
-                label: window.siyuan.languages.assets,
+                label: window.scribli.languages.assets,
                 submenu: iframeMenu(protyle, nodeElement)
             }).element);
         } else if (type === "NodeHTMLBlock" && !protyle.disabled) {
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_html", type: "separator"}).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_html", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "html",
                 icon: "iconHTML5",
                 label: "HTML",
@@ -1900,17 +1900,17 @@ export class Gutter {
                 }
             }).element);
         } else if (type === "NodeBlockQueryEmbed" && !protyle.disabled) {
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_blockEmbed", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_blockEmbed", type: "separator"}).element);
             const breadcrumb = nodeElement.getAttribute("breadcrumb");
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "blockEmbed",
                 type: "submenu",
                 icon: "iconSQL",
-                label: window.siyuan.languages.blockEmbed,
+                label: window.scribli.languages.blockEmbed,
                 submenu: [{
                     id: "refresh",
                     icon: "iconRefresh",
-                    label: `${window.siyuan.languages.refresh} SQL`,
+                    label: `${window.scribli.languages.refresh} SQL`,
                     click() {
                         nodeElement.removeAttribute("data-render");
                         blockRender(protyle, nodeElement);
@@ -1918,7 +1918,7 @@ export class Gutter {
                 }, {
                     id: "update",
                     icon: "iconEdit",
-                    label: `${window.siyuan.languages.update} SQL`,
+                    label: `${window.scribli.languages.update} SQL`,
                     click() {
                         protyle.toolbar.showRender(protyle, nodeElement);
                     }
@@ -1926,8 +1926,8 @@ export class Gutter {
                     type: "separator"
                 }, {
                     id: "embedBlockBreadcrumb",
-                    label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.siyuan.languages.embedBlockBreadcrumb}</span><span class="fn__space fn__flex-1"></span>
-<input type="checkbox" class="b3-switch fn__flex-center"${breadcrumb === "true" ? " checked" : ((window.siyuan.config.editor.embedBlockBreadcrumb && breadcrumb !== "false") ? " checked" : "")}></div>`,
+                    label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.scribli.languages.embedBlockBreadcrumb}</span><span class="fn__space fn__flex-1"></span>
+<input type="checkbox" class="b3-switch fn__flex-center"${breadcrumb === "true" ? " checked" : ((window.scribli.config.editor.embedBlockBreadcrumb && breadcrumb !== "false") ? " checked" : "")}></div>`,
                     bind(element) {
                         element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
                             const inputElement = element.querySelector("input");
@@ -1941,16 +1941,16 @@ export class Gutter {
                             });
                             nodeElement.removeAttribute("data-render");
                             blockRender(protyle, nodeElement);
-                            window.siyuan.menus.menu.remove();
+                            window.scribli.menus.menu.remove();
                         });
                     }
                 }, {
                     id: "headingEmbedMode",
-                    label: window.siyuan.languages.headingEmbedMode,
+                    label: window.scribli.languages.headingEmbedMode,
                     type: "submenu",
                     submenu: [{
                         id: "showHeadingWithBlocks",
-                        label: window.siyuan.languages.showHeadingWithBlocks,
+                        label: window.scribli.languages.showHeadingWithBlocks,
                         iconHTML: "",
                         checked: nodeElement.getAttribute("custom-heading-mode") === "0",
                         click() {
@@ -1964,7 +1964,7 @@ export class Gutter {
                         }
                     }, {
                         id: "showHeadingOnlyTitle",
-                        label: window.siyuan.languages.showHeadingOnlyTitle,
+                        label: window.scribli.languages.showHeadingOnlyTitle,
                         iconHTML: "",
                         checked: nodeElement.getAttribute("custom-heading-mode") === "1",
                         click() {
@@ -1978,7 +1978,7 @@ export class Gutter {
                         }
                     }, {
                         id: "showHeadingOnlyBlocks",
-                        label: window.siyuan.languages.showHeadingOnlyBlocks,
+                        label: window.scribli.languages.showHeadingOnlyBlocks,
                         iconHTML: "",
                         checked: nodeElement.getAttribute("custom-heading-mode") === "2",
                         click() {
@@ -1992,7 +1992,7 @@ export class Gutter {
                         }
                     }, {
                         id: "default",
-                        label: window.siyuan.languages.default,
+                        label: window.scribli.languages.default,
                         iconHTML: "",
                         checked: !nodeElement.getAttribute("custom-heading-mode"),
                         click() {
@@ -2008,7 +2008,7 @@ export class Gutter {
                 }]
             }).element);
         } else if (type === "NodeHeading" && !protyle.disabled) {
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
             if (!isEmbedMenu) {
                 const headingSubMenu = [];
                 if (subType !== "h1") {
@@ -2029,18 +2029,18 @@ export class Gutter {
                 if (subType !== "h6") {
                     headingSubMenu.push(this.genHeadingTransform(protyle, id, 6));
                 }
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "tWithSubtitle",
                     type: "submenu",
                     icon: "iconRefresh",
-                    label: window.siyuan.languages.tWithSubtitle,
+                    label: window.scribli.languages.tWithSubtitle,
                     submenu: headingSubMenu
                 }).element);
             }
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "copyHeadings1",
                 icon: "iconCopy",
-                label: `${window.siyuan.languages.copy} ${window.siyuan.languages.headings1}`,
+                label: `${window.scribli.languages.copy} ${window.scribli.languages.headings1}`,
                 click() {
                     fetchPost("/api/block/getHeadingChildrenDOM", {
                         id,
@@ -2057,10 +2057,10 @@ export class Gutter {
                 }
             }).element);
             if (!isEmbedMenu) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "cutHeadings1",
                     icon: "iconCut",
-                    label: `${window.siyuan.languages.cut} ${window.siyuan.languages.headings1}`,
+                    label: `${window.scribli.languages.cut} ${window.scribli.languages.headings1}`,
                     click() {
                         fetchPost("/api/block/getHeadingChildrenDOM", {
                             id,
@@ -2102,10 +2102,10 @@ export class Gutter {
                         });
                     }
                 }).element);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "deleteHeadings1",
                     icon: "iconTrashcan",
-                    label: `${window.siyuan.languages.delete} ${window.siyuan.languages.headings1}`,
+                    label: `${window.scribli.languages.delete} ${window.scribli.languages.headings1}`,
                     click() {
                         fetchPost("/api/block/getHeadingDeleteTransaction", {
                             id,
@@ -2137,33 +2137,33 @@ export class Gutter {
                 }).element);
             }
         }
-        window.siyuan.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
+        window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
         if (!protyle.options.backlinkData) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "enter",
                 icon: "iconEnter",
-                accelerator: `${window.siyuan.config.keymap.general.enter.custom ? updateHotkeyTip(window.siyuan.config.keymap.general.enter.custom) + "/" : ""}${updateHotkeyAfterTip("⌘" + window.siyuan.languages.click)}`,
-                label: window.siyuan.languages.enter,
+                accelerator: `${window.scribli.config.keymap.general.enter.custom ? updateHotkeyTip(window.scribli.config.keymap.general.enter.custom) + "/" : ""}${updateHotkeyAfterTip("⌘" + window.scribli.languages.click)}`,
+                label: window.scribli.languages.enter,
                 click: () => {
                     zoomOut({protyle, id});
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "enterBack",
                 icon: "iconEnterBack",
-                accelerator: window.siyuan.config.keymap.general.enterBack.custom,
-                label: window.siyuan.languages.enterBack,
+                accelerator: window.scribli.config.keymap.general.enterBack.custom,
+                label: window.scribli.languages.enterBack,
                 click: () => {
                     enterBack(protyle, id);
                 }
             }).element);
         } else {
             /// #if !MOBILE
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "enter",
                 icon: "iconEnter",
-                accelerator: `${updateHotkeyTip(window.siyuan.config.keymap.general.enter.custom)}/${updateHotkeyTip("⌘" + window.siyuan.languages.click)}`,
-                label: window.siyuan.languages.openBy,
+                accelerator: `${updateHotkeyTip(window.scribli.config.keymap.general.enter.custom)}/${updateHotkeyTip("⌘" + window.scribli.languages.click)}`,
+                label: window.scribli.languages.openBy,
                 click: () => {
                     checkFold(id, (zoomIn, action) => {
                         openFileById({
@@ -2178,22 +2178,22 @@ export class Gutter {
             /// #endif
         }
         if (allowStructuralMutation) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "insertBefore",
                 icon: "iconBefore",
-                label: window.siyuan.languages.insertBefore,
-                accelerator: window.siyuan.config.keymap.editor.general.insertBefore.custom,
+                label: window.scribli.languages.insertBefore,
+                accelerator: window.scribli.config.keymap.editor.general.insertBefore.custom,
                 click() {
                     hideElements(["select"], protyle);
                     countBlockWord([], protyle.block.rootID);
                     insertEmptyBlock(protyle, "beforebegin", nodeElement);
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "insertAfter",
                 icon: "iconAfter",
-                label: window.siyuan.languages.insertAfter,
-                accelerator: window.siyuan.config.keymap.editor.general.insertAfter.custom,
+                label: window.scribli.languages.insertAfter,
+                accelerator: window.scribli.config.keymap.editor.general.insertAfter.custom,
                 click() {
                     hideElements(["select"], protyle);
                     countBlockWord([], protyle.block.rootID);
@@ -2207,16 +2207,16 @@ export class Gutter {
                 transferBlockRef(id);
             }
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "jumpTo",
             icon: "iconJumpTo",
             type: "submenu",
-            label: window.siyuan.languages.jumpTo,
+            label: window.scribli.languages.jumpTo,
             submenu: [{
                 id: "jumpToParentPrev",
                 iconHTML: "",
-                label: window.siyuan.languages.jumpToParentPrev,
-                accelerator: window.siyuan.config.keymap.editor.general.jumpToParentPrev.custom,
+                label: window.scribli.languages.jumpToParentPrev,
+                accelerator: window.scribli.config.keymap.editor.general.jumpToParentPrev.custom,
                 click() {
                     hideElements(["select"], protyle);
                     jumpToParent(protyle, nodeElement, "previous");
@@ -2224,8 +2224,8 @@ export class Gutter {
             }, {
                 iconHTML: "",
                 id: "jumpToParentNext",
-                label: window.siyuan.languages.jumpToParentNext,
-                accelerator: window.siyuan.config.keymap.editor.general.jumpToParentNext.custom,
+                label: window.scribli.languages.jumpToParentNext,
+                accelerator: window.scribli.config.keymap.editor.general.jumpToParentNext.custom,
                 click() {
                     hideElements(["select"], protyle);
                     jumpToParent(protyle, nodeElement, "next");
@@ -2233,8 +2233,8 @@ export class Gutter {
             }, {
                 iconHTML: "",
                 id: "jumpToParent",
-                label: window.siyuan.languages.jumpToParent,
-                accelerator: window.siyuan.config.keymap.editor.general.jumpToParent.custom,
+                label: window.scribli.languages.jumpToParent,
+                accelerator: window.scribli.config.keymap.editor.general.jumpToParent.custom,
                 click() {
                     hideElements(["select"], protyle);
                     jumpToParent(protyle, nodeElement, "parent");
@@ -2242,16 +2242,16 @@ export class Gutter {
             }]
         }).element);
 
-        window.siyuan.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
+        window.scribli.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
 
         if (type !== "NodeThematicBreak") {
             this.appendFoldMenu(protyle, nodeElement);
             if (!protyle.disabled && !isEncryptedBox(protyle.notebookId)) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "attr",
-                    label: window.siyuan.languages.attr,
+                    label: window.scribli.languages.attr,
                     icon: "iconAttr",
-                    accelerator: window.siyuan.config.keymap.editor.general.attr.custom + "/" + updateHotkeyTip("⇧" + window.siyuan.languages.click),
+                    accelerator: window.scribli.config.keymap.editor.general.attr.custom + "/" + updateHotkeyTip("⇧" + window.scribli.languages.click),
                     click() {
                         openAttr(nodeElement, "bookmark", protyle);
                     }
@@ -2261,9 +2261,9 @@ export class Gutter {
         if (!protyle.disabled) {
             const appearanceElement = new MenuItem({
                 id: "appearance",
-                label: window.siyuan.languages.appearance,
+                label: window.scribli.languages.appearance,
                 icon: "iconFont",
-                accelerator: window.siyuan.config.keymap.editor.insert.appearance.custom,
+                accelerator: window.scribli.config.keymap.editor.insert.appearance.custom,
                 click: () => {
                     /// #if MOBILE
                     this.showMobileAppearance(protyle);
@@ -2273,7 +2273,7 @@ export class Gutter {
                     protyle.toolbar.subElement.style.width = "";
                     protyle.toolbar.subElement.style.padding = "";
                     protyle.toolbar.subElement.append(appearanceMenu(protyle, [nodeElement]));
-                    protyle.toolbar.subElement.style.zIndex = (++window.siyuan.zIndex).toString();
+                    protyle.toolbar.subElement.style.zIndex = (++window.scribli.zIndex).toString();
                     protyle.toolbar.subElement.classList.remove("fn__none");
                     protyle.toolbar.subElementCloseCB = undefined;
                     const position = nodeElement.getBoundingClientRect();
@@ -2281,7 +2281,7 @@ export class Gutter {
                     /// #endif
                 }
             }).element;
-            window.siyuan.menus.menu.append(appearanceElement);
+            window.scribli.menus.menu.append(appearanceElement);
             if (!isMobile()) {
                 appearanceElement.lastElementChild.classList.add("b3-menu__submenu--row");
             }
@@ -2289,42 +2289,42 @@ export class Gutter {
             this.genWidths([nodeElement], protyle);
             // this.genHeights([nodeElement], protyle);
         }
-        window.siyuan.menus.menu.append(new MenuItem({id: "separator_4", type: "separator"}).element);
-        if (window.siyuan.config.cloudRegion === 0 &&
+        window.scribli.menus.menu.append(new MenuItem({id: "separator_4", type: "separator"}).element);
+        if (window.scribli.config.cloudRegion === 0 &&
             !["NodeThematicBreak", "NodeBlockQueryEmbed", "NodeIFrame", "NodeHTMLBlock", "NodeWidget", "NodeVideo", "NodeAudio"].includes(type) &&
             getContenteditableElement(nodeElement)?.textContent.trim() !== "" &&
             (type !== "NodeCodeBlock" || (type === "NodeCodeBlock" && !nodeElement.getAttribute("data-subtype")))) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "wechatReminder",
                 icon: "iconMp",
-                label: window.siyuan.languages.wechatReminder,
-                ignore: window.siyuan.config.readonly,
+                label: window.scribli.languages.wechatReminder,
+                ignore: window.scribli.config.readonly,
                 click() {
                     openWechatNotify(nodeElement);
                 }
             }).element);
         }
-        if (type !== "NodeThematicBreak" && !window.siyuan.config.readonly && !isEncryptedBox(protyle.notebookId)) {
+        if (type !== "NodeThematicBreak" && !window.scribli.config.readonly && !isEncryptedBox(protyle.notebookId)) {
             const isCardMade = nodeElement.hasAttribute(Constants.CUSTOM_RIFF_DECKS);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: isCardMade ? "removeCard" : "quickMakeCard",
                 icon: "iconRiffCard",
-                label: isCardMade ? window.siyuan.languages.removeCard : window.siyuan.languages.quickMakeCard,
-                accelerator: window.siyuan.config.keymap.editor.general.quickMakeCard.custom,
+                label: isCardMade ? window.scribli.languages.removeCard : window.scribli.languages.quickMakeCard,
+                accelerator: window.scribli.config.keymap.editor.general.quickMakeCard.custom,
                 click() {
                     quickMakeCard(protyle, [nodeElement]);
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "addToDeck",
-                label: window.siyuan.languages.addToDeck,
-                ignore: !window.siyuan.config.flashcard.deck,
+                label: window.scribli.languages.addToDeck,
+                ignore: !window.scribli.config.flashcard.deck,
                 icon: "iconRiffCard",
                 click() {
                     makeCard(protyle.app, [id]);
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_5", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_5", type: "separator"}).element);
         }
 
         if (!isEmbedMenu && protyle?.app?.plugins) {
@@ -2341,15 +2341,15 @@ export class Gutter {
 
         let updateHTML = nodeElement.getAttribute("updated") || "";
         if (updateHTML) {
-            updateHTML = `${window.siyuan.languages.modifiedAt} ${dayjs(updateHTML).format("YYYY-MM-DD HH:mm:ss")}<br>`;
+            updateHTML = `${window.scribli.languages.modifiedAt} ${dayjs(updateHTML).format("YYYY-MM-DD HH:mm:ss")}<br>`;
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "updateAndCreatedAt",
             iconHTML: "",
             type: "readonly",
-            label: `${updateHTML}${window.siyuan.languages.createdAt} ${dayjs(id.substr(0, 14)).format("YYYY-MM-DD HH:mm:ss")}`,
+            label: `${updateHTML}${window.scribli.languages.createdAt} ${dayjs(id.substr(0, 14)).format("YYYY-MM-DD HH:mm:ss")}`,
         }).element);
-        return window.siyuan.menus.menu;
+        return window.scribli.menus.menu;
     }
 
     private genHeadingTransform(protyle: IProtyle, id: string, level: number) {
@@ -2357,7 +2357,7 @@ export class Gutter {
             id: "heading" + level,
             iconHTML: "",
             icon: "iconHeading" + level,
-            label: window.siyuan.languages["heading" + level],
+            label: window.scribli.languages["heading" + level],
             click() {
                 fetchPost("/api/block/getHeadingLevelTransaction", {
                     id,
@@ -2388,16 +2388,16 @@ export class Gutter {
 
     private genAlign(nodeElements: Element[], protyle: IProtyle) {
         const disabledRTL = nodeElements.some(e => ["NodeAttributeView", "NodeCodeBlock", "NodeMathBlock"].includes(e.getAttribute("data-type")));
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "layout",
             icon: "iconAlignSettings",
-            label: window.siyuan.languages.layout,
+            label: window.scribli.languages.layout,
             type: "submenu",
             submenu: [{
                 id: "alignLeft",
                 icon: "iconAlignLeft",
-                label: window.siyuan.languages.alignLeft,
-                accelerator: window.siyuan.config.keymap.editor.general.alignLeft.custom,
+                label: window.scribli.languages.alignLeft,
+                accelerator: window.scribli.config.keymap.editor.general.alignLeft.custom,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         if (e.classList.contains("av")) {
@@ -2412,8 +2412,8 @@ export class Gutter {
             }, {
                 id: "alignCenter",
                 icon: "iconAlignCenter",
-                label: window.siyuan.languages.alignCenter,
-                accelerator: window.siyuan.config.keymap.editor.general.alignCenter.custom,
+                label: window.scribli.languages.alignCenter,
+                accelerator: window.scribli.config.keymap.editor.general.alignCenter.custom,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         if (e.classList.contains("av")) {
@@ -2428,8 +2428,8 @@ export class Gutter {
             }, {
                 id: "alignRight",
                 icon: "iconAlignRight",
-                label: window.siyuan.languages.alignRight,
-                accelerator: window.siyuan.config.keymap.editor.general.alignRight.custom,
+                label: window.scribli.languages.alignRight,
+                accelerator: window.scribli.config.keymap.editor.general.alignRight.custom,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         if (e.classList.contains("av")) {
@@ -2444,7 +2444,7 @@ export class Gutter {
             }, {
                 id: "justify",
                 icon: "iconAlignJustify",
-                label: window.siyuan.languages.justify,
+                label: window.scribli.languages.justify,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         e.style.textAlign = "justify";
@@ -2457,8 +2457,8 @@ export class Gutter {
                 id: "ltr",
                 icon: "iconLtr",
                 ignore: disabledRTL,
-                label: window.siyuan.languages.ltr,
-                accelerator: window.siyuan.config.keymap.editor.general.ltr.custom,
+                label: window.scribli.languages.ltr,
+                accelerator: window.scribli.config.keymap.editor.general.ltr.custom,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         if (e.classList.contains("table")) {
@@ -2474,8 +2474,8 @@ export class Gutter {
                 id: "rtl",
                 icon: "iconRtl",
                 ignore: disabledRTL,
-                label: window.siyuan.languages.rtl,
-                accelerator: window.siyuan.config.keymap.editor.general.rtl.custom,
+                label: window.scribli.languages.rtl,
+                accelerator: window.scribli.config.keymap.editor.general.rtl.custom,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         if (e.classList.contains("table")) {
@@ -2494,7 +2494,7 @@ export class Gutter {
             }, {
                 id: "clearFontStyle",
                 icon: "iconTrashcan",
-                label: window.siyuan.languages.clearFontStyle,
+                label: window.scribli.languages.clearFontStyle,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         if (e.classList.contains("av")) {
@@ -2539,7 +2539,7 @@ export class Gutter {
                 }
             });
             transaction(protyle, operations, undoOperations);
-            window.siyuan.menus.menu.remove();
+            window.scribli.menus.menu.remove();
             focusBlock(nodeElements[0]);
         });
     }
@@ -2561,7 +2561,7 @@ export class Gutter {
             id: "widthInput",
             iconHTML: "",
             type: "readonly",
-            label: `<div class="fn__flex"><input class="b3-text-field fn__flex-1" value="${firstElement.style.width.endsWith("px") ? parseInt(firstElement.style.width) : ""}" type="number" style="margin: 4px 8px 4px 0" placeholder="${window.siyuan.languages.width}"><span class="fn__flex-center">px</span></div>`,
+            label: `<div class="fn__flex"><input class="b3-text-field fn__flex-1" value="${firstElement.style.width.endsWith("px") ? parseInt(firstElement.style.width) : ""}" type="number" style="margin: 4px 8px 4px 0" placeholder="${window.scribli.languages.width}"><span class="fn__flex-center">px</span></div>`,
             bind: (element) => {
                 const inputElement = element.querySelector("input");
                 inputElement.addEventListener("input", () => {
@@ -2599,15 +2599,15 @@ export class Gutter {
             type: "separator"
         });
         const width = firstElement.style.width.endsWith("%") ? parseInt(firstElement.style.width) : 0;
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "width",
             icon: "iconWidth",
-            label: window.siyuan.languages.width,
+            label: window.scribli.languages.width,
             submenu: styles.concat([{
                 id: "widthDrag",
                 iconHTML: "",
                 type: "readonly",
-                label: `<div style="margin: 4px 0;" aria-label="${firstElement.style.width.endsWith("px") ? firstElement.style.width : (firstElement.style.width || window.siyuan.languages.default)}" class="b3-tooltips b3-tooltips__n"><input style="box-sizing: border-box" value="${width}" class="b3-slider fn__block" max="100" min="1" step="1" type="range"></div>`,
+                label: `<div style="margin: 4px 0;" aria-label="${firstElement.style.width.endsWith("px") ? firstElement.style.width : (firstElement.style.width || window.scribli.languages.default)}" class="b3-tooltips b3-tooltips__n"><input style="box-sizing: border-box" value="${width}" class="b3-slider fn__block" max="100" min="1" step="1" type="range"></div>`,
                 bind: (element) => {
                     rangeElement = element.querySelector("input");
                     rangeElement.addEventListener("input", () => {
@@ -2625,7 +2625,7 @@ export class Gutter {
             }, {
                 id: "default",
                 iconHTML: "",
-                label: window.siyuan.languages.default,
+                label: window.scribli.languages.default,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         if (e.style.width) {
@@ -2660,7 +2660,7 @@ export class Gutter {
             id: "heightInput",
             iconHTML: "",
             type: "readonly",
-            label: `<div class="fn__flex"><input class="b3-text-field fn__flex-1" value="${firstElement.style.height.endsWith("px") ? parseInt(firstElement.style.height) : ""}" type="number" style="margin: 4px 8px 4px 0" placeholder="${window.siyuan.languages.height}"><span class="fn__flex-center">px</span></div>`,
+            label: `<div class="fn__flex"><input class="b3-text-field fn__flex-1" value="${firstElement.style.height.endsWith("px") ? parseInt(firstElement.style.height) : ""}" type="number" style="margin: 4px 8px 4px 0" placeholder="${window.scribli.languages.height}"><span class="fn__flex-center">px</span></div>`,
             bind: (element) => {
                 const inputElement = element.querySelector("input");
                 inputElement.addEventListener("input", () => {
@@ -2691,13 +2691,13 @@ export class Gutter {
             type: "separator"
         });
         const height = firstElement.style.height.endsWith("%") ? parseInt(firstElement.style.height) : 0;
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "heightDrag",
-            label: window.siyuan.languages.height,
+            label: window.scribli.languages.height,
             submenu: styles.concat([{
                 iconHTML: "",
                 type: "readonly",
-                label: `<div style="margin: 4px 0;" aria-label="${firstElement.style.height.endsWith("px") ? firstElement.style.height : (firstElement.style.height || window.siyuan.languages.default)}" class="b3-tooltips b3-tooltips__n"><input style="box-sizing: border-box" value="${height}" class="b3-slider fn__block" max="100" min="1" step="1" type="range"></div>`,
+                label: `<div style="margin: 4px 0;" aria-label="${firstElement.style.height.endsWith("px") ? firstElement.style.height : (firstElement.style.height || window.scribli.languages.default)}" class="b3-tooltips b3-tooltips__n"><input style="box-sizing: border-box" value="${height}" class="b3-slider fn__block" max="100" min="1" step="1" type="range"></div>`,
                 bind: (element) => {
                     rangeElement = element.querySelector("input");
                     rangeElement.addEventListener("input", () => {
@@ -2714,7 +2714,7 @@ export class Gutter {
             }, {
                 id: "default",
                 iconHTML: "",
-                label: window.siyuan.languages.default,
+                label: window.scribli.languages.default,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         if (e.style.height) {
@@ -2731,11 +2731,11 @@ export class Gutter {
         if (protyle.disabled) {
             return;
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "addToDatabase",
             icon: "iconDatabase",
-            label: window.siyuan.languages.addToDatabase,
-            accelerator: window.siyuan.config.keymap.general.addToDatabase.custom,
+            label: window.scribli.languages.addToDatabase,
+            accelerator: window.scribli.config.keymap.general.addToDatabase.custom,
             click: () => {
                 addEditorToDatabase(protyle, getEditorRange(nodeElement));
             }
@@ -2743,11 +2743,11 @@ export class Gutter {
     }
 
     private appendFoldMenu(protyle: IProtyle, nodeElement: Element) {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "fold",
             icon: "iconFoldUnFold",
-            label: window.siyuan.languages.fold,
-            accelerator: `${updateHotkeyTip(window.siyuan.config.keymap.editor.general.collapse.custom)}/${updateHotkeyTip("⌥" + window.siyuan.languages.click)}`,
+            label: window.scribli.languages.fold,
+            accelerator: `${updateHotkeyTip(window.scribli.config.keymap.editor.general.collapse.custom)}/${updateHotkeyTip("⌥" + window.scribli.languages.click)}`,
             click() {
                 setFold(protyle, nodeElement);
                 focusBlock(nodeElement);
@@ -2755,11 +2755,11 @@ export class Gutter {
         }).element);
         if (["NodeHeading", "NodeListItem", "NodeBlockquote", "NodeCallout", "NodeSuperBlock"].includes(
             nodeElement.getAttribute("data-type"))) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "foldRecursive",
                 icon: "iconListTree",
-                label: window.siyuan.languages.foldRecursive,
-                accelerator: window.siyuan.config.keymap.editor.general.foldRecursive?.custom,
+                label: window.scribli.languages.foldRecursive,
+                accelerator: window.scribli.config.keymap.editor.general.foldRecursive?.custom,
                 click() {
                     foldBlocksRecursively(protyle, [nodeElement]);
                     focusBlock(nodeElement);
@@ -2774,8 +2774,8 @@ export class Gutter {
         const copyMenu = (copySubMenu([id], true, nodeElement) as IMenu[]).concat([{
             id: "copyPlainText",
             iconHTML: "",
-            label: window.siyuan.languages.copyPlainText,
-            accelerator: window.siyuan.config.keymap.editor.general.copyPlainText.custom,
+            label: window.scribli.languages.copyPlainText,
+            accelerator: window.scribli.config.keymap.editor.general.copyPlainText.custom,
             click() {
                 copyPlainText(getPlainText(nodeElement as HTMLElement).trimEnd());
                 focusBlock(nodeElement);
@@ -2783,7 +2783,7 @@ export class Gutter {
         }, {
             id: type === "NodeAttributeView" ? "copyMirror" : "copy",
             iconHTML: "",
-            label: type === "NodeAttributeView" ? window.siyuan.languages.copyMirror : window.siyuan.languages.copy,
+            label: type === "NodeAttributeView" ? window.scribli.languages.copyMirror : window.scribli.languages.copy,
             accelerator: "⌘C",
             click() {
                 if (isNotEditBlock(nodeElement)) {
@@ -2801,7 +2801,7 @@ export class Gutter {
         if (type === "NodeAttributeView") {
             copyMenu.splice(6, 0, {
                 iconHTML: "",
-                label: window.siyuan.languages.copyAVID,
+                label: window.scribli.languages.copyAVID,
                 click() {
                     writeText(nodeElement.getAttribute("data-av-id"));
                 }
@@ -2810,8 +2810,8 @@ export class Gutter {
                 copyMenu.push({
                     id: "duplicateMirror",
                     iconHTML: "",
-                    label: window.siyuan.languages.duplicateMirror,
-                    accelerator: window.siyuan.config.keymap.editor.general.duplicate.custom,
+                    label: window.scribli.languages.duplicateMirror,
+                    accelerator: window.scribli.config.keymap.editor.general.duplicate.custom,
                     click() {
                         duplicateBlock([nodeElement], protyle);
                     }
@@ -2819,8 +2819,8 @@ export class Gutter {
                 copyMenu.push({
                     id: "duplicateCompletely",
                     iconHTML: "",
-                    label: window.siyuan.languages.duplicateCompletely,
-                    accelerator: window.siyuan.config.keymap.editor.general.duplicateCompletely.custom,
+                    label: window.scribli.languages.duplicateCompletely,
+                    accelerator: window.scribli.config.keymap.editor.general.duplicateCompletely.custom,
                     click() {
                         duplicateCompletely(protyle, nodeElement as HTMLElement);
                     }
@@ -2830,17 +2830,17 @@ export class Gutter {
             copyMenu.push({
                 id: "duplicate",
                 iconHTML: "",
-                label: window.siyuan.languages.duplicate,
-                accelerator: window.siyuan.config.keymap.editor.general.duplicate.custom,
+                label: window.scribli.languages.duplicate,
+                accelerator: window.scribli.config.keymap.editor.general.duplicate.custom,
                 click() {
                     duplicateBlock([nodeElement], protyle);
                 }
             });
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "copy",
             icon: "iconCopy",
-            label: window.siyuan.languages.copy,
+            label: window.scribli.languages.copy,
             type: "submenu",
             submenu: copyMenu
         }).element);
@@ -2853,8 +2853,8 @@ export class Gutter {
         return {
             id: "copyText",
             iconHTML: "",
-            accelerator: window.siyuan.config.keymap.editor.general.copyText.custom,
-            label: window.siyuan.languages.copyText,
+            accelerator: window.scribli.config.keymap.editor.general.copyText.custom,
+            label: window.scribli.languages.copyText,
             click() {
                 // 用于标识复制文本 *
                 selectsElement[0].setAttribute("data-reftext", "true");
@@ -2899,15 +2899,15 @@ export class Gutter {
                     if (rowElement && !rowElement.classList.contains("av__row--header") && rowElement.dataset.id) {
                         element = rowElement;
                         const bodyElement = hasClosestByClassName(rowElement, "av__body") as HTMLElement;
-                        let iconAriaLabel = isMac() ? window.siyuan.languages.rowTip : window.siyuan.languages.rowTip.replace("⇧", "Shift+");
+                        let iconAriaLabel = isMac() ? window.scribli.languages.rowTip : window.scribli.languages.rowTip.replace("⇧", "Shift+");
                         if (protyle.disabled) {
-                            iconAriaLabel = window.siyuan.languages.rowTip.substring(0, window.siyuan.languages.rowTip.indexOf("<br"));
+                            iconAriaLabel = window.scribli.languages.rowTip.substring(0, window.scribli.languages.rowTip.indexOf("<br"));
                         } else if (rowElement.querySelector('[data-dtype="block"]')?.getAttribute("data-detached") === "true") {
-                            iconAriaLabel = window.siyuan.languages.rowTip.substring(0, window.siyuan.languages.rowTip.lastIndexOf("<br"));
+                            iconAriaLabel = window.scribli.languages.rowTip.substring(0, window.scribli.languages.rowTip.lastIndexOf("<br"));
                         }
                         html = `<button data-type="NodeAttributeViewRowMenu" data-node-id="${dataNodeId}" data-row-id="${rowElement.dataset.id}" data-group-id="${bodyElement.dataset.groupId || ""}" class="ariaLabel" data-position="parentW" aria-label="${iconAriaLabel}"><svg><use xlink:href="#iconDrag"></use></svg><span ${protyle.disabled ? "" : 'draggable="true" class="fn__grab"'}></span></button>`;
                         if (!protyle.disabled) {
-                            html = `<button data-type="NodeAttributeViewRow" data-node-id="${dataNodeId}" data-row-id="${rowElement.dataset.id}" data-group-id="${bodyElement.dataset.groupId || ""}" class="ariaLabel" data-position="parentW" aria-label="${isMac() ? window.siyuan.languages.addBelowAbove : window.siyuan.languages.addBelowAbove.replace("⌥", "Alt+")}"><svg><use xlink:href="#iconAdd"></use></svg></button>${html}`;
+                            html = `<button data-type="NodeAttributeViewRow" data-node-id="${dataNodeId}" data-row-id="${rowElement.dataset.id}" data-group-id="${bodyElement.dataset.groupId || ""}" class="ariaLabel" data-position="parentW" aria-label="${isMac() ? window.scribli.languages.addBelowAbove : window.scribli.languages.addBelowAbove.replace("⌥", "Alt+")}"><svg><use xlink:href="#iconAdd"></use></svg></button>${html}`;
                         }
                         break;
                     }
@@ -2995,7 +2995,7 @@ data-type="${type}" data-subtype="${nodeElement.getAttribute("data-subtype")}" d
                 let foldHTML = "";
                 if (type === "NodeListItem" && nodeElement.childElementCount > 3 || type === "NodeHeading") {
                     const fold = nodeElement.getAttribute("fold");
-                    foldHTML = `<button class="ariaLabel" data-delay="500" data-position="parentW" aria-label="${window.siyuan.languages.fold}"
+                    foldHTML = `<button class="ariaLabel" data-delay="500" data-position="parentW" aria-label="${window.scribli.languages.fold}"
 data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold === "1" ? "" : "transform:rotate(90deg)"}"><use xlink:href="#iconPlay"></use></svg></button>`;
                 }
                 if (type === "NodeListItem" || type === "NodeList") {
@@ -3079,15 +3079,15 @@ data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold 
         }
         let rect = element.getBoundingClientRect();
         let marginHeight = 0;
-        if (listItem && !window.siyuan.config.editor.rtl && getComputedStyle(element).direction !== "rtl") {
+        if (listItem && !window.scribli.config.editor.rtl && getComputedStyle(element).direction !== "rtl") {
             rect = listItem.firstElementChild.getBoundingClientRect();
             space = 0;
         } else if (nodeElement.getAttribute("data-type") === "NodeBlockQueryEmbed") {
             rect = nodeElement.getBoundingClientRect();
             space = 0;
         } else if (!element.classList.contains("av__row")) {
-            if (rect.height < Math.floor(window.siyuan.config.editor.fontSize * 1.625) + 8 ||
-                (rect.height > Math.floor(window.siyuan.config.editor.fontSize * 1.625) + 8 && rect.height < Math.floor(window.siyuan.config.editor.fontSize * 1.625) * 2 + 8)) {
+            if (rect.height < Math.floor(window.scribli.config.editor.fontSize * 1.625) + 8 ||
+                (rect.height > Math.floor(window.scribli.config.editor.fontSize * 1.625) + 8 && rect.height < Math.floor(window.scribli.config.editor.fontSize * 1.625) * 2 + 8)) {
                 marginHeight = (rect.height - this.element.clientHeight) / 2;
             } else if ((nodeElement.getAttribute("data-type") === "NodeAttributeView" || element.getAttribute("data-type") === "NodeAttributeView") &&
                 contentTop < rect.top) {
@@ -3130,7 +3130,7 @@ data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold 
         // 追加块标边缘的框线（悬浮块标显示）与+号（悬浮框线显示），默认隐藏，由 mousemove 定位
         // 双元素：框线贴块标边缘不移动（避免闪烁），+号独立定位在外偏位置，tooltip 基于+号元素对齐
         if (!embedContext) {
-            this.element.insertAdjacentHTML("beforeend", `<button class="protyle-gutters__line" data-type="gutterLineBefore" style="display:none"></button><button class="protyle-gutters__line" data-type="gutterLineAfter" style="display:none"></button><button class="protyle-gutters__plus ariaLabel" data-type="gutterPlusBefore" data-position="4west" aria-label="${window.siyuan.languages.insertBefore}" style="display:none"><svg><use xlink:href="#iconAdd"></use></svg></button><button class="protyle-gutters__plus ariaLabel" data-type="gutterPlusAfter" data-position="4west" aria-label="${window.siyuan.languages.insertAfter}" style="display:none"><svg><use xlink:href="#iconAdd"></use></svg></button>`);
+            this.element.insertAdjacentHTML("beforeend", `<button class="protyle-gutters__line" data-type="gutterLineBefore" style="display:none"></button><button class="protyle-gutters__line" data-type="gutterLineAfter" style="display:none"></button><button class="protyle-gutters__plus ariaLabel" data-type="gutterPlusBefore" data-position="4west" aria-label="${window.scribli.languages.insertBefore}" style="display:none"><svg><use xlink:href="#iconAdd"></use></svg></button><button class="protyle-gutters__plus ariaLabel" data-type="gutterPlusAfter" data-position="4west" aria-label="${window.scribli.languages.insertAfter}" style="display:none"><svg><use xlink:href="#iconAdd"></use></svg></button>`);
         }
     }
 }

@@ -67,7 +67,7 @@ export const setGroupMethod = async (options: {
 export const getGroupsMethodHTML = (columns: IAVColumn[], group: IAVGroup, viewType: TAVView) => {
     const selectHTML = '<svg class="b3-menu__checked"><use xlink:href="#iconSelect"></use></svg>';
     let html = viewType === "kanban" ? "" : `<button class="b3-menu__item" data-type="setGroupMethod">
-    <div class="b3-menu__label">${window.siyuan.languages.calcOperatorNone}</div>
+    <div class="b3-menu__label">${window.scribli.languages.calcOperatorNone}</div>
     ${(!group || !group.field) ? selectHTML : ""}
 </button>`;
     columns.forEach(item => {
@@ -87,7 +87,7 @@ export const getGroupsMethodHTML = (columns: IAVColumn[], group: IAVGroup, viewT
     <span class="block__icon" style="padding: 8px;margin-left: -4px;" data-type="${(!group || !group.field) ? "go-config" : "goGroups"}">
         <svg><use xlink:href="#iconLeft"></use></svg>
     </span>
-    <span class="b3-menu__label ft__center">${window.siyuan.languages.groupMethod}</span>
+    <span class="b3-menu__label ft__center">${window.scribli.languages.groupMethod}</span>
 </button>
 <button class="b3-menu__separator"></button>
 ${html}
@@ -98,28 +98,28 @@ export const getLanguageByIndex = (index: number, type: "sort" | "date") => {
     if (type === "sort") {
         switch (index) {
             case 0:
-                return window.siyuan.languages.asc;
+                return window.scribli.languages.asc;
             case 1:
-                return window.siyuan.languages.desc;
+                return window.scribli.languages.desc;
             case 2:
-                return window.siyuan.languages.customSort;
+                return window.scribli.languages.customSort;
             case 3:
-                return window.siyuan.languages.sortBySelectOption;
+                return window.scribli.languages.sortBySelectOption;
             default:
                 return "";
         }
     } else if (type === "date") {
         switch (index) {
             case 2:
-                return window.siyuan.languages.groupMethodDateRelative;
+                return window.scribli.languages.groupMethodDateRelative;
             case 3:
-                return window.siyuan.languages.groupMethodDateDay;
+                return window.scribli.languages.groupMethodDateDay;
             case 4:
-                return window.siyuan.languages.groupMethodDateWeek;
+                return window.scribli.languages.groupMethodDateWeek;
             case 5:
-                return window.siyuan.languages.groupMethodDateMonth;
+                return window.scribli.languages.groupMethodDateMonth;
             case 6:
-                return window.siyuan.languages.groupMethodDateYear;
+                return window.scribli.languages.groupMethodDateYear;
             default:
                 return "";
         }
@@ -132,19 +132,19 @@ export const getGroupsNumberHTML = (group: IAVGroup) => {
         <span class="block__icon" style="padding: 8px;margin-left: -4px;" data-type="goGroups">
             <svg><use xlink:href="#iconLeft"></use></svg>
         </span>
-        <span class="b3-menu__label ft__center">${window.siyuan.languages.numberFormatNone}</span>
+        <span class="b3-menu__label ft__center">${window.scribli.languages.numberFormatNone}</span>
     </button>
     <button class="b3-menu__separator"></button>
     <div class="b3-menu__item" data-type="nobg">
         <div class="fn__block">
-            <div class="b3-menu__labels">${window.siyuan.languages.groupRange}</div>
+            <div class="b3-menu__labels">${window.scribli.languages.groupRange}</div>
             <div class="fn__flex">
                 <input data-type="avGroupRange" class="b3-text-field fn__flex-1" value="${group?.range?.numStart || 0}">
                 <span class="fn__space"></span>-<span class="fn__space"></span>
                 <input class="b3-text-field fn__flex-1" value="${group?.range?.numEnd || 1000}">            
             </div>
             <div class="fn__hr"></div>
-            <div class="b3-menu__labels">${window.siyuan.languages.groupStep}</div>
+            <div class="b3-menu__labels">${window.scribli.languages.groupStep}</div>
             <input class="b3-text-field fn__block" value="${group?.range?.numStep || 100}">
             <div class="fn__hr--small"></div>
         </div>
@@ -217,29 +217,29 @@ export const getGroupsHTML = (columns: IAVColumn[], view: IAVView) => {
 <button class="b3-menu__item" data-type="nobg">
     <span class="b3-menu__label"></span>
     <span class="block__icon" data-type="hideGroups">
-        ${window.siyuan.languages[showCount === 0 ? "showAll" : "hideAll"]}
+        ${window.scribli.languages[showCount === 0 ? "showAll" : "hideAll"]}
         <span class="fn__space"></span>
         <svg><use xlink:href="#iconEye${showCount === 0 ? "" : "off"}"></use></svg>
     </span>
 </button>` + groupHTML;
         }
         html = `<button class="b3-menu__item${["date", "updated", "created"].includes(column.type) ? "" : " fn__none"}" data-type="goGroupsDate">
-    <span class="b3-menu__label">${window.siyuan.languages.date}</span>
+    <span class="b3-menu__label">${window.scribli.languages.date}</span>
     <span class="b3-menu__accelerator">${getLanguageByIndex(view.group.method, "date")}</span>
     <svg class="b3-menu__icon b3-menu__icon--small"><use xlink:href="#iconRight"></use></svg>
 </button>
 <button class="b3-menu__item${column.type === "number" ? "" : " fn__none"}" data-type="getGroupsNumber">
-    <span class="b3-menu__label">${window.siyuan.languages.numberFormatNone}</span>
+    <span class="b3-menu__label">${window.scribli.languages.numberFormatNone}</span>
     <span class="b3-menu__accelerator">${(view.group.range && typeof view.group.range.numStart === "number") ? `${view.group.range.numStart} - ${view.group.range.numEnd}` : ""}</span>
     <svg class="b3-menu__icon b3-menu__icon--small"><use xlink:href="#iconRight"></use></svg>
 </button>
 <button class="b3-menu__item${["checkbox", "rollup", "mAsset"].includes(column.type) ? " fn__none" : ""}" data-type="goGroupsSort">
-    <span class="b3-menu__label">${window.siyuan.languages.sort}</span>
+    <span class="b3-menu__label">${window.scribli.languages.sort}</span>
     <span class="b3-menu__accelerator">${getLanguageByIndex(view.group.order, "sort")}</span>
     <svg class="b3-menu__icon b3-menu__icon--small"><use xlink:href="#iconRight"></use></svg>
 </button>
 <label class="b3-menu__item">
-    <span class="fn__flex-center">${window.siyuan.languages.hideEmptyGroup}</span>
+    <span class="fn__flex-center">${window.scribli.languages.hideEmptyGroup}</span>
     <span class="fn__space fn__flex-1"></span>
     <input type="checkbox" class="b3-switch b3-switch--menu"${view.group.hideEmpty ? " checked" : ""}>
 </label>
@@ -247,7 +247,7 @@ ${groupHTML}
 <button class="b3-menu__separator"></button>
 <button class="b3-menu__item b3-menu__item--warning" data-type="removeGroups">
     <svg class="b3-menu__icon"><use xlink:href="#iconTrashcan"></use></svg>
-    <span class="b3-menu__label">${window.siyuan.languages.removeGroup}</span>
+    <span class="b3-menu__label">${window.scribli.languages.removeGroup}</span>
 </button>`;
     }
     return `<div class="b3-menu__items">
@@ -255,11 +255,11 @@ ${groupHTML}
     <span class="block__icon" style="padding: 8px;margin-left: -4px;" data-type="go-config">
         <svg><use xlink:href="#iconLeft"></use></svg>
     </span>
-    <span class="b3-menu__label ft__center">${window.siyuan.languages.group}</span>
+    <span class="b3-menu__label ft__center">${window.scribli.languages.group}</span>
 </button>
 <button class="b3-menu__separator"></button>
 <button class="b3-menu__item" data-type="goGroupsMethod">
-    <span class="b3-menu__label">${window.siyuan.languages.groupMethod}</span>
+    <span class="b3-menu__label">${window.scribli.languages.groupMethod}</span>
     <span class="b3-menu__accelerator">${column ? column.name : ""}</span>
     <svg class="b3-menu__icon b3-menu__icon--small"><use xlink:href="#iconRight"></use></svg>
 </button>

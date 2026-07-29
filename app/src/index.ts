@@ -9,7 +9,7 @@ import {fetchGet, fetchPost} from "./util/fetch";
 import {
     addBaseURL,
     getDocDisplayName,
-    parseSiYuanUriInfo,
+    parseScribliUriInfo,
     redirectToCheckAuth,
     setNoteBook
 } from "./util/pathName";
@@ -56,10 +56,10 @@ export class App {
         if (checkPublishServiceClosed()) {
             return;
         }
-        registerServiceWorker(`${Constants.SERVICE_WORKER_PATH}?v=${Constants.SIYUAN_VERSION}`);
+        registerServiceWorker(`${Constants.SERVICE_WORKER_PATH}?v=${Constants.SCRIBLI_VERSION}`);
         addBaseURL();
 
-        this.appId = Constants.SIYUAN_APPID;
+        this.appId = Constants.SCRIBLI_APPID;
 
         const mainWs = new Model({app: this});
         mainWs.connect({
@@ -78,7 +78,7 @@ export class App {
                             appearanceConfigApi.apply(data.data);
                             break;
                         case "setSnippet":
-                            window.siyuan.config.snippet = data.data;
+                            window.scribli.config.snippet = data.data;
                             renderSnippet();
                             break;
                         case "setDefRefCount":
@@ -105,15 +105,15 @@ export class App {
                             reloadSync(this, {upsertRootIDs: [data.data], removeRootIDs: []}, false, false, true);
                             break;
                         case "readonly":
-                            window.siyuan.config.editor.readOnly = data.data;
+                            window.scribli.config.editor.readOnly = data.data;
                             hideAllElements(["util"]);
                             break;
                         case "setConf":
-                            window.siyuan.config = data.data;
+                            window.scribli.config = data.data;
                             break;
                         case "setPublish":
-                            window.siyuan.config.publish = data.data;
-                            if (!window.siyuan.config.publish.enable) {
+                            window.scribli.config.publish = data.data;
+                            if (!window.scribli.config.publish.enable) {
                                 getAllModels().files.forEach(item => {
                                     item.element.classList.remove("file-tree__publish-access--active");
                                     item.element.querySelectorAll(".b3-list-item__icon").forEach(iconItem => {
@@ -127,21 +127,21 @@ export class App {
                             progressLoading(data);
                             break;
                         case "setLocalStorageVal":
-                            if (window.siyuan.storage) {
-                                window.siyuan.storage[data.data.key] = data.data.val;
+                            if (window.scribli.storage) {
+                                window.scribli.storage[data.data.key] = data.data.val;
                             }
                             break;
                         case "setLocalStorageVals":
                             Object.keys(data.data.keyVals).forEach((k) => {
-                                window.siyuan.storage[k] = data.data.keyVals[k];
+                                window.scribli.storage[k] = data.data.keyVals[k];
                             });
                             break;
                         case "removeLocalStorageVal":
-                            delete window.siyuan.storage[data.data.key];
+                            delete window.scribli.storage[data.data.key];
                             break;
                         case "removeLocalStorageVals":
                             data.data.keys.forEach((k: string) => {
-                                delete window.siyuan.storage[k];
+                                delete window.scribli.storage[k];
                             });
                             break;
                         case "rename":
@@ -183,9 +183,9 @@ export class App {
                                     }
                                 }
                             });
-                            if (window.siyuan.config.onboarding?.newUser && !window.siyuan.config.onboarding.dismissed &&
-                                data.data.ids.includes(window.siyuan.config.onboarding.documentID)) {
-                                void activateOnboarding(this, window.siyuan.config.onboarding);
+                            if (window.scribli.config.onboarding?.newUser && !window.scribli.config.onboarding.dismissed &&
+                                data.data.ids.includes(window.scribli.config.onboarding.documentID)) {
+                                void activateOnboarding(this, window.scribli.config.onboarding);
                             }
                             break;
                         case "onboarding":
@@ -204,7 +204,7 @@ export class App {
                             progressBackgroundTask(data.data.tasks);
                             break;
                         case "refreshtheme":
-                            if ((window.siyuan.config.appearance.mode === 1 && window.siyuan.config.appearance.themeDark !== "midnight") || (window.siyuan.config.appearance.mode === 0 && window.siyuan.config.appearance.themeLight !== "daylight")) {
+                            if ((window.scribli.config.appearance.mode === 1 && window.scribli.config.appearance.themeDark !== "midnight") || (window.scribli.config.appearance.mode === 0 && window.scribli.config.appearance.themeLight !== "daylight")) {
                                 (document.getElementById("themeStyle") as HTMLLinkElement).href = data.data.theme;
                             } else {
                                 (document.getElementById("themeDefaultStyle") as HTMLLinkElement).href = data.data.theme;
@@ -231,7 +231,7 @@ export class App {
             }
         });
 
-        window.siyuan = {
+        window.scribli = {
             zIndex: 10,
             reqIds: {},
             backStack: [],
@@ -243,18 +243,19 @@ export class App {
             altIsPressed: false,
             ws: mainWs,
         };
+        window.siyuan = window.scribli;
 
         fetchPost("/api/system/getConf", {}, async (response) => {
-            addScriptSync(`${Constants.PROTYLE_CDN}/js/lute/lute.min.js?v=${Constants.SIYUAN_VERSION}`, "protyleLuteScript");
-            addScript(`${Constants.PROTYLE_CDN}/js/protyle-html.js?v=${Constants.SIYUAN_VERSION}`, "protyleWcHtmlScript");
-            window.siyuan.config = response.data.conf;
-            window.siyuan.isPublish = response.data.isPublish;
+            addScriptSync(`${Constants.PROTYLE_CDN}/js/lute/lute.min.js?v=${Constants.SCRIBLI_VERSION}`, "protyleLuteScript");
+            addScript(`${Constants.PROTYLE_CDN}/js/protyle-html.js?v=${Constants.SCRIBLI_VERSION}`, "protyleWcHtmlScript");
+            window.scribli.config = response.data.conf;
+            window.scribli.isPublish = response.data.isPublish;
             setBodyHighlight();
             await loadPlugins(this);
             getLocalStorage(() => {
-                fetchGet(`/appearance/langs/${window.siyuan.config.appearance.lang}.json?v=${Constants.SIYUAN_VERSION}`, (lauguages: IObject) => {
-                    window.siyuan.languages = lauguages;
-                    window.siyuan.menus = new Menus(this);
+                fetchGet(`/appearance/langs/${window.scribli.config.appearance.lang}.json?v=${Constants.SCRIBLI_VERSION}`, (lauguages: IObject) => {
+                    window.scribli.languages = lauguages;
+                    window.scribli.menus = new Menus(this);
                     bootSync();
                     ensureOnboarding().then(() => {
                         setNoteBook(() => {
@@ -262,9 +263,9 @@ export class App {
                             setTitle("", true);
                             initMessage();
                             /// #if BROWSER && !MOBILE
-                            if (!isInMobileApp() && !window.siyuan.config.readonly && !window.siyuan.isPublish && !isChromeBrowser()
-                                && window.siyuan.config.appearance.notifications?.browserCompatibility !== false) {
-                                showMessage(window.siyuan.languages.useChrome, 0, "error");
+                            if (!isInMobileApp() && !window.scribli.config.readonly && !window.scribli.isPublish && !isChromeBrowser()
+                                && window.scribli.config.appearance.notifications?.browserCompatibility !== false) {
+                                showMessage(window.scribli.languages.useChrome, 0, "error");
                             }
                             /// #endif
                         });
@@ -277,10 +278,10 @@ export class App {
     }
 }
 
-const siyuanApp = new App();
+const scribliApp = new App();
 
 window.openFileByURL = (openURL) => {
-    const blockInfo = parseSiYuanUriInfo(openURL);
+    const blockInfo = parseScribliUriInfo(openURL);
     if (blockInfo != null) {
         if (blockInfo.avItemID) {
             queueAVLocateRequest(blockInfo.id, {
@@ -290,7 +291,7 @@ window.openFileByURL = (openURL) => {
             });
         }
         openFileById({
-            app: siyuanApp,
+            app: scribliApp,
             id: blockInfo.id,
             action: blockInfo.avItemID ? [Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL] :
                 (blockInfo.focus ? [Constants.CB_GET_ALL, Constants.CB_GET_FOCUS] : [Constants.CB_GET_FOCUS, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL]),
@@ -322,5 +323,5 @@ if (window.JSAndroid?.setWebViewFocusable) {
     window.JSHarmony.setWebViewFocusable(true);
 }
 /// #else
-ipcRenderer.send(Constants.SIYUAN_READY_TO_SHOW);
+ipcRenderer.send(Constants.SCRIBLI_READY_TO_SHOW);
 /// #endif

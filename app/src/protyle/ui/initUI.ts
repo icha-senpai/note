@@ -79,7 +79,7 @@ export const initUI = (protyle: IProtyle) => {
         const pinElement = protyle.toolbar.subElement.querySelector('.block__icons [data-type="pin"]');
         if (pinElement) {
             pinElement.querySelector("svg use").setAttribute("xlink:href", "#iconUnpin");
-            pinElement.setAttribute("aria-label", window.siyuan.languages.unpin);
+            pinElement.setAttribute("aria-label", window.scribli.languages.unpin);
             protyle.toolbar.subElement.firstElementChild.setAttribute("data-drag", "true");
         }
         if (type !== "move" && protyle.toolbar.subElementResizeCB) {
@@ -99,39 +99,39 @@ export const initUI = (protyle: IProtyle) => {
     const wheelId = genUUID();
     const isMacOS = isMac();
     protyle.contentElement.addEventListener("mousewheel", (event: WheelEvent) => {
-        if (!window.siyuan.config.editor.fontSizeScrollZoom || (isMacOS && !event.metaKey) || (!isMacOS && !event.ctrlKey) || event.deltaX !== 0) {
+        if (!window.scribli.config.editor.fontSizeScrollZoom || (isMacOS && !event.metaKey) || (!isMacOS && !event.ctrlKey) || event.deltaX !== 0) {
             return;
         }
         event.stopPropagation();
         if (event.deltaY < 0) {
-            if (window.siyuan.config.editor.fontSize < 72) {
-                window.siyuan.config.editor.fontSize++;
+            if (window.scribli.config.editor.fontSize < 72) {
+                window.scribli.config.editor.fontSize++;
             } else {
                 return;
             }
         } else if (event.deltaY > 0) {
-            if (window.siyuan.config.editor.fontSize > 9) {
-                window.siyuan.config.editor.fontSize--;
+            if (window.scribli.config.editor.fontSize > 9) {
+                window.scribli.config.editor.fontSize--;
             } else {
                 return;
             }
         }
         setInlineStyle();
         clearTimeout(wheelTimeout);
-        showMessage(`${window.siyuan.languages.fontSize} ${window.siyuan.config.editor.fontSize}px<span class="fn__space"></span>
-<button class="b3-button b3-button--white">${window.siyuan.languages.reset} 16px</button>`, undefined, undefined, wheelId);
+        showMessage(`${window.scribli.languages.fontSize} ${window.scribli.config.editor.fontSize}px<span class="fn__space"></span>
+<button class="b3-button b3-button--white">${window.scribli.languages.reset} 16px</button>`, undefined, undefined, wheelId);
         wheelTimeout = window.setTimeout(() => {
-            fetchPost("/api/setting/setEditor", window.siyuan.config.editor, (response) => {
-                window.siyuan.config.editor = response.data;
+            fetchPost("/api/setting/setEditor", window.scribli.config.editor, (response) => {
+                window.scribli.config.editor = response.data;
             });
             protyle.wysiwyg.element.querySelectorAll(".code-block .protyle-linenumber__rows").forEach((block: HTMLElement) => {
                 lineNumberRender(block.parentElement);
             });
             document.querySelector(`#message [data-id="${wheelId}"] button`)?.addEventListener("click", () => {
-                window.siyuan.config.editor.fontSize = 16;
+                window.scribli.config.editor.fontSize = 16;
                 setInlineStyle();
-                fetchPost("/api/setting/setEditor", window.siyuan.config.editor, (response) => {
-                    window.siyuan.config.editor = response.data;
+                fetchPost("/api/setting/setEditor", window.scribli.config.editor, (response) => {
+                    window.scribli.config.editor = response.data;
                 });
                 hideMessage(wheelId);
                 protyle.wysiwyg.element.querySelectorAll(".code-block .protyle-linenumber__rows").forEach((block: HTMLElement) => {
@@ -361,7 +361,7 @@ export const getPadding = (protyle: IProtyle) => {
     if (!isMobile()) {
         let isFullWidth = protyle.wysiwyg.element.getAttribute(Constants.CUSTOM_SY_FULLWIDTH);
         if (!isFullWidth) {
-            isFullWidth = window.siyuan.config.editor.fullWidth ? "true" : "false";
+            isFullWidth = window.scribli.config.editor.fullWidth ? "true" : "false";
         }
         let padding = (protyle.element.clientWidth - Constants.SIZE_EDITOR_WIDTH) / 2;
         if (isFullWidth === "false" && padding > 96) {

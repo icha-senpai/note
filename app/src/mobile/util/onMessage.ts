@@ -27,7 +27,7 @@ export const onMessage = (app: App, data: IWebSocketData) => {
                 break;
             case "backgroundtask":
                 if (!document.querySelector("#keyboardToolbar").classList.contains("fn__none") ||
-                    window.siyuan.config.appearance.hideStatusBar) {
+                    window.scribli.config.appearance.hideStatusBar) {
                     return;
                 }
                 if (data.data.tasks.length === 0) {
@@ -42,14 +42,14 @@ export const onMessage = (app: App, data: IWebSocketData) => {
                 window.location.reload();
                 break;
             case "setSnippet":
-                window.siyuan.config.snippet = data.data;
+                window.scribli.config.snippet = data.data;
                 renderSnippet();
                 break;
             case "setDefRefCount":
                 setDefRefCount(data.data);
                 break;
             case "reloadTag":
-                window.siyuan.mobile.docks.tag?.update();
+                window.scribli.mobile.docks.tag?.update();
                 break;
             case "setRefDynamicText":
                 setRefDynamicText(data.data);
@@ -64,26 +64,26 @@ export const onMessage = (app: App, data: IWebSocketData) => {
                 reloadSync(app, data.data);
                 break;
             case "setConf":
-                window.siyuan.config = data.data;
+                window.scribli.config = data.data;
                 break;
             case "setPublish":
-                window.siyuan.config.publish = data.data;
+                window.scribli.config.publish = data.data;
                 setPublish();
                 break;
             case "reloaddoc":
                 reloadSync(this, {upsertRootIDs: [data.data], removeRootIDs: []}, false, false, true);
                 break;
             case "readonly":
-                window.siyuan.config.editor.readOnly = data.data;
+                window.scribli.config.editor.readOnly = data.data;
                 break;
             case "closeBox":
             case "removeBox": {
-                const closesCurrentEditor = window.siyuan.mobile.editor?.protyle.notebookId === data.data.box;
+                const closesCurrentEditor = window.scribli.mobile.editor?.protyle.notebookId === data.data.box;
                 clearMobileBackForward(closesCurrentEditor ? undefined : data.data.box);
                 if (closesCurrentEditor) {
-                    window.siyuan.mobile.editor.destroy();
-                    window.siyuan.mobile.editor.protyle.element.innerHTML = "";
-                    window.siyuan.mobile.editor = undefined;
+                    window.scribli.mobile.editor.destroy();
+                    window.scribli.mobile.editor.protyle.element.innerHTML = "";
+                    window.scribli.mobile.editor = undefined;
                     setEmpty(app);
                 }
                 break;
@@ -92,25 +92,25 @@ export const onMessage = (app: App, data: IWebSocketData) => {
                 void activateOnboarding(app, data.data);
                 break;
             case "removeDoc":
-                if (window.siyuan.config.onboarding?.newUser && !window.siyuan.config.onboarding.dismissed &&
-                    data.data.ids.includes(window.siyuan.config.onboarding.documentID)) {
-                    void activateOnboarding(app, window.siyuan.config.onboarding);
+                if (window.scribli.config.onboarding?.newUser && !window.scribli.config.onboarding.dismissed &&
+                    data.data.ids.includes(window.scribli.config.onboarding.documentID)) {
+                    void activateOnboarding(app, window.scribli.config.onboarding);
                 }
                 break;
             case "setLocalStorageVal":
-                window.siyuan.storage[data.data.key] = data.data.val;
+                window.scribli.storage[data.data.key] = data.data.val;
                 break;
             case "setLocalStorageVals":
                 Object.keys(data.data.keyVals).forEach((k) => {
-                    window.siyuan.storage[k] = data.data.keyVals[k];
+                    window.scribli.storage[k] = data.data.keyVals[k];
                 });
                 break;
             case "removeLocalStorageVal":
-                delete window.siyuan.storage[data.data.key];
+                delete window.scribli.storage[data.data.key];
                 break;
             case "removeLocalStorageVals":
                 data.data.keys.forEach((k: string) => {
-                    delete window.siyuan.storage[k];
+                    delete window.scribli.storage[k];
                 });
                 break;
             case"progress":
@@ -130,7 +130,7 @@ export const onMessage = (app: App, data: IWebSocketData) => {
                 break;
             case"statusbar":
                 if (!document.querySelector("#keyboardToolbar").classList.contains("fn__none") ||
-                    window.siyuan.config.appearance.hideStatusBar) {
+                    window.scribli.config.appearance.hideStatusBar) {
                     return;
                 }
                 clearTimeout(statusTimeout);
@@ -145,11 +145,11 @@ export const onMessage = (app: App, data: IWebSocketData) => {
 };
 
 const setPublish = () => {
-    const accessElement = window.siyuan.mobile.docks.file.element.previousElementSibling.querySelector('[data-type="publish-access"]');
-    if (!window.siyuan.config.publish.enable) {
+    const accessElement = window.scribli.mobile.docks.file.element.previousElementSibling.querySelector('[data-type="publish-access"]');
+    if (!window.scribli.config.publish.enable) {
         accessElement.classList.remove("block__icon--active");
         accessElement.classList.add("fn__none");
-        window.siyuan.mobile.docks.file.element.querySelectorAll(".b3-list-item__icon").forEach(item => {
+        window.scribli.mobile.docks.file.element.querySelectorAll(".b3-list-item__icon").forEach(item => {
             item.classList.remove("fn__none");
             item.nextElementSibling.classList.add("fn__none");
         });

@@ -233,14 +233,14 @@ export class LocalUndo implements IUndo {
 
 export const electronUndo = (event: KeyboardEvent) => {
     /// #if !BROWSER
-    if (matchHotKey(window.siyuan.config.keymap.editor.general.undo.custom, event)) {
-        ipcRenderer.send(Constants.SIYUAN_CMD, "undo");
+    if (matchHotKey(window.scribli.config.keymap.editor.general.undo.custom, event)) {
+        ipcRenderer.send(Constants.SCRIBLI_CMD, "undo");
         event.preventDefault();
         event.stopPropagation();
         return true;
     }
-    if (matchHotKey(window.siyuan.config.keymap.editor.general.redo.custom, event)) {
-        ipcRenderer.send(Constants.SIYUAN_CMD, "redo");
+    if (matchHotKey(window.scribli.config.keymap.editor.general.redo.custom, event)) {
+        ipcRenderer.send(Constants.SCRIBLI_CMD, "redo");
         event.preventDefault();
         event.stopPropagation();
         return true;

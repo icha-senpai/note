@@ -14,23 +14,23 @@ interface NamedItem {
 // region 密钥区块（Secrets）
 
 export const getSecretsBlockKeywords = (): string[] => [
-    window.siyuan.languages.secrets,
-    window.siyuan.languages.secretsTip,
-    window.siyuan.languages.addSecret,
-    window.siyuan.languages.secretName,
-    window.siyuan.languages.secretValue,
-    window.siyuan.languages.noSecretConfigured,
+    window.scribli.languages.secrets,
+    window.scribli.languages.secretsTip,
+    window.scribli.languages.addSecret,
+    window.scribli.languages.secretName,
+    window.scribli.languages.secretValue,
+    window.scribli.languages.noSecretConfigured,
 ];
 
 export const genSecretsBlockHtml = (): string => `<div class="b3-label config-item" id="secretsBlock">
-    <div class="b3-label__text">${window.siyuan.languages.secretsTip}</div>
+    <div class="b3-label__text">${window.scribli.languages.secretsTip}</div>
     <div class="fn__hr--small"></div>
     <div id="secretList"></div>
     <div class="fn__hr"></div>
     <div class="config-wrap">
         <button class="b3-button b3-button--outline fn__flex-center fn__size200" data-type="addSecret">
             <svg><use xlink:href="#iconAdd"></use></svg>
-            ${window.siyuan.languages.addSecret}
+            ${window.scribli.languages.addSecret}
         </button>
     </div>
 </div>`;
@@ -74,7 +74,7 @@ export const mountSecretsBlock = (root: HTMLElement) => {
                 return;
             }
             showDeleteConfirm(name, () => {
-                saveSecrets(root, window.siyuan.config.secrets.items.filter((item) => item.name !== name));
+                saveSecrets(root, window.scribli.config.secrets.items.filter((item) => item.name !== name));
             });
         }
     });
@@ -87,12 +87,12 @@ const renderSecretList = (root: HTMLElement) => {
     }
     renderNamedItemList({
         listEl,
-        items: window.siyuan.config.secrets.items,
+        items: window.scribli.config.secrets.items,
         addType: "addSecret",
         editType: "editSecret",
         deleteType: "deleteSecret",
         dataAttr: "data-secret-name",
-        emptyTextKey: window.siyuan.languages.noSecretConfigured,
+        emptyTextKey: window.scribli.languages.noSecretConfigured,
     });
 };
 
@@ -108,23 +108,23 @@ const getSecretName = (el: HTMLElement): string | undefined =>
 // region 变量区块（Variables）
 
 export const getVariablesBlockKeywords = (): string[] => [
-    window.siyuan.languages.variables,
-    window.siyuan.languages.variablesTip,
-    window.siyuan.languages.addVariable,
-    window.siyuan.languages.variableName,
-    window.siyuan.languages.variableValue,
-    window.siyuan.languages.noVariableConfigured,
+    window.scribli.languages.variables,
+    window.scribli.languages.variablesTip,
+    window.scribli.languages.addVariable,
+    window.scribli.languages.variableName,
+    window.scribli.languages.variableValue,
+    window.scribli.languages.noVariableConfigured,
 ];
 
 export const genVariablesBlockHtml = (): string => `<div class="b3-label config-item" id="variablesBlock">
-    <div class="b3-label__text">${window.siyuan.languages.variablesTip}</div>
+    <div class="b3-label__text">${window.scribli.languages.variablesTip}</div>
     <div class="fn__hr--small"></div>
     <div id="variableList"></div>
     <div class="fn__hr"></div>
     <div class="config-wrap">
         <button class="b3-button b3-button--outline fn__flex-center fn__size200" data-type="addVariable">
             <svg><use xlink:href="#iconAdd"></use></svg>
-            ${window.siyuan.languages.addVariable}
+            ${window.scribli.languages.addVariable}
         </button>
     </div>
 </div>`;
@@ -168,7 +168,7 @@ export const mountVariablesBlock = (root: HTMLElement) => {
                 return;
             }
             showDeleteConfirm(name, () => {
-                saveVariables(root, window.siyuan.config.variables.items.filter((item) => item.name !== name));
+                saveVariables(root, window.scribli.config.variables.items.filter((item) => item.name !== name));
             });
         }
     });
@@ -181,12 +181,12 @@ const renderVariableList = (root: HTMLElement) => {
     }
     renderNamedItemList({
         listEl,
-        items: window.siyuan.config.variables.items,
+        items: window.scribli.config.variables.items,
         addType: "addVariable",
         editType: "editVariable",
         deleteType: "deleteVariable",
         dataAttr: "data-variable-name",
-        emptyTextKey: window.siyuan.languages.noVariableConfigured,
+        emptyTextKey: window.scribli.languages.noVariableConfigured,
     });
 };
 
@@ -221,10 +221,10 @@ const renderNamedItemList = (options: RenderNamedItemListOptions) => {
     const html = items.map((item) => {
         return `<div class="b3-list-item b3-list-item--narrow${hideActionClass}" ${dataAttr}="${Lute.EscapeHTMLStr(item.name)}">
     <span class="b3-list-item__text">${Lute.EscapeHTMLStr(item.name)}</span>
-    <span data-type="${deleteType}" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.delete}">
+    <span data-type="${deleteType}" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.delete}">
         <svg><use xlink:href="#iconTrashcan"></use></svg>
     </span>
-    <span data-type="${editType}" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.edit}">
+    <span data-type="${editType}" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.edit}">
         <svg><use xlink:href="#iconSettings"></use></svg>
     </span>
 </div>`;
@@ -243,8 +243,8 @@ const openItemDialog = (options: OpenItemDialogOptions) => {
     const isNew = !existingName;
     const isSecret = kind === "secret";
     const configItems: NamedItem[] = isSecret
-        ? window.siyuan.config.secrets.items
-        : window.siyuan.config.variables.items;
+        ? window.scribli.config.secrets.items
+        : window.scribli.config.variables.items;
     const existing = existingName ? configItems.find((item) => item.name === existingName) : undefined;
     if (!isNew && !existing) {
         return;
@@ -252,15 +252,15 @@ const openItemDialog = (options: OpenItemDialogOptions) => {
     const initial: NamedItem = isNew ? {name: "", value: ""} : existing;
 
     const titleKey = isNew
-        ? (isSecret ? window.siyuan.languages.addSecret : window.siyuan.languages.addVariable)
-        : (isSecret ? window.siyuan.languages.secrets : window.siyuan.languages.variables);
-    const valueKey = isSecret ? window.siyuan.languages.secretValue : window.siyuan.languages.variableValue;
+        ? (isSecret ? window.scribli.languages.addSecret : window.scribli.languages.addVariable)
+        : (isSecret ? window.scribli.languages.secrets : window.scribli.languages.variables);
+    const valueKey = isSecret ? window.scribli.languages.secretValue : window.scribli.languages.variableValue;
     const nameRequiredKey = isSecret
-        ? window.siyuan.languages.secretNameRequired
-        : window.siyuan.languages.variableNameRequired;
+        ? window.scribli.languages.secretNameRequired
+        : window.scribli.languages.variableNameRequired;
     const nameDuplicateKey = isSecret
-        ? window.siyuan.languages.secretNameDuplicate
-        : window.siyuan.languages.variableNameDuplicate;
+        ? window.scribli.languages.secretNameDuplicate
+        : window.scribli.languages.variableNameDuplicate;
 
     const valueInputHtml = isSecret
         ? `<div class="b3-form__icona fn__block">
@@ -276,8 +276,8 @@ const openItemDialog = (options: OpenItemDialogOptions) => {
         width: isMobile() ? "92vw" : "520px",
         content: `<div class="b3-dialog__content">
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${isSecret ? window.siyuan.languages.secretName : window.siyuan.languages.variableName}</div>
-        <div class="b3-label__text">${isSecret ? window.siyuan.languages.secretNameTip : window.siyuan.languages.variableNameTip}</div>
+        <div class="config-name">${isSecret ? window.scribli.languages.secretName : window.scribli.languages.variableName}</div>
+        <div class="b3-label__text">${isSecret ? window.scribli.languages.secretNameTip : window.scribli.languages.variableNameTip}</div>
         <div class="fn__hr"></div>
         <input class="b3-text-field fn__block" id="itemName" type="text" spellcheck="false" value="${Lute.EscapeHTMLStr(initial.name)}"/>
     </div>
@@ -288,8 +288,8 @@ const openItemDialog = (options: OpenItemDialogOptions) => {
     </div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
     });
 
@@ -329,8 +329,8 @@ const openItemDialog = (options: OpenItemDialogOptions) => {
 
 const showDeleteConfirm = (title: string, onConfirm: () => void) => {
     confirmDialog(
-        window.siyuan.languages.deleteOpConfirm,
-        window.siyuan.languages.confirmDeleteTip.replace("${x}", Lute.EscapeHTMLStr(title)),
+        window.scribli.languages.deleteOpConfirm,
+        window.scribli.languages.confirmDeleteTip.replace("${x}", Lute.EscapeHTMLStr(title)),
         onConfirm,
         undefined,
         true,

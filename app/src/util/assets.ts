@@ -22,22 +22,22 @@ import {getWorkspaceName} from "./processTitle";
 
 export const loadAssets = (data: Config.IAppearance) => {
     const htmlElement = document.getElementsByTagName("html")[0];
-    htmlElement.setAttribute("lang", window.siyuan.config.appearance.lang);
+    htmlElement.setAttribute("lang", window.scribli.config.appearance.lang);
     htmlElement.setAttribute("data-frontend", getFrontend()); // https://github.com/siyuan-note/siyuan/issues/12549
     htmlElement.setAttribute("data-backend", getBackend());
     htmlElement.setAttribute("data-theme-mode", getThemeMode());
-    htmlElement.setAttribute("data-light-theme", window.siyuan.config.appearance.themeLight);
-    htmlElement.setAttribute("data-dark-theme", window.siyuan.config.appearance.themeDark);
+    htmlElement.setAttribute("data-light-theme", window.scribli.config.appearance.themeLight);
+    htmlElement.setAttribute("data-dark-theme", window.scribli.config.appearance.themeDark);
     const OSTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    if (window.siyuan.config.appearance.modeOS && (
-        (window.siyuan.config.appearance.mode === 1 && OSTheme === "light") ||
-        (window.siyuan.config.appearance.mode === 0 && OSTheme === "dark")
+    if (window.scribli.config.appearance.modeOS && (
+        (window.scribli.config.appearance.mode === 1 && OSTheme === "light") ||
+        (window.scribli.config.appearance.mode === 0 && OSTheme === "dark")
     )) {
         fetchPost("/api/system/setAppearanceMode", {mode: OSTheme === "light" ? 0 : 1});
-        window.siyuan.config.appearance.mode = (OSTheme === "light" ? 0 : 1);
+        window.scribli.config.appearance.mode = (OSTheme === "light" ? 0 : 1);
     }
     const defaultStyleElement = document.getElementById("themeDefaultStyle");
-    const defaultThemeAddress = `/appearance/themes/${data.mode === 1 ? "midnight" : "daylight"}/theme.css?v=${Constants.SIYUAN_VERSION}`;
+    const defaultThemeAddress = `/appearance/themes/${data.mode === 1 ? "midnight" : "daylight"}/theme.css?v=${Constants.SCRIBLI_VERSION}`;
     if (defaultStyleElement) {
         if (!defaultStyleElement.getAttribute("href").startsWith(defaultThemeAddress)) {
             const newStyleElement = document.createElement("link");
@@ -72,8 +72,8 @@ export const loadAssets = (data: Config.IAppearance) => {
     getAllModels().graph.forEach(item => {
         item.searchGraph(false);
     });
-    const pdfTheme = window.siyuan.config.appearance.mode === 0 ? window.siyuan.storage[Constants.LOCAL_PDFTHEME].light :
-        window.siyuan.storage[Constants.LOCAL_PDFTHEME].dark;
+    const pdfTheme = window.scribli.config.appearance.mode === 0 ? window.scribli.storage[Constants.LOCAL_PDFTHEME].light :
+        window.scribli.storage[Constants.LOCAL_PDFTHEME].dark;
     document.querySelectorAll(".pdf__outer").forEach(item => {
         const darkElement = item.querySelector("#pdfDark");
         const lightElement = item.querySelector("#pdfLight");
@@ -113,7 +113,7 @@ export const loadAssets = (data: Config.IAppearance) => {
     const iconScriptElement = document.getElementById("iconScript");
     const iconDefaultScriptElement = document.getElementById("iconDefaultScript");
     // 不能使用 data.iconVer，因为其他主题也需要加载默认图标，此时 data.iconVer 为其他图标的版本号
-    const iconDefaultURL = `/appearance/icons/litheness/icon.js?v=${Constants.SIYUAN_VERSION}`;
+    const iconDefaultURL = `/appearance/icons/litheness/icon.js?v=${Constants.SCRIBLI_VERSION}`;
     const iconThirdURL = `/appearance/icons/${data.icon}/icon.js?v=${data.iconVer}`;
 
     if ((isBuiltInIcon && iconDefaultScriptElement && iconDefaultScriptElement.getAttribute("src").startsWith(iconDefaultURL)) ||
@@ -155,17 +155,17 @@ export const initAssets = () => {
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", event => {
         const OSTheme = event.matches ? "dark" : "light";
         updateMobileTheme(OSTheme);
-        if (!window.siyuan.config.appearance.modeOS) {
+        if (!window.scribli.config.appearance.modeOS) {
             return;
         }
-        if ((window.siyuan.config.appearance.mode === 0 && OSTheme === "light") ||
-            (window.siyuan.config.appearance.mode === 1 && OSTheme === "dark")) {
+        if ((window.scribli.config.appearance.mode === 0 && OSTheme === "light") ||
+            (window.scribli.config.appearance.mode === 1 && OSTheme === "dark")) {
             return;
         }
         fetchPost("/api/system/setAppearanceMode", {
             mode: OSTheme === "light" ? 0 : 1
         }, async response => {
-            if (window.siyuan.config.appearance.themeJS) {
+            if (window.scribli.config.appearance.themeJS) {
                 if (window.destroyTheme) {
                     try {
                         await window.destroyTheme();
@@ -188,7 +188,7 @@ export const initAssets = () => {
                     return;
                 }
             }
-            window.siyuan.config.appearance = response.data.appearance;
+            window.scribli.config.appearance = response.data.appearance;
             loadAssets(response.data.appearance);
         });
     });
@@ -272,10 +272,10 @@ export const setInlineStyle = async (set = true, servePath = "../../../") => {
   size-adjust: 92%;
 }`;
     }
-    style += `\n:root { --b3-font-size-editor: ${window.siyuan.config.editor.fontSize}px }
-.b3-typography code:not(.hljs), .protyle-wysiwyg span[data-type~=code] { font-variant-ligatures: ${window.siyuan.config.editor.codeLigatures ? "normal" : "none"} }${window.siyuan.config.editor.justify ? "\n.protyle-wysiwyg [data-node-id] { text-align: justify }" : ""}`;
-    if (window.siyuan.config.editor.fontFamily) {
-        style += `\n.b3-typography:not(.b3-typography--default), .protyle-wysiwyg, .protyle-title {${window.siyuan.config.editor.fontWeight ? `font-weight: ${window.siyuan.config.editor.fontWeight};` : ""}font-family: "Emojis Additional", "Emojis Reset", "${window.siyuan.config.editor.fontFamily}", var(--b3-font-family)}`;
+    style += `\n:root { --b3-font-size-editor: ${window.scribli.config.editor.fontSize}px }
+.b3-typography code:not(.hljs), .protyle-wysiwyg span[data-type~=code] { font-variant-ligatures: ${window.scribli.config.editor.codeLigatures ? "normal" : "none"} }${window.scribli.config.editor.justify ? "\n.protyle-wysiwyg [data-node-id] { text-align: justify }" : ""}`;
+    if (window.scribli.config.editor.fontFamily) {
+        style += `\n.b3-typography:not(.b3-typography--default), .protyle-wysiwyg, .protyle-title {${window.scribli.config.editor.fontWeight ? `font-weight: ${window.scribli.config.editor.fontWeight};` : ""}font-family: "Emojis Additional", "Emojis Reset", "${window.scribli.config.editor.fontFamily}", var(--b3-font-family)}`;
     }
     // pad 端菜单移除显示，如工作空间
     if ("ontouchend" in document) {
@@ -303,7 +303,7 @@ export const setMode = (modeElementValue: number) => {
         }
     }
     fetchPost("/api/setting/setAppearance", {
-        ...window.siyuan.config.appearance,
+        ...window.scribli.config.appearance,
         mode,
         modeOS: modeElementValue === 2,
     });
@@ -341,8 +341,8 @@ const cssVarToRgba = (varName: string) => {
 const updateMobileTheme = (OSTheme: string) => {
     if (isInMobileApp()) {
         setTimeout(() => {
-            let mode = window.siyuan.config.appearance.mode;
-            if (window.siyuan.config.appearance.modeOS) {
+            let mode = window.scribli.config.appearance.mode;
+            if (window.scribli.config.appearance.modeOS) {
                 if (OSTheme === "dark") {
                     mode = 1;
                 } else {
@@ -365,10 +365,10 @@ const updateMobileTheme = (OSTheme: string) => {
 
 export const getThemeMode = () => {
     const OSTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    if (window.siyuan.config.appearance.modeOS) {
+    if (window.scribli.config.appearance.modeOS) {
         return OSTheme;
     } else {
-        return window.siyuan.config.appearance.mode === 0 ? "light" : "dark";
+        return window.scribli.config.appearance.mode === 0 ? "light" : "dark";
     }
 };
 

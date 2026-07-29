@@ -167,8 +167,8 @@ export const matchHotKey = (hotKey: string, event: KeyboardEvent) => {
 
 export const isIncludesHotKey = (hotKey: string) => {
     let isInclude = false;
-    Object.keys(window.siyuan.config.keymap).find(key => {
-        const item = window.siyuan.config.keymap[key as "editor"];
+    Object.keys(window.scribli.config.keymap).find(key => {
+        const item = window.scribli.config.keymap[key as "editor"];
         Object.keys(item).find(key2 => {
             const item2 = item[key2 as "general"];
             if (typeof item2.custom === "string") {

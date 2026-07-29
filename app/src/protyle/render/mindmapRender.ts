@@ -35,7 +35,7 @@ export const mindmapRender = (element: Element, cdn = Constants.PROTYLE_CDN) => 
                 } else {
                     renderElement.lastElementChild.classList.remove("ft__error");
                 }
-                window.echarts.init(renderElement.lastElementChild, window.siyuan.config.appearance.mode === 1 ? "dark" : undefined, {
+                window.echarts.init(renderElement.lastElementChild, window.scribli.config.appearance.mode === 1 ? "dark" : undefined, {
                     width,
                 }).setOption({
                     series: [

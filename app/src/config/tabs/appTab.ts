@@ -8,7 +8,7 @@ import {fetchPost} from "../../util/fetch";
 /// #if !MOBILE
 import {exportLayout} from "../../layout/util";
 /// #endif
-import {exitSiYuan} from "../../dialog/processSystem";
+import {exitScribli} from "../../dialog/processSystem";
 import {showMessage} from "../../dialog/message";
 import {isMac, saveExportFile} from "../../protyle/util/compatibility";
 /// #if MOBILE
@@ -26,24 +26,24 @@ import {sendAppSetting} from "./appRuntime";
 
 /// #if MOBILE
 const registerAppWorkspaceGroup = (tab: SettingTabBuilder) => {
-    if (!isInMobileApp() || window.siyuan.config.readonly) {
+    if (!isInMobileApp() || window.scribli.config.readonly) {
         return;
     }
-    const group = tab.group("workspace", window.siyuan.languages.workspaceList);
+    const group = tab.group("workspace", window.scribli.languages.workspaceList);
 
     group.slot({
         key: "workspaceList",
         keywords: [
-            window.siyuan.languages.openBy,
-            window.siyuan.languages.new,
-            window.siyuan.languages.removeWorkspacePhysically,
+            window.scribli.languages.openBy,
+            window.scribli.languages.new,
+            window.scribli.languages.removeWorkspacePhysically,
         ],
         html: () => `<div class="b3-label config-item">
-    <button id="openWorkspace" class="b3-button b3-button--outline fn__block">${window.siyuan.languages.openBy}...</button>
+    <button id="openWorkspace" class="b3-button b3-button--outline fn__block">${window.scribli.languages.openBy}...</button>
     <div class="fn__hr--small"></div>
     <ul id="workspaceDir" class="b3-list b3-list--background"></ul>
     <div class="fn__hr--small"></div>
-    <button id="creatWorkspace" class="b3-button fn__block">${window.siyuan.languages.new}</button>
+    <button id="creatWorkspace" class="b3-button fn__block">${window.scribli.languages.new}</button>
 </div>`,
         afterMount: mountAppWorkspaceSlot,
     });
@@ -53,7 +53,7 @@ const renderWorkspaceList = (workspaceDirElement: Element) => {
     fetchPost("/api/system/getWorkspaces", {}, (response) => {
         let html = "";
         response.data.forEach((item: IWorkspace) => {
-            html += `<li data-path="${escapeAttr(item.path)}" class="b3-list-item b3-list-item--narrow${window.siyuan.config.system.workspaceDir === item.path ? " b3-list-item--focus" : ""}">
+            html += `<li data-path="${escapeAttr(item.path)}" class="b3-list-item b3-list-item--narrow${window.scribli.config.system.workspaceDir === item.path ? " b3-list-item--focus" : ""}">
     <span class="b3-list-item__text">${escapeHtml(pathPosix().basename(item.path))}</span>
     <span data-type="remove" class="b3-list-item__action">
         <svg><use xlink:href="#iconMin"></use></svg>
@@ -80,30 +80,30 @@ const mountAppWorkspaceSlot = (root: HTMLElement) => {
                         selectHTML += `<option value="${escapeAttr(item)}"${index === 0 ? " selected" : ""}>${escapeHtml(pathPosix().basename(item))}</option>`;
                     });
                     const openWorkspaceDialog = new Dialog({
-                        title: window.siyuan.languages.openBy,
+                        title: window.scribli.languages.openBy,
                         content: `<div class="b3-dialog__content">
     <select class="b3-text-field fn__block">${selectHTML}</select>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                         width: "92vw",
                     });
-                    openWorkspaceDialog.element.setAttribute("data-key", Constants.SIYUAN_OPEN_WORKSPACE);
+                    openWorkspaceDialog.element.setAttribute("data-key", Constants.SCRIBLI_OPEN_WORKSPACE);
                     const btnsElement = openWorkspaceDialog.element.querySelectorAll(".b3-button");
                     btnsElement[0].addEventListener("click", () => {
                         openWorkspaceDialog.destroy();
                     });
                     btnsElement[1].addEventListener("click", () => {
                         const openPath = (openWorkspaceDialog.element.querySelector("select") as HTMLSelectElement).value;
-                        if (openPath === window.siyuan.config.system.workspaceDir) {
+                        if (openPath === window.scribli.config.system.workspaceDir) {
                             openWorkspaceDialog.destroy();
                             return;
                         }
-                        confirmDialog(window.siyuan.languages.confirm, `${pathPosix().basename(window.siyuan.config.system.workspaceDir)} -> ${pathPosix().basename(openPath)}?`, () => {
+                        confirmDialog(window.scribli.languages.confirm, `${pathPosix().basename(window.scribli.config.system.workspaceDir)} -> ${pathPosix().basename(openPath)}?`, () => {
                             fetchPost("/api/system/setWorkspaceDir", {path: openPath}, () => {
-                                void exitSiYuan(false);
+                                void exitScribli(false);
                             });
                         });
                     });
@@ -113,13 +113,13 @@ const mountAppWorkspaceSlot = (root: HTMLElement) => {
                 break;
             } else if (target.id === "creatWorkspace") {
                 const createWorkspaceDialog = new Dialog({
-                    title: window.siyuan.languages.new,
+                    title: window.scribli.languages.new,
                     content: `<div class="b3-dialog__content">
     <input class="b3-text-field fn__block">
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                     width: "92vw",
                 });
@@ -132,7 +132,7 @@ const mountAppWorkspaceSlot = (root: HTMLElement) => {
                 });
                 btnsElement[1].addEventListener("click", () => {
                     fetchPost("/api/system/createWorkspaceDir", {
-                        path: pathPosix().join(pathPosix().dirname(window.siyuan.config.system.workspaceDir), inputElement.value),
+                        path: pathPosix().join(pathPosix().dirname(window.scribli.config.system.workspaceDir), inputElement.value),
                     }, () => {
                         renderWorkspaceList(workspaceDirElement);
                         createWorkspaceDialog.destroy();
@@ -148,7 +148,7 @@ const mountAppWorkspaceSlot = (root: HTMLElement) => {
                 }
                 fetchPost("/api/system/removeWorkspaceDir", {path: removePath}, () => {
                     renderWorkspaceList(workspaceDirElement);
-                    confirmDialog(window.siyuan.languages.deleteOpConfirm, window.siyuan.languages.removeWorkspacePhysically.replace("${x}", removePath), () => {
+                    confirmDialog(window.scribli.languages.deleteOpConfirm, window.scribli.languages.removeWorkspacePhysically.replace("${x}", removePath), () => {
                         fetchPost("/api/system/removeWorkspaceDirPhysically", {path: removePath});
                     }, undefined, true);
                 });
@@ -160,9 +160,9 @@ const mountAppWorkspaceSlot = (root: HTMLElement) => {
                 if (!workspacePath) {
                     break;
                 }
-                confirmDialog(window.siyuan.languages.confirm, `${pathPosix().basename(window.siyuan.config.system.workspaceDir)} -> ${pathPosix().basename(workspacePath)}?`, () => {
+                confirmDialog(window.scribli.languages.confirm, `${pathPosix().basename(window.scribli.config.system.workspaceDir)} -> ${pathPosix().basename(workspacePath)}?`, () => {
                     fetchPost("/api/system/setWorkspaceDir", {path: workspacePath}, () => {
-                        void exitSiYuan(false);
+                        void exitScribli(false);
                     });
                 });
                 event.preventDefault();
@@ -183,17 +183,17 @@ const genImportUploadButtonHtml = (inputId: string, label: string): string =>
 </button>`;
 
 const registerAppGeneralGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("general", window.siyuan.languages.configGroupGeneral);
+    const group = tab.group("general", window.scribli.languages.configGroupGeneral);
 
     /// #if !BROWSER
-    if (!window.siyuan.config.system.isMicrosoftStore && window.siyuan.config.system.container === "std" && window.siyuan.config.system.os !== "linux") {
+    if (!window.scribli.config.system.isMicrosoftStore && window.scribli.config.system.container === "std" && window.scribli.config.system.os !== "linux") {
         group.select("system.autoLaunch2", {
-            title: window.siyuan.languages.autoLaunch,
-            desc: window.siyuan.languages.autoLaunchTip,
+            title: window.scribli.languages.autoLaunch,
+            desc: window.scribli.languages.autoLaunchTip,
             options: [
-                {value: 0, label: window.siyuan.languages.autoLaunchMode0},
-                {value: 1, label: window.siyuan.languages.autoLaunchMode1},
-                ...(!isMac() ? [{value: 2, label: window.siyuan.languages.autoLaunchMode2}] : []),
+                {value: 0, label: window.scribli.languages.autoLaunchMode0},
+                {value: 1, label: window.scribli.languages.autoLaunchMode1},
+                ...(!isMac() ? [{value: 2, label: window.scribli.languages.autoLaunchMode2}] : []),
             ],
             save: (value) => sendAppSetting("system.autoLaunch2", value),
         });
@@ -202,15 +202,15 @@ const registerAppGeneralGroup = (tab: SettingTabBuilder) => {
     group.slot({
         key: "networkProxy",
         keywords: [
-            window.siyuan.languages.networkProxy,
-            window.siyuan.languages.about17,
-            window.siyuan.languages.directConnection,
+            window.scribli.languages.networkProxy,
+            window.scribli.languages.about17,
+            window.scribli.languages.directConnection,
             "SOCKS5",
             "HTTPS",
             "HTTP",
             "user:pass@IP",
             "Port",
-            window.siyuan.languages.confirm,
+            window.scribli.languages.confirm,
         ],
         html: genNetworkProxyHtml,
         afterMount: mountNetworkProxy,
@@ -218,15 +218,15 @@ const registerAppGeneralGroup = (tab: SettingTabBuilder) => {
 };
 
 const genNetworkProxyHtml = (): string => {
-    const proxy = window.siyuan.config.system.networkProxy;
+    const proxy = window.scribli.config.system.networkProxy;
     return `<div class="b3-label config-item">
-    ${genConfigItemName(window.siyuan.languages.networkProxy)}
+    ${genConfigItemName(window.scribli.languages.networkProxy)}
     <div class="b3-label__text">
-        ${window.siyuan.languages.about17}
+        ${window.scribli.languages.about17}
     </div>
     <div class="b3-label__text fn__flex config-wrap" style="overflow: visible !important;">
         <select id="networkProxyScheme" class="b3-select">
-            <option value="" ${proxy.scheme === "" ? "selected" : ""}>${window.siyuan.languages.directConnection}</option>
+            <option value="" ${proxy.scheme === "" ? "selected" : ""}>${window.scribli.languages.directConnection}</option>
             <option value="socks5" ${proxy.scheme === "socks5" ? "selected" : ""}>SOCKS5</option>
             <option value="https" ${proxy.scheme === "https" ? "selected" : ""}>HTTPS</option>
             <option value="http" ${proxy.scheme === "http" ? "selected" : ""}>HTTP</option>
@@ -236,7 +236,7 @@ const genNetworkProxyHtml = (): string => {
         <span class="fn__space"></span>
         <input id="networkProxyPort" placeholder="Port" class="b3-text-field fn__block" value="${Lute.EscapeHTMLStr(proxy.port)}" type="number"/>
         <span class="fn__space"></span>
-        <button id="networkProxyConfirm" class="b3-button fn__size200 b3-button--outline">${window.siyuan.languages.confirm}</button>
+        <button id="networkProxyConfirm" class="b3-button fn__size200 b3-button--outline">${window.scribli.languages.confirm}</button>
     </div>
 </div>`;
 };
@@ -247,11 +247,11 @@ const mountNetworkProxy = (root: HTMLElement) => {
         const host = (root.querySelector("#networkProxyHost") as HTMLInputElement)?.value;
         const port = (root.querySelector("#networkProxyPort") as HTMLInputElement)?.value;
         fetchPost("/api/system/setNetworkProxy", {scheme, host, port}, async () => {
-            Object.assign(window.siyuan.config.system.networkProxy, {scheme, host, port});
+            Object.assign(window.scribli.config.system.networkProxy, {scheme, host, port});
             /// #if !BROWSER
-            ipcRenderer.invoke(Constants.SIYUAN_GET, {
+            ipcRenderer.invoke(Constants.SCRIBLI_GET, {
                 cmd: "setProxy",
-                proxyURL: `${window.siyuan.config.system.networkProxy.scheme}://${window.siyuan.config.system.networkProxy.host}:${window.siyuan.config.system.networkProxy.port}`,
+                proxyURL: `${window.scribli.config.system.networkProxy.scheme}://${window.scribli.config.system.networkProxy.host}:${window.scribli.config.system.networkProxy.port}`,
             }).then(() => {
                 exportLayout({
                     errorExit: false,
@@ -266,23 +266,23 @@ const mountNetworkProxy = (root: HTMLElement) => {
 };
 
 const registerAppDataGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("data", window.siyuan.languages.configGroupData);
+    const group = tab.group("data", window.scribli.languages.configGroupData);
 
     group.button({
         id: "exportData",
-        title: `${window.siyuan.languages.export} Data`,
-        desc: window.siyuan.languages.exportDataTip,
-        label: window.siyuan.languages.export,
+        title: `${window.scribli.languages.export} Data`,
+        desc: window.scribli.languages.exportDataTip,
+        label: window.scribli.languages.export,
         icon: "iconUpload",
         afterMount: mountExportData,
     });
     group.slot({
         key: "importData",
-        keywords: [window.siyuan.languages.import, window.siyuan.languages.importDataTip],
+        keywords: [window.scribli.languages.import, window.scribli.languages.importDataTip],
         html: () => `<div class="fn__flex b3-label config-item config-wrap">
-    ${genConfigItemMainHtml(`${window.siyuan.languages.import} Data`, window.siyuan.languages.importDataTip)}
+    ${genConfigItemMainHtml(`${window.scribli.languages.import} Data`, window.scribli.languages.importDataTip)}
     <span class="fn__space"></span>
-    ${genImportUploadButtonHtml("importData", window.siyuan.languages.import)}
+    ${genImportUploadButtonHtml("importData", window.scribli.languages.import)}
 </div>`,
         afterMount: (root) => {
             root.querySelector("#importData")?.addEventListener("change", (event: Event) => {
@@ -295,9 +295,9 @@ const registerAppDataGroup = (tab: SettingTabBuilder) => {
     });
     group.button({
         id: "exportConf",
-        title: window.siyuan.languages.exportConf,
-        desc: window.siyuan.languages.exportConfTip,
-        label: window.siyuan.languages.export,
+        title: window.scribli.languages.exportConf,
+        desc: window.scribli.languages.exportConfTip,
+        label: window.scribli.languages.export,
         icon: "iconUpload",
         afterMount: (root) => {
             root.querySelector("#exportConf")?.addEventListener("click", () => {
@@ -309,11 +309,11 @@ const registerAppDataGroup = (tab: SettingTabBuilder) => {
     });
     group.slot({
         key: "importConf",
-        keywords: [window.siyuan.languages.importConf, window.siyuan.languages.importConfTip],
+        keywords: [window.scribli.languages.importConf, window.scribli.languages.importConfTip],
         html: () => `<div class="fn__flex b3-label config-item config-wrap">
-    ${genConfigItemMainHtml(window.siyuan.languages.importConf, window.siyuan.languages.importConfTip)}
+    ${genConfigItemMainHtml(window.scribli.languages.importConf, window.scribli.languages.importConfTip)}
     <span class="fn__space"></span>
-    ${genImportUploadButtonHtml("importConf", window.siyuan.languages.import)}
+    ${genImportUploadButtonHtml("importConf", window.scribli.languages.import)}
 </div>`,
         afterMount: (root) => {
             root.querySelector("#importConf")?.addEventListener("change", (event: Event) => {
@@ -325,13 +325,13 @@ const registerAppDataGroup = (tab: SettingTabBuilder) => {
                         showMessage(response.msg);
                         return;
                     }
-                    showMessage(window.siyuan.languages.imported);
+                    showMessage(window.scribli.languages.imported);
                     /// #if MOBILE
-                    void exitSiYuan();
+                    void exitScribli();
                     /// #else
                     void exportLayout({
                         errorExit: true,
-                        cb: exitSiYuan,
+                        cb: exitScribli,
                     });
                     /// #endif
                 });
@@ -347,15 +347,15 @@ const mountExportData = (root: HTMLElement) => {
             saveExportFile(response.data.zip);
         });
         /// #else
-        const result = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+        const result = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
             cmd: "showOpenDialog",
-            title: window.siyuan.languages.export + " " + "Data",
+            title: window.scribli.languages.export + " " + "Data",
             properties: ["createDirectory", "openDirectory"],
         });
         if (result.canceled || result.filePaths.length === 0) {
             return;
         }
-        const msgId = showMessage(window.siyuan.languages.exporting, -1);
+        const msgId = showMessage(window.scribli.languages.exporting, -1);
         fetchPost("/api/export/exportDataInFolder", {
             folder: result.filePaths[0],
         }, (response) => {
@@ -366,13 +366,13 @@ const mountExportData = (root: HTMLElement) => {
 };
 
 const registerAppMaintenanceGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("maintenance", window.siyuan.languages.configGroupMaintenance);
+    const group = tab.group("maintenance", window.scribli.languages.configGroupMaintenance);
 
     group.button({
         id: "reloadUI",
-        title: window.siyuan.languages.reloadUI,
-        desc: window.siyuan.languages.reloadUITip,
-        label: window.siyuan.languages.reloadUI,
+        title: window.scribli.languages.reloadUI,
+        desc: window.scribli.languages.reloadUITip,
+        label: window.scribli.languages.reloadUI,
         icon: "iconRefresh",
         afterMount: (root) => {
             root.querySelector("#reloadUI")?.addEventListener("click", () => {
@@ -382,9 +382,9 @@ const registerAppMaintenanceGroup = (tab: SettingTabBuilder) => {
     });
     group.button({
         id: "vacuumDataIndex",
-        title: window.siyuan.languages.vacuumDataIndex,
-        desc: window.siyuan.languages.vacuumDataIndexTip,
-        label: window.siyuan.languages.vacuumDataIndex,
+        title: window.scribli.languages.vacuumDataIndex,
+        desc: window.scribli.languages.vacuumDataIndexTip,
+        label: window.scribli.languages.vacuumDataIndex,
         icon: "iconRefresh",
         afterMount: (root) => {
             root.querySelector("#vacuumDataIndex")?.addEventListener("click", () => {
@@ -394,9 +394,9 @@ const registerAppMaintenanceGroup = (tab: SettingTabBuilder) => {
     });
     group.button({
         id: "rebuildDataIndex",
-        title: window.siyuan.languages.rebuildDataIndex,
-        desc: window.siyuan.languages.rebuildDataIndexTip,
-        label: window.siyuan.languages.rebuildDataIndex,
+        title: window.scribli.languages.rebuildDataIndex,
+        desc: window.scribli.languages.rebuildDataIndexTip,
+        label: window.scribli.languages.rebuildDataIndex,
         icon: "iconRefresh",
         afterMount: (root) => {
             root.querySelector("#rebuildDataIndex")?.addEventListener("click", () => {
@@ -406,9 +406,9 @@ const registerAppMaintenanceGroup = (tab: SettingTabBuilder) => {
     });
     group.button({
         id: "clearTempFiles",
-        title: window.siyuan.languages.clearTempFiles,
-        desc: window.siyuan.languages.clearTempFilesTip,
-        label: window.siyuan.languages.purge,
+        title: window.scribli.languages.clearTempFiles,
+        desc: window.scribli.languages.clearTempFilesTip,
+        label: window.scribli.languages.purge,
         icon: "iconTrashcan",
         afterMount: (root) => {
             root.querySelector("#clearTempFiles")?.addEventListener("click", () => {
@@ -418,9 +418,9 @@ const registerAppMaintenanceGroup = (tab: SettingTabBuilder) => {
     });
     group.button({
         id: "exportLog",
-        title: window.siyuan.languages.systemLog,
-        desc: window.siyuan.languages.systemLogTip,
-        label: window.siyuan.languages.export,
+        title: window.scribli.languages.systemLog,
+        desc: window.scribli.languages.systemLogTip,
+        label: window.scribli.languages.export,
         icon: "iconUpload",
         afterMount: (root) => {
             root.querySelector("#exportLog")?.addEventListener("click", () => {

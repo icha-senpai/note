@@ -41,7 +41,7 @@ export const onGet = (options: {
             if (options.protyle.model) {
                 options.protyle.model.parent.parent.removeTab(options.protyle.model.parent.id);
             } else {
-                options.protyle.element.innerHTML = `<div class="ft__smaller ft__secondary b3-form__space--small" contenteditable="false">${window.siyuan.languages.refExpired}</div>`;
+                options.protyle.element.innerHTML = `<div class="ft__smaller ft__secondary b3-form__space--small" contenteditable="false">${window.scribli.languages.refExpired}</div>`;
             }
         }
         return;
@@ -230,9 +230,9 @@ const setHTML = (options: {
         if (editElement && editElement.textContent === "") {
             editElement.classList.add("protyle-wysiwyg--empty");
             /// #if MOBILE
-            editElement.setAttribute("placeholder", window.siyuan.languages.emptyMobilePlaceholder);
+            editElement.setAttribute("placeholder", window.scribli.languages.emptyMobilePlaceholder);
             /// #else
-            editElement.setAttribute("placeholder", window.siyuan.languages.emptyPlaceholder);
+            editElement.setAttribute("placeholder", window.scribli.languages.emptyPlaceholder);
             /// #endif
         }
     }
@@ -269,7 +269,7 @@ const setHTML = (options: {
             }
             protyle.element.removeAttribute("disabled-forever");
         }
-        if (options.action.includes(Constants.CB_GET_OPENNEW) && window.siyuan.config.editor.readOnly && !window.siyuan.config.readonly) {
+        if (options.action.includes(Constants.CB_GET_OPENNEW) && window.scribli.config.editor.readOnly && !window.scribli.config.readonly) {
             enableProtyle(protyle);
         } else {
             setReadonlyByConfig(protyle, updateReadonly);
@@ -323,7 +323,7 @@ const setHTML = (options: {
         const getDocParam: IObject = {
             id: protyle.wysiwyg.element.lastElementChild.getAttribute("data-node-id"),
             mode: 2,
-            size: window.siyuan.config.editor.dynamicLoadBlocks,
+            size: window.scribli.config.editor.dynamicLoadBlocks,
         };
         if (isEncryptedBox(protyle.notebookId)) {
             getDocParam.notebook = protyle.notebookId;
@@ -338,7 +338,7 @@ const setHTML = (options: {
         const getDocParam: IObject = {
             id: protyle.wysiwyg.element.firstElementChild.getAttribute("data-node-id"),
             mode: 1,
-            size: window.siyuan.config.editor.dynamicLoadBlocks,
+            size: window.scribli.config.editor.dynamicLoadBlocks,
         };
         if (isEncryptedBox(protyle.notebookId)) {
             getDocParam.notebook = protyle.notebookId;
@@ -359,7 +359,7 @@ const setHTML = (options: {
                 // https://github.com/siyuan-note/siyuan/issues/8224
                 // https://github.com/siyuan-note/siyuan/issues/10716
                 if (index > 1 && protyle.block.blockCount > 1 && protyle.contentElement.scrollHeight <= protyle.contentElement.clientHeight) {
-                    showMessage(window.siyuan.languages.scrollGetMore);
+                    showMessage(window.scribli.languages.scrollGetMore);
                 }
             });
         }
@@ -373,9 +373,9 @@ const setHTML = (options: {
 export const disabledForeverProtyle = (protyle: IProtyle) => {
     disabledProtyle(protyle);
     if (protyle.breadcrumb && !isMobile()) {
-        protyle.breadcrumb.element.nextElementSibling.textContent = window.siyuan.languages["_kernel"][81];
+        protyle.breadcrumb.element.nextElementSibling.textContent = window.scribli.languages["_kernel"][81];
     } else {
-        showMessage(window.siyuan.languages["_kernel"][81]);
+        showMessage(window.scribli.languages["_kernel"][81]);
     }
     protyle.element.setAttribute("disabled-forever", "true");
 };
@@ -407,7 +407,7 @@ export const disabledWYSIWYG = (element: HTMLElement) => {
 
 /** 禁用编辑器 */
 export const disabledProtyle = (protyle: IProtyle) => {
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
     hideElements(["gutter", "toolbar", "select", "hint", "util"], protyle);
     protyle.disabled = true;
     if (protyle.title && protyle.title.editElement) {
@@ -425,7 +425,7 @@ export const disabledProtyle = (protyle: IProtyle) => {
     if (protyle.breadcrumb) {
         const readonlyButton = protyle.breadcrumb.element.parentElement.querySelector('[data-type="readonly"]');
         readonlyButton.querySelector("use").setAttribute("xlink:href", "#iconLock");
-        readonlyButton.setAttribute("aria-label", window.siyuan.config.editor.readOnly ? window.siyuan.languages.tempUnlock : window.siyuan.languages.unlockEdit);
+        readonlyButton.setAttribute("aria-label", window.scribli.config.editor.readOnly ? window.scribli.languages.tempUnlock : window.scribli.languages.unlockEdit);
         readonlyButton.setAttribute("data-subtype", "lock");
         const undoElement = protyle.breadcrumb.element.parentElement.querySelector('[data-type="undo"]');
         if (undoElement && !undoElement.classList.contains("fn__none")) {
@@ -482,7 +482,7 @@ export const enableProtyle = (protyle: IProtyle) => {
     if (protyle.breadcrumb) {
         const readonlyButton = protyle.breadcrumb.element.parentElement.querySelector('[data-type="readonly"]');
         readonlyButton.querySelector("use").setAttribute("xlink:href", "#iconUnlock");
-        readonlyButton.setAttribute("aria-label", window.siyuan.config.editor.readOnly ? window.siyuan.languages.cancelTempUnlock : window.siyuan.languages.lockEdit);
+        readonlyButton.setAttribute("aria-label", window.scribli.config.editor.readOnly ? window.scribli.languages.cancelTempUnlock : window.scribli.languages.lockEdit);
         readonlyButton.setAttribute("data-subtype", "unlock");
         const undoElement = protyle.breadcrumb.element.parentElement.querySelector('[data-type="undo"]');
         if (undoElement && undoElement.classList.contains("fn__none")) {
@@ -605,11 +605,11 @@ const focusElementById = (protyle: IProtyle, action: string[], scrollAttr?: IScr
 };
 
 export const setReadonlyByConfig = (protyle: IProtyle, updateReadonly: boolean) => {
-    let readOnly = window.siyuan.config.readonly ? "true" : "false";
+    let readOnly = window.scribli.config.readonly ? "true" : "false";
     if (!updateReadonly) {
         readOnly = protyle.disabled ? "true" : "false";
     } else if (readOnly === "false") {
-        readOnly = window.siyuan.config.editor.readOnly ? "true" : "false";
+        readOnly = window.scribli.config.editor.readOnly ? "true" : "false";
         if (readOnly === "false") {
             readOnly = protyle.wysiwyg.element.getAttribute(Constants.CUSTOM_SY_READONLY);
         }

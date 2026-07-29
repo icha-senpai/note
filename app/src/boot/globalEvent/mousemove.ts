@@ -44,7 +44,7 @@ export const windowMouseMove = (event: MouseEvent, mouseIsEnter: boolean) => {
         return;
     }
     // https://github.com/siyuan-note/siyuan/pull/8793
-    const coordinates = window.siyuan.coordinates ?? (window.siyuan.coordinates = {
+    const coordinates = window.scribli.coordinates ?? (window.scribli.coordinates = {
         pageX: 0,
         pageY: 0,
         clientX: 0,
@@ -60,8 +60,8 @@ export const windowMouseMove = (event: MouseEvent, mouseIsEnter: boolean) => {
     coordinates.screenY = event.screenY;
 
     // breadcrumb
-    if (window.siyuan.hideBreadcrumb) {
-        window.siyuan.hideBreadcrumb = false;
+    if (window.scribli.hideBreadcrumb) {
+        window.scribli.hideBreadcrumb = false;
         getAllEditor().forEach(item => {
             if (item.protyle.breadcrumb?.element.classList.contains("protyle-breadcrumb__bar--hide")) {
                 item.protyle.breadcrumb.element.classList.remove("protyle-breadcrumb__bar--hide");
@@ -73,12 +73,12 @@ export const windowMouseMove = (event: MouseEvent, mouseIsEnter: boolean) => {
     // Dock
     if (!mouseIsEnter &&
         event.buttons === 0 &&  // 鼠标按键被按下时不触发
-        window.siyuan.layout.bottomDock &&
+        window.scribli.layout.bottomDock &&
         !isWindow()) {
         if (event.clientX < Math.max(document.getElementById("dockLeft").clientWidth + 1, 16)) {
-            if (!window.siyuan.layout.leftDock.pin && window.siyuan.layout.leftDock.layout.element.clientWidth > 0 &&
+            if (!window.scribli.layout.leftDock.pin && window.scribli.layout.leftDock.layout.element.clientWidth > 0 &&
                 // 隐藏停靠栏会导致点击两侧内容触发浮动面板弹出，因此需减小鼠标范围
-                (window.siyuan.layout.leftDock.elements[0].clientWidth > 0 || (window.siyuan.layout.leftDock.elements[0].clientWidth === 0 && event.clientX < 8))) {
+                (window.scribli.layout.leftDock.elements[0].clientWidth > 0 || (window.scribli.layout.leftDock.elements[0].clientWidth === 0 && event.clientX < 8))) {
                 if (event.clientY > document.getElementById("toolbar").clientHeight &&
                     event.clientY < window.innerHeight - document.getElementById("status").clientHeight) {
                     if (!hasClosestByClassName(target, "b3-menu") &&
@@ -86,15 +86,15 @@ export const windowMouseMove = (event: MouseEvent, mouseIsEnter: boolean) => {
                         !hasClosestByClassName(target, "protyle-util") &&
                         !hasClosestByClassName(target, "b3-dialog", true) &&
                         !hasClosestByClassName(target, "layout--float")) {
-                        window.siyuan.layout.leftDock.showDock();
+                        window.scribli.layout.leftDock.showDock();
                     }
                 } else {
-                    window.siyuan.layout.leftDock.hideDock();
+                    window.scribli.layout.leftDock.hideDock();
                 }
             }
         } else if (event.clientX > window.innerWidth - Math.max(document.getElementById("dockRight").clientWidth - 2, 16)) {
-            if (!window.siyuan.layout.rightDock.pin && window.siyuan.layout.rightDock.layout.element.clientWidth > 0 &&
-                (window.siyuan.layout.rightDock.elements[0].clientWidth > 0 || (window.siyuan.layout.rightDock.elements[0].clientWidth === 0 && event.clientX > window.innerWidth - 8))) {
+            if (!window.scribli.layout.rightDock.pin && window.scribli.layout.rightDock.layout.element.clientWidth > 0 &&
+                (window.scribli.layout.rightDock.elements[0].clientWidth > 0 || (window.scribli.layout.rightDock.elements[0].clientWidth === 0 && event.clientX > window.innerWidth - 8))) {
                 if (event.clientY > document.getElementById("toolbar").clientHeight &&
                     event.clientY < window.innerHeight - document.getElementById("status").clientHeight) {
                     if (!hasClosestByClassName(target, "b3-menu") &&
@@ -102,15 +102,15 @@ export const windowMouseMove = (event: MouseEvent, mouseIsEnter: boolean) => {
                         !hasClosestByClassName(target, "protyle-toolbar") &&
                         !hasClosestByClassName(target, "protyle-util") &&
                         !hasClosestByClassName(target, "b3-dialog", true)) {
-                        window.siyuan.layout.rightDock.showDock();
+                        window.scribli.layout.rightDock.showDock();
                     }
                 } else {
-                    window.siyuan.layout.rightDock.hideDock();
+                    window.scribli.layout.rightDock.hideDock();
                 }
             }
         }
         if (event.clientY > Math.min(window.innerHeight - 10, window.innerHeight - document.querySelector("#status").clientHeight)) {
-            window.siyuan.layout.bottomDock.showDock();
+            window.scribli.layout.bottomDock.showDock();
         }
     }
 
@@ -135,7 +135,7 @@ export const windowMouseMove = (event: MouseEvent, mouseIsEnter: boolean) => {
                 }
             });
             if (!findNode) {
-                window.siyuan.blockPanels.find(item => {
+                window.scribli.blockPanels.find(item => {
                     item.editors.find(eItem => {
                         if (eItem.protyle.wysiwyg.element.contains(eventPath0)) {
                             eItem.protyle.gutter.render(eItem.protyle, targetBlockElement, mouseElement);
@@ -185,7 +185,7 @@ export const windowMouseMove = (event: MouseEvent, mouseIsEnter: boolean) => {
             }
         });
         if (!findNode) {
-            window.siyuan.blockPanels.find(item => {
+            window.scribli.blockPanels.find(item => {
                 item.editors.find(eItem => {
                     if (eItem.protyle.wysiwyg.element.contains(eventPath0)) {
                         eItem.protyle.gutter.render(eItem.protyle, targetBlockElement);

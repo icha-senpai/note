@@ -2,7 +2,7 @@ import {BlockPanel} from "./Panel";
 import {hasClosestByAttribute, hasClosestByClassName,} from "../protyle/util/hasClosest";
 import {fetchPost, fetchSyncPost} from "../util/fetch";
 import {hideTooltip, showTooltip} from "../dialog/tooltip";
-import {isLocalPath, parseSiYuanUriInfo} from "../util/pathName";
+import {isLocalPath, parseScribliUriInfo} from "../util/pathName";
 import {App} from "../index";
 import {Constants} from "../constants";
 import {getCellText} from "../protyle/render/av/cell";
@@ -22,9 +22,9 @@ export const initBlockPopover = (app: App) => {
     let timeoutHide: number;
     // 编辑器内容块引用/backlinks/tag/bookmark/套娃中使用
     document.addEventListener("mouseover", (event: MouseEvent & { target: HTMLElement, path: HTMLElement[] }) => {
-        if (!window.siyuan.config || !window.siyuan.menus ||
+        if (!window.scribli.config || !window.scribli.menus ||
             // 拖拽时禁止
-            window.siyuan.dragElement || document.onmousemove) {
+            window.scribli.dragElement || document.onmousemove) {
             hideTooltip();
             return;
         }
@@ -110,7 +110,7 @@ export const initBlockPopover = (app: App) => {
                     tip = `<span style="word-break: break-all">${href.substring(0, Constants.SIZE_TITLE)}</span>`;
                 }
                 const title = aElement.getAttribute("data-title");
-                if (!window.siyuan.isPublish && tip && isLocalPath(href) && !aElement.classList.contains("b3-tooltips")) {
+                if (!window.scribli.isPublish && tip && isLocalPath(href) && !aElement.classList.contains("b3-tooltips")) {
                     let assetTip = tip;
                     tooltipAbortController = new AbortController();
                     const signal = tooltipAbortController.signal;
@@ -124,7 +124,7 @@ export const initBlockPopover = (app: App) => {
                                 assetTip += '<div class="fn__hr"></div><span>' + title + "</span>";
                             }
                         } else {
-                            assetTip += ` ${response.data.hSize}${title ? '<div class="fn__hr"></div><span>' + title + "</span>" : ""}<br>${window.siyuan.languages.modifiedAt} ${response.data.hUpdated}<br>${window.siyuan.languages.createdAt} ${response.data.hCreated}`;
+                            assetTip += ` ${response.data.hSize}${title ? '<div class="fn__hr"></div><span>' + title + "</span>" : ""}<br>${window.scribli.languages.modifiedAt} ${response.data.hUpdated}<br>${window.scribli.languages.createdAt} ${response.data.hCreated}`;
                         }
                         try {
                             showTooltip(decodeURIComponent(assetTip), aElement, tooltipClass, event, tooltipSpace);
@@ -188,7 +188,7 @@ export const initBlockPopover = (app: App) => {
                         return;
                     }
                     const boxData = response.data.boxInfo;
-                    const tip = `${boxData.name} <small class='ft__on-surface'>${boxData.hSize}</small>${boxData.docCount !== 0 ? window.siyuan.languages.includeSubFile.replace("x", boxData.docCount) : ""}<br>${window.siyuan.languages.modifiedAt} ${boxData.hMtime}<br>${window.siyuan.languages.createdAt} ${boxData.hCtime}`;
+                    const tip = `${boxData.name} <small class='ft__on-surface'>${boxData.hSize}</small>${boxData.docCount !== 0 ? window.scribli.languages.includeSubFile.replace("x", boxData.docCount) : ""}<br>${window.scribli.languages.modifiedAt} ${boxData.hMtime}<br>${window.scribli.languages.createdAt} ${boxData.hCtime}`;
                     showTooltip(tip, notebookItemElement as Element);
                     (notebookItemElement as HTMLElement).setAttribute("aria-label", tip);
                     if (tooltipAbortController === capturedController) {
@@ -215,7 +215,7 @@ export const initBlockPopover = (app: App) => {
                 hideTooltip();
             }
         }
-        if (window.siyuan.config.editor.floatWindowMode === 1 || window.siyuan.shiftIsPressed) {
+        if (window.scribli.config.editor.floatWindowMode === 1 || window.scribli.shiftIsPressed) {
             clearTimeout(timeoutHide);
             timeoutHide = window.setTimeout(() => {
                 hidePopover(event);
@@ -228,10 +228,10 @@ export const initBlockPopover = (app: App) => {
             if (event.relatedTarget && !document.contains(event.relatedTarget as Node)) {
                 return;
             }
-            if (window.siyuan.ctrlIsPressed) {
+            if (window.scribli.ctrlIsPressed) {
                 clearTimeout(timeoutHide);
                 showPopover(app);
-            } else if (window.siyuan.shiftIsPressed) {
+            } else if (window.scribli.shiftIsPressed) {
                 clearTimeout(timeoutHide);
                 showPopover(app, true);
             }
@@ -254,7 +254,7 @@ export const initBlockPopover = (app: App) => {
             }
             clearTimeout(timeoutHide);
             showPopover(app);
-        }, window.siyuan.config.editor.floatWindowDelay);
+        }, window.scribli.config.editor.floatWindowDelay);
     });
 };
 
@@ -276,7 +276,7 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
     const avPanelElement = hasClosestByClassName(target, "av__panel") || hasClosestByClassName(target, "av__mask");
     if (avPanelElement) {
         // 浮窗上点击 av 操作，浮窗不能消失
-        const blockPanel = window.siyuan.blockPanels.find((item) => {
+        const blockPanel = window.scribli.blockPanels.find((item) => {
             if (item.element.style.zIndex < avPanelElement.style.zIndex) {
                 return true;
             }
@@ -288,7 +288,7 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
         // 浮窗上点击菜单，浮窗不能消失 https://ld246.com/article/1632668091023
         const menuElement = hasClosestByClassName(target, "b3-menu");
         if (menuElement && menuElement.getAttribute("data-name") !== Constants.MENU_DOC_TREE_MORE) {
-            const blockPanel = window.siyuan.blockPanels.find((item) => {
+            const blockPanel = window.scribli.blockPanels.find((item) => {
                 if (item.element.style.zIndex < menuElement.style.zIndex) {
                     return true;
                 }
@@ -307,10 +307,10 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
         popoverTargetElement = hasClosestByClassName(target, "popover__block") as HTMLElement;
     }
     const linkElement = hasClosestByAttribute(target, "data-type", "a", true);
-    if (!popoverTargetElement && linkElement && parseSiYuanUriInfo(linkElement.getAttribute("data-href"))) {
+    if (!popoverTargetElement && linkElement && parseScribliUriInfo(linkElement.getAttribute("data-href"))) {
         popoverTargetElement = linkElement;
     }
-    if (!popoverTargetElement || (popoverTargetElement && window.siyuan.menus.menu.data && window.siyuan.menus.menu.data === popoverTargetElement)) {
+    if (!popoverTargetElement || (popoverTargetElement && window.scribli.menus.menu.data && window.scribli.menus.menu.data === popoverTargetElement)) {
         // 移动到弹窗的 loading 元素上，但经过 settimeout 后 loading 已经被移除了
         // https://ld246.com/article/1673596577519/comment/1673767749885#comments
         let targetElement = target;
@@ -319,7 +319,7 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
         }
         const blockElement = hasClosestByClassName(targetElement, "block__popover", true);
         const maxEditLevels: { [key: string]: number } = {oid: 0};
-        window.siyuan.blockPanels.forEach((item) => {
+        window.scribli.blockPanels.forEach((item) => {
             if ((item.targetElement || typeof item.x === "number") && item.element.getAttribute("data-pin") === "true") {
                 const level = parseInt(item.element.getAttribute("data-level"));
                 const oid = item.element.getAttribute("data-oid");
@@ -332,10 +332,10 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
                 }
             }
         });
-        const menuLevel = parseInt(window.siyuan.menus.menu.element.dataset.from);
+        const menuLevel = parseInt(window.scribli.menus.menu.element.dataset.from);
         if (blockElement) {
-            for (let i = window.siyuan.blockPanels.length - 1; i >= 0; i--) {
-                const item = window.siyuan.blockPanels[i];
+            for (let i = window.scribli.blockPanels.length - 1; i >= 0; i--) {
+                const item = window.scribli.blockPanels[i];
                 const itemLevel = parseInt(item.element.getAttribute("data-level"));
                 if ((item.targetElement || typeof item.x === "number") &&
                     itemLevel > (maxEditLevels[item.element.getAttribute("data-oid")] || 0) &&
@@ -358,8 +358,8 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
                 }
             }
         } else {
-            for (let i = window.siyuan.blockPanels.length - 1; i >= 0; i--) {
-                const item = window.siyuan.blockPanels[i];
+            for (let i = window.scribli.blockPanels.length - 1; i >= 0; i--) {
+                const item = window.scribli.blockPanels[i];
                 const itemLevel = parseInt(item.element.getAttribute("data-level"));
                 if ((item.targetElement || typeof item.x === "number") && item.element.getAttribute("data-pin") === "false") {
                     if (menuLevel && menuLevel >= itemLevel) {
@@ -387,7 +387,7 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
 };
 
 const getTarget = (event: MouseEvent & { target: HTMLElement }, aElement: false | HTMLElement) => {
-    if (window.siyuan.config.editor.floatWindowMode === 2 || hasClosestByClassName(event.target, "history__repo", true)) {
+    if (window.scribli.config.editor.floatWindowMode === 2 || hasClosestByClassName(event.target, "history__repo", true)) {
         return false;
     }
     popoverTargetElement = hasClosestByAttribute(event.target, "data-type", "block-ref") as HTMLElement ||
@@ -399,18 +399,18 @@ const getTarget = (event: MouseEvent & { target: HTMLElement }, aElement: false 
         popoverTargetElement = hasClosestByClassName(event.target, "popover__block") as HTMLElement;
     }
     if (!popoverTargetElement && aElement) {
-        if (parseSiYuanUriInfo(aElement.getAttribute("data-href")) && aElement.getAttribute("prevent-popover") !== "true") {
+        if (parseScribliUriInfo(aElement.getAttribute("data-href")) && aElement.getAttribute("prevent-popover") !== "true") {
             popoverTargetElement = aElement;
         } else if (aElement.classList.contains("av__cell")) {
             const textElement = aElement.querySelector(".av__celltext--url") as HTMLElement;
-            if (textElement && textElement.dataset.type === "url" && parseSiYuanUriInfo(textElement.dataset.href)) {
+            if (textElement && textElement.dataset.type === "url" && parseScribliUriInfo(textElement.dataset.href)) {
                 popoverTargetElement = textElement;
             }
         }
     }
-    if (!popoverTargetElement || window.siyuan.altIsPressed ||
-        (window.siyuan.isPublish && popoverTargetElement.dataset.popoverUrl === "/api/av/getMirrorDatabaseBlocks") ||
-        (window.siyuan.config.editor.floatWindowMode === 0 && window.siyuan.ctrlIsPressed) ||
+    if (!popoverTargetElement || window.scribli.altIsPressed ||
+        (window.scribli.isPublish && popoverTargetElement.dataset.popoverUrl === "/api/av/getMirrorDatabaseBlocks") ||
+        (window.scribli.config.editor.floatWindowMode === 0 && window.scribli.ctrlIsPressed) ||
         (popoverTargetElement && popoverTargetElement.getAttribute("prevent-popover") === "true")) {
         return false;
     }
@@ -425,7 +425,7 @@ const getTarget = (event: MouseEvent & { target: HTMLElement }, aElement: false 
 };
 
 export const showPopover = async (app: App, showRef = false) => {
-    if (!popoverTargetElement || (window.siyuan.menus.menu.data && window.siyuan.menus.menu.data === popoverTargetElement)) {
+    if (!popoverTargetElement || (window.scribli.menus.menu.data && window.scribli.menus.menu.data === popoverTargetElement)) {
         return;
     }
     let refDefs: IRefDefs[] = [];
@@ -453,7 +453,7 @@ export const showPopover = async (app: App, showRef = false) => {
         refDefs = postResponse.data.refDefs;
     } else if (popoverTargetElement.getAttribute("data-type")?.split(" ").includes("a")) {
         // 以Scribli协议开头的链接
-        const blockInfo = parseSiYuanUriInfo(popoverTargetElement.getAttribute("data-href"));
+        const blockInfo = parseScribliUriInfo(popoverTargetElement.getAttribute("data-href"));
         refDefs = [{
             refID: blockInfo?.id ?? "",
             avItemID: blockInfo?.avItemID,
@@ -462,7 +462,7 @@ export const showPopover = async (app: App, showRef = false) => {
         }];
     } else if (popoverTargetElement.dataset.type === "url") {
         // 在 database 的 url 列中以Scribli协议开头的链接
-        const blockInfo = parseSiYuanUriInfo(popoverTargetElement.dataset.href || popoverTargetElement.textContent.trim());
+        const blockInfo = parseScribliUriInfo(popoverTargetElement.dataset.href || popoverTargetElement.textContent.trim());
         refDefs = [{
             refID: blockInfo?.id ?? "",
             avItemID: blockInfo?.avItemID,
@@ -507,7 +507,7 @@ export const showPopover = async (app: App, showRef = false) => {
     }
 
     let hasPin = false;
-    window.siyuan.blockPanels.find((item) => {
+    window.scribli.blockPanels.find((item) => {
         if ((item.targetElement || typeof item.x === "number") && item.element.getAttribute("data-pin") === "true"
             && JSON.stringify(refDefs) === JSON.stringify(item.refDefs)) {
             hasPin = true;
@@ -517,7 +517,7 @@ export const showPopover = async (app: App, showRef = false) => {
     if (!hasPin && popoverTargetElement.parentElement &&
         popoverTargetElement.parentElement.style.opacity !== "0.38" // 反向面板图标拖拽时不应该弹层
     ) {
-        window.siyuan.blockPanels.push(new BlockPanel({
+        window.scribli.blockPanels.push(new BlockPanel({
             app,
             targetElement: popoverTargetElement,
             isBacklink: showRef || popoverTargetElement.classList.contains("protyle-attr--refcount") || popoverTargetElement.classList.contains("counter"),

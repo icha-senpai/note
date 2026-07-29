@@ -13,7 +13,7 @@ import {openSetting} from "../config";
 import {getAllDocks} from "../layout/getAll";
 import {exportLayout, getAllLayout} from "../layout/util";
 import {getDockByType} from "../layout/tabUtil";
-import {exitSiYuan, lockScreen} from "../dialog/processSystem";
+import {exitScribli, lockScreen} from "../dialog/processSystem";
 import {showMessage} from "../dialog/message";
 import {unicode2Emoji} from "../emoji";
 import {Dock} from "../layout/dock";
@@ -32,15 +32,15 @@ import {openDataMigration} from "./dataMigration";
 const editLayout = (layoutName?: string) => {
     const dialog = new Dialog({
         positionId: Constants.DIALOG_SAVEWORKSPACE,
-        title: layoutName ? window.siyuan.languages.edit : window.siyuan.languages.save,
+        title: layoutName ? window.scribli.languages.edit : window.scribli.languages.save,
         content: `<div class="b3-dialog__content">
-        <input class="b3-text-field fn__block" value="${layoutName || ""}" placeholder="${window.siyuan.languages.memo}">
+        <input class="b3-text-field fn__block" value="${layoutName || ""}" placeholder="${window.scribli.languages.memo}">
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--remove${layoutName ? "" : " fn__none"}">${window.siyuan.languages.delete}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text${layoutName ? "" : " fn__none"}">${window.siyuan.languages.rename}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages[layoutName ? "updateLayout" : "confirm"]}</button>
+    <button class="b3-button b3-button--remove${layoutName ? "" : " fn__none"}">${window.scribli.languages.delete}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text${layoutName ? "" : " fn__none"}">${window.scribli.languages.rename}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages[layoutName ? "updateLayout" : "confirm"]}</button>
 </div>`,
         width: "520px",
     });
@@ -53,10 +53,10 @@ const editLayout = (layoutName?: string) => {
         btnsElement[3].dispatchEvent(new CustomEvent("click"));
     });
     btnsElement[0].addEventListener("click", () => {
-        window.siyuan.storage[Constants.LOCAL_LAYOUTS].find((layoutItem: ISaveLayout, index: number) => {
+        window.scribli.storage[Constants.LOCAL_LAYOUTS].find((layoutItem: ISaveLayout, index: number) => {
             if (layoutItem.name === layoutName) {
-                window.siyuan.storage[Constants.LOCAL_LAYOUTS].splice(index, 1);
-                setStorageVal(Constants.LOCAL_LAYOUTS, window.siyuan.storage[Constants.LOCAL_LAYOUTS]);
+                window.scribli.storage[Constants.LOCAL_LAYOUTS].splice(index, 1);
+                setStorageVal(Constants.LOCAL_LAYOUTS, window.scribli.storage[Constants.LOCAL_LAYOUTS]);
                 return true;
             }
         });
@@ -68,15 +68,15 @@ const editLayout = (layoutName?: string) => {
     btnsElement[2].addEventListener("click", () => {
         const value = inputElement.value;
         if (!value) {
-            showMessage(window.siyuan.languages["_kernel"]["142"]);
+            showMessage(window.scribli.languages["_kernel"]["142"]);
             return;
         }
         dialog.destroy();
-        window.siyuan.storage[Constants.LOCAL_LAYOUTS].find((layoutItem: ISaveLayout) => {
+        window.scribli.storage[Constants.LOCAL_LAYOUTS].find((layoutItem: ISaveLayout) => {
             if (layoutItem.name === layoutName) {
                 layoutItem.name = value;
                 layoutItem.time = Date.now();
-                setStorageVal(Constants.LOCAL_LAYOUTS, window.siyuan.storage[Constants.LOCAL_LAYOUTS]);
+                setStorageVal(Constants.LOCAL_LAYOUTS, window.scribli.storage[Constants.LOCAL_LAYOUTS]);
                 return true;
             }
         });
@@ -84,30 +84,30 @@ const editLayout = (layoutName?: string) => {
     btnsElement[3].addEventListener("click", () => {
         const value = inputElement.value;
         if (!value) {
-            showMessage(window.siyuan.languages["_kernel"]["142"]);
+            showMessage(window.scribli.languages["_kernel"]["142"]);
             return;
         }
         dialog.destroy();
         if (layoutName) {
-            window.siyuan.storage[Constants.LOCAL_LAYOUTS].find((layoutItem: ISaveLayout) => {
+            window.scribli.storage[Constants.LOCAL_LAYOUTS].find((layoutItem: ISaveLayout) => {
                 if (layoutItem.name === layoutName) {
                     layoutItem.name = value;
                     layoutItem.time = Date.now();
                     layoutItem.layout = getAllLayout();
-                    layoutItem.filesPaths = window.siyuan.storage[Constants.LOCAL_FILESPATHS];
-                    setStorageVal(Constants.LOCAL_LAYOUTS, window.siyuan.storage[Constants.LOCAL_LAYOUTS]);
+                    layoutItem.filesPaths = window.scribli.storage[Constants.LOCAL_FILESPATHS];
+                    setStorageVal(Constants.LOCAL_LAYOUTS, window.scribli.storage[Constants.LOCAL_LAYOUTS]);
                     return true;
                 }
             });
             return;
         }
-        const hadName = window.siyuan.storage[Constants.LOCAL_LAYOUTS].find((item: ISaveLayout) => {
+        const hadName = window.scribli.storage[Constants.LOCAL_LAYOUTS].find((item: ISaveLayout) => {
             if (item.name === value) {
-                confirmDialog(window.siyuan.languages.save, window.siyuan.languages.exportTplTip, () => {
+                confirmDialog(window.scribli.languages.save, window.scribli.languages.exportTplTip, () => {
                     item.layout = getAllLayout();
                     item.time = Date.now();
-                    item.filesPaths = window.siyuan.storage[Constants.LOCAL_FILESPATHS];
-                    setStorageVal(Constants.LOCAL_LAYOUTS, window.siyuan.storage[Constants.LOCAL_LAYOUTS]);
+                    item.filesPaths = window.scribli.storage[Constants.LOCAL_FILESPATHS];
+                    setStorageVal(Constants.LOCAL_LAYOUTS, window.scribli.storage[Constants.LOCAL_LAYOUTS]);
                 });
                 return true;
             }
@@ -115,22 +115,22 @@ const editLayout = (layoutName?: string) => {
         if (hadName) {
             return;
         }
-        window.siyuan.storage[Constants.LOCAL_LAYOUTS].push({
+        window.scribli.storage[Constants.LOCAL_LAYOUTS].push({
             name: value,
             time: Date.now(),
             layout: getAllLayout(),
-            filesPaths: window.siyuan.storage[Constants.LOCAL_FILESPATHS]
+            filesPaths: window.scribli.storage[Constants.LOCAL_FILESPATHS]
         });
-        setStorageVal(Constants.LOCAL_LAYOUTS, window.siyuan.storage[Constants.LOCAL_LAYOUTS]);
+        setStorageVal(Constants.LOCAL_LAYOUTS, window.scribli.storage[Constants.LOCAL_LAYOUTS]);
     });
 };
 
 const togglePinDock = (id: "switchLeftDock" | "switchRightDock" | "switchBottomDock", dock: Dock, pinIcon: string, unpinIcon: string) => {
     return {
         id,
-        label: `${dock.pin ? window.siyuan.languages.switchToFloatingLayout : window.siyuan.languages.switchToFixedLayout}`,
+        label: `${dock.pin ? window.scribli.languages.switchToFloatingLayout : window.scribli.languages.switchToFixedLayout}`,
         icon: `${dock.pin ? unpinIcon : pinIcon}`,
-        accelerator: window.siyuan.config.keymap.general[id].custom,
+        accelerator: window.scribli.config.keymap.general[id].custom,
         current: !dock.pin,
         click() {
             dock.togglePin();
@@ -139,20 +139,20 @@ const togglePinDock = (id: "switchLeftDock" | "switchRightDock" | "switchBottomD
 };
 
 export const workspaceMenu = (app: App, rect: DOMRect) => {
-    if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-        window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_BAR_WORKSPACE) {
-        window.siyuan.menus.menu.remove();
+    if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+        window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_BAR_WORKSPACE) {
+        window.scribli.menus.menu.remove();
         return;
     }
     fetchPost("/api/system/getWorkspaces", {}, (response) => {
-        window.siyuan.menus.menu.remove();
-        window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_BAR_WORKSPACE);
-        if (!window.siyuan.config.readonly) {
-            window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.remove();
+        window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_BAR_WORKSPACE);
+        if (!window.scribli.config.readonly) {
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "config",
-                label: window.siyuan.languages.config,
+                label: window.scribli.languages.config,
                 icon: "iconSettings",
-                accelerator: window.siyuan.config.keymap.general.config.custom,
+                accelerator: window.scribli.config.keymap.general.config.custom,
                 click: () => {
                     openSetting(app);
                 }
@@ -170,30 +170,30 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                 }
             });
         });
-        if (!window.siyuan.config.readonly) {
+        if (!window.scribli.config.readonly) {
             dockMenu.push({id: "separator_1", type: "separator"});
-            dockMenu.push(togglePinDock("switchLeftDock", window.siyuan.layout.leftDock, "iconPanelLeft", "iconPanelLeftDashed"));
-            dockMenu.push(togglePinDock("switchRightDock", window.siyuan.layout.rightDock, "iconPanelRight", "iconPanelRightDashed"));
-            dockMenu.push(togglePinDock("switchBottomDock", window.siyuan.layout.bottomDock, "iconPanelBottom", "iconPanelBottomDashed"));
+            dockMenu.push(togglePinDock("switchLeftDock", window.scribli.layout.leftDock, "iconPanelLeft", "iconPanelLeftDashed"));
+            dockMenu.push(togglePinDock("switchRightDock", window.scribli.layout.rightDock, "iconPanelRight", "iconPanelRightDashed"));
+            dockMenu.push(togglePinDock("switchBottomDock", window.scribli.layout.bottomDock, "iconPanelBottom", "iconPanelBottomDashed"));
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "panels",
-            label: window.siyuan.languages.panels,
+            label: window.scribli.languages.panels,
             icon: "iconDock",
             type: "submenu",
             submenu: dockMenu
         }).element);
-        if (!window.siyuan.config.readonly) {
+        if (!window.scribli.config.readonly) {
             let workspaceSubMenu: IMenu[];
             /// #if !BROWSER
             workspaceSubMenu = [{
                 id: "newOrOpenBy",
-                label: `${window.siyuan.languages.new} / ${window.siyuan.languages.openBy}`,
+                label: `${window.scribli.languages.new} / ${window.scribli.languages.openBy}`,
                 iconHTML: "",
                 click: async () => {
-                    const localPath = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+                    const localPath = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
                         cmd: "showOpenDialog",
-                        defaultPath: window.siyuan.config.system.homeDir,
+                        defaultPath: window.scribli.config.system.homeDir,
                         properties: ["openDirectory", "createDirectory"],
                     });
                     if (localPath.filePaths.length === 0) {
@@ -203,7 +203,7 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                         if (response.data.isWorkspace) {
                             openWorkspace(localPath.filePaths[0]);
                         } else {
-                            confirmDialog("🏗️ " + window.siyuan.languages.createWorkspace, window.siyuan.languages.createWorkspaceTip + `<br><br><code class="fn__code">${localPath.filePaths[0]}</code>`, () => {
+                            confirmDialog("🏗️ " + window.scribli.languages.createWorkspace, window.scribli.languages.createWorkspaceTip + `<br><br><code class="fn__code">${localPath.filePaths[0]}</code>`, () => {
                                 openWorkspace(localPath.filePaths[0]);
                             });
                         }
@@ -217,17 +217,17 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
             /// #else
             workspaceSubMenu = [{
                 id: "new",
-                label: window.siyuan.languages.new,
+                label: window.scribli.languages.new,
                 iconHTML: "",
                 click() {
                     const createWorkspaceDialog = new Dialog({
-                        title: window.siyuan.languages.new,
+                        title: window.scribli.languages.new,
                         content: `<div class="b3-dialog__content">
     <input class="b3-text-field fn__block">
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                         width: "520px",
                     });
@@ -240,7 +240,7 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                     });
                     btnsElement[1].addEventListener("click", () => {
                         fetchPost("/api/system/createWorkspaceDir", {
-                            path: pathPosix().join(pathPosix().dirname(window.siyuan.config.system.workspaceDir), inputElement.value)
+                            path: pathPosix().join(pathPosix().dirname(window.scribli.config.system.workspaceDir), inputElement.value)
                         }, () => {
                             createWorkspaceDialog.destroy();
                         });
@@ -248,7 +248,7 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                 }
             }, {
                 id: "openBy",
-                label: `${window.siyuan.languages.openBy}...`,
+                label: `${window.scribli.languages.openBy}...`,
                 iconHTML: "",
                 click() {
                     fetchPost("/api/system/getMobileWorkspaces", {}, (response) => {
@@ -257,13 +257,13 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                             selectHTML += `<option value="${item}"${index === 0 ? ' selected="selected"' : ""}>${pathPosix().basename(item)}</option>`;
                         });
                         const openWorkspaceDialog = new Dialog({
-                            title: window.siyuan.languages.openBy,
+                            title: window.scribli.languages.openBy,
                             content: `<div class="b3-dialog__content">
     <select class="b3-text-field fn__block">${selectHTML}</select>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                             width: "520px",
                         });
@@ -274,15 +274,15 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                         });
                         btnsElement[1].addEventListener("click", () => {
                             const openPath = openWorkspaceDialog.element.querySelector("select").value;
-                            if (openPath === window.siyuan.config.system.workspaceDir) {
+                            if (openPath === window.scribli.config.system.workspaceDir) {
                                 openWorkspaceDialog.destroy();
                                 return;
                             }
-                            confirmDialog(window.siyuan.languages.confirm, `${pathPosix().basename(window.siyuan.config.system.workspaceDir)} -> ${pathPosix().basename(openPath)}?`, () => {
+                            confirmDialog(window.scribli.languages.confirm, `${pathPosix().basename(window.scribli.config.system.workspaceDir)} -> ${pathPosix().basename(openPath)}?`, () => {
                                 fetchPost("/api/system/setWorkspaceDir", {
                                     path: openPath
                                 }, () => {
-                                    exitSiYuan(false);
+                                    exitScribli(false);
                                 });
                             });
                         });
@@ -294,7 +294,7 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                 workspaceSubMenu.push({
                     iconHTML: "",
                     action: "iconCloseRound",
-                    current: window.siyuan.config.system.workspaceDir === item.path,
+                    current: window.scribli.config.system.workspaceDir === item.path,
                     label: pathPosix().basename(item.path),
                     bind(menuElement) {
                         menuElement.addEventListener("click", (event) => {
@@ -302,17 +302,17 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                                 event.preventDefault();
                                 event.stopPropagation();
                                 fetchPost("/api/system/removeWorkspaceDir", {path: item.path}, () => {
-                                    confirmDialog(window.siyuan.languages.deleteOpConfirm, window.siyuan.languages.removeWorkspacePhysically.replace("${x}", item.path), () => {
+                                    confirmDialog(window.scribli.languages.deleteOpConfirm, window.scribli.languages.removeWorkspacePhysically.replace("${x}", item.path), () => {
                                         fetchPost("/api/system/removeWorkspaceDirPhysically", {path: item.path});
                                     }, undefined, true);
                                 });
                                 return;
                             }
-                            confirmDialog(window.siyuan.languages.confirm, `${pathPosix().basename(window.siyuan.config.system.workspaceDir)} -> ${pathPosix().basename(item.path)}?`, () => {
+                            confirmDialog(window.scribli.languages.confirm, `${pathPosix().basename(window.scribli.config.system.workspaceDir)} -> ${pathPosix().basename(item.path)}?`, () => {
                                 fetchPost("/api/system/setWorkspaceDir", {
                                     path: item.path
                                 }, () => {
-                                    exitSiYuan(false);
+                                    exitScribli(false);
                                 });
                             });
                         });
@@ -321,9 +321,9 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
             });
             /// #endif
             if (!isBrowser() || isInMobileApp()) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "workspaceList",
-                    label: window.siyuan.languages.workspaceList,
+                    label: window.scribli.languages.workspaceList,
                     icon: "iconWorkspace",
                     type: "submenu",
                     submenu: workspaceSubMenu,
@@ -333,22 +333,22 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
         const layoutSubMenu: IMenu[] = [{
             id: "save",
             iconHTML: "",
-            label: window.siyuan.languages.save,
+            label: window.scribli.languages.save,
             click() {
                 editLayout();
             }
         }];
-        if (window.siyuan.storage[Constants.LOCAL_LAYOUTS].length > 0) {
+        if (window.scribli.storage[Constants.LOCAL_LAYOUTS].length > 0) {
             layoutSubMenu.push({id: "separator_1", type: "separator"});
             layoutSubMenu.push({
                 iconHTML: "",
                 type: "empty",
-                label: `<input class="b3-text-field fn__block" style="margin: 4px 0" placeholder="${window.siyuan.languages.search}">
+                label: `<input class="b3-text-field fn__block" style="margin: 4px 0" placeholder="${window.scribli.languages.search}">
 <div class="b3-list b3-list--background" style="width: 220px"></div>`,
                 bind(menuElement) {
                     const genListHTML = (isInit = false) => {
                         let html = "";
-                        window.siyuan.storage[Constants.LOCAL_LAYOUTS].sort((a: ISaveLayout, b: ISaveLayout) => {
+                        window.scribli.storage[Constants.LOCAL_LAYOUTS].sort((a: ISaveLayout, b: ISaveLayout) => {
                             return a.name.localeCompare(b.name, undefined, {numeric: true});
                         }).forEach((item: ISaveLayout) => {
                             if (inputElement.value === "" || item.name.toLowerCase().indexOf(inputElement.value.toLowerCase()) > -1) {
@@ -380,7 +380,7 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                         }
                         upDownHint(listElement, event);
                         if (event.key === "Escape" || (event.key === "ArrowLeft" && inputElement.value === "")) {
-                            window.siyuan.menus.menu.remove(true);
+                            window.scribli.menus.menu.remove(true);
                         } else if (event.key === "Enter") {
                             const currentElement = listElement.querySelector(".b3-list-item--focus");
                             if (currentElement) {
@@ -399,7 +399,7 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                         listElement.innerHTML = genListHTML();
                     });
                     listElement.addEventListener("click", (event: MouseEvent) => {
-                        if (window.siyuan.config.readonly) {
+                        if (window.scribli.config.readonly) {
                             return;
                         }
                         const actionElement = hasClosestByClassName(event.target as Element, "b3-list-item__action");
@@ -407,12 +407,12 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                             event.preventDefault();
                             event.stopPropagation();
                             editLayout(actionElement.parentElement.dataset.name);
-                            window.siyuan.menus.menu.remove();
+                            window.scribli.menus.menu.remove();
                             return;
                         }
                         const liElement = hasClosestByClassName(event.target as Element, "b3-list-item");
                         if (liElement || event.detail) {
-                            const itemData: ISaveLayout = window.siyuan.storage[Constants.LOCAL_LAYOUTS].find((item: ISaveLayout) => {
+                            const itemData: ISaveLayout = window.scribli.storage[Constants.LOCAL_LAYOUTS].find((item: ISaveLayout) => {
                                 if (typeof event.detail === "string") {
                                     return item.name === event.detail;
                                 } else if (liElement) {
@@ -422,7 +422,7 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                             if (itemData) {
                                 fetchPost("/api/system/setUILayout", {layout: itemData.layout}, () => {
                                     if (itemData.filesPaths) {
-                                        window.siyuan.storage[Constants.LOCAL_FILESPATHS] = itemData.filesPaths;
+                                        window.scribli.storage[Constants.LOCAL_FILESPATHS] = itemData.filesPaths;
                                         setStorageVal(Constants.LOCAL_FILESPATHS, itemData.filesPaths, () => {
                                             window.location.reload();
                                         });
@@ -439,163 +439,163 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                 }
             });
         }
-        if (!window.siyuan.config.readonly) {
-            window.siyuan.menus.menu.append(new MenuItem({
+        if (!window.scribli.config.readonly) {
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "layout",
-                label: window.siyuan.languages.layout,
+                label: window.scribli.languages.layout,
                 icon: "iconLayout",
                 type: "submenu",
                 submenu: layoutSubMenu
             }).element);
         }
-        window.siyuan.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
-        if (!window.siyuan.config.readonly) {
+        window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
+        if (!window.scribli.config.readonly) {
             if (getOpenNotebookCount() < 2) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "dailyNote",
-                    label: window.siyuan.languages.dailyNote,
+                    label: window.scribli.languages.dailyNote,
                     icon: "iconCalendar",
-                    accelerator: window.siyuan.config.keymap.general.dailyNote.custom,
+                    accelerator: window.scribli.config.keymap.general.dailyNote.custom,
                     click: () => {
                         newDailyNote(app);
                     }
                 }).element);
             } else {
                 const submenu: IMenu[] = [];
-                window.siyuan.notebooks.forEach(item => {
+                window.scribli.notebooks.forEach(item => {
                     if (!item.closed) {
                         submenu.push({
                             label: escapeHtml(item.name),
-                            iconHTML: unicode2Emoji(item.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].note, "b3-menu__icon", true),
-                            accelerator: window.siyuan.storage[Constants.LOCAL_DAILYNOTEID] === item.id ? window.siyuan.config.keymap.general.dailyNote.custom : "",
+                            iconHTML: unicode2Emoji(item.icon || window.scribli.storage[Constants.LOCAL_IMAGES].note, "b3-menu__icon", true),
+                            accelerator: window.scribli.storage[Constants.LOCAL_DAILYNOTEID] === item.id ? window.scribli.config.keymap.general.dailyNote.custom : "",
                             click: () => {
                                 fetchNewDailyNote(app, item.id);
-                                window.siyuan.storage[Constants.LOCAL_DAILYNOTEID] = item.id;
-                                setStorageVal(Constants.LOCAL_DAILYNOTEID, window.siyuan.storage[Constants.LOCAL_DAILYNOTEID]);
+                                window.scribli.storage[Constants.LOCAL_DAILYNOTEID] = item.id;
+                                setStorageVal(Constants.LOCAL_DAILYNOTEID, window.scribli.storage[Constants.LOCAL_DAILYNOTEID]);
                             }
                         });
                     }
                 });
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "dailyNote",
-                    label: window.siyuan.languages.dailyNote,
+                    label: window.scribli.languages.dailyNote,
                     icon: "iconCalendar",
                     type: "submenu",
                     submenu
                 }).element);
             }
-            if (!window.siyuan.config.readonly) {
-                window.siyuan.menus.menu.append(new MenuItem({
+            if (!window.scribli.config.readonly) {
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "riffCard",
-                    label: window.siyuan.languages.riffCard,
+                    label: window.scribli.languages.riffCard,
                     type: "submenu",
                     icon: "iconRiffCard",
                     submenu: [{
                         id: "spaceRepetition",
                         iconHTML: "",
-                        label: window.siyuan.languages.spaceRepetition,
-                        accelerator: window.siyuan.config.keymap.general.riffCard.custom,
+                        label: window.scribli.languages.spaceRepetition,
+                        accelerator: window.scribli.config.keymap.general.riffCard.custom,
                         click: () => {
                             openCard(app);
                         }
                     }, {
                         id: "manage",
                         iconHTML: "",
-                        label: window.siyuan.languages.manage,
+                        label: window.scribli.languages.manage,
                         click: () => {
-                            viewCards(app, "", window.siyuan.languages.all, "");
+                            viewCards(app, "", window.scribli.languages.all, "");
                         }
                     }],
                 }).element);
             }
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "recentDocs",
-                label: window.siyuan.languages.recentDocs,
+                label: window.scribli.languages.recentDocs,
                 icon: "iconRecentDocs",
-                accelerator: window.siyuan.config.keymap.general.recentDocs.custom,
+                accelerator: window.scribli.config.keymap.general.recentDocs.custom,
                 click: () => {
                     openRecentDocs();
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "lockScreen",
-                label: window.siyuan.languages.lockScreen,
+                label: window.scribli.languages.lockScreen,
                 icon: "iconLock",
-                accelerator: window.siyuan.config.keymap.general.lockScreen.custom,
+                accelerator: window.scribli.config.keymap.general.lockScreen.custom,
                 click: () => {
                     lockScreen(app);
                 }
             }).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "dataHistory",
-                label: window.siyuan.languages.dataHistory,
+                label: window.scribli.languages.dataHistory,
                 icon: "iconHistory",
-                accelerator: window.siyuan.config.keymap.general.dataHistory.custom,
+                accelerator: window.scribli.config.keymap.general.dataHistory.custom,
                 click: () => {
                     openHistory(app);
                 }
             }).element);
-            if (!window.siyuan.config.readonly) {
-                window.siyuan.menus.menu.append(new MenuItem({
+            if (!window.scribli.config.readonly) {
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "dataMigration",
-                    label: window.siyuan.languages.dataMigration,
+                    label: window.scribli.languages.dataMigration,
                     icon: "iconDatabaseBackup",
                     click: () => {
                         openDataMigration();
                     }
                 }).element);
             }
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
         }
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "userGuide",
-            label: window.siyuan.languages.userGuide,
+            label: window.scribli.languages.userGuide,
             icon: "iconHelp",
-            ignore: window.siyuan.config.readonly,
+            ignore: window.scribli.config.readonly,
             click: () => {
                 mountHelp();
             }
         }).element);
         /// #if !BROWSER
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "debug",
-            label: window.siyuan.languages.debug,
+            label: window.scribli.languages.debug,
             icon: "iconBug",
             click: () => {
-                ipcRenderer.send(Constants.SIYUAN_CMD, "openDevTools");
+                ipcRenderer.send(Constants.SCRIBLI_CMD, "openDevTools");
             }
         }).element);
         /// #endif
         if (isIPad() || isInAndroid() || isInHarmony() || !isBrowser()) {
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "safeQuit",
-                label: window.siyuan.languages.safeQuit,
+                label: window.scribli.languages.safeQuit,
                 icon: "iconQuit",
                 warning: true,
                 click: () => {
                     exportLayout({
                         errorExit: true,
-                        cb: exitSiYuan,
+                        cb: exitScribli,
                     });
                 }
             }).element);
         }
-        window.siyuan.menus.menu.popup({x: rect.left, y: rect.bottom});
+        window.scribli.menus.menu.popup({x: rect.left, y: rect.bottom});
     });
 };
 
 const openWorkspace = (workspace: string) => {
     /// #if !BROWSER
-    if (workspace === window.siyuan.config.system.workspaceDir) {
+    if (workspace === window.scribli.config.system.workspaceDir) {
         return;
     }
     fetchPost("/api/system/setWorkspaceDir", {
         path: workspace
     }, () => {
-        ipcRenderer.send(Constants.SIYUAN_OPEN_WORKSPACE, {
+        ipcRenderer.send(Constants.SCRIBLI_OPEN_WORKSPACE, {
             workspace,
-            lang: window.siyuan.config.appearance.lang
+            lang: window.scribli.config.appearance.lang
         });
     });
     /// #endif
@@ -606,24 +606,24 @@ const workspaceItem = (item: IWorkspace) => {
     const submenu = [{
         id: "showInFolder",
         icon: "iconFolder",
-        label: window.siyuan.languages.showInFolder,
+        label: window.scribli.languages.showInFolder,
         click() {
             useShell("showItemInFolder", item.path);
         }
     }, {
         id: "copyPath",
         icon: "iconCopy",
-        label: window.siyuan.languages.copyPath,
+        label: window.scribli.languages.copyPath,
         click() {
             writeText(item.path);
-            showMessage(window.siyuan.languages.copied);
+            showMessage(window.scribli.languages.copied);
         }
     }];
-    if (item.path !== window.siyuan.config.system.workspaceDir) {
+    if (item.path !== window.scribli.config.system.workspaceDir) {
         submenu.splice(0, 0, {
             id: "openBy",
             icon: "iconOpenWindow",
-            label: window.siyuan.languages.openBy,
+            label: window.scribli.languages.openBy,
             click() {
                 openWorkspace(item.path);
             }
@@ -632,7 +632,7 @@ const workspaceItem = (item: IWorkspace) => {
             submenu.push({
                 id: "removeWorkspaceTip",
                 icon: "iconTrashcan",
-                label: window.siyuan.languages.removeWorkspaceTip,
+                label: window.scribli.languages.removeWorkspaceTip,
                 click() {
                     fetchPost("/api/system/removeWorkspaceDir", {path: item.path});
                 }

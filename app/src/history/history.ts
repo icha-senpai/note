@@ -46,7 +46,7 @@ const renderDoc = (element: HTMLElement, currentPage: number) => {
     docElement.classList.add("fn__none");
     if (typeElement.value === "2" || typeElement.value === "4") {
         notebookElement.setAttribute("disabled", "disabled");
-        if (window.siyuan.storage[Constants.LOCAL_HISTORY].type !== 2 && window.siyuan.storage[Constants.LOCAL_HISTORY].type !== 4) {
+        if (window.scribli.storage[Constants.LOCAL_HISTORY].type !== 2 && window.scribli.storage[Constants.LOCAL_HISTORY].type !== 4) {
             opElement.value = "all";
         }
         if (typeElement.value === "4") {
@@ -63,7 +63,7 @@ const renderDoc = (element: HTMLElement, currentPage: number) => {
         opElement.querySelector('option[value="outline"]').classList.add("fn__none");
     } else {
         notebookElement.removeAttribute("disabled");
-        if (window.siyuan.storage[Constants.LOCAL_HISTORY].type === 2 || window.siyuan.storage[Constants.LOCAL_HISTORY].type === 4) {
+        if (window.scribli.storage[Constants.LOCAL_HISTORY].type === 2 || window.scribli.storage[Constants.LOCAL_HISTORY].type === 4) {
             opElement.value = "all";
         }
         opElement.querySelector('option[value="clean"]').classList.add("fn__none");
@@ -74,10 +74,10 @@ const renderDoc = (element: HTMLElement, currentPage: number) => {
         opElement.querySelector('option[value="replace"]').classList.remove("fn__none");
         opElement.querySelector('option[value="outline"]').classList.remove("fn__none");
     }
-    window.siyuan.storage[Constants.LOCAL_HISTORY].notebookId = notebookElement.value;
-    window.siyuan.storage[Constants.LOCAL_HISTORY].type = parseInt(typeElement.value);
-    window.siyuan.storage[Constants.LOCAL_HISTORY].operation = opElement.value;
-    setStorageVal(Constants.LOCAL_HISTORY, window.siyuan.storage[Constants.LOCAL_HISTORY]);
+    window.scribli.storage[Constants.LOCAL_HISTORY].notebookId = notebookElement.value;
+    window.scribli.storage[Constants.LOCAL_HISTORY].type = parseInt(typeElement.value);
+    window.scribli.storage[Constants.LOCAL_HISTORY].operation = opElement.value;
+    setStorageVal(Constants.LOCAL_HISTORY, window.scribli.storage[Constants.LOCAL_HISTORY]);
     fetchPost("/api/history/searchHistory", {
         notebook: notebookElement.value,
         query: inputElement.value,
@@ -92,10 +92,10 @@ const renderDoc = (element: HTMLElement, currentPage: number) => {
         }
         pageBtn.setAttribute("data-totalpage", (response.data.pageCount || 1).toString());
         const pageElement = nextElement.nextElementSibling.nextElementSibling;
-        pageElement.textContent = `${window.siyuan.languages.pageCountAndHistoryCount.replace("${x}", response.data.pageCount).replace("${y}", response.data.totalCount || 1)}`;
+        pageElement.textContent = `${window.scribli.languages.pageCountAndHistoryCount.replace("${x}", response.data.pageCount).replace("${y}", response.data.totalCount || 1)}`;
         pageElement.classList.remove("fn__none");
         if (response.data.histories.length === 0) {
-            listElement.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+            listElement.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
             return;
         }
         let logsHTML = "";
@@ -111,7 +111,7 @@ const renderDoc = (element: HTMLElement, currentPage: number) => {
 
 const renderRepoItem = (response: IWebSocketData, element: Element, type: string) => {
     if (response.data.snapshots.length === 0) {
-        element.lastElementChild.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+        element.lastElementChild.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
         return;
     }
     let actionHTML = "";
@@ -121,13 +121,13 @@ const renderRepoItem = (response: IWebSocketData, element: Element, type: string
 <span class="b3-list-item__action" data-type="rollback">
     <svg><use xlink:href="#iconUndo"></use></svg>
     <span class="fn__space"></span>
-    ${window.siyuan.languages.rollback}
+    ${window.scribli.languages.rollback}
 </span>
 <span class="fn__flex-1"></span>
 <span class="b3-list-item__action" data-type="removeRepoTagSnapshot">
     <svg><use xlink:href="#iconTrashcan"></use></svg>
     <span class="fn__space"></span>
-    ${window.siyuan.languages.remove}
+    ${window.scribli.languages.remove}
 </span>
 <span class="fn__flex-1"></span>`;
     } else if (type === "getRepoSnapshots") {
@@ -135,23 +135,23 @@ const renderRepoItem = (response: IWebSocketData, element: Element, type: string
 <span class="b3-list-item__action" data-type="genTag">
     <svg><use xlink:href="#iconTag"></use></svg>
     <span class="fn__space"></span>
-    ${window.siyuan.languages.tagSnapshot}
+    ${window.scribli.languages.tagSnapshot}
 </span>
 <span class="fn__flex-1"></span>
 <span class="b3-list-item__action" data-type="rollback">
     <svg><use xlink:href="#iconUndo"></use></svg>
     <span class="fn__space"></span>
-    ${window.siyuan.languages.rollback}
+    ${window.scribli.languages.rollback}
 </span>
 <span class="fn__flex-1"></span>`;
     }
     /// #else
     if (type === "getRepoTagSnapshots") {
-        actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.siyuan.languages.rollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>
-<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="removeRepoTagSnapshot" aria-label="${window.siyuan.languages.remove}"><svg><use xlink:href="#iconTrashcan"></use></svg></span>`;
+        actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.scribli.languages.rollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>
+<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="removeRepoTagSnapshot" aria-label="${window.scribli.languages.remove}"><svg><use xlink:href="#iconTrashcan"></use></svg></span>`;
     } else if (type === "getRepoSnapshots") {
-        actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="genTag" aria-label="${window.siyuan.languages.tagSnapshot}"><svg><use xlink:href="#iconTag"></use></svg></span>
-<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.siyuan.languages.rollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>`;
+        actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="genTag" aria-label="${window.scribli.languages.tagSnapshot}"><svg><use xlink:href="#iconTag"></use></svg></span>
+<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.scribli.languages.rollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>`;
     }
     /// #endif
     let repoHTML = "";
@@ -173,7 +173,7 @@ const renderRepoItem = (response: IWebSocketData, element: Element, type: string
         let statHTML = "";
         if (item.typesCount) {
             statHTML = `<div class="b3-list-item__meta${isPhone ? " fn__none" : ""}">
-${window.siyuan.languages.fileCount} ${item.count}<span class="fn__space"></span>`;
+${window.scribli.languages.fileCount} ${item.count}<span class="fn__space"></span>`;
             item.typesCount.forEach(subItem => {
                 statHTML += `${subItem.type} ${subItem.count}<span class="fn__space"></span>`;
             });
@@ -204,7 +204,7 @@ ${statHTML}`;
         <span class="b3-list-item__action" data-type="more">
             <svg><use xlink:href="#iconMore"></use></svg>
             <span class="fn__space"></span>
-            ${window.siyuan.languages.more}
+            ${window.scribli.languages.more}
         </span>
         <span class="fn__flex-1"></span>
     </div>
@@ -222,7 +222,7 @@ ${actionHTML}
 
 const renderRepoSearchResult = (response: IWebSocketData, element: Element) => {
     if (response.data.files.length === 0) {
-        element.lastElementChild.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+        element.lastElementChild.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
         return;
     }
     let html = "";
@@ -248,17 +248,17 @@ const renderRepoSearchResult = (response: IWebSocketData, element: Element) => {
             <span class="fn__flex-1"></span>
             <span class="b3-list-item__action" data-type="view">
                 <svg><use xlink:href="#iconEye"></use></svg>
-                <span class="fn__space"></span>${window.siyuan.languages.cardPreview}
+                <span class="fn__space"></span>${window.scribli.languages.cardPreview}
             </span>
             <span class="fn__space"></span>
             <span class="b3-list-item__action" data-type="saveAs">
                 <svg><use xlink:href="#iconDownload"></use></svg>
-                <span class="fn__space"></span>${window.siyuan.languages.saveAs}
+                <span class="fn__space"></span>${window.scribli.languages.saveAs}
             </span>
             <span class="fn__space"></span>
             <span class="b3-list-item__action" data-type="rollback">
                 <svg><use xlink:href="#iconUndo"></use></svg>
-                <span class="fn__space"></span> ${window.siyuan.languages.rollback}
+                <span class="fn__space"></span> ${window.scribli.languages.rollback}
             </span>
         </div>
     </div>
@@ -275,13 +275,13 @@ const renderRepoSearchResult = (response: IWebSocketData, element: Element) => {
             ${dayjs(item.updated).format("YYYY-MM-DD HH:mm:ss")}
         </div>
     </div>
-    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="view" aria-label="${window.siyuan.languages.cardPreview}">
+    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="view" aria-label="${window.scribli.languages.cardPreview}">
         <svg><use xlink:href="#iconEye"></use></svg>
     </span>
-    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="saveAs" aria-label="${window.siyuan.languages.saveAs}">
+    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="saveAs" aria-label="${window.scribli.languages.saveAs}">
         <svg><use xlink:href="#iconDownload"></use></svg>
     </span>
-    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.siyuan.languages.rollback}">
+    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.scribli.languages.rollback}">
         <svg><use xlink:href="#iconUndo"></use></svg>
     </span>
 </li>`;
@@ -333,7 +333,7 @@ const renderRepo = (element: Element, currentPage: number) => {
                 nextElement.setAttribute("disabled", "disabled");
             }
             pageBtn.setAttribute("data-totalpage", (response.data.pageCount || 1).toString());
-            pageElement.textContent = `${window.siyuan.languages.pageCountAndSnapshotCount.replace("${x}", response.data.pageCount).replace("${y}", response.data.totalCount || 1)}`;
+            pageElement.textContent = `${window.scribli.languages.pageCountAndSnapshotCount.replace("${x}", response.data.pageCount).replace("${y}", response.data.totalCount || 1)}`;
             pageElement.classList.remove("fn__none");
             renderRepoSearchResult(response, element);
         });
@@ -365,7 +365,7 @@ const renderRepo = (element: Element, currentPage: number) => {
                 nextElement.setAttribute("disabled", "disabled");
             }
             pageBtn.setAttribute("data-totalpage", (response.data.pageCount || 1).toString());
-            pageElement.textContent = `${window.siyuan.languages.pageCountAndSnapshotCount.replace("${x}", response.data.pageCount).replace("${y}", response.data.totalCount || 1)}`;
+            pageElement.textContent = `${window.scribli.languages.pageCountAndSnapshotCount.replace("${x}", response.data.pageCount).replace("${y}", response.data.totalCount || 1)}`;
             pageElement.classList.remove("fn__none");
             renderRepoItem(response, element, selectValue);
         });
@@ -376,7 +376,7 @@ const renderRmNotebook = (element: HTMLElement) => {
     element.setAttribute("data-init", "true");
     fetchPost("/api/history/getNotebookHistory", {}, (response) => {
         if (response.data.histories.length === 0) {
-            element.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+            element.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
             return;
         }
         let logsHTML = "";
@@ -394,7 +394,7 @@ const renderRmNotebook = (element: HTMLElement) => {
                     logsHTML += `<li data-type="notebook" data-path="${docItem.path}" class="b3-list-item b3-list-item--hide-action" style="padding-left: 32px">
     <span class="b3-list-item__text">${escapeHtml(docItem.title)}</span>
     <span class="fn__space"></span>
-    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.siyuan.languages.rollback}">
+    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.scribli.languages.rollback}">
         <svg><use xlink:href="#iconUndo"></use></svg>
     </span>
 </li>`;
@@ -407,10 +407,10 @@ const renderRmNotebook = (element: HTMLElement) => {
 };
 
 export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc") => {
-    if (window.siyuan.config.readonly) {
+    if (window.scribli.config.readonly) {
         return;
     }
-    const exitDialog = window.siyuan.dialogs.find((item) => {
+    const exitDialog = window.scribli.dialogs.find((item) => {
         if (item.element.querySelector("#historyContainer")) {
             item.destroy();
             return true;
@@ -420,9 +420,9 @@ export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc") 
         return;
     }
 
-    const localHistory = window.siyuan.storage[Constants.LOCAL_HISTORY];
-    let notebookSelectHTML = `<option value='%' ${localHistory.notebookId === "%" ? "selected" : ""}>${window.siyuan.languages.allNotebooks}</option>`;
-    window.siyuan.notebooks.forEach((item) => {
+    const localHistory = window.scribli.storage[Constants.LOCAL_HISTORY];
+    let notebookSelectHTML = `<option value='%' ${localHistory.notebookId === "%" ? "selected" : ""}>${window.scribli.languages.allNotebooks}</option>`;
+    window.scribli.notebooks.forEach((item) => {
         if (!item.closed) {
             notebookSelectHTML += ` <option value="${item.id}"${item.id === localHistory.notebookId ? " selected" : ""}>${escapeHtml(item.name)}</option>`;
         }
@@ -430,54 +430,54 @@ export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc") 
 
     const contentHTML = `<div class="fn__flex-column" style="height: 100%;">
     <div class="layout-tab-bar fn__flex" ${isMobile() ? "" : 'style="border-radius: var(--b3-border-radius-b) var(--b3-border-radius-b) 0 0"'}>
-        <div data-type="doc" class="item item--full item--focus"><span class="fn__flex-1"></span><span class="item__text">${window.siyuan.languages.fileHistory}</span><span class="fn__flex-1"></span></div>
-        <div data-type="notebook" style="min-width: 160px" class="item item--full"><span class="fn__flex-1"></span><span class="item__text">${window.siyuan.languages.removedNotebook}</span><span class="fn__flex-1"></span></div>
-        <div data-type="repo" class="item item--full"><span class="fn__flex-1"></span><span class="item__text">${window.siyuan.languages.dataSnapshot}</span><span class="fn__flex-1"></span></div>
+        <div data-type="doc" class="item item--full item--focus"><span class="fn__flex-1"></span><span class="item__text">${window.scribli.languages.fileHistory}</span><span class="fn__flex-1"></span></div>
+        <div data-type="notebook" style="min-width: 160px" class="item item--full"><span class="fn__flex-1"></span><span class="item__text">${window.scribli.languages.removedNotebook}</span><span class="fn__flex-1"></span></div>
+        <div data-type="repo" class="item item--full"><span class="fn__flex-1"></span><span class="item__text">${window.scribli.languages.dataSnapshot}</span><span class="fn__flex-1"></span></div>
     </div>
     <div class="fn__flex-1 fn__flex" id="historyContainer">
         <div data-type="doc" class="history__repo fn__block" data-init="true">
             <div class="history__action">
                 <div class="block__icons">
-                    <span data-type="docprevious" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.siyuan.languages.previousLabel}"><svg><use xlink:href='#iconLeft'></use></svg></span>
+                    <span data-type="docprevious" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.scribli.languages.previousLabel}"><svg><use xlink:href='#iconLeft'></use></svg></span>
                     <button class="b3-button b3-button--text ft__selectnone" data-type="jumpHistoryPage" data-totalpage="1">1</button>
-                    <span data-type="docnext" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.siyuan.languages.nextLabel}"><svg><use xlink:href='#iconRight'></use></svg></span>
+                    <span data-type="docnext" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.scribli.languages.nextLabel}"><svg><use xlink:href='#iconRight'></use></svg></span>
                     <span class="fn__space"></span>
-                    <span class="ft__on-surface fn__flex-shrink ft__selectnone fn__none">${window.siyuan.languages.pageCountAndHistoryCount}</span>
+                    <span class="ft__on-surface fn__flex-shrink ft__selectnone fn__none">${window.scribli.languages.pageCountAndHistoryCount}</span>
                     <span class="fn__space"></span>
                     <div class="fn__flex-1"></div>
                     <div class="b3-form__icon">
                         <svg class="b3-form__icon-icon"><use xlink:href="#iconSearch"></use></svg>
-                        <input class="b3-text-field b3-form__icon-input ${isMobile() ? "fn__size96" : "fn__size200"}" placeholder="${window.siyuan.languages.search}">
+                        <input class="b3-text-field b3-form__icon-input ${isMobile() ? "fn__size96" : "fn__size200"}" placeholder="${window.scribli.languages.search}">
                     </div>
                     <span class="fn__space"></span>
                     <select data-type="typeselect" class="b3-select ${isMobile() ? "fn__size96" : "fn__size200"}">
-                        <option value="0" ${localHistory.type === 0 ? "selected" : ""}>${window.siyuan.languages.docName}</option>
-                        <option value="1" ${localHistory.type === 1 ? "selected" : ""}>${window.siyuan.languages.docNameAndContent}</option>
-                        <option value="2" ${localHistory.type === 2 ? "selected" : ""}>${window.siyuan.languages.assets}</option>
-                        <option value="4" ${localHistory.type === 4 ? "selected" : ""}>${window.siyuan.languages.database}</option>
+                        <option value="0" ${localHistory.type === 0 ? "selected" : ""}>${window.scribli.languages.docName}</option>
+                        <option value="1" ${localHistory.type === 1 ? "selected" : ""}>${window.scribli.languages.docNameAndContent}</option>
+                        <option value="2" ${localHistory.type === 2 ? "selected" : ""}>${window.scribli.languages.assets}</option>
+                        <option value="4" ${localHistory.type === 4 ? "selected" : ""}>${window.scribli.languages.database}</option>
                     </select>
                     <span class="fn__space"></span>
                     <select data-type="opselect" class="b3-select${isMobile() ? " fn__size96" : ""}">
-                        <option value="all" ${localHistory.operation === "all" ? "selected" : ""}>${window.siyuan.languages.allOp}</option>
-                        <option value="clean" ${localHistory.operation === "clean" ? "selected" : ""}>${window.siyuan.languages.historyClean}</option>
-                        <option value="update" ${localHistory.operation === "update" ? "selected" : ""}>${window.siyuan.languages.historyUpdate}</option>
-                        <option value="delete" ${localHistory.operation === "delete" ? "selected" : ""}>${window.siyuan.languages.historyDelete}</option>
-                        <option value="format" ${localHistory.operation === "format" ? "selected" : ""}>${window.siyuan.languages.historyFormat}</option>
-                        <option value="sync" ${localHistory.operation === "sync" ? "selected" : ""}>${window.siyuan.languages.historySync}</option>
-                        <option value="replace" ${localHistory.operation === "replace" ? "selected" : ""}>${window.siyuan.languages.historyReplace}</option>
-                        <option value="outline" ${localHistory.operation === "outline" ? "selected" : ""}>${window.siyuan.languages.historyOutline}</option>
+                        <option value="all" ${localHistory.operation === "all" ? "selected" : ""}>${window.scribli.languages.allOp}</option>
+                        <option value="clean" ${localHistory.operation === "clean" ? "selected" : ""}>${window.scribli.languages.historyClean}</option>
+                        <option value="update" ${localHistory.operation === "update" ? "selected" : ""}>${window.scribli.languages.historyUpdate}</option>
+                        <option value="delete" ${localHistory.operation === "delete" ? "selected" : ""}>${window.scribli.languages.historyDelete}</option>
+                        <option value="format" ${localHistory.operation === "format" ? "selected" : ""}>${window.scribli.languages.historyFormat}</option>
+                        <option value="sync" ${localHistory.operation === "sync" ? "selected" : ""}>${window.scribli.languages.historySync}</option>
+                        <option value="replace" ${localHistory.operation === "replace" ? "selected" : ""}>${window.scribli.languages.historyReplace}</option>
+                        <option value="outline" ${localHistory.operation === "outline" ? "selected" : ""}>${window.scribli.languages.historyOutline}</option>
                     </select>
                     <span class="fn__space"></span>
                     <select data-type="notebookselect" class="b3-select ${isMobile() ? "fn__size96" : "fn__size200"}">
                         ${notebookSelectHTML}
                     </select>
                     <span class="fn__space"></span>
-                    <button data-type="rebuildIndex" class="b3-button b3-button--outline">${window.siyuan.languages.rebuildHistoryIndex}</button>
+                    <button data-type="rebuildIndex" class="b3-button b3-button--outline">${window.scribli.languages.rebuildHistoryIndex}</button>
                 </div>
             </div>
             <div class="fn__flex fn__flex-1 history__panel">
                 <ul class="b3-list b3-list--background history__side" ${isMobile() ? "" : `style="width: ${localHistory.sideWidth}"`}>
-                    <li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>
+                    <li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>
                 </ul>
                 <div class="history__resize"></div>
                 <div class="fn__flex-column fn__flex-1">
@@ -489,38 +489,38 @@ export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc") 
             </div>
         </div>
         <ul data-type="notebook" style="padding: 8px 0;" class="fn__none b3-list b3-list--background">
-            <li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>
+            <li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>
         </ul>
         <div data-type="repo" class="fn__none history__repo">
             <div class="history__action">
                 <div class="block__icons">
-                    <span data-type="previous" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.siyuan.languages.previousLabel}"><svg><use xlink:href='#iconLeft'></use></svg></span>
+                    <span data-type="previous" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.scribli.languages.previousLabel}"><svg><use xlink:href='#iconLeft'></use></svg></span>
                     <button class="b3-button b3-button--text ft__selectnone" data-type="jumpRepoPage" data-totalpage="1">1</button>
-                    <span data-type="next" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.siyuan.languages.nextLabel}"><svg><use xlink:href='#iconRight'></use></svg></span>
+                    <span data-type="next" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.scribli.languages.nextLabel}"><svg><use xlink:href='#iconRight'></use></svg></span>
                     <span class="fn__space"></span>
-                    <span class="ft__on-surface fn__flex-shrink ft__selectnone fn__none">${window.siyuan.languages.pageCountAndSnapshotCount}</span>
+                    <span class="ft__on-surface fn__flex-shrink ft__selectnone fn__none">${window.scribli.languages.pageCountAndSnapshotCount}</span>
                     <span class="fn__space"></span>
                     <div class="fn__flex-1"></div>
                     <div class="b3-form__icon fn__none">
                        <svg class="b3-form__icon-icon"><use xlink:href="#iconSearch"></use></svg>
-                       <input class="b3-text-field b3-form__icon-input fn__size200" style="padding-right: 44px;" placeholder="${window.siyuan.languages.searchFileName}">
-                       <button class="b3-button b3-button--text" style="position: absolute;right: 0;top: 0;">${window.siyuan.languages.search}</button>
+                       <input class="b3-text-field b3-form__icon-input fn__size200" style="padding-right: 44px;" placeholder="${window.scribli.languages.searchFileName}">
+                       <button class="b3-button b3-button--text" style="position: absolute;right: 0;top: 0;">${window.scribli.languages.search}</button>
                     </div>
                     <span class="fn__space"></span>
                     <select class="b3-select ${isMobile() ? "fn__size96" : "fn__size200"}">
-                        <option value="getRepoSnapshots">${window.siyuan.languages.localSnapshot}</option>
-                        <option value="getRepoTagSnapshots">${window.siyuan.languages.localTagSnapshot}</option>
+                        <option value="getRepoSnapshots">${window.scribli.languages.localSnapshot}</option>
+                        <option value="getRepoTagSnapshots">${window.scribli.languages.localTagSnapshot}</option>
                     </select>
                     <span class="fn__space"></span>
-                    <button class="b3-button b3-button--outline" disabled data-type="compare">${window.siyuan.languages.compare}</button>
+                    <button class="b3-button b3-button--outline" disabled data-type="compare">${window.scribli.languages.compare}</button>
                     <span class="fn__space"></span>
                     <button class="b3-button b3-button--outline" data-type="genRepo">
-                        <svg><use xlink:href="#iconAdd"></use></svg>${window.siyuan.languages.createSnapshot}
+                        <svg><use xlink:href="#iconAdd"></use></svg>${window.scribli.languages.createSnapshot}
                     </button>
                 </div>    
             </div>
             <ul class="b3-list b3-list--background fn__flex-1" style="padding: 8px 0">
-                <li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>
+                <li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>
             </ul>
         </div>
     </div>
@@ -530,7 +530,7 @@ export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc") 
         openModel({
             html: contentHTML,
             icon: "iconHistory",
-            title: window.siyuan.languages.dataHistory,
+            title: window.scribli.languages.dataHistory,
             bindEvent(element) {
                 element.firstElementChild.setAttribute("style", "background-color:var(--b3-theme-background);height:100%");
                 bindEvent(app, element.firstElementChild);
@@ -641,7 +641,7 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                 event.stopPropagation();
                 event.preventDefault();
                 break;
-            } else if (target.classList.contains("b3-list-item__action") && type === "rollback" && !window.siyuan.config.readonly) {
+            } else if (target.classList.contains("b3-list-item__action") && type === "rollback" && !window.scribli.config.readonly) {
                 const liElement = target.closest(".b3-list-item");
                 const dataType = target.parentElement.getAttribute("data-type") || liElement.getAttribute("data-type");
                 let name;
@@ -650,7 +650,7 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                     name = target.previousElementSibling.previousElementSibling.textContent.trim();
                     time = target.parentElement.parentElement.previousElementSibling.textContent.trim();
                 } else if (dataType === "repoitem") {
-                    name = window.siyuan.languages.workspaceData;
+                    name = window.scribli.languages.workspaceData;
                     time = (isMobile() ? target.parentElement.parentElement : target.parentElement).querySelector("span[data-type='hCreated']").textContent.trim();
                 } else if (dataType === "searchFileItem") {
                     name = liElement.querySelector(".b3-list-item__text").textContent.trim();
@@ -659,8 +659,8 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                     name = target.previousElementSibling.previousElementSibling.textContent.trim();
                     time = dayjs(parseInt(target.parentElement.getAttribute("data-created")) * 1000).format("YYYY-MM-DD HH:mm:ss");
                 }
-                confirmDialog("⚠️ " + window.siyuan.languages.rollback,
-                    window.siyuan.languages.rollbackConfirm.replace("${name}", name).replace("${time}", time),
+                confirmDialog("⚠️ " + window.scribli.languages.rollback,
+                    window.scribli.languages.rollbackConfirm.replace("${name}", name).replace("${time}", time),
                     () => {
                         if (dataType === "assets") {
                             fetchPost("/api/history/rollbackAssetsHistory", {
@@ -713,7 +713,7 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                 const contentElement = dialog.element.querySelector(".b3-dialog__content");
                 fetchPost("/api/repo/openRepoSnapshotFile", {id: liElement.getAttribute("data-id")}, (response) => {
                     const type = pathPosix().extname(response.data.content).toLowerCase();
-                    if (Constants.SIYUAN_ASSETS_IMAGE.concat(Constants.SIYUAN_ASSETS_AUDIO).concat(Constants.SIYUAN_ASSETS_VIDEO).includes(type)) {
+                    if (Constants.SCRIBLI_ASSETS_IMAGE.concat(Constants.SCRIBLI_ASSETS_AUDIO).concat(Constants.SCRIBLI_ASSETS_VIDEO).includes(type)) {
                         contentElement.firstElementChild.innerHTML = renderAssetsPreview(response.data.content);
                     } else if (response.data.displayInText) {
                         contentElement.innerHTML = '<textarea readonly class="b3-text-field fn__block" style="height: 100%"></textarea>';
@@ -785,31 +785,31 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                                 let chipClass = " b3-chip b3-chip--list ";
                                 if (docItem.op === "clean") {
                                     chipClass += "b3-chip--primary ";
-                                    ariaLabel = window.siyuan.languages.historyClean;
+                                    ariaLabel = window.scribli.languages.historyClean;
                                 } else if (docItem.op === "update") {
                                     chipClass += "b3-chip--info ";
-                                    ariaLabel = window.siyuan.languages.historyUpdate;
+                                    ariaLabel = window.scribli.languages.historyUpdate;
                                 } else if (docItem.op === "delete") {
                                     chipClass += "b3-chip--error ";
-                                    ariaLabel = window.siyuan.languages.historyDelete;
+                                    ariaLabel = window.scribli.languages.historyDelete;
                                 } else if (docItem.op === "format") {
                                     chipClass += "b3-chip--pink ";
-                                    ariaLabel = window.siyuan.languages.historyFormat;
+                                    ariaLabel = window.scribli.languages.historyFormat;
                                 } else if (docItem.op === "sync") {
                                     chipClass += "b3-chip--success ";
-                                    ariaLabel = window.siyuan.languages.historySync;
+                                    ariaLabel = window.scribli.languages.historySync;
                                 } else if (docItem.op === "replace") {
                                     chipClass += "b3-chip--secondary ";
-                                    ariaLabel = window.siyuan.languages.historyReplace;
+                                    ariaLabel = window.scribli.languages.historyReplace;
                                 } else if (docItem.op === "outline") {
                                     chipClass += "b3-chip--warning ";
-                                    ariaLabel = window.siyuan.languages.historyOutline;
+                                    ariaLabel = window.scribli.languages.historyOutline;
                                 }
                                 html += `<li data-notebook-id="${docItem.notebook}" data-created="${created}" data-type="${typeElement.value === "4" ? "av" : (typeElement.value === "2" ? "assets" : "doc")}" data-path="${docItem.path}" class="b3-list-item b3-list-item--hide-action" style="padding-left: 22px">
     <span class="${opElement.value === "all" ? "" : "fn__none"}${chipClass}ariaLabel" data-position="6south" aria-label="${ariaLabel}">${docItem.op.substring(0, 1).toUpperCase()}</span>
     <span class="b3-list-item__text" title="${escapeAttr(docItem.title)}">${escapeHtml(docItem.title)}</span>
     <span class="fn__space"></span>
-    <span class="b3-list-item__action ariaLabel" data-type="rollback" data-position="6south" aria-label="${window.siyuan.languages.rollback}">
+    <span class="b3-list-item__action ariaLabel" data-type="rollback" data-position="6south" aria-label="${window.scribli.languages.rollback}">
         <svg><use xlink:href="#iconUndo"></use></svg>
     </span>
 </li>`;
@@ -922,13 +922,13 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                 break;
             } else if (type === "genRepo") {
                 const genRepoDialog = new Dialog({
-                    title: window.siyuan.languages.snapshotMemo,
+                    title: window.scribli.languages.snapshotMemo,
                     content: `<div class="b3-dialog__content">
-    <textarea class="b3-text-field fn__block" placeholder="${window.siyuan.languages.snapshotMemoTip}"></textarea>
+    <textarea class="b3-text-field fn__block" placeholder="${window.scribli.languages.snapshotMemoTip}"></textarea>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                     width: isMobile() ? "92vw" : "520px",
                 });
@@ -953,7 +953,7 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                 break;
             } else if (type === "removeRepoTagSnapshot") {
                 const tag = target.parentElement.getAttribute("data-tag");
-                confirmDialog(window.siyuan.languages.deleteOpConfirm, `${window.siyuan.languages.confirmDelete} <i>${tag}</i>?`, () => {
+                confirmDialog(window.scribli.languages.deleteOpConfirm, `${window.scribli.languages.confirmDelete} <i>${tag}</i>?`, () => {
                     fetchPost("/api/repo/" + type, {tag}, () => {
                         renderRepo(repoElement, 1);
                     });
@@ -963,13 +963,13 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                 break;
             } else if (type === "genTag") {
                 const genTagDialog = new Dialog({
-                    title: window.siyuan.languages.tagSnapshot,
+                    title: window.scribli.languages.tagSnapshot,
                     content: `<div class="b3-dialog__content">
-    <input class="b3-text-field fn__block" value="${dayjs().format("YYYYMMDDHHmmss")}" placeholder="${window.siyuan.languages.tagSnapshotTip}">
+    <input class="b3-text-field fn__block" value="${dayjs().format("YYYYMMDDHHmmss")}" placeholder="${window.scribli.languages.tagSnapshotTip}">
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.tagSnapshot}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.tagSnapshot}</button>
 </div>`,
                     width: isMobile() ? "92vw" : "520px",
                 });
@@ -1004,7 +1004,7 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
 
                 if (totalPage > 1) {
                     confirmDialog(
-                        window.siyuan.languages.jumpToPage.replace("${x}", totalPage),
+                        window.scribli.languages.jumpToPage.replace("${x}", totalPage),
                         `<input class="b3-text-field fn__block" type="number" min="1" max="${totalPage}" value="${currentPage}">`,
                         (confirmD) => {
                             const inputElement = confirmD.element.querySelector(".b3-text-field") as HTMLInputElement;
@@ -1023,7 +1023,7 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
 
                 if (totalPage > 1) {
                     confirmDialog(
-                        window.siyuan.languages.jumpToPage.replace("${x}", totalPage),
+                        window.scribli.languages.jumpToPage.replace("${x}", totalPage),
                         `<input class="b3-text-field fn__block" type="number" min="1" max="${totalPage}" value="${currentPage}">`,
                         (confirmD) => {
                             const inputElement = confirmD.element.querySelector(".b3-text-field") as HTMLInputElement;

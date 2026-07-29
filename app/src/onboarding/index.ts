@@ -12,14 +12,14 @@ import {openFileById} from "../editor/util";
 /// #endif
 
 export const ensureOnboarding = async () => {
-    const onboarding = window.siyuan.config.onboarding;
-    if (!onboarding?.newUser || onboarding.dismissed || window.siyuan.config.readonly || window.siyuan.isPublish) {
+    const onboarding = window.scribli.config.onboarding;
+    if (!onboarding?.newUser || onboarding.dismissed || window.scribli.config.readonly || window.scribli.isPublish) {
         return;
     }
     try {
         const response = await fetchSyncPost("/api/system/ensureOnboarding", {});
         if (response.code === 0) {
-            window.siyuan.config.onboarding = response.data;
+            window.scribli.config.onboarding = response.data;
         }
     } catch (error) {
         console.warn("ensure onboarding failed", error);
@@ -27,10 +27,10 @@ export const ensureOnboarding = async () => {
 };
 
 const shouldShowOnboarding = () => {
-    return window.siyuan.config.onboarding?.newUser &&
-        window.siyuan.config.onboarding.state === "completed" &&
-        window.siyuan.config.onboarding.documentID &&
-        !window.siyuan.config.onboarding.dismissed;
+    return window.scribli.config.onboarding?.newUser &&
+        window.scribli.config.onboarding.state === "completed" &&
+        window.scribli.config.onboarding.documentID &&
+        !window.scribli.config.onboarding.dismissed;
 };
 
 let pendingSyncHandler: (() => void) | undefined;
@@ -48,7 +48,7 @@ const dismissOnboarding = () => {
     const onboardingElement = document.querySelector(".onboarding");
     onboardingElement?.parentElement?.classList.remove("onboarding-container");
     onboardingElement?.remove();
-    window.siyuan.config.onboarding.dismissed = true;
+    window.scribli.config.onboarding.dismissed = true;
     fetchPost("/api/system/dismissOnboarding", {});
 };
 
@@ -70,19 +70,19 @@ const renderOnboarding = (app: App) => {
     }
     const element = document.createElement("section");
     element.className = "onboarding";
-    element.innerHTML = `<button class="onboarding__close" data-type="close" aria-label="${window.siyuan.languages.close}">
+    element.innerHTML = `<button class="onboarding__close" data-type="close" aria-label="${window.scribli.languages.close}">
     <svg><use xlink:href="#iconCloseRound"></use></svg>
 </button>
-<div class="onboarding__title">&#x1F389; ${window.siyuan.languages.onboardingWelcome}</div>
-<div class="onboarding__desc">${window.siyuan.languages.onboardingDescription}</div>
+<div class="onboarding__title">&#x1F389; ${window.scribli.languages.onboardingWelcome}</div>
+<div class="onboarding__desc">${window.scribli.languages.onboardingDescription}</div>
 <button class="b3-button b3-button--outline fn__block" data-type="import">
-    <svg><use xlink:href="#iconDownload"></use></svg>${window.siyuan.languages.importExistingData}
+    <svg><use xlink:href="#iconDownload"></use></svg>${window.scribli.languages.importExistingData}
 </button>
 <button class="b3-button b3-button--outline fn__block" data-type="sync">
-    <svg><use xlink:href="#iconCloud"></use></svg>${window.siyuan.languages.settingsAndSync}
+    <svg><use xlink:href="#iconCloud"></use></svg>${window.scribli.languages.settingsAndSync}
 </button>
 <button class="b3-button b3-button--outline fn__block" data-type="guide">
-    <svg><use xlink:href="#iconHelp"></use></svg>${window.siyuan.languages.userGuide}
+    <svg><use xlink:href="#iconHelp"></use></svg>${window.scribli.languages.userGuide}
 </button>`;
     element.addEventListener("click", (event) => {
         const target = (event.target as HTMLElement).closest("[data-type]") as HTMLElement;
@@ -96,7 +96,7 @@ const renderOnboarding = (app: App) => {
             case "import":
                 openDataMigration({
                     mode: "onboarding",
-                    notebookID: window.siyuan.config.onboarding.notebookID,
+                    notebookID: window.scribli.config.onboarding.notebookID,
                     onContentImportComplete: dismissOnboarding,
                 });
                 break;
@@ -135,7 +135,7 @@ export const openDesktopOnboarding = (app: App) => {
     window.setTimeout(() => {
         openFileById({
             app,
-            id: window.siyuan.config.onboarding.documentID,
+            id: window.scribli.config.onboarding.documentID,
             action: [Constants.CB_GET_FOCUSFIRST],
         });
         renderOnboarding(app);
@@ -149,13 +149,13 @@ export const openMobileOnboarding = (app: App) => {
         return false;
     }
     renderOnboarding(app);
-    openMobileFileById(app, window.siyuan.config.onboarding.documentID, [Constants.CB_GET_CONTEXT]);
+    openMobileFileById(app, window.scribli.config.onboarding.documentID, [Constants.CB_GET_CONTEXT]);
     return true;
 };
 /// #endif
 
 export const activateOnboarding = async (app: App, onboarding: Config.IConf["onboarding"]) => {
-    window.siyuan.config.onboarding = onboarding;
+    window.scribli.config.onboarding = onboarding;
     await ensureOnboarding();
     setNoteBook(() => {
         /// #if MOBILE

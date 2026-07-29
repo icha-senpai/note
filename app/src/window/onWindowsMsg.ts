@@ -36,7 +36,7 @@ export const onWindowsMsg = (ipcData: IWebSocketData, app: App) => {
             }
             break;
         case "lockscreenByMode":
-            if (window.siyuan.config.system.lockScreenMode === 1) {
+            if (window.scribli.config.system.lockScreenMode === 1) {
                 lockScreen(app);
             }
             break;

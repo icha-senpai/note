@@ -31,7 +31,7 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
     let edit: Protyle;
     let unRefEdit;
     let config: Config.IUILayoutTabSearchConfig;
-    window.siyuan.dialogs.find((item) => {
+    window.scribli.dialogs.find((item) => {
         if (item.element.contains(range.startContainer) && item.element.querySelector("#searchList")) {
             element = item.element.querySelector(".b3-dialog__body");
             dialog = item;
@@ -60,7 +60,7 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
     const searchType = assetsElement.classList.contains("fn__none") ? (unRefElement.classList.contains("fn__none") ? "doc" : "unRef") : "asset";
     const listElement = searchType === "asset" ? assetsElement.querySelector("#searchAssetList") : (searchType === "doc" ? element.querySelector("#searchList") : unRefElement.querySelector("#searchUnRefList"));
     const searchInputElement = element.querySelector("#searchInput") as HTMLInputElement;
-    if (searchType === "doc" && matchHotKey(window.siyuan.config.keymap.general.newFile.custom, event)) {
+    if (searchType === "doc" && matchHotKey(window.scribli.config.keymap.general.newFile.custom, event)) {
         if (config.method === 0) {
             newFile(app, searchInputElement.value);
         }
@@ -79,8 +79,8 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
         }
         return true;
     }
-    const assetLocal = window.siyuan.storage[Constants.LOCAL_SEARCHASSET] as ISearchAssetOption;
-    if (!window.siyuan.menus.menu.element.classList.contains("fn__none")) {
+    const assetLocal = window.scribli.storage[Constants.LOCAL_SEARCHASSET] as ISearchAssetOption;
+    if (!window.scribli.menus.menu.element.classList.contains("fn__none")) {
         // 不能返回 true，否则历史菜单无法使用快捷键
         return false;
     }
@@ -96,7 +96,7 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
         return false;
     }
     if (searchType !== "asset") {
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.insertRight.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.insertRight.custom, event)) {
             openSearchEditor({
                 protyle: edit.protyle,
                 rootId: currentList.getAttribute("data-root-id"),
@@ -119,27 +119,27 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
             });
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.copyBlockRef.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.copyBlockRef.custom, event)) {
             fetchPost("/api/block/getRefText", {id}, (response) => {
                 writeText(`((${id} '${response.data}'))`);
             });
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.copyBlockEmbed.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.copyBlockEmbed.custom, event)) {
             writeText(`{{select * from blocks where id='${id}'}}`);
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.copyProtocol.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.copyProtocol.custom, event)) {
             writeText(`scribli://blocks/${id}`);
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.copyProtocolInMd.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.copyProtocolInMd.custom, event)) {
             fetchPost("/api/block/getRefText", {id}, (response) => {
                 writeText(`[${response.data}](scribli://blocks/${id})`);
             });
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.copyHPath.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.copyHPath.custom, event)) {
             fetchPost("/api/filetree/getHPathByID", {
                 id
             }, (response) => {
@@ -147,7 +147,7 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
             });
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.copyID.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.copyID.custom, event)) {
             writeText(id);
             return true;
         }
@@ -209,7 +209,7 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
         }
         return true;
     }
-    if (!window.siyuan.menus.menu.element.classList.contains("fn__none")) {
+    if (!window.scribli.menus.menu.element.classList.contains("fn__none")) {
         return false;
     }
     if (event.key === "Enter") {
@@ -230,7 +230,7 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
             }
         } else {
             /// #if !BROWSER
-            useShell("showItemInFolder", path.join(window.siyuan.config.system.dataDir, currentList.lastElementChild.getAttribute("aria-label")));
+            useShell("showItemInFolder", path.join(window.scribli.config.system.dataDir, currentList.lastElementChild.getAttribute("aria-label")));
             /// #endif
         }
         return true;

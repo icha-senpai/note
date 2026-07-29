@@ -115,7 +115,7 @@ export const openMenuPanel = (options: {
             avPanelElement.remove();
             return;
         }
-        window.siyuan.menus.menu.remove();
+        window.scribli.menus.menu.remove();
         const blockID = options.blockElement.getAttribute("data-node-id");
 
         const isCustomAttr = !options.blockElement.classList.contains("av");
@@ -177,7 +177,7 @@ export const openMenuPanel = (options: {
             }
         }
 
-        document.body.insertAdjacentHTML("beforeend", `<div class="av__panel" style="z-index: ${++window.siyuan.zIndex};">
+        document.body.insertAdjacentHTML("beforeend", `<div class="av__panel" style="z-index: ${++window.scribli.zIndex};">
     <div class="b3-dialog__scrim" data-type="close"></div>
     <div class="b3-menu${options.type === "filters" ? " av__filter-panel" : ""}" ${["select", "date", "asset", "relation", "rollup"].includes(options.type) ? `style="${["select", "asset", "relation"].includes(options.type) ? "max-height: calc(100vh - 32px);display: flex;flex-direction: column;" : ""}min-width: 200px;${isMobile() ? "max-width: 90vw;" : "max-width: 50vw;"}"` : ""}>${html}</div>
 </div>`);
@@ -255,26 +255,26 @@ export const openMenuPanel = (options: {
         }
         let counter = 0;
         avPanelElement.addEventListener("dragstart", (event: DragEvent) => {
-            window.siyuan.dragElement = event.target as HTMLElement;
-            window.siyuan.dragElement.style.opacity = ".38";
+            window.scribli.dragElement = event.target as HTMLElement;
+            window.scribli.dragElement.style.opacity = ".38";
             return;
         });
         avPanelElement.addEventListener("drop", (event) => {
             counter = 0;
-            if (!window.siyuan.dragElement) {
+            if (!window.scribli.dragElement) {
                 event.preventDefault();
                 event.stopPropagation();
                 return;
             }
-            window.siyuan.dragElement.style.opacity = "";
-            const sourceElement = window.siyuan.dragElement;
-            window.siyuan.dragElement = undefined;
+            window.scribli.dragElement.style.opacity = "";
+            const sourceElement = window.scribli.dragElement;
+            window.scribli.dragElement = undefined;
             if (options.protyle && options.protyle.disabled) {
                 event.preventDefault();
                 event.stopPropagation();
                 return;
             }
-            if (!options.protyle && window.siyuan.config.readonly) {
+            if (!options.protyle && window.scribli.config.readonly) {
                 event.preventDefault();
                 event.stopPropagation();
                 return;
@@ -544,7 +544,7 @@ export const openMenuPanel = (options: {
             if (!targetElement) {
                 targetElement = hasClosestByAttribute(document.elementFromPoint(event.clientX, event.clientY - 1), "draggable", "true");
             }
-            if (!targetElement || targetElement === window.siyuan.dragElement) {
+            if (!targetElement || targetElement === window.scribli.dragElement) {
                 return;
             }
             event.preventDefault();
@@ -575,9 +575,9 @@ export const openMenuPanel = (options: {
             counter++;
         });
         avPanelElement.addEventListener("dragend", () => {
-            if (window.siyuan.dragElement) {
-                window.siyuan.dragElement.style.opacity = "";
-                window.siyuan.dragElement = undefined;
+            if (window.scribli.dragElement) {
+                window.scribli.dragElement.style.opacity = "";
+                window.scribli.dragElement = undefined;
             }
         });
         // 过滤分组 AND/OR 切换（select 的 change 事件，不走 click 分发）
@@ -636,7 +636,7 @@ export const openMenuPanel = (options: {
                     ghostElement.setAttribute("id", "dragGhost");
                     ghostElement.style.pointerEvents = "none";
                     ghostElement.style.position = "fixed";
-                    ghostElement.style.zIndex = (window.siyuan.zIndex++).toString();
+                    ghostElement.style.zIndex = (window.scribli.zIndex++).toString();
                     selectedElement.style.opacity = ".38";
                     const selectedRect = selectedElement.getBoundingClientRect();
                     diffPosition.x = moveEvent.clientX - selectedRect.left;
@@ -692,7 +692,7 @@ export const openMenuPanel = (options: {
                     if (!options.protyle.toolbar.subElement.classList.contains("fn__none")) {
                         // 优先关闭资源文件搜索
                         hideElements(["util"], options.protyle);
-                    } else if (!window.siyuan.menus.menu.element.classList.contains("fn__none")) {
+                    } else if (!window.scribli.menus.menu.element.classList.contains("fn__none")) {
                         // 过滤面板先关闭过滤条件
                     } else {
                         closeCB?.();
@@ -701,7 +701,7 @@ export const openMenuPanel = (options: {
                             focusBlock(options.blockElement);
                         }, Constants.TIMEOUT_TRANSITION);  // 单选使用 enter 修改选项后会滚动
                     }
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -710,7 +710,7 @@ export const openMenuPanel = (options: {
                     menuElement.innerHTML = getViewHTML(data);
                     setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
                     bindViewEvent({protyle: options.protyle, data, menuElement, blockElement: options.blockElement});
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -720,7 +720,7 @@ export const openMenuPanel = (options: {
                     menuElement.classList.remove("av__filter-panel");
                     menuElement.innerHTML = getPropertiesHTML(fields);
                     setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -729,7 +729,7 @@ export const openMenuPanel = (options: {
                     menuElement.innerHTML = getLayoutHTML(data);
                     setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
                     bindLayoutEvent({protyle: options.protyle, data, menuElement, blockElement: options.blockElement});
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -738,7 +738,7 @@ export const openMenuPanel = (options: {
                     menuElement.innerHTML = getSortsHTML(fields, data.view.sorts);
                     bindSortsEvent(options.protyle, menuElement, data, blockID);
                     setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -804,7 +804,7 @@ export const openMenuPanel = (options: {
                     menuElement.classList.add("av__filter-panel");
                     bindInlineFilterEvents(avPanelElement as HTMLElement, data, options.protyle, blockID, avID);
                     setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -824,7 +824,7 @@ export const openMenuPanel = (options: {
                     data.view.filters = [{combination: "and", filters: []}];
                     menuElement.innerHTML = getFiltersHTML(data);
                     setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -849,7 +849,7 @@ export const openMenuPanel = (options: {
                     const menu = new Menu("addFilterCondition");
                     menu.addItem({
                         icon: "iconAdd",
-                        label: window.siyuan.languages.addFilter,
+                        label: window.scribli.languages.addFilter,
                         click: () => {
                             addFilter({
                                 data,
@@ -866,7 +866,7 @@ export const openMenuPanel = (options: {
                     if (depth < 3) {
                         menu.addItem({
                             icon: "iconListFilterPlus",
-                            label: window.siyuan.languages.addFilterGroup,
+                            label: window.scribli.languages.addFilterGroup,
                             click: () => {
                                 const oldFilters = JSON.parse(JSON.stringify(data.view.filters));
                                 addFilterGroup(data, path);
@@ -919,7 +919,7 @@ export const openMenuPanel = (options: {
                     const menu = new Menu("moreFilter");
                     menu.addItem({
                         icon: "iconAdd",
-                        label: window.siyuan.languages.duplicate,
+                        label: window.scribli.languages.duplicate,
                         click: () => {
                             const oldFilters = JSON.parse(JSON.stringify(data.view.filters));
                             duplicateFilterByPath(getEditableFilters(data), path);
@@ -941,7 +941,7 @@ export const openMenuPanel = (options: {
                     if (!isGroup) {
                         menu.addItem({
                             icon: "iconListFilterPlus",
-                            label: window.siyuan.languages.convertToFilterGroup,
+                            label: window.scribli.languages.convertToFilterGroup,
                             click: () => {
                                 const oldFilters = JSON.parse(JSON.stringify(data.view.filters));
                                 convertFilterToGroup(getEditableFilters(data), path);
@@ -963,7 +963,7 @@ export const openMenuPanel = (options: {
                     } else if (node && node.filters && 1 === node.filters.length) {
                         menu.addItem({
                             icon: "iconListFilterPlus",
-                            label: window.siyuan.languages.convertGroupToFilter,
+                            label: window.scribli.languages.convertGroupToFilter,
                             click: () => {
                                 const oldFilters = JSON.parse(JSON.stringify(data.view.filters));
                                 convertGroupToFilter(getEditableFilters(data), path);
@@ -985,7 +985,7 @@ export const openMenuPanel = (options: {
                     }
                     menu.addItem({
                         icon: "iconTrashcan",
-                        label: window.siyuan.languages.delete,
+                        label: window.scribli.languages.delete,
                         click: () => {
                             const cloneBefore = JSON.parse(JSON.stringify(data.view.filters));
                             removeFilterByPath(getEditableFilters(data), path);
@@ -1290,7 +1290,7 @@ export const openMenuPanel = (options: {
                     event.stopPropagation();
                     break;
                 } else if (type === "goUpdateColType") {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     const editMenuElement = hasClosestByClassName(target, "b3-menu");
                     if (editMenuElement) {
                         editMenuElement.firstElementChild.classList.add("fn__none");
@@ -1445,19 +1445,19 @@ export const openMenuPanel = (options: {
                     const isTwoWay = colData.type === "relation" && colData.relation?.isTwoWay;
                     if (isCustomAttr || isTwoWay) {
                         const dialog = new Dialog({
-                            title: isTwoWay ? window.siyuan.languages.removeColConfirm : window.siyuan.languages.deleteOpConfirm,
+                            title: isTwoWay ? window.scribli.languages.removeColConfirm : window.scribli.languages.deleteOpConfirm,
                             content: `<div class="b3-dialog__content">
-    ${isTwoWay ? window.siyuan.languages.confirmRemoveRelationField
-                                    .replace("${x}", menuElement.querySelector("input").value || window.siyuan.languages._kernel[272])
+    ${isTwoWay ? window.scribli.languages.confirmRemoveRelationField
+                                    .replace("${x}", menuElement.querySelector("input").value || window.scribli.languages._kernel[272])
                                     .replace("${y}", menuElement.querySelector('.b3-menu__item[data-type="goSearchAV"] .b3-menu__accelerator').textContent)
-                                    .replace("${z}", (menuElement.querySelector('input[data-type="colName"]') as HTMLInputElement).value || window.siyuan.languages._kernel[272])
-                                : window.siyuan.languages.removeCol.replace("${x}", menuElement.querySelector("input").value || window.siyuan.languages._kernel[272])}
+                                    .replace("${z}", (menuElement.querySelector('input[data-type="colName"]') as HTMLInputElement).value || window.scribli.languages._kernel[272])
+                                : window.scribli.languages.removeCol.replace("${x}", menuElement.querySelector("input").value || window.scribli.languages._kernel[272])}
     <div class="fn__hr--b"></div>
-    <button class="fn__block b3-button b3-button--remove" data-action="delete">${isTwoWay ? window.siyuan.languages.removeBothRelationField : window.siyuan.languages.delete}</button>
+    <button class="fn__block b3-button b3-button--remove" data-action="delete">${isTwoWay ? window.scribli.languages.removeBothRelationField : window.scribli.languages.delete}</button>
     <div class="fn__hr"></div>
-    <button class="fn__block b3-button b3-button--remove${isTwoWay ? "" : " fn__none"}" data-action="keep-relation">${window.siyuan.languages.removeButKeepRelationField}</button>
+    <button class="fn__block b3-button b3-button--remove${isTwoWay ? "" : " fn__none"}" data-action="keep-relation">${window.scribli.languages.removeButKeepRelationField}</button>
     <div class="fn__hr"></div>
-    <button class="fn__block b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button>
+    <button class="fn__block b3-button b3-button--cancel">${window.scribli.languages.cancel}</button>
 </div>`,
                             width: "520px",
                         });
@@ -1541,7 +1541,7 @@ export const openMenuPanel = (options: {
                     } else {
                         addColOptionOrCell(options.protyle, data, options.cellElements, target, menuElement, options.blockElement);
                     }
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -1564,7 +1564,7 @@ export const openMenuPanel = (options: {
                         h: rect.height
                     }, (url, name) => {
                         let value: IAVCellAssetValue;
-                        if (Constants.SIYUAN_ASSETS_IMAGE.includes(pathPosix().extname(url).toLowerCase())) {
+                        if (Constants.SCRIBLI_ASSETS_IMAGE.includes(pathPosix().extname(url).toLowerCase())) {
                             value = {
                                 type: "image",
                                 content: url,
@@ -1583,7 +1583,7 @@ export const openMenuPanel = (options: {
                             addValue: [value],
                             blockElement: options.blockElement
                         });
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                     });
                     event.preventDefault();
                     event.stopPropagation();
@@ -1632,7 +1632,7 @@ export const openMenuPanel = (options: {
                     event.stopPropagation();
                     break;
                 } else if (type === "av-add") {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     addView(options.protyle, options.blockElement);
                     avPanelElement.remove();
                     event.preventDefault();
@@ -1678,7 +1678,7 @@ export const openMenuPanel = (options: {
                             id: options.blockElement.querySelector(".av__views .item--focus").getAttribute("data-id"),
                             avID,
                         }]);
-                        window.siyuan.menus.menu.remove();
+                        window.scribli.menus.menu.remove();
                         openViewMenu({
                             protyle: options.protyle,
                             blockElement: options.blockElement as HTMLElement,
@@ -1785,14 +1785,14 @@ export const openMenuPanel = (options: {
                     event.stopPropagation();
                     break;
                 } else if (type === "goGroupsMethod") {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     menuElement.innerHTML = getGroupsMethodHTML(fields, data.view.group, data.viewType);
                     setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
                     event.preventDefault();
                     event.stopPropagation();
                     break;
                 } else if (type === "getGroupsNumber") {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     menuElement.innerHTML = getGroupsNumberHTML(data.view.group);
                     setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
                     closeCB = bindGroupsNumber({
@@ -1805,7 +1805,7 @@ export const openMenuPanel = (options: {
                     event.stopPropagation();
                     break;
                 } else if (type === "hideGroup") {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     const useElement = target.firstElementChild;
                     const isHide = useElement.getAttribute("xlink:href") !== "#iconEye";
                     useElement.setAttribute("xlink:href", isHide ? "#iconEye" : "#iconEyeoff");
@@ -1821,7 +1821,7 @@ export const openMenuPanel = (options: {
                         }
                     });
                     target.parentElement.classList[isHide ? "remove" : "add"]("b3-menu__item--hidden");
-                    menuElement.querySelector('[data-type="hideGroups"]').innerHTML = `${window.siyuan.languages[showCount === 0 ? "showAll" : "hideAll"]}
+                    menuElement.querySelector('[data-type="hideGroups"]').innerHTML = `${window.scribli.languages[showCount === 0 ? "showAll" : "hideAll"]}
 <span class="fn__space"></span>
 <svg><use xlink:href="#iconEye${showCount === 0 ? "" : "off"}"></use></svg>`;
                     transaction(options.protyle, [{
@@ -1841,9 +1841,9 @@ export const openMenuPanel = (options: {
                     event.stopPropagation();
                     break;
                 } else if (type === "hideGroups") {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     const isShow = target.querySelector("use").getAttribute("xlink:href") === "#iconEyeoff";
-                    target.innerHTML = `${window.siyuan.languages[isShow ? "showAll" : "hideAll"]}
+                    target.innerHTML = `${window.scribli.languages[isShow ? "showAll" : "hideAll"]}
 <span class="fn__space"></span>
 <svg><use xlink:href="#iconEye${isShow ? "" : "off"}"></use></svg>`;
                     data.view.groups.forEach((item) => {
@@ -1867,7 +1867,7 @@ export const openMenuPanel = (options: {
                     event.stopPropagation();
                     break;
                 } else if (type === "removeGroups") {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     transaction(options.protyle, [{
                         action: "removeAttrViewGroup",
                         avID: data.id,
@@ -1932,10 +1932,10 @@ export const getPropertiesHTML = (fields: IAVColumn[]) => {
         hideHTML = `<button class="b3-menu__separator"></button>
 <button class="b3-menu__item" data-type="nobg">
     <span class="b3-menu__label">
-        ${window.siyuan.languages.hideCol} 
+        ${window.scribli.languages.hideCol} 
     </span>
     <span class="block__icon" data-type="showAllCol">
-        ${window.siyuan.languages.showAll}
+        ${window.scribli.languages.showAll}
         <span class="fn__space"></span>
         <svg><use xlink:href="#iconEye"></use></svg>
     </span>
@@ -1947,15 +1947,15 @@ ${hideHTML}`;
     <span class="block__icon" style="padding: 8px;margin-left: -4px;" data-type="go-config">
         <svg><use xlink:href="#iconLeft"></use></svg>
     </span>
-    <span class="b3-menu__label ft__center">${window.siyuan.languages.fields}</span>
+    <span class="b3-menu__label ft__center">${window.scribli.languages.fields}</span>
 </button>
 <button class="b3-menu__separator"></button>
 <button class="b3-menu__item" data-type="nobg">
     <span class="b3-menu__label">
-        ${window.siyuan.languages.showCol} 
+        ${window.scribli.languages.showCol} 
     </span>
     <span class="block__icon" data-type="hideAllCol">
-        ${window.siyuan.languages.hideAll}
+        ${window.scribli.languages.hideAll}
         <span class="fn__space"></span>
         <svg><use xlink:href="#iconEyeoff"></use></svg>
     </span>
@@ -1965,7 +1965,7 @@ ${hideHTML}
 <button class="b3-menu__separator"></button>
 <button class="b3-menu__item" data-type="newCol">
     <svg class="b3-menu__icon"><use xlink:href="#iconAdd"></use></svg>
-    <span class="b3-menu__label">${window.siyuan.languages.new}</span>
+    <span class="b3-menu__label">${window.scribli.languages.new}</span>
 </button>
 </div>`;
 };

@@ -102,24 +102,24 @@ export class Plugin {
             if (typeof toolbarItem.hotkey !== "string") {
                 toolbarItem.hotkey = "";
             }
-            if (!window.siyuan.config.keymap.plugin) {
-                window.siyuan.config.keymap.plugin = {};
+            if (!window.scribli.config.keymap.plugin) {
+                window.scribli.config.keymap.plugin = {};
             }
-            if (!window.siyuan.config.keymap.plugin[options.name]) {
-                window.siyuan.config.keymap.plugin[options.name] = {
+            if (!window.scribli.config.keymap.plugin[options.name]) {
+                window.scribli.config.keymap.plugin[options.name] = {
                     [toolbarItem.name]: {
                         default: toolbarItem.hotkey,
                         custom: toolbarItem.hotkey,
                     }
                 };
             }
-            if (!window.siyuan.config.keymap.plugin[options.name][toolbarItem.name]) {
-                window.siyuan.config.keymap.plugin[options.name][toolbarItem.name] = {
+            if (!window.scribli.config.keymap.plugin[options.name][toolbarItem.name]) {
+                window.scribli.config.keymap.plugin[options.name][toolbarItem.name] = {
                     default: toolbarItem.hotkey,
                     custom: toolbarItem.hotkey,
                 };
             } else {
-                window.siyuan.config.keymap.plugin[options.name][toolbarItem.name].default = toolbarItem.hotkey;
+                window.scribli.config.keymap.plugin[options.name][toolbarItem.name].default = toolbarItem.hotkey;
             }
         });
     }
@@ -165,30 +165,30 @@ export class Plugin {
         if (typeof command.hotkey !== "string") {
             command.hotkey = "";
         }
-        if (!window.siyuan.config.keymap.plugin) {
-            window.siyuan.config.keymap.plugin = {};
+        if (!window.scribli.config.keymap.plugin) {
+            window.scribli.config.keymap.plugin = {};
         }
-        if (!window.siyuan.config.keymap.plugin[this.name]) {
+        if (!window.scribli.config.keymap.plugin[this.name]) {
             command.customHotkey = command.hotkey;
-            window.siyuan.config.keymap.plugin[this.name] = {
+            window.scribli.config.keymap.plugin[this.name] = {
                 [command.langKey]: {
                     default: command.hotkey,
                     custom: command.hotkey,
                 }
             };
-        } else if (!window.siyuan.config.keymap.plugin[this.name][command.langKey]) {
+        } else if (!window.scribli.config.keymap.plugin[this.name][command.langKey]) {
             command.customHotkey = command.hotkey;
-            window.siyuan.config.keymap.plugin[this.name][command.langKey] = {
+            window.scribli.config.keymap.plugin[this.name][command.langKey] = {
                 default: command.hotkey,
                 custom: command.hotkey,
             };
-        } else if (window.siyuan.config.keymap.plugin[this.name][command.langKey]) {
-            if (typeof window.siyuan.config.keymap.plugin[this.name][command.langKey].custom === "string") {
-                command.customHotkey = window.siyuan.config.keymap.plugin[this.name][command.langKey].custom;
+        } else if (window.scribli.config.keymap.plugin[this.name][command.langKey]) {
+            if (typeof window.scribli.config.keymap.plugin[this.name][command.langKey].custom === "string") {
+                command.customHotkey = window.scribli.config.keymap.plugin[this.name][command.langKey].custom;
             } else {
                 command.customHotkey = command.hotkey;
             }
-            window.siyuan.config.keymap.plugin[this.name][command.langKey]["default"] = command.hotkey;
+            window.scribli.config.keymap.plugin[this.name][command.langKey]["default"] = command.hotkey;
         }
         if (typeof command.customHotkey !== "string") {
             console.error(`${this.name} - commands data is error and has been removed.`);
@@ -196,7 +196,7 @@ export class Plugin {
             this.commands.push(command);
             /// #if !BROWSER
             if (command.globalCallback) {
-                ipcRenderer.send(Constants.SIYUAN_CMD, {
+                ipcRenderer.send(Constants.SCRIBLI_CMD, {
                     cmd: "registerGlobalShortcut",
                     accelerator: command.customHotkey
                 });
@@ -248,12 +248,12 @@ export class Plugin {
             iconElement.setAttribute("data-location", options.position || "right");
             resizeTopBar();
         }
-        if (isMobile() && window.siyuan.storage) {
-            if (!window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(iconElement.id)) {
+        if (isMobile() && window.scribli.storage) {
+            if (!window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(iconElement.id)) {
                 document.querySelector("#" + settingTabToMenuId("about"))?.after(iconElement);
             }
-        } else if (!isWindow() && window.siyuan.storage) {
-            if (window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(iconElement.id)) {
+        } else if (!isWindow() && window.scribli.storage) {
+            if (window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(iconElement.id)) {
                 iconElement.classList.add("fn__none");
             }
             document.querySelector("#" + (iconElement.getAttribute("data-location") === "right" ? "barPlugins" : "drag"))?.before(iconElement);
@@ -310,7 +310,7 @@ export class Plugin {
     }
 
     public saveData(storageName: string, data: any): Promise<any | IWebSocketData> {
-        if (window.siyuan.config.readonly || window.siyuan.isPublish) {
+        if (window.scribli.config.readonly || window.scribli.isPublish) {
             return Promise.reject({
                 code: 403,
                 msg: "Readonly mode or publish mode",
@@ -349,7 +349,7 @@ export class Plugin {
     }
 
     public removeData(storageName: string): Promise<IWebSocketData> {
-        if (window.siyuan.config.readonly || window.siyuan.isPublish) {
+        if (window.scribli.config.readonly || window.scribli.isPublish) {
             return Promise.reject({
                 code: 403,
                 msg: "Readonly mode or publish mode",
@@ -423,7 +423,7 @@ export class Plugin {
      * 密钥在内核侧加密存储，此处读到的是运行时明文；仅在本地管理员身份下可用。
      */
     public getSecret(name: string): string {
-        const found = window.siyuan.config.secrets?.items?.find((item) => item.name === name);
+        const found = window.scribli.config.secrets?.items?.find((item) => item.name === name);
         return found ? found.value : "";
     }
 
@@ -432,7 +432,7 @@ export class Plugin {
      * 变量以明文存储，用于非敏感配置。
      */
     public getVariable(name: string): string {
-        const found = window.siyuan.config.variables?.items?.find((item) => item.name === name);
+        const found = window.scribli.config.variables?.items?.find((item) => item.name === name);
         return found ? found.value : "";
     }
 
@@ -499,23 +499,23 @@ export class Plugin {
             }
             /// #endif
         };
-        if (!window.siyuan.config.keymap.plugin) {
-            window.siyuan.config.keymap.plugin = {};
+        if (!window.scribli.config.keymap.plugin) {
+            window.scribli.config.keymap.plugin = {};
         }
-        if (!window.siyuan.config.keymap.plugin[this.name]) {
-            window.siyuan.config.keymap.plugin[this.name] = {};
+        if (!window.scribli.config.keymap.plugin[this.name]) {
+            window.scribli.config.keymap.plugin[this.name] = {};
         }
         const hotkey = typeof options.config.hotkey === "string" ? options.config.hotkey : "";
-        if (!window.siyuan.config.keymap.plugin[this.name][type2]) {
-            window.siyuan.config.keymap.plugin[this.name][type2] = {
+        if (!window.scribli.config.keymap.plugin[this.name][type2]) {
+            window.scribli.config.keymap.plugin[this.name][type2] = {
                 default: hotkey,
                 custom: hotkey,
             };
         } else {
-            if (typeof window.siyuan.config.keymap.plugin[this.name][type2].custom !== "string") {
-                window.siyuan.config.keymap.plugin[this.name][type2].custom = hotkey;
+            if (typeof window.scribli.config.keymap.plugin[this.name][type2].custom !== "string") {
+                window.scribli.config.keymap.plugin[this.name][type2].custom = hotkey;
             }
-            window.siyuan.config.keymap.plugin[this.name][type2]["default"] = hotkey;
+            window.scribli.config.keymap.plugin[this.name][type2]["default"] = hotkey;
         }
         addPluginDock(this);
         return this.docks[type2];
@@ -529,7 +529,7 @@ export class Plugin {
         originalRefBlockIDs?: IObject,
         isBacklink: boolean,
     }) => {
-        window.siyuan.blockPanels.push(new BlockPanel({
+        window.scribli.blockPanels.push(new BlockPanel({
             app: this.app,
             originalRefBlockIDs: options.originalRefBlockIDs,
             targetElement: options.targetElement,

@@ -17,7 +17,7 @@ import {fetchPost, fetchSyncPost} from "../util/fetch";
 import {initAssets, setInlineStyle} from "../util/assets";
 import {renderSnippet} from "../config/util/snippets";
 import {openFile} from "../editor/util";
-import {exitSiYuan} from "../dialog/processSystem";
+import {exitScribli} from "../dialog/processSystem";
 import {isWindow, setToolbarLeftMac} from "../util/functions";
 import {initStatus} from "../layout/status";
 import {showMessage} from "../dialog/message";
@@ -30,7 +30,7 @@ import {sendGlobalShortcut} from "./globalEvent/keydown";
 import {closeWindow} from "../window/closeWin";
 import {correctHotkey} from "./globalEvent/commonHotkey";
 import {recordBeforeResizeTop} from "../protyle/util/resize";
-import {processSiYuanUri} from "../util/uri";
+import {processScribliUri} from "../util/uri";
 import {getAllEditor} from "../layout/getAll";
 import {openDesktopOnboarding} from "../onboarding";
 
@@ -38,28 +38,28 @@ export const onGetConfig = (isStart: boolean, app: App) => {
     correctHotkey(app);
     document.body.classList.toggle("body--windows", isWindows());
     /// #if !BROWSER
-    ipcRenderer.invoke(Constants.SIYUAN_INIT, {
-        languages: window.siyuan.languages["_trayMenu"],
-        workspaceDir: window.siyuan.config.system.workspaceDir,
+    ipcRenderer.invoke(Constants.SCRIBLI_INIT, {
+        languages: window.scribli.languages["_trayMenu"],
+        workspaceDir: window.scribli.config.system.workspaceDir,
         port: location.port
     });
-    webFrame.setZoomFactor(window.siyuan.storage[Constants.LOCAL_ZOOM]);
-    const position = Constants.SIZE_ZOOM.find((item) => item.zoom === window.siyuan.storage[Constants.LOCAL_ZOOM]).position;
-    ipcRenderer.send(Constants.SIYUAN_CMD, {
+    webFrame.setZoomFactor(window.scribli.storage[Constants.LOCAL_ZOOM]);
+    const position = Constants.SIZE_ZOOM.find((item) => item.zoom === window.scribli.storage[Constants.LOCAL_ZOOM]).position;
+    ipcRenderer.send(Constants.SCRIBLI_CMD, {
         cmd: "setTrafficLightPosition",
-        zoom: window.siyuan.storage[Constants.LOCAL_ZOOM],
+        zoom: window.scribli.storage[Constants.LOCAL_ZOOM],
         position: {
             x: position.x,
-            y: (window.siyuan.config.appearance.hideToolbar ? 5 * window.siyuan.storage[Constants.LOCAL_ZOOM] : 0) + position.y
+            y: (window.scribli.config.appearance.hideToolbar ? 5 * window.scribli.storage[Constants.LOCAL_ZOOM] : 0) + position.y
         },
     });
     /// #endif
-    if (!window.siyuan.config.uiLayout || (window.siyuan.config.uiLayout && !window.siyuan.config.uiLayout.left)) {
-        window.siyuan.config.uiLayout = Constants.SIYUAN_EMPTY_LAYOUT;
+    if (!window.scribli.config.uiLayout || (window.scribli.config.uiLayout && !window.scribli.config.uiLayout.left)) {
+        window.scribli.config.uiLayout = Constants.SCRIBLI_EMPTY_LAYOUT;
     }
     initWindowEvent(app);
     fetchPost("/api/system/getEmojiConf", {}, response => {
-        window.siyuan.emojis = response.data as IEmoji[];
+        window.scribli.emojis = response.data as IEmoji[];
         try {
             JSONToLayout(app, isStart);
             setTimeout(() => {
@@ -81,13 +81,13 @@ export const onGetConfig = (isStart: boolean, app: App) => {
     /// #if !BROWSER
     initNativeDialogOverride();
     /// #endif
-    appearanceConfigApi.apply(window.siyuan.config.appearance);
+    appearanceConfigApi.apply(window.scribli.config.appearance);
     initAssets();
     setInlineStyle();
     renderSnippet();
-    if (window.siyuan.config.system.safeMode) {
+    if (window.scribli.config.system.safeMode) {
         // 安全模式已禁用代码片段、插件、自定义主题和图标
-        showMessage(window.siyuan.languages.safeModeTip);
+        showMessage(window.scribli.languages.safeModeTip);
     }
     let resizeTimeout = 0;
     let firstResize = true;
@@ -102,7 +102,7 @@ export const onGetConfig = (isStart: boolean, app: App) => {
             resizeTabs();
             resizeTopBar();
             setTabPosition(true);
-            window.siyuan.menus.menu.resetPosition();
+            window.scribli.menus.menu.resetPosition();
             firstResize = true;
             if (getSelection().rangeCount > 0) {
                 const range = getSelection().getRangeAt(0);
@@ -112,7 +112,7 @@ export const onGetConfig = (isStart: boolean, app: App) => {
                     }
                 });
             }
-            window.siyuan.dialogs.forEach(item => {
+            window.scribli.dialogs.forEach(item => {
                 item.resize();
             });
         }, Constants.TIMEOUT_RESIZE);
@@ -121,49 +121,49 @@ export const onGetConfig = (isStart: boolean, app: App) => {
 
 export const initWindow = async (app: App) => {
     /// #if !BROWSER
-    ipcRenderer.send(Constants.SIYUAN_CMD, {
+    ipcRenderer.send(Constants.SCRIBLI_CMD, {
         cmd: "setSpellCheckerLanguages",
-        languages: window.siyuan.config.editor.spellcheckLanguages
+        languages: window.scribli.config.editor.spellcheckLanguages
     });
     const winOnClose = (close = false) => {
         exportLayout({
             cb() {
-                if (window.siyuan.config.appearance.closeButtonBehavior === 1 && !close) {
+                if (window.scribli.config.appearance.closeButtonBehavior === 1 && !close) {
                     // 最小化
-                    if ("windows" === window.siyuan.config.system.os) {
-                        ipcRenderer.send(Constants.SIYUAN_CONFIG_TRAY, {
-                            languages: window.siyuan.languages["_trayMenu"],
+                    if ("windows" === window.scribli.config.system.os) {
+                        ipcRenderer.send(Constants.SCRIBLI_CONFIG_TRAY, {
+                            languages: window.scribli.languages["_trayMenu"],
                         });
                     } else {
-                        ipcRenderer.send(Constants.SIYUAN_CMD, "closeButtonBehavior");
+                        ipcRenderer.send(Constants.SCRIBLI_CMD, "closeButtonBehavior");
                     }
                 } else {
-                    exitSiYuan();
+                    exitScribli();
                 }
             },
             errorExit: true
         });
     };
 
-    ipcRenderer.send(Constants.SIYUAN_EVENT);
-    ipcRenderer.on(Constants.SIYUAN_EVENT, (event, cmd) => {
+    ipcRenderer.send(Constants.SCRIBLI_EVENT);
+    ipcRenderer.on(Constants.SCRIBLI_EVENT, (event, cmd) => {
         if (cmd === "focus") {
             // 由于 https://github.com/siyuan-note/siyuan/issues/10060 和新版 electron 应用切出再切进会保持光标，故移除 focus
-            window.siyuan.altIsPressed = false;
-            window.siyuan.ctrlIsPressed = false;
-            window.siyuan.shiftIsPressed = false;
+            window.scribli.altIsPressed = false;
+            window.scribli.ctrlIsPressed = false;
+            window.scribli.shiftIsPressed = false;
             document.body.classList.remove("body--blur");
         } else if (cmd === "blur") {
             document.body.classList.add("body--blur");
         } else if (cmd === "enter-full-screen") {
             document.body.classList.add("body--fullscreen");
             // 全屏下红绿灯隐藏，清除缩放补偿让 body--fullscreen 的 5px 生效
-            setToolbarLeftMac(window.siyuan.storage[Constants.LOCAL_ZOOM]);
+            setToolbarLeftMac(window.scribli.storage[Constants.LOCAL_ZOOM]);
             setTabPosition();
         } else if (cmd === "leave-full-screen") {
             document.body.classList.remove("body--fullscreen");
             // 退出全屏后按当前缩放重新补偿
-            setToolbarLeftMac(window.siyuan.storage[Constants.LOCAL_ZOOM]);
+            setToolbarLeftMac(window.scribli.storage[Constants.LOCAL_ZOOM]);
             setTabPosition();
         } else if (cmd === "maximize") {
             document.body.classList.add("body--maximize");
@@ -172,27 +172,27 @@ export const initWindow = async (app: App) => {
         }
     });
     if (!isWindow()) {
-        ipcRenderer.on(Constants.SIYUAN_OPEN_URL, (event, url) => {
-            processSiYuanUri(app, url);
+        ipcRenderer.on(Constants.SCRIBLI_OPEN_URL, (event, url) => {
+            processScribliUri(app, url);
         });
     }
-    ipcRenderer.on(Constants.SIYUAN_OPEN_FILE, (event, data) => {
+    ipcRenderer.on(Constants.SCRIBLI_OPEN_FILE, (event, data) => {
         if (!data.app) {
             data.app = app;
         }
         openFile(data);
     });
-    ipcRenderer.on(Constants.SIYUAN_SAVE_CLOSE, (event, close) => {
+    ipcRenderer.on(Constants.SCRIBLI_SAVE_CLOSE, (event, close) => {
         if (isWindow()) {
             closeWindow(app);
         } else {
             winOnClose(close);
         }
     });
-    ipcRenderer.on(Constants.SIYUAN_SEND_WINDOWS, (e, ipcData: IWebSocketData) => {
+    ipcRenderer.on(Constants.SCRIBLI_SEND_WINDOWS, (e, ipcData: IWebSocketData) => {
         onWindowsMsg(ipcData, app);
     });
-    ipcRenderer.on(Constants.SIYUAN_HOTKEY, (e, data) => {
+    ipcRenderer.on(Constants.SCRIBLI_HOTKEY, (e, data) => {
         let matchCommand = false;
         app.plugins.find(item => {
             item.commands.find(command => {
@@ -207,9 +207,9 @@ export const initWindow = async (app: App) => {
             }
         });
     });
-    ipcRenderer.on(Constants.SIYUAN_EXPORT_PDF, async (e, ipcData) => {
-        const msgId = showMessage(window.siyuan.languages.exporting, -1);
-        window.siyuan.storage[Constants.LOCAL_EXPORTPDF] = {
+    ipcRenderer.on(Constants.SCRIBLI_EXPORT_PDF, async (e, ipcData) => {
+        const msgId = showMessage(window.scribli.languages.exporting, -1);
+        window.scribli.storage[Constants.LOCAL_EXPORTPDF] = {
             removeAssets: ipcData.removeAssets,
             keepFold: ipcData.keepFold,
             mergeSubdocs: ipcData.mergeSubdocs,
@@ -224,17 +224,17 @@ export const initWindow = async (app: App) => {
             marginLeft: ipcData.pdfOptions.margins.left,
             paged: ipcData.paged,
         };
-        setStorageVal(Constants.LOCAL_EXPORTPDF, window.siyuan.storage[Constants.LOCAL_EXPORTPDF]);
+        setStorageVal(Constants.LOCAL_EXPORTPDF, window.scribli.storage[Constants.LOCAL_EXPORTPDF]);
         try {
-            if (window.siyuan.config.export.pdfFooter.trim()) {
-                const response = await fetchSyncPost("/api/template/renderSprig", {template: window.siyuan.config.export.pdfFooter});
+            if (window.scribli.config.export.pdfFooter.trim()) {
+                const response = await fetchSyncPost("/api/template/renderSprig", {template: window.scribli.config.export.pdfFooter});
                 ipcData.pdfOptions.displayHeaderFooter = true;
                 ipcData.pdfOptions.headerTemplate = "<span></span>";
                 ipcData.pdfOptions.footerTemplate = `<div style="text-align:center;width:100%;font-size:10px;line-height:12px;">
 ${response.data.replace("%pages", "<span class=totalPages></span>").replace("%page", "<span class=pageNumber></span>")}
 </div>`;
             }
-            const pdfData = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+            const pdfData = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
                 cmd: "printToPDF",
                 pdfOptions: ipcData.pdfOptions,
                 webContentsId: ipcData.webContentsId
@@ -251,7 +251,7 @@ ${response.data.replace("%pages", "<span class=totalPages></span>").replace("%pa
                 savePath,
             }, () => {
                 fs.writeFileSync(pdfFilePath, pdfData);
-                ipcRenderer.send(Constants.SIYUAN_CMD, {cmd: "destroy", webContentsId: ipcData.webContentsId});
+                ipcRenderer.send(Constants.SCRIBLI_CMD, {cmd: "destroy", webContentsId: ipcData.webContentsId});
                 fetchPost("/api/export/processPDF", {
                     id: ipcData.rootId,
                     merge: ipcData.mergeSubdocs,
@@ -292,72 +292,72 @@ ${response.data.replace("%pages", "<span class=totalPages></span>").replace("%pa
             });
         } catch (e) {
             console.error(e);
-            showMessage(window.siyuan.languages.exportPDFLowMemory, 0, "error", msgId);
-            ipcRenderer.send(Constants.SIYUAN_CMD, {cmd: "destroy", webContentsId: ipcData.webContentsId});
+            showMessage(window.scribli.languages.exportPDFLowMemory, 0, "error", msgId);
+            ipcRenderer.send(Constants.SCRIBLI_CMD, {cmd: "destroy", webContentsId: ipcData.webContentsId});
         }
-        ipcRenderer.send(Constants.SIYUAN_CMD, {cmd: "hide", webContentsId: ipcData.webContentsId});
+        ipcRenderer.send(Constants.SCRIBLI_CMD, {cmd: "hide", webContentsId: ipcData.webContentsId});
     });
 
     if (isWindow()) {
-        const isAlwaysOnTop = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+        const isAlwaysOnTop = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
             cmd: "isAlwaysOnTop",
         });
         document.body.insertAdjacentHTML("beforeend", `<div class="toolbar__window">
 <div class="toolbar__window-drag"></div>
-<div class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages[isAlwaysOnTop ? "unpin" : "pin"]}" id="pinWindow">
+<div class="toolbar__item ariaLabel" aria-label="${window.scribli.languages[isAlwaysOnTop ? "unpin" : "pin"]}" id="pinWindow">
     <svg>
         <use xlink:href="#icon${isAlwaysOnTop ? "Unpin" : "Pin"}"></use>
     </svg>
 </div></div>`);
         const pinElement = document.getElementById("pinWindow");
         pinElement.addEventListener("click", () => {
-            if (pinElement.getAttribute("aria-label") === window.siyuan.languages.pin) {
+            if (pinElement.getAttribute("aria-label") === window.scribli.languages.pin) {
                 pinElement.querySelector("use").setAttribute("xlink:href", "#iconUnpin");
-                pinElement.setAttribute("aria-label", window.siyuan.languages.unpin);
-                ipcRenderer.send(Constants.SIYUAN_CMD, "setAlwaysOnTopTrue");
+                pinElement.setAttribute("aria-label", window.scribli.languages.unpin);
+                ipcRenderer.send(Constants.SCRIBLI_CMD, "setAlwaysOnTopTrue");
             } else {
                 pinElement.querySelector("use").setAttribute("xlink:href", "#iconPin");
-                pinElement.setAttribute("aria-label", window.siyuan.languages.pin);
-                ipcRenderer.send(Constants.SIYUAN_CMD, "setAlwaysOnTopFalse");
+                pinElement.setAttribute("aria-label", window.scribli.languages.pin);
+                ipcRenderer.send(Constants.SCRIBLI_CMD, "setAlwaysOnTopFalse");
             }
         });
     }
 
-    const isFullScreen = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+    const isFullScreen = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
         cmd: "isFullScreen",
     });
     if (isFullScreen) {
         document.body.classList.add("body--fullscreen");
     }
     // 全屏状态恢复后再同步一次，避免启动时按缩放设置的补偿覆盖 body--fullscreen 的 5px
-    setToolbarLeftMac(window.siyuan.storage[Constants.LOCAL_ZOOM]);
-    const isMaximized = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+    setToolbarLeftMac(window.scribli.storage[Constants.LOCAL_ZOOM]);
+    const isMaximized = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
         cmd: "isMaximized",
     });
     if (isMaximized) {
         document.body.classList.add("body--maximize");
     }
 
-    if ("darwin" !== window.siyuan.config.system.os) {
+    if ("darwin" !== window.scribli.config.system.os) {
         document.body.classList.add("body--win32");
 
         // 添加窗口控件
-        const controlsHTML = `<div class="toolbar__item ariaLabel toolbar__item--win" aria-label="${window.siyuan.languages.min}" id="minWindow">
+        const controlsHTML = `<div class="toolbar__item ariaLabel toolbar__item--win" aria-label="${window.scribli.languages.min}" id="minWindow">
     <svg>
         <use xlink:href="#iconMin"></use>
     </svg>
 </div>
-<div aria-label="${window.siyuan.languages.max}" class="ariaLabel toolbar__item toolbar__item--win" id="maxWindow">
+<div aria-label="${window.scribli.languages.max}" class="ariaLabel toolbar__item toolbar__item--win" id="maxWindow">
     <svg>
         <use xlink:href="#iconMax"></use>
     </svg>
 </div>
-<div aria-label="${window.siyuan.languages.restore}" class="ariaLabel toolbar__item toolbar__item--win" id="restoreWindow">
+<div aria-label="${window.scribli.languages.restore}" class="ariaLabel toolbar__item toolbar__item--win" id="restoreWindow">
     <svg>
         <use xlink:href="#iconRestore"></use>
     </svg>
 </div>
-<div aria-label="${window.siyuan.languages.close}" class="ariaLabel toolbar__item toolbar__item--close" id="closeWindow">
+<div aria-label="${window.scribli.languages.close}" class="ariaLabel toolbar__item toolbar__item--close" id="closeWindow">
     <svg>
         <use xlink:href="#iconClose"></use>
     </svg>
@@ -371,10 +371,10 @@ ${response.data.replace("%pages", "<span class=totalPages></span>").replace("%pa
         const restoreBtnElement = document.getElementById("restoreWindow");
 
         restoreBtnElement.addEventListener("click", () => {
-            ipcRenderer.send(Constants.SIYUAN_CMD, "restore");
+            ipcRenderer.send(Constants.SCRIBLI_CMD, "restore");
         });
         maxBtnElement.addEventListener("click", () => {
-            ipcRenderer.send(Constants.SIYUAN_CMD, "maximize");
+            ipcRenderer.send(Constants.SCRIBLI_CMD, "maximize");
         });
 
         const minBtnElement = document.getElementById("minWindow");
@@ -383,7 +383,7 @@ ${response.data.replace("%pages", "<span class=totalPages></span>").replace("%pa
             if (minBtnElement.classList.contains("window-controls__item--disabled")) {
                 return;
             }
-            ipcRenderer.send(Constants.SIYUAN_CMD, "minimize");
+            ipcRenderer.send(Constants.SCRIBLI_CMD, "minimize");
         });
         closeBtnElement.addEventListener("click", () => {
             if (isWindow()) {

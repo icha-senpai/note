@@ -16,51 +16,51 @@ import {shell} from "electron";
 type ModelPickerGroup = "editing" | "agent" | "vision" | "imageGeneration";
 
 export const getProvidersBlockKeywords = (): string[] => [
-    window.siyuan.languages.apiProvider,
-    window.siyuan.languages.apiProviderTip,
-    window.siyuan.languages.addAiProvider,
-    window.siyuan.languages.addAiModel,
-    window.siyuan.languages.aiProviderSettings,
-    window.siyuan.languages.aiModelSettings,
-    window.siyuan.languages.apiBaseURL,
-    window.siyuan.languages.apiBaseURLTip,
-    window.siyuan.languages.apiKey,
-    window.siyuan.languages.apiKeyTip,
-    window.siyuan.languages.apiTimeout,
-    window.siyuan.languages.apiTimeoutTip,
-    window.siyuan.languages.customDisplayName,
-    window.siyuan.languages.aiProviderDisplayNameTip,
-    window.siyuan.languages.aiModelDisplayNameTip,
-    window.siyuan.languages.apiModel,
-    window.siyuan.languages.apiModelTip,
-    window.siyuan.languages.noProviderConfigured,
-    window.siyuan.languages.noModelConfigured,
-    window.siyuan.languages.testConnection,
-    window.siyuan.languages.testConnectionFailModelRequired,
-    window.siyuan.languages.testConnectionFailModelNotFound,
-    window.siyuan.languages.fetchAvailableModels,
-    window.siyuan.languages.fetchAvailableModelsFail,
-    window.siyuan.languages.selectModel,
+    window.scribli.languages.apiProvider,
+    window.scribli.languages.apiProviderTip,
+    window.scribli.languages.addAiProvider,
+    window.scribli.languages.addAiModel,
+    window.scribli.languages.aiProviderSettings,
+    window.scribli.languages.aiModelSettings,
+    window.scribli.languages.apiBaseURL,
+    window.scribli.languages.apiBaseURLTip,
+    window.scribli.languages.apiKey,
+    window.scribli.languages.apiKeyTip,
+    window.scribli.languages.apiTimeout,
+    window.scribli.languages.apiTimeoutTip,
+    window.scribli.languages.customDisplayName,
+    window.scribli.languages.aiProviderDisplayNameTip,
+    window.scribli.languages.aiModelDisplayNameTip,
+    window.scribli.languages.apiModel,
+    window.scribli.languages.apiModelTip,
+    window.scribli.languages.noProviderConfigured,
+    window.scribli.languages.noModelConfigured,
+    window.scribli.languages.testConnection,
+    window.scribli.languages.testConnectionFailModelRequired,
+    window.scribli.languages.testConnectionFailModelNotFound,
+    window.scribli.languages.fetchAvailableModels,
+    window.scribli.languages.fetchAvailableModelsFail,
+    window.scribli.languages.selectModel,
 ];
 
 export const getEmbeddingStatsKeywords = (): string[] => [
-    window.siyuan.languages.embeddingIndexProgress,
-    window.siyuan.languages.rebuildEmbeddingIndex,
-    window.siyuan.languages.rebuildEmbeddingIndexTip,
+    window.scribli.languages.embeddingIndexProgress,
+    window.scribli.languages.rebuildEmbeddingIndex,
+    window.scribli.languages.rebuildEmbeddingIndexTip,
 ];
 
 // genEmbeddingStatsHtml 生成嵌入索引进度区块。容器留空，由 mountEmbeddingStatsBlock 轮询填充。
 export const genEmbeddingStatsHtml = (): string => `<div class="b3-label config-item" id="aiEmbeddingStatsBlock">
     <div class="fn__block">
-        <div class="config-name">${window.siyuan.languages.embeddingIndexProgress}</div>
-        <div class="b3-label__text fn__none" id="aiEmbeddingStatsDisabled">${window.siyuan.languages.embeddingNotEnabledTip}</div>
+        <div class="config-name">${window.scribli.languages.embeddingIndexProgress}</div>
+        <div class="b3-label__text fn__none" id="aiEmbeddingStatsDisabled">${window.scribli.languages.embeddingNotEnabledTip}</div>
         <div id="aiEmbeddingStatsContent" class="fn__none">
             <div class="fn__hr--small"></div>
             <div style="margin: 8px 0;height: 8px;border-radius: var(--b3-border-radius);overflow: hidden;background-color: var(--b3-theme-surface-lighter);" id="aiEmbeddingProgressBar">
                 <div id="aiEmbeddingProgressFill" style="width: 0%;transition: var(--b3-transition);background-color: var(--b3-theme-primary);height: 8px;"></div>
             </div>
             <div id="aiEmbeddingStatsNum" style="font-size: 13px;color: var(--b3-theme-on-surface);margin-top: 8px;"></div>
-            <a id="aiEmbeddingRetryFailed" class="fn__none b3-link" style="display: block;margin-top: 4px;font-size: 12px;">${window.siyuan.languages.retryFailedEmbedding}</a>
+            <a id="aiEmbeddingRetryFailed" class="fn__none b3-link" style="display: block;margin-top: 4px;font-size: 12px;">${window.scribli.languages.retryFailedEmbedding}</a>
         </div>
     </div>
 </div>`;
@@ -124,11 +124,11 @@ export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
                 return;
             }
             // 每个统计项独立一行，避免单行过长被截断
-            numEl.innerHTML = `<div>${window.siyuan.languages.embeddingIndexed}<b>${indexed}</b> / ${total}</div>
-                <div>${window.siyuan.languages.embeddingPending}<b>${pending}</b></div>
-                <div>${window.siyuan.languages.embeddingFailed}<b>${stat.failed || 0}</b></div>
-                <div>${window.siyuan.languages.embeddingIgnoredByLen}<b>${stat.ignoredByLen || 0}</b></div>
-                <div>${window.siyuan.languages.embeddingIgnoredByConfig}<b>${stat.ignoredByConfig || 0}</b></div>`;
+            numEl.innerHTML = `<div>${window.scribli.languages.embeddingIndexed}<b>${indexed}</b> / ${total}</div>
+                <div>${window.scribli.languages.embeddingPending}<b>${pending}</b></div>
+                <div>${window.scribli.languages.embeddingFailed}<b>${stat.failed || 0}</b></div>
+                <div>${window.scribli.languages.embeddingIgnoredByLen}<b>${stat.ignoredByLen || 0}</b></div>
+                <div>${window.scribli.languages.embeddingIgnoredByConfig}<b>${stat.ignoredByConfig || 0}</b></div>`;
 
             // 有失败块时显示“重试失败”链接
             const retryEl = block.querySelector("#aiEmbeddingRetryFailed") as HTMLElement;
@@ -145,7 +145,7 @@ export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
     // “重试失败”点击：删除失败块行让其回到主循环重嵌，无需确认框（操作轻，只删空向量行）
     block.querySelector("#aiEmbeddingRetryFailed")?.addEventListener("click", () => {
         fetchPost("/api/ai/retryFailedEmbedding", {}, () => {
-            showMessage(window.siyuan.languages.retryFailedEmbeddingStarted);
+            showMessage(window.scribli.languages.retryFailedEmbeddingStarted);
         });
     });
 
@@ -177,7 +177,7 @@ export const mountEmbeddingTestBtn = (root: HTMLElement) => {
     const btnContainer = document.createElement("div");
     btnContainer.style.textAlign = "right";
     btnContainer.style.marginTop = "8px";
-    btnContainer.innerHTML = `<button class="b3-button b3-button--outline" id="aiEmbeddingTestBtn"><svg class="b3-button__icon"><use xlink:href="#iconPlugZap"></use></svg><span>${window.siyuan.languages.testConnection}</span></button>`;
+    btnContainer.innerHTML = `<button class="b3-button b3-button--outline" id="aiEmbeddingTestBtn"><svg class="b3-button__icon"><use xlink:href="#iconPlugZap"></use></svg><span>${window.scribli.languages.testConnection}</span></button>`;
     wrapper.appendChild(btnContainer);
 
     const testBtn = btnContainer.querySelector<HTMLButtonElement>("#aiEmbeddingTestBtn");
@@ -188,12 +188,12 @@ export const mountEmbeddingTestBtn = (root: HTMLElement) => {
         testBtn.disabled = true;
         iconUse.setAttribute("xlink:href", "#iconRefresh");
         svgEl.style.animation = "agent-mirror-spin 0.8s linear infinite";
-        labelSpan.textContent = window.siyuan.languages.testConnectionTesting;
+        labelSpan.textContent = window.scribli.languages.testConnectionTesting;
         const restoreBtn = () => {
             testBtn.disabled = false;
             iconUse.setAttribute("xlink:href", "#iconPlugZap");
             svgEl.style.animation = "";
-            labelSpan.textContent = window.siyuan.languages.testConnection;
+            labelSpan.textContent = window.scribli.languages.testConnection;
         };
         fetchPost("/api/ai/testEmbeddingModel", {}, (response) => {
             restoreBtn();
@@ -202,16 +202,16 @@ export const mountEmbeddingTestBtn = (root: HTMLElement) => {
                 const dims = data.dimensions;
                 showMessage(
                     dims
-                        ? window.siyuan.languages.testConnectionSuccessDimensions.replace("${dimensions}", String(dims))
-                        : window.siyuan.languages.testConnectionSuccess,
+                        ? window.scribli.languages.testConnectionSuccessDimensions.replace("${dimensions}", String(dims))
+                        : window.scribli.languages.testConnectionSuccess,
                     undefined, "info",
                 );
                 return;
             }
             showMessage(
                 data.msg
-                    ? window.siyuan.languages.testConnectionFailMsg.replace("${msg}", data.msg)
-                    : window.siyuan.languages.testConnectionFail,
+                    ? window.scribli.languages.testConnectionFailMsg.replace("${msg}", data.msg)
+                    : window.scribli.languages.testConnectionFail,
                 undefined, "error",
             );
         });
@@ -232,7 +232,7 @@ export const mountRerankTestBtn = (root: HTMLElement) => {
     const btnContainer = document.createElement("div");
     btnContainer.style.textAlign = "right";
     btnContainer.style.marginTop = "8px";
-    btnContainer.innerHTML = `<button class="b3-button b3-button--outline" id="aiRerankTestBtn"><svg class="b3-button__icon"><use xlink:href="#iconPlugZap"></use></svg><span>${window.siyuan.languages.testConnection}</span></button>`;
+    btnContainer.innerHTML = `<button class="b3-button b3-button--outline" id="aiRerankTestBtn"><svg class="b3-button__icon"><use xlink:href="#iconPlugZap"></use></svg><span>${window.scribli.languages.testConnection}</span></button>`;
     wrapper.appendChild(btnContainer);
 
     const testBtn = btnContainer.querySelector<HTMLButtonElement>("#aiRerankTestBtn");
@@ -243,24 +243,24 @@ export const mountRerankTestBtn = (root: HTMLElement) => {
         testBtn.disabled = true;
         iconUse.setAttribute("xlink:href", "#iconRefresh");
         svgEl.style.animation = "agent-mirror-spin 0.8s linear infinite";
-        labelSpan.textContent = window.siyuan.languages.testConnectionTesting;
+        labelSpan.textContent = window.scribli.languages.testConnectionTesting;
         const restoreBtn = () => {
             testBtn.disabled = false;
             iconUse.setAttribute("xlink:href", "#iconPlugZap");
             svgEl.style.animation = "";
-            labelSpan.textContent = window.siyuan.languages.testConnection;
+            labelSpan.textContent = window.scribli.languages.testConnection;
         };
         fetchPost("/api/ai/testRerankModel", {}, (response) => {
             restoreBtn();
             const data = response.data || {};
             if (data.matched) {
-                showMessage(window.siyuan.languages.testConnectionSuccess, undefined, "info");
+                showMessage(window.scribli.languages.testConnectionSuccess, undefined, "info");
                 return;
             }
             showMessage(
                 data.msg
-                    ? window.siyuan.languages.testConnectionFailMsg.replace("${msg}", data.msg)
-                    : window.siyuan.languages.testConnectionFail,
+                    ? window.scribli.languages.testConnectionFailMsg.replace("${msg}", data.msg)
+                    : window.scribli.languages.testConnectionFail,
                 undefined, "error",
             );
         });
@@ -268,14 +268,14 @@ export const mountRerankTestBtn = (root: HTMLElement) => {
 };
 
 export const genProvidersBlockHtml = (): string => `<div class="b3-label config-item" id="aiProvidersBlock">
-    <div class="b3-label__text">${window.siyuan.languages.apiProviderTip}</div>
+    <div class="b3-label__text">${window.scribli.languages.apiProviderTip}</div>
     <div class="fn__hr--small"></div>
     <div id="aiProviderList"></div>
     <div class="fn__hr"></div>
     <div class="config-wrap">
         <button class="b3-button b3-button--outline fn__flex-center fn__size200" data-type="addAiProvider">
             <svg><use xlink:href="#iconAdd"></use></svg>
-            ${window.siyuan.languages.addAiProvider}
+            ${window.scribli.languages.addAiProvider}
         </button>
     </div>
 </div>`;
@@ -324,7 +324,7 @@ export const mountProvidersBlock = (root: HTMLElement) => {
                 return;
             }
             showDeleteConfirm(provider.displayName || provider.baseURL, () => {
-                saveProviders(root, window.siyuan.config.ai.providers.filter((item) => item.id !== providerId));
+                saveProviders(root, window.scribli.config.ai.providers.filter((item) => item.id !== providerId));
             });
             return;
         }
@@ -364,7 +364,7 @@ export const mountProvidersBlock = (root: HTMLElement) => {
                 return;
             }
             showDeleteConfirm(model.displayName || model.name, () => {
-                saveProviders(root, window.siyuan.config.ai.providers.map((item) => {
+                saveProviders(root, window.scribli.config.ai.providers.map((item) => {
                     if (item.id !== providerId) {
                         return item;
                     }
@@ -392,7 +392,7 @@ export const mountProvidersBlock = (root: HTMLElement) => {
         if (!providerId || !findProvider(providerId)) {
             return;
         }
-        const providers = window.siyuan.config.ai.providers;
+        const providers = window.scribli.config.ai.providers;
         if (type === "toggleAiProvider") {
             const nextProviders = providers.map((item) => {
                 if (item.id !== providerId) {
@@ -432,7 +432,7 @@ const renderProviderList = (root: HTMLElement) => {
     if (!listEl) {
         return;
     }
-    const providers = window.siyuan.config.ai.providers;
+    const providers = window.scribli.config.ai.providers;
     const expanded = new Set<string>();
     if (!listEl.innerHTML) {
         // 初始化时，如果模型总数小于 10，则默认展开所有提供商
@@ -466,7 +466,7 @@ const renderProviderList = (root: HTMLElement) => {
     }
     const hideActionClass = isMobile() ? "" : " b3-list-item--hide-action";
     if (providers.length === 0) {
-        listEl.innerHTML = `<div class="b3-label__text">${window.siyuan.languages.noProviderConfigured}</div>`;
+        listEl.innerHTML = `<div class="b3-label__text">${window.scribli.languages.noProviderConfigured}</div>`;
         return;
     }
     const providersHtml = providers.map((provider) => {
@@ -474,10 +474,10 @@ const renderProviderList = (root: HTMLElement) => {
         const modelsHtml = provider.models.map((model) => {
             return `<div class="b3-list-item b3-list-item--narrow${hideActionClass}" data-type="aiModel" data-model-id="${model.id}">
     <span class="b3-list-item__text">${Lute.EscapeHTMLStr((model.displayName || model.name))}</span>
-    <span data-type="deleteAiModel" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.delete}">
+    <span data-type="deleteAiModel" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.delete}">
         <svg><use xlink:href="#iconTrashcan"></use></svg>
     </span>
-    <span data-type="editAiModel" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.config}">
+    <span data-type="editAiModel" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.config}">
         <svg><use xlink:href="#iconSettings"></use></svg>
     </span>
     <span class="fn__space--small"></span>
@@ -491,10 +491,10 @@ const renderProviderList = (root: HTMLElement) => {
             <svg class="b3-list-item__arrow${isExpanded ? " b3-list-item__arrow--open" : ""}"><use xlink:href="#iconRight"></use></svg>
         </span>
         <span class="b3-list-item__text">${Lute.EscapeHTMLStr((provider.displayName || provider.baseURL))}</span>
-        <span data-type="deleteAiProvider" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.delete}">
+        <span data-type="deleteAiProvider" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.delete}">
             <svg><use xlink:href="#iconTrashcan"></use></svg>
         </span>
-        <span data-type="editAiProvider" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.config}">
+        <span data-type="editAiProvider" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.config}">
             <svg><use xlink:href="#iconSettings"></use></svg>
         </span>
         <span class="fn__space--small"></span>
@@ -505,7 +505,7 @@ const renderProviderList = (root: HTMLElement) => {
         <div class="fn__hr--small"></div>
         <button class="b3-button b3-button--small" data-type="addAiModel">
             <svg><use xlink:href="#iconAdd"></use></svg>
-            ${window.siyuan.languages.addAiModel}
+            ${window.scribli.languages.addAiModel}
         </button>
     </div>
 </div>`;
@@ -515,8 +515,8 @@ const renderProviderList = (root: HTMLElement) => {
 
 const showDeleteConfirm = (title: string, onConfirm: () => void) => {
     confirmDialog(
-        window.siyuan.languages.deleteOpConfirm,
-        window.siyuan.languages.confirmDeleteTip.replace("${x}", Lute.EscapeHTMLStr(title)),
+        window.scribli.languages.deleteOpConfirm,
+        window.scribli.languages.confirmDeleteTip.replace("${x}", Lute.EscapeHTMLStr(title)),
         onConfirm,
         undefined,
         true,
@@ -539,25 +539,25 @@ const openProviderDialog = (root: HTMLElement, providerId: string | null) => {
     } : existingProvider;
 
     const dialog = new Dialog({
-        title: isNew ? window.siyuan.languages.addAiProvider : window.siyuan.languages.aiProviderSettings,
+        title: isNew ? window.scribli.languages.addAiProvider : window.scribli.languages.aiProviderSettings,
         width: isMobile() ? "92vw" : "520px",
         height: "80vh",
         content: `<div class="b3-dialog__content">
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${window.siyuan.languages.apiBaseURL}</div>
-        <div class="b3-label__text">${window.siyuan.languages.apiBaseURLTip}</div>
+        <div class="config-name">${window.scribli.languages.apiBaseURL}</div>
+        <div class="b3-label__text">${window.scribli.languages.apiBaseURLTip}</div>
         <div class="fn__hr"></div>
         <input class="b3-text-field fn__block" id="aiProviderBaseURL" type="text" spellcheck="false" value="${Lute.EscapeHTMLStr(initialProvider.baseURL)}"/>
     </div>
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${window.siyuan.languages.customDisplayName}</div>
-        <div class="b3-label__text">${window.siyuan.languages.aiProviderDisplayNameTip}</div>
+        <div class="config-name">${window.scribli.languages.customDisplayName}</div>
+        <div class="b3-label__text">${window.scribli.languages.aiProviderDisplayNameTip}</div>
         <div class="fn__hr"></div>
         <input class="b3-text-field fn__block" id="aiProviderDisplayName" type="text" spellcheck="false" value="${Lute.EscapeHTMLStr(initialProvider.displayName ?? "")}"/>
     </div>
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${window.siyuan.languages.apiKey}</div>
-        <div class="b3-label__text">${window.siyuan.languages.apiKeyTip}</div>
+        <div class="config-name">${window.scribli.languages.apiKey}</div>
+        <div class="b3-label__text">${window.scribli.languages.apiKeyTip}</div>
         <div class="fn__hr"></div>
         <div class="b3-form__icona fn__block">
             <input id="aiProviderApiKey" type="password" class="b3-text-field b3-form__icona-input" value="${Lute.EscapeHTMLStr(initialProvider.apiKey)}">
@@ -565,8 +565,8 @@ const openProviderDialog = (root: HTMLElement, providerId: string | null) => {
         </div>
     </div>
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${window.siyuan.languages.apiTimeout}</div>
-        <div class="b3-label__text">${window.siyuan.languages.apiTimeoutTip}</div>
+        <div class="config-name">${window.scribli.languages.apiTimeout}</div>
+        <div class="b3-label__text">${window.scribli.languages.apiTimeoutTip}</div>
         <div class="fn__hr"></div>
         <div class="fn__flex">
             <input class="b3-text-field fn__flex-1" id="aiProviderRequestTimeout" type="number" min="1" max="600" value="${initialProvider.requestTimeout}"/>
@@ -576,8 +576,8 @@ const openProviderDialog = (root: HTMLElement, providerId: string | null) => {
     </div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
     });
     dialog.element.setAttribute("data-key", Constants.DIALOG_AIPROVIDER);
@@ -593,7 +593,7 @@ const openProviderDialog = (root: HTMLElement, providerId: string | null) => {
             apiKey: dialog.element.querySelector<HTMLInputElement>("#aiProviderApiKey").value,
             requestTimeout: dialog.element.querySelector<HTMLInputElement>("#aiProviderRequestTimeout").valueAsNumber,
         };
-        const providers = window.siyuan.config.ai.providers;
+        const providers = window.scribli.config.ai.providers;
         const nextProviders = isNew
             ? [...providers, nextProvider]
             : providers.map((item) => item.id !== providerId ? item : nextProvider);
@@ -603,7 +603,7 @@ const openProviderDialog = (root: HTMLElement, providerId: string | null) => {
 };
 
 const findProvider = (providerId: string) =>
-    window.siyuan.config.ai.providers.find((provider) => provider.id === providerId);
+    window.scribli.config.ai.providers.find((provider) => provider.id === providerId);
 
 const findModel = (provider: Config.IProvider, modelId: string) =>
     provider.models.find((model) => model.id === modelId);
@@ -631,7 +631,7 @@ const syncModelPickerSelects = (root: HTMLElement) => {
         // 数据源：当前 UI 下拉框选中值、持久化配置
         const uiProviderId = providerSelect.value;
         const uiModelId = modelSelect.value;
-        const savedModelId = window.siyuan.config.ai[group].modelId;
+        const savedModelId = window.scribli.config.ai[group].modelId;
         const {providerId: savedProviderId, modelId: storedModelId} = lookupModelOwner(savedModelId);
 
         // 提供商优先级：UI 选中（已启用）→ 配置归属（已启用）→ 空
@@ -662,7 +662,7 @@ const lookupModelOwner = (modelId: string): {providerId: string; modelId: string
     if (!modelId) {
         return {providerId: "", modelId: ""};
     }
-    const provider = window.siyuan.config.ai.providers.find((item) => findModel(item, modelId));
+    const provider = window.scribli.config.ai.providers.find((item) => findModel(item, modelId));
     if (!provider) {
         return {providerId: "", modelId: ""};
     }
@@ -670,7 +670,7 @@ const lookupModelOwner = (modelId: string): {providerId: string; modelId: string
 };
 
 const getEnabledProviders = () =>
-    window.siyuan.config.ai.providers.filter((provider) => provider.enabled);
+    window.scribli.config.ai.providers.filter((provider) => provider.enabled);
 
 const getEnabledModels = (providerId: string): Config.IModel[] => {
     const provider = findProvider(providerId);
@@ -681,13 +681,13 @@ const getEnabledModels = (providerId: string): Config.IModel[] => {
 };
 
 const buildProviderOptionsHtml = (enabledProviders: Config.IProvider[], providerId: string): string =>
-    `<option value="">${window.siyuan.languages.noProviderConfigured}</option>` +
+    `<option value="">${window.scribli.languages.noProviderConfigured}</option>` +
     enabledProviders.map(provider =>
         `<option value="${Lute.EscapeHTMLStr(provider.id)}"${provider.id === providerId ? " selected" : ""}>${Lute.EscapeHTMLStr(provider.displayName || provider.baseURL)}</option>`
     ).join("");
 
 const buildModelOptionsHtml = (enabledModels: Config.IModel[], modelId: string): string =>
-    `<option value="">${window.siyuan.languages.noModelConfigured}</option>` +
+    `<option value="">${window.scribli.languages.noModelConfigured}</option>` +
     enabledModels.map((model) =>
         `<option value="${Lute.EscapeHTMLStr(model.id)}"${model.id === modelId ? " selected" : ""}>${Lute.EscapeHTMLStr(model.displayName || model.name)}</option>`
     ).join("");
@@ -721,14 +721,14 @@ const openAvailableModelMenu = (modelInput: HTMLInputElement, models: string[]) 
         iconHTML: "",
         type: "empty",
         label: `<div class="fn__flex-column b3-menu__filter">
-    <input class="b3-text-field fn__block" placeholder="${window.siyuan.languages.search}">
+    <input class="b3-text-field fn__block" placeholder="${window.scribli.languages.search}">
     <div class="fn__hr"></div>
     <div class="b3-list fn__flex-1 b3-list--background">
         ${models.map((model) => `<div class="b3-list-item b3-list-item--narrow" data-model="${Lute.EscapeHTMLStr(model)}">
     <span class="b3-list-item__text">${Lute.EscapeHTMLStr(model)}</span>
     ${model === modelInput.value ? '<svg class="b3-menu__checked"><use xlink:href="#iconSelect"></use></svg>' : ""}
 </div>`).join("")}
-        <div class="b3-list--empty fn__none" data-type="empty">${window.siyuan.languages.emptyContent}</div>
+        <div class="b3-list--empty fn__none" data-type="empty">${window.scribli.languages.emptyContent}</div>
     </div>
 </div>`,
         bind(element) {
@@ -800,7 +800,7 @@ const replaceModelInputWithPicker = (inputElement: HTMLElement, models: string[]
     modelInput.type = "text";
     modelInput.spellcheck = false;
     modelInput.readOnly = true;
-    modelInput.placeholder = window.siyuan.languages.selectModel;
+    modelInput.placeholder = window.scribli.languages.selectModel;
     modelInput.value = current && models.includes(current) ? current : "";
     const openMenu = () => openAvailableModelMenu(modelInput, models);
     modelInput.addEventListener("click", openMenu);
@@ -829,33 +829,33 @@ const openModelDialog = (root: HTMLElement, providerId: string, modelId: string 
     }
 
     const dialog = new Dialog({
-        title: isNew ? window.siyuan.languages.addAiModel : window.siyuan.languages.aiModelSettings,
+        title: isNew ? window.scribli.languages.addAiModel : window.scribli.languages.aiModelSettings,
         width: isMobile() ? "92vw" : "520px",
         height: "80vh",
         content: `<div class="b3-dialog__content">
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${window.siyuan.languages.apiModel}</div>
-        <div class="b3-label__text">${window.siyuan.languages.apiModelTip}</div>
+        <div class="config-name">${window.scribli.languages.apiModel}</div>
+        <div class="b3-label__text">${window.scribli.languages.apiModelTip}</div>
         <div class="fn__hr"></div>
         <div class="fn__flex config-wrap" style="overflow: visible !important;">
-            <button class="b3-button b3-button--outline fn__flex-center" id="aiModelFetchBtn" title="${window.siyuan.languages.fetchAvailableModels}"><svg style="margin-right: 4px;"><use xlink:href="#iconRefresh"></use></svg>${window.siyuan.languages.fetchAvailableModels}</button>
+            <button class="b3-button b3-button--outline fn__flex-center" id="aiModelFetchBtn" title="${window.scribli.languages.fetchAvailableModels}"><svg style="margin-right: 4px;"><use xlink:href="#iconRefresh"></use></svg>${window.scribli.languages.fetchAvailableModels}</button>
             <span class="fn__space"></span>
             <input class="b3-text-field fn__flex-1" id="aiModelName" type="text" spellcheck="false" value="${Lute.EscapeHTMLStr(initialModel.name)}"/>
         </div>
     </div>
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${window.siyuan.languages.customDisplayName}</div>
-        <div class="b3-label__text">${window.siyuan.languages.aiModelDisplayNameTip}</div>
+        <div class="config-name">${window.scribli.languages.customDisplayName}</div>
+        <div class="b3-label__text">${window.scribli.languages.aiModelDisplayNameTip}</div>
         <div class="fn__hr"></div>
         <input class="b3-text-field fn__block" id="aiModelDisplayName" type="text" spellcheck="false" value="${Lute.EscapeHTMLStr(initialModel.displayName ?? "")}"/>
     </div>
     <div style="text-align: right;">
-        <button class="b3-button b3-button--outline" id="aiModelTestBtn"><svg class="b3-button__icon"><use xlink:href="#iconPlugZap"></use></svg><span>${window.siyuan.languages.testConnection}</span></button>
+        <button class="b3-button b3-button--outline" id="aiModelTestBtn"><svg class="b3-button__icon"><use xlink:href="#iconPlugZap"></use></svg><span>${window.scribli.languages.testConnection}</span></button>
     </div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
     });
     dialog.element.setAttribute("data-key", Constants.DIALOG_AIMODEL);
@@ -883,20 +883,20 @@ const openModelDialog = (root: HTMLElement, providerId: string, modelId: string 
             const data = response.data || {};
             const models: string[] = Array.isArray(data.models) ? data.models : [];
             if (models.length === 0) {
-                showMessage(`${window.siyuan.languages.fetchAvailableModelsFail}${data.msg ? "：" + data.msg : ""}`, undefined, "error");
+                showMessage(`${window.scribli.languages.fetchAvailableModelsFail}${data.msg ? "：" + data.msg : ""}`, undefined, "error");
                 return;
             }
             // 用可搜索选择器替换原文本框，保留当前已填值
             const current = getModelName();
             const inputEl = dialog.element.querySelector<HTMLElement>("#aiModelName");
             replaceModelInputWithPicker(inputEl, models, current);
-            showMessage(window.siyuan.languages.fetchAvailableModelsSuccess, undefined, "info");
+            showMessage(window.scribli.languages.fetchAvailableModelsSuccess, undefined, "info");
         });
     });
     dialog.element.querySelector<HTMLElement>("#aiModelTestBtn")?.addEventListener("click", () => {
         const modelName = getModelName();
         if (!modelName) {
-            showMessage(window.siyuan.languages.testConnectionFailModelRequired);
+            showMessage(window.scribli.languages.testConnectionFailModelRequired);
             return;
         }
         const testBtn = dialog.element.querySelector<HTMLButtonElement>("#aiModelTestBtn");
@@ -907,29 +907,29 @@ const openModelDialog = (root: HTMLElement, providerId: string, modelId: string 
         testBtn.disabled = true;
         iconUse.setAttribute("xlink:href", "#iconRefresh");
         svgEl.style.animation = "agent-mirror-spin 0.8s linear infinite";
-        labelSpan.textContent = window.siyuan.languages.testConnectionTesting;
+        labelSpan.textContent = window.scribli.languages.testConnectionTesting;
         const restoreBtn = () => {
             testBtn.disabled = false;
             iconUse.setAttribute("xlink:href", originalHref);
             svgEl.style.animation = "";
-            labelSpan.textContent = window.siyuan.languages.testConnection;
+            labelSpan.textContent = window.scribli.languages.testConnection;
         };
         fetchPost("/api/ai/testModel", {provider: providerId, model: modelName}, (response) => {
             restoreBtn();
             const data = response.data || {};
             if (data.matched) {
-                showMessage(window.siyuan.languages.testConnectionSuccess, undefined, "info");
+                showMessage(window.scribli.languages.testConnectionSuccess, undefined, "info");
                 return;
             }
             const available = data.available;
             if (Array.isArray(available) && available.length > 0) {
-                showMessage(`${window.siyuan.languages.testConnectionFailModelNotFound}（${available.slice(0, 10).join(", ")}）`, undefined, "error");
+                showMessage(`${window.scribli.languages.testConnectionFailModelNotFound}（${available.slice(0, 10).join(", ")}）`, undefined, "error");
                 return;
             }
             showMessage(
                 data.msg
-                    ? window.siyuan.languages.testConnectionFailMsg.replace("${msg}", data.msg)
-                    : window.siyuan.languages.testConnectionFail,
+                    ? window.scribli.languages.testConnectionFailMsg.replace("${msg}", data.msg)
+                    : window.scribli.languages.testConnectionFail,
                 undefined, "error",
             );
         });
@@ -937,7 +937,7 @@ const openModelDialog = (root: HTMLElement, providerId: string, modelId: string 
     btns[1].addEventListener("click", () => {
         const modelName = getModelName();
         if (!modelName) {
-            showMessage(window.siyuan.languages.testConnectionFailModelRequired);
+            showMessage(window.scribli.languages.testConnectionFailModelRequired);
             return;
         }
         const nextModel: Config.IModel = {
@@ -945,7 +945,7 @@ const openModelDialog = (root: HTMLElement, providerId: string, modelId: string 
             name: modelName,
             displayName: dialog.element.querySelector<HTMLInputElement>("#aiModelDisplayName").value,
         };
-        const nextProviders = window.siyuan.config.ai.providers.map((item) => {
+        const nextProviders = window.scribli.config.ai.providers.map((item) => {
             if (item.id !== providerId) {
                 return item;
             }
@@ -961,49 +961,49 @@ const openModelDialog = (root: HTMLElement, providerId: string, modelId: string 
 
 export const getModelPickerKeywords = (group: ModelPickerGroup): string[] => {
     const keywords = [
-        window.siyuan.languages.defaultModel,
-        window.siyuan.languages.apiProvider,
-        window.siyuan.languages.apiModel,
-        window.siyuan.languages.noProviderConfigured,
-        window.siyuan.languages.noModelConfigured,
+        window.scribli.languages.defaultModel,
+        window.scribli.languages.apiProvider,
+        window.scribli.languages.apiModel,
+        window.scribli.languages.noProviderConfigured,
+        window.scribli.languages.noModelConfigured,
     ];
     if (group === "editing") {
         keywords.push(
-            window.siyuan.languages.aiEditingModelPickerTip
+            window.scribli.languages.aiEditingModelPickerTip
         );
     } else if (group === "agent") {
         keywords.push(
-            window.siyuan.languages.aiAgentModelPickerTip,
-            window.siyuan.languages.agentChat,
+            window.scribli.languages.aiAgentModelPickerTip,
+            window.scribli.languages.agentChat,
         );
     } else if (group === "vision") {
-        keywords.push(window.siyuan.languages.aiImageUnderstanding, window.siyuan.languages.aiImageUnderstandingTip);
+        keywords.push(window.scribli.languages.aiImageUnderstanding, window.scribli.languages.aiImageUnderstandingTip);
     } else {
-        keywords.push(window.siyuan.languages.aiImageGeneration, window.siyuan.languages.aiImageGenerationTip);
+        keywords.push(window.scribli.languages.aiImageGeneration, window.scribli.languages.aiImageGenerationTip);
     }
     return keywords;
 };
 
 export const genModelPickerHtml = (group: ModelPickerGroup): string => {
-    const savedModelId = window.siyuan.config.ai[group].modelId;
+    const savedModelId = window.scribli.config.ai[group].modelId;
     const {providerId, modelId: storedModelId} = lookupModelOwner(savedModelId);
     const enabledProviders = getEnabledProviders();
     const enabledModels = getEnabledModels(providerId);
     const modelId = pickModelId(enabledModels, [storedModelId]);
     let desc: string;
     if (group === "editing") {
-        desc = window.siyuan.languages.aiEditingModelPickerTip;
+        desc = window.scribli.languages.aiEditingModelPickerTip;
     } else if (group === "agent") {
-        desc = window.siyuan.languages.aiAgentModelPickerTip;
+        desc = window.scribli.languages.aiAgentModelPickerTip;
     } else if (group === "vision") {
-        desc = window.siyuan.languages.aiImageUnderstandingTip;
+        desc = window.scribli.languages.aiImageUnderstandingTip;
     } else {
-        desc = window.siyuan.languages.aiImageGenerationTip;
+        desc = window.scribli.languages.aiImageGenerationTip;
     }
 
     return `<div class="b3-label config-item" id="aiModelPickerBlock-${group}" data-type="aiModelPicker" data-name="${group}">
     <div class="fn__block">
-        <div class="config-name">${window.siyuan.languages.defaultModel}</div>
+        <div class="config-name">${window.scribli.languages.defaultModel}</div>
         <div class="b3-label__text">${desc}</div>
         <div class="fn__hr--small"></div>
         <div class="fn__flex">
@@ -1039,7 +1039,7 @@ export const mountModelPickerBlock = (root: HTMLElement, group: ModelPickerGroup
             return;
         }
         const providerId = providerSelect.value;
-        const {modelId: storedModelId} = lookupModelOwner(window.siyuan.config.ai[group].modelId);
+        const {modelId: storedModelId} = lookupModelOwner(window.scribli.config.ai[group].modelId);
         const enabledModels = getEnabledModels(providerId);
         const isProviderChange = selectEl.dataset.type === "modelPickerProvider";
         const modelId = pickModelId(enabledModels, isProviderChange ? [storedModelId] : [modelSelect.value]);
@@ -1054,38 +1054,38 @@ export const mountModelPickerBlock = (root: HTMLElement, group: ModelPickerGroup
 };
 
 export const getMcpServersBlockKeywords = (): string[] => [
-    window.siyuan.languages.mcpStatusConnected,
-    window.siyuan.languages.mcpStatusConnecting,
-    window.siyuan.languages.mcpStatusAuthorizing,
-    window.siyuan.languages.mcpStatusAuthorizationRequired,
-    window.siyuan.languages.mcpStatusFailed,
-    window.siyuan.languages.mcpStatusDisabled,
-    window.siyuan.languages.mcpStatusTools,
-    window.siyuan.languages.aiMcpServersTip,
-    window.siyuan.languages.addAiMcpServer,
-    window.siyuan.languages.aiMcpServerSettings,
-    window.siyuan.languages.noMcpServerConfigured,
-    window.siyuan.languages.aiMcpServerName,
-    window.siyuan.languages.aiMcpServerNameTip,
-    window.siyuan.languages.connectionType,
-    window.siyuan.languages.aiMcpTypeStdio,
-    window.siyuan.languages.aiMcpTypeHttp,
-    window.siyuan.languages.command,
-    window.siyuan.languages.aiMcpCommandTip,
-    window.siyuan.languages.args,
-    window.siyuan.languages.aiMcpArgsTip,
-    window.siyuan.languages.aiMcpUrlTip,
-    window.siyuan.languages.aiMcpHttpHeaders,
-    window.siyuan.languages.apiTimeout,
-    window.siyuan.languages.mcpAuthorize,
-    window.siyuan.languages.mcpDisconnectAuthorization,
+    window.scribli.languages.mcpStatusConnected,
+    window.scribli.languages.mcpStatusConnecting,
+    window.scribli.languages.mcpStatusAuthorizing,
+    window.scribli.languages.mcpStatusAuthorizationRequired,
+    window.scribli.languages.mcpStatusFailed,
+    window.scribli.languages.mcpStatusDisabled,
+    window.scribli.languages.mcpStatusTools,
+    window.scribli.languages.aiMcpServersTip,
+    window.scribli.languages.addAiMcpServer,
+    window.scribli.languages.aiMcpServerSettings,
+    window.scribli.languages.noMcpServerConfigured,
+    window.scribli.languages.aiMcpServerName,
+    window.scribli.languages.aiMcpServerNameTip,
+    window.scribli.languages.connectionType,
+    window.scribli.languages.aiMcpTypeStdio,
+    window.scribli.languages.aiMcpTypeHttp,
+    window.scribli.languages.command,
+    window.scribli.languages.aiMcpCommandTip,
+    window.scribli.languages.args,
+    window.scribli.languages.aiMcpArgsTip,
+    window.scribli.languages.aiMcpUrlTip,
+    window.scribli.languages.aiMcpHttpHeaders,
+    window.scribli.languages.apiTimeout,
+    window.scribli.languages.mcpAuthorize,
+    window.scribli.languages.mcpDisconnectAuthorization,
 ];
 
 const openedMcpOAuthURLs = new Map<string, string>();
 
 export const genMcpServersBlockHtml = (): string => `<div class="b3-label config-item" id="aiMcpServersBlock">
     <div class="fn__flex" style="align-items:center;">
-        <span class="b3-label__text">${window.siyuan.languages.aiMcpServersTip}</span>
+        <span class="b3-label__text">${window.scribli.languages.aiMcpServersTip}</span>
         <span class="fn__flex-1"></span>
         <span id="aiMcpStatusSummary" class="b3-label__text ft__on-surface fn__none"></span>
     </div>
@@ -1095,7 +1095,7 @@ export const genMcpServersBlockHtml = (): string => `<div class="b3-label config
     <div class="config-wrap">
         <button class="b3-button b3-button--outline fn__flex-center fn__size200" data-type="addAiMcpServer">
             <svg><use xlink:href="#iconAdd"></use></svg>
-            ${window.siyuan.languages.addAiMcpServer}
+            ${window.scribli.languages.addAiMcpServer}
         </button>
     </div>
 </div>`;
@@ -1161,27 +1161,27 @@ export const mountMcpServersBlock = (root: HTMLElement) => {
                 // 每个 server 行上显示其工具数（仅已连接且有工具时）。
                 const toolsEl = block.querySelector<HTMLElement>(`[data-mcp-tools-count="${CSS.escape(item.id)}"]`);
                 if (toolsEl) {
-                    toolsEl.textContent = item.status === "connected" && item.tools > 0 ? window.siyuan.languages.mcpStatusTools.replace("${x}", String(item.tools)) : "";
+                    toolsEl.textContent = item.status === "connected" && item.tools > 0 ? window.scribli.languages.mcpStatusTools.replace("${x}", String(item.tools)) : "";
                 }
                 let label: string;
                 switch (item.status) {
                     case "connected":
-                        label = window.siyuan.languages.mcpStatusConnected;
+                        label = window.scribli.languages.mcpStatusConnected;
                         break;
                     case "connecting":
-                        label = window.siyuan.languages.mcpStatusConnecting;
+                        label = window.scribli.languages.mcpStatusConnecting;
                         break;
                     case "authorizing":
-                        label = window.siyuan.languages.mcpStatusAuthorizing;
+                        label = window.scribli.languages.mcpStatusAuthorizing;
                         break;
                     case "authorization_required":
-                        label = window.siyuan.languages.mcpStatusAuthorizationRequired;
+                        label = window.scribli.languages.mcpStatusAuthorizationRequired;
                         break;
                     case "failed":
-                        label = window.siyuan.languages.mcpStatusFailed;
+                        label = window.scribli.languages.mcpStatusFailed;
                         break;
                     default:
-                        label = window.siyuan.languages.mcpStatusDisabled;
+                        label = window.scribli.languages.mcpStatusDisabled;
                 }
                 dotWrap.setAttribute("aria-label", item.error ? `${label}: ${item.error}` : label);
                 block.querySelector<HTMLElement>(`[data-mcp-authorize-id="${CSS.escape(item.id)}"]`)?.classList.toggle("fn__none", item.status !== "authorization_required");
@@ -1197,7 +1197,7 @@ export const mountMcpServersBlock = (root: HTMLElement) => {
             const summaryEl = block.querySelector<HTMLElement>("#aiMcpStatusSummary");
             if (summaryEl) {
                 if (connectedCount > 0) {
-                    summaryEl.textContent = window.siyuan.languages.mcpStatusConnected + " " + connectedCount + "/" + items.length + " · " + window.siyuan.languages.mcpStatusTools.replace("${x}", String(totalTools));
+                    summaryEl.textContent = window.scribli.languages.mcpStatusConnected + " " + connectedCount + "/" + items.length + " · " + window.scribli.languages.mcpStatusTools.replace("${x}", String(totalTools));
                     summaryEl.classList.remove("fn__none");
                 } else {
                     summaryEl.classList.add("fn__none");
@@ -1254,7 +1254,7 @@ export const mountMcpServersBlock = (root: HTMLElement) => {
                 return;
             }
             showDeleteConfirm(server.name, () => {
-                saveMcpServers(root, window.siyuan.config.ai.mcp.servers.filter((item) => item.name !== serverName));
+                saveMcpServers(root, window.scribli.config.ai.mcp.servers.filter((item) => item.name !== serverName));
             });
             return;
         }
@@ -1274,8 +1274,8 @@ export const mountMcpServersBlock = (root: HTMLElement) => {
         if (type === "disconnectAiMcpOAuth") {
             const serverID = getMcpServerID(actionEl);
             if (serverID) {
-                confirmDialog(window.siyuan.languages.mcpDisconnectAuthorization,
-                    window.siyuan.languages.mcpDisconnectAuthorizationConfirm, () => {
+                confirmDialog(window.scribli.languages.mcpDisconnectAuthorization,
+                    window.scribli.languages.mcpDisconnectAuthorizationConfirm, () => {
                         fetchPost("/api/ai/mcpOAuthDisconnect", {id: serverID}, (response) => {
                             if (response.code !== 0) {
                                 showMessage(response.msg);
@@ -1297,7 +1297,7 @@ export const mountMcpServersBlock = (root: HTMLElement) => {
             return;
         }
         if (type === "toggleAiMcpServer") {
-            const nextServers = window.siyuan.config.ai.mcp.servers.map((item) => {
+            const nextServers = window.scribli.config.ai.mcp.servers.map((item) => {
                 if (item.name !== serverName) {
                     return item;
                 }
@@ -1313,27 +1313,27 @@ const renderMcpServerList = (root: HTMLElement) => {
     if (!listEl) {
         return;
     }
-    const servers = window.siyuan.config.ai.mcp.servers;
+    const servers = window.scribli.config.ai.mcp.servers;
     const hideActionClass = isMobile() ? "" : " b3-list-item--hide-action";
     if (servers.length === 0) {
-        listEl.innerHTML = `<div class="b3-label__text">${window.siyuan.languages.noMcpServerConfigured}</div>`;
+        listEl.innerHTML = `<div class="b3-label__text">${window.scribli.languages.noMcpServerConfigured}</div>`;
         return;
     }
     const serversHtml = servers.map((server) => {
         return `<div class="b3-list-item b3-list-item--narrow${hideActionClass}" data-type="aiMcpServer" data-mcp-server-id="${Lute.EscapeHTMLStr(server.id)}" data-mcp-server-name="${Lute.EscapeHTMLStr(server.name)}">
-    <span class="mcp-status-dot b3-tooltips b3-tooltips__n" data-mcp-status-id="${Lute.EscapeHTMLStr(server.id)}" aria-label="${server.enabled ? window.siyuan.languages.mcpStatusConnecting : window.siyuan.languages.mcpStatusDisabled}" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;margin-right:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background-color:${server.enabled ? "#d97706" : "var(--b3-theme-on-surface-light)"};"></span></span>
+    <span class="mcp-status-dot b3-tooltips b3-tooltips__n" data-mcp-status-id="${Lute.EscapeHTMLStr(server.id)}" aria-label="${server.enabled ? window.scribli.languages.mcpStatusConnecting : window.scribli.languages.mcpStatusDisabled}" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0;margin-right:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background-color:${server.enabled ? "#d97706" : "var(--b3-theme-on-surface-light)"};"></span></span>
     <span class="b3-list-item__text">${Lute.EscapeHTMLStr(server.name)}</span>
     <span class="ft__on-surface fn__flex-center" data-mcp-tools-count="${Lute.EscapeHTMLStr(server.id)}" style="font-size:12px;margin-right:8px;"></span>
-    <span data-type="authorizeAiMcpServer" data-mcp-authorize-id="${Lute.EscapeHTMLStr(server.id)}" class="fn__none b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.mcpAuthorize}">
+    <span data-type="authorizeAiMcpServer" data-mcp-authorize-id="${Lute.EscapeHTMLStr(server.id)}" class="fn__none b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.mcpAuthorize}">
         <svg><use xlink:href="#iconKey"></use></svg>
     </span>
-    <span data-type="disconnectAiMcpOAuth" data-mcp-disconnect-oauth-id="${Lute.EscapeHTMLStr(server.id)}" class="fn__none b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.mcpDisconnectAuthorization}">
+    <span data-type="disconnectAiMcpOAuth" data-mcp-disconnect-oauth-id="${Lute.EscapeHTMLStr(server.id)}" class="fn__none b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.mcpDisconnectAuthorization}">
         <svg><use xlink:href="#iconLinkOff"></use></svg>
     </span>
-    <span data-type="deleteAiMcpServer" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.delete}">
+    <span data-type="deleteAiMcpServer" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.delete}">
         <svg><use xlink:href="#iconTrashcan"></use></svg>
     </span>
-    <span data-type="editAiMcpServer" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.config}">
+    <span data-type="editAiMcpServer" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.config}">
         <svg><use xlink:href="#iconSettings"></use></svg>
     </span>
     <span class="fn__space--small"></span>
@@ -1368,50 +1368,50 @@ const openMcpServerDialog = (root: HTMLElement, serverName: string | null) => {
         : JSON.stringify(initialServer.headers, null, 2);
 
     const dialog = new Dialog({
-        title: isNew ? window.siyuan.languages.addAiMcpServer : window.siyuan.languages.aiMcpServerSettings,
+        title: isNew ? window.scribli.languages.addAiMcpServer : window.scribli.languages.aiMcpServerSettings,
         width: isMobile() ? "92vw" : "520px",
         height: "80vh",
         content: `<div class="b3-dialog__content">
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${window.siyuan.languages.aiMcpServerName}</div>
-        <div class="b3-label__text">${window.siyuan.languages.aiMcpServerNameTip}</div>
+        <div class="config-name">${window.scribli.languages.aiMcpServerName}</div>
+        <div class="b3-label__text">${window.scribli.languages.aiMcpServerNameTip}</div>
         <div class="fn__hr"></div>
         <input class="b3-text-field fn__block" id="aiMcpServerName" type="text" spellcheck="false" value="${Lute.EscapeHTMLStr(initialServer.name)}"/>
     </div>
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${window.siyuan.languages.connectionType}</div>
+        <div class="config-name">${window.scribli.languages.connectionType}</div>
         <div class="fn__hr"></div>
         <select class="b3-select fn__block" id="aiMcpServerType">
-            <option value="stdio"${initialServer.type === "stdio" ? " selected" : ""}>${window.siyuan.languages.aiMcpTypeStdio}</option>
-            <option value="http"${initialServer.type === "http" ? " selected" : ""}>${window.siyuan.languages.aiMcpTypeHttp}</option>
+            <option value="stdio"${initialServer.type === "stdio" ? " selected" : ""}>${window.scribli.languages.aiMcpTypeStdio}</option>
+            <option value="http"${initialServer.type === "http" ? " selected" : ""}>${window.scribli.languages.aiMcpTypeHttp}</option>
         </select>
     </div>
     <div class="b3-label b3-label--inner${mcpTypeHidden("stdio")}" data-mcp-type="stdio">
-        <div class="config-name">${window.siyuan.languages.command}</div>
-        <div class="b3-label__text">${window.siyuan.languages.aiMcpCommandTip}</div>
+        <div class="config-name">${window.scribli.languages.command}</div>
+        <div class="b3-label__text">${window.scribli.languages.aiMcpCommandTip}</div>
         <div class="fn__hr"></div>
         <input class="b3-text-field fn__block" id="aiMcpServerCommand" type="text" spellcheck="false" value="${Lute.EscapeHTMLStr(initialServer.command)}"/>
     </div>
     <div class="b3-label b3-label--inner${mcpTypeHidden("stdio")}" data-mcp-type="stdio">
-        <div class="config-name">${window.siyuan.languages.args}</div>
-        <div class="b3-label__text">${window.siyuan.languages.aiMcpArgsTip}</div>
+        <div class="config-name">${window.scribli.languages.args}</div>
+        <div class="b3-label__text">${window.scribli.languages.aiMcpArgsTip}</div>
         <div class="fn__hr"></div>
         <textarea class="b3-text-field fn__block" id="aiMcpServerArgs" rows="4" style="resize: vertical;">${Lute.EscapeHTMLStr(argsText)}</textarea>
     </div>
     <div class="b3-label b3-label--inner${mcpTypeHidden("http")}" data-mcp-type="http">
         <div class="config-name">URL</div>
-        <div class="b3-label__text">${window.siyuan.languages.aiMcpUrlTip}</div>
+        <div class="b3-label__text">${window.scribli.languages.aiMcpUrlTip}</div>
         <div class="fn__hr"></div>
         <input class="b3-text-field fn__block" id="aiMcpServerUrl" type="text" spellcheck="false" value="${Lute.EscapeHTMLStr(initialServer.url)}"/>
     </div>
     <div class="b3-label b3-label--inner${mcpTypeHidden("http")}" data-mcp-type="http">
-        <div class="config-name">${window.siyuan.languages.aiMcpHttpHeaders}</div>
-        <div class="b3-label__text">${window.siyuan.languages.fillJsonObject}</div>
+        <div class="config-name">${window.scribli.languages.aiMcpHttpHeaders}</div>
+        <div class="b3-label__text">${window.scribli.languages.fillJsonObject}</div>
         <div class="fn__hr"></div>
         <textarea class="b3-text-field fn__block" id="aiMcpServerHeaders" rows="3" style="resize: vertical;" placeholder='{"Authorization":"Bearer ..."}'>${Lute.EscapeHTMLStr(headersText)}</textarea>
     </div>
     <div class="b3-label b3-label--inner">
-        <div class="config-name">${window.siyuan.languages.apiTimeout}</div>
+        <div class="config-name">${window.scribli.languages.apiTimeout}</div>
         <div class="fn__hr"></div>
         <div class="fn__flex">
             <input class="b3-text-field fn__flex-1" id="aiMcpServerTimeout" type="number" min="1" max="600" value="${initialServer.timeout}"/>
@@ -1421,16 +1421,16 @@ const openMcpServerDialog = (root: HTMLElement, serverName: string | null) => {
     </div>
     <div class="b3-label b3-label--inner fn__flex">
         <div class="fn__flex-1">
-            <div class="config-name">${window.siyuan.languages.aiMcpTrustToolAnnotations}</div>
-            <div class="b3-label__text">${window.siyuan.languages.aiMcpTrustToolAnnotationsTip}</div>
+            <div class="config-name">${window.scribli.languages.aiMcpTrustToolAnnotations}</div>
+            <div class="b3-label__text">${window.scribli.languages.aiMcpTrustToolAnnotationsTip}</div>
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" id="aiMcpTrustToolAnnotations" type="checkbox"${initialServer.trustToolAnnotations ? " checked" : ""}/>
     </div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
     });
     dialog.element.setAttribute("data-key", Constants.DIALOG_AIMCPSERVER);
@@ -1450,7 +1450,7 @@ const openMcpServerDialog = (root: HTMLElement, serverName: string | null) => {
                     headers = parsed as Record<string, string>;
                 }
             } catch {
-                showMessage(window.siyuan.languages.aiMcpHeadersInvalid);
+                showMessage(window.scribli.languages.aiMcpHeadersInvalid);
                 return;
             }
         }
@@ -1466,16 +1466,16 @@ const openMcpServerDialog = (root: HTMLElement, serverName: string | null) => {
             trustToolAnnotations: dialog.element.querySelector<HTMLInputElement>("#aiMcpTrustToolAnnotations").checked,
         };
         if (!nextServer.name) {
-            showMessage(window.siyuan.languages.aiMcpServerNameRequired);
+            showMessage(window.scribli.languages.aiMcpServerNameRequired);
             return;
         }
-        if (window.siyuan.config.ai.mcp.servers.some((server) => {
+        if (window.scribli.config.ai.mcp.servers.some((server) => {
             return server.name === nextServer.name && server.name !== serverName;
         })) {
-            showMessage(window.siyuan.languages.aiMcpServerNameDuplicate);
+            showMessage(window.scribli.languages.aiMcpServerNameDuplicate);
             return;
         }
-        const servers = window.siyuan.config.ai.mcp.servers;
+        const servers = window.scribli.config.ai.mcp.servers;
         const nextServers = isNew
             ? [...servers, nextServer]
             : servers.map((item) => item.name !== serverName ? item : nextServer);
@@ -1491,7 +1491,7 @@ const syncMcpTypeFields = (dialogEl: HTMLElement, type: string) => {
 };
 
 const findMcpServer = (serverName: string) =>
-    window.siyuan.config.ai.mcp.servers.find((server) => server.name === serverName);
+    window.scribli.config.ai.mcp.servers.find((server) => server.name === serverName);
 
 const saveMcpServers = (root: HTMLElement, servers: Config.IMCPServer[]) => {
     aiConfigApi.patch("mcp.servers", servers, () => renderMcpServerList(root));

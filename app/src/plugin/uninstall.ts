@@ -32,8 +32,8 @@ export const uninstall = (app: App, name: string, isReload: boolean) => {
                 } catch (e) {
                     console.error(`plugin ${plugin.name} uninstall error:`, e);
                 }
-                window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name] = {};
-                setStorageVal(Constants.LOCAL_PLUGIN_DOCKS, window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS]);
+                window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name] = {};
+                setStorageVal(Constants.LOCAL_PLUGIN_DOCKS, window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS]);
             }
             // rm tab
             /// #if !MOBILE
@@ -67,12 +67,12 @@ export const uninstall = (app: App, name: string, isReload: boolean) => {
             // rm dock
             const docksKeys = Object.keys(plugin.docks);
             docksKeys.forEach(key => {
-                if (window.siyuan.layout.leftDock && Object.keys(window.siyuan.layout.leftDock.data).includes(key)) {
-                    window.siyuan.layout.leftDock.remove(key);
-                } else if (window.siyuan.layout.rightDock && Object.keys(window.siyuan.layout.rightDock.data).includes(key)) {
-                    window.siyuan.layout.rightDock.remove(key);
-                } else if (window.siyuan.layout.bottomDock && Object.keys(window.siyuan.layout.bottomDock.data).includes(key)) {
-                    window.siyuan.layout.bottomDock.remove(key);
+                if (window.scribli.layout.leftDock && Object.keys(window.scribli.layout.leftDock.data).includes(key)) {
+                    window.scribli.layout.leftDock.remove(key);
+                } else if (window.scribli.layout.rightDock && Object.keys(window.scribli.layout.rightDock.data).includes(key)) {
+                    window.scribli.layout.rightDock.remove(key);
+                } else if (window.scribli.layout.bottomDock && Object.keys(window.scribli.layout.bottomDock.data).includes(key)) {
+                    window.scribli.layout.bottomDock.remove(key);
                 }
             });
             resizeTopBar();
@@ -104,7 +104,7 @@ export const uninstall = (app: App, name: string, isReload: boolean) => {
             /// #if !BROWSER
             plugin.commands.forEach(command => {
                 if (command.globalCallback && command.customHotkey) {
-                    ipcRenderer.send(Constants.SIYUAN_CMD, {
+                    ipcRenderer.send(Constants.SCRIBLI_CMD, {
                         cmd: "unregisterGlobalShortcut",
                         accelerator: command.customHotkey
                     });

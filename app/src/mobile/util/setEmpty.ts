@@ -17,22 +17,22 @@ export const setEmpty = (app: App) => {
         return;
     }
     emptyElement.innerHTML = `<div id="emptySearch" class="b3-list-item">
-    <svg class="b3-list-item__graphic"><use xlink:href="#iconSearch"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.siyuan.languages.search}</span>
+    <svg class="b3-list-item__graphic"><use xlink:href="#iconSearch"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.scribli.languages.search}</span>
 </div>
 <div id="emptyRecent" class="b3-list-item">
-    <svg class="b3-list-item__graphic"><use xlink:href="#iconRecentDocs"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.siyuan.languages.recentDocs}</span>
+    <svg class="b3-list-item__graphic"><use xlink:href="#iconRecentDocs"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.scribli.languages.recentDocs}</span>
 </div>
-<div id="emptyHistory" class="b3-list-item${window.siyuan.config.readonly ? " fn__none" : ""}">
-    <svg class="b3-list-item__graphic"><use xlink:href="#iconHistory"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.siyuan.languages.dataHistory}</span>
+<div id="emptyHistory" class="b3-list-item${window.scribli.config.readonly ? " fn__none" : ""}">
+    <svg class="b3-list-item__graphic"><use xlink:href="#iconHistory"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.scribli.languages.dataHistory}</span>
 </div>
-<div id="emptyNewFile" class="b3-list-item${(getOpenNotebookCount() > 0 || !window.siyuan.config.readonly) ? "" : " fn__none"}">
-    <svg class="b3-list-item__graphic"><use xlink:href="#iconAddDoc"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.siyuan.languages.newFile}</span>
+<div id="emptyNewFile" class="b3-list-item${(getOpenNotebookCount() > 0 || !window.scribli.config.readonly) ? "" : " fn__none"}">
+    <svg class="b3-list-item__graphic"><use xlink:href="#iconAddDoc"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.scribli.languages.newFile}</span>
 </div>
-<div class="b3-list-item" id="emptyNewNotebook${window.siyuan.config.readonly ? " fn__none" : ""}">
-    <svg class="b3-list-item__graphic"><use xlink:href="#iconNewNoteBook"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.siyuan.languages.newNotebook}</span>
+<div class="b3-list-item" id="emptyNewNotebook${window.scribli.config.readonly ? " fn__none" : ""}">
+    <svg class="b3-list-item__graphic"><use xlink:href="#iconNewNoteBook"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.scribli.languages.newNotebook}</span>
 </div>
-<div class="b3-list-item${window.siyuan.config.readonly ? " fn__none" : ""}" id="emptyHelp">
-    <svg class="b3-list-item__graphic"><use xlink:href="#iconHelp"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.siyuan.languages.userGuide}</span>
+<div class="b3-list-item${window.scribli.config.readonly ? " fn__none" : ""}" id="emptyHelp">
+    <svg class="b3-list-item__graphic"><use xlink:href="#iconHelp"></use></svg><span class="fn__space"></span><span class="b3-list-item__text">${window.scribli.languages.userGuide}</span>
 </div>`;
     emptyElement.addEventListener("click", (event) => {
         let target = event.target as HTMLElement;

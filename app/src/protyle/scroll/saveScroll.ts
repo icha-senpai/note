@@ -9,7 +9,7 @@ import {isEncryptedBox} from "../../util/pathName";
 import {getContenteditableElement} from "../wysiwyg/getBlock";
 
 export const saveScroll = (protyle: IProtyle, getObject = false) => {
-    if (!protyle.wysiwyg.element.firstElementChild || window.siyuan.config.readonly ||
+    if (!protyle.wysiwyg.element.firstElementChild || window.scribli.config.readonly ||
         (protyle.element.dataset.databaseRowId && !getObject)) {
         // 报错或者空白页面
         return undefined;
@@ -52,9 +52,9 @@ export const saveScroll = (protyle: IProtyle, getObject = false) => {
         return attr;
     }
 
-    window.siyuan.storage[Constants.LOCAL_FILEPOSITION][protyle.block.rootID] = attr;
+    window.scribli.storage[Constants.LOCAL_FILEPOSITION][protyle.block.rootID] = attr;
     return new Promise(resolve => {
-        setStorageVal(Constants.LOCAL_FILEPOSITION, window.siyuan.storage[Constants.LOCAL_FILEPOSITION], () => {
+        setStorageVal(Constants.LOCAL_FILEPOSITION, window.scribli.storage[Constants.LOCAL_FILEPOSITION], () => {
             resolve(true);
         });
     });

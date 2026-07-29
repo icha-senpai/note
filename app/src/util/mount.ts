@@ -17,7 +17,7 @@ import {importObsidianVault} from "../menus/importObsidian";
 export const fetchNewDailyNote = (app: App, notebook: string) => {
     fetchPost("/api/filetree/createDailyNote", {
         notebook,
-        app: Constants.SIYUAN_APPID,
+        app: Constants.SCRIBLI_APPID,
     }, (response) => {
         /// #if MOBILE
         openMobileFileById(app, response.data.id, [Constants.CB_GET_SCROLL, Constants.CB_GET_FOCUS]);
@@ -28,7 +28,7 @@ export const fetchNewDailyNote = (app: App, notebook: string) => {
 };
 
 export const newDailyNote = (app: App) => {
-    const exit = window.siyuan.dialogs.find(item => {
+    const exit = window.scribli.dialogs.find(item => {
         if (item.element.getAttribute("data-key") === Constants.DIALOG_DIALYNOTE) {
             item.destroy();
             return true;
@@ -39,12 +39,12 @@ export const newDailyNote = (app: App) => {
     }
     const openCount = getOpenNotebookCount();
     if (openCount === 0) {
-        showMessage(window.siyuan.languages.newFileTip);
+        showMessage(window.scribli.languages.newFileTip);
         return;
     }
     if (openCount === 1) {
         let notebookId = "";
-        window.siyuan.notebooks.find(item => {
+        window.scribli.notebooks.find(item => {
             if (!item.closed) {
                 notebookId = item.id;
             }
@@ -52,8 +52,8 @@ export const newDailyNote = (app: App) => {
         fetchNewDailyNote(app, notebookId);
         return;
     }
-    const localNotebookId = window.siyuan.storage[Constants.LOCAL_DAILYNOTEID];
-    const localNotebookIsOpen = window.siyuan.notebooks.find((item) => {
+    const localNotebookId = window.scribli.storage[Constants.LOCAL_DAILYNOTEID];
+    const localNotebookIsOpen = window.scribli.notebooks.find((item) => {
         if (item.id === localNotebookId && !item.closed) {
             return true;
         }
@@ -62,20 +62,20 @@ export const newDailyNote = (app: App) => {
         fetchNewDailyNote(app, localNotebookId);
     } else {
         let optionsHTML = "";
-        window.siyuan.notebooks.forEach(item => {
+        window.scribli.notebooks.forEach(item => {
             if (!item.closed) {
                 optionsHTML += `<option value="${item.id}">${item.name}</option>`;
             }
         });
         const dialog = new Dialog({
             positionId: Constants.DIALOG_DIALYNOTE,
-            title: window.siyuan.languages.plsChoose,
+            title: window.scribli.languages.plsChoose,
             content: `<div class="b3-dialog__content">
     <select class="b3-select fn__block">${optionsHTML}</select>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
             width: isMobile() ? "92vw" : "520px",
         });
@@ -88,8 +88,8 @@ export const newDailyNote = (app: App) => {
         });
         btnsElement[1].addEventListener("click", () => {
             const notebook = selectElement.value;
-            window.siyuan.storage[Constants.LOCAL_DAILYNOTEID] = notebook;
-            setStorageVal(Constants.LOCAL_DAILYNOTEID, window.siyuan.storage[Constants.LOCAL_DAILYNOTEID]);
+            window.scribli.storage[Constants.LOCAL_DAILYNOTEID] = notebook;
+            setStorageVal(Constants.LOCAL_DAILYNOTEID, window.scribli.storage[Constants.LOCAL_DAILYNOTEID]);
             fetchNewDailyNote(app, notebook);
             dialog.destroy();
         });
@@ -97,11 +97,11 @@ export const newDailyNote = (app: App) => {
 };
 
 export const mountHelp = () => {
-    const notebookId = Constants.HELP_PATH[window.siyuan.config.appearance.lang];
+    const notebookId = Constants.HELP_PATH[window.scribli.config.appearance.lang];
     fetchPost("/api/notebook/removeNotebook", {notebook: notebookId}, () => {
         fetchPost("/api/notebook/openNotebook", {
             notebook: notebookId,
-            app: Constants.SIYUAN_APPID,
+            app: Constants.SCRIBLI_APPID,
         });
     });
 };
@@ -112,19 +112,19 @@ export const newNotebook = () => {
     importObsidianHTML = "<div class=\"b3-list-item fn__pointer\" data-type=\"import-obsidian\" role=\"button\" tabindex=\"0\"><svg class=\"b3-list-item__graphic\"><use xlink:href=\"#iconObsidian\"></use></svg><span class=\"b3-list-item__text\">Obsidian Vault</span></div>";
     /// #endif
     const dialog = new Dialog({
-        title: window.siyuan.languages.newNotebook,
+        title: window.scribli.languages.newNotebook,
         content: `<div class="b3-dialog__content">
-    <input placeholder="${window.siyuan.languages.notebookName}" class="b3-text-field fn__block">
+    <input placeholder="${window.scribli.languages.notebookName}" class="b3-text-field fn__block">
     <div class="fn__hr"></div>
-    <div class="b3-label__text fn__pointer fn__flex" style="align-items: center;gap: 4px" data-type="toggle-import" role="button" tabindex="0" aria-expanded="false"><svg class="b3-list-item__arrow" style="display: block;flex: none;height: 14px;width: 14px" data-type="import-arrow"><use xlink:href="#iconRight"></use></svg><span style="line-height: 20px">${window.siyuan.languages.importFromMoreApps}</span></div>
+    <div class="b3-label__text fn__pointer fn__flex" style="align-items: center;gap: 4px" data-type="toggle-import" role="button" tabindex="0" aria-expanded="false"><svg class="b3-list-item__arrow" style="display: block;flex: none;height: 14px;width: 14px" data-type="import-arrow"><use xlink:href="#iconRight"></use></svg><span style="line-height: 20px">${window.scribli.languages.importFromMoreApps}</span></div>
     <div class="b3-list--background fn__none" data-type="import-options" style="padding-top: 8px">
         <label class="b3-list-item fn__pointer" data-type="import-sy"><svg class="b3-list-item__graphic"><use xlink:href="#iconScribli"></use></svg><span class="b3-list-item__text">Scribli .sy.zip</span><input class="b3-form__upload" type="file" accept="application/zip"></label>
         ${importObsidianHTML}
     </div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel" data-type="cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text" data-type="confirm">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel" data-type="cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text" data-type="confirm">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px"
     });
@@ -183,10 +183,10 @@ export const newNotebook = () => {
         }
         selectingObsidianVault = true;
         try {
-            const localPath = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+            const localPath = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
                 cmd: "showOpenDialog",
                 singleton: "obsidianVault",
-                defaultPath: window.siyuan.config.system.homeDir,
+                defaultPath: window.scribli.config.system.homeDir,
                 properties: ["openDirectory"],
             });
             if (localPath.filePaths.length === 0) {
@@ -212,21 +212,21 @@ export const newEncryptedNotebook = () => {
     // 先检查加密功能是否已启用；未启用则提示去设置页启用
     fetchPost("/api/notebook/getEncryptedNotebookStatus", {}, (response) => {
         if (!response.data.enabled) {
-            showMessage(window.siyuan.languages.encryptedNotebookTip, 6000);
+            showMessage(window.scribli.languages.encryptedNotebookTip, 6000);
             return;
         }
         const dialog = new Dialog({
-            title: window.siyuan.languages.newEncryptedNotebook,
+            title: window.scribli.languages.newEncryptedNotebook,
             content: `<div class="b3-dialog__content">
-    <input placeholder="${window.siyuan.languages.notebookName}" class="b3-text-field fn__block">
+    <input placeholder="${window.scribli.languages.notebookName}" class="b3-text-field fn__block">
     <div class="fn__hr"></div>
-    <input type="password" placeholder="${window.siyuan.languages.masterPassword}" class="b3-text-field fn__block">
+    <input type="password" placeholder="${window.scribli.languages.masterPassword}" class="b3-text-field fn__block">
     <div class="fn__hr--b"></div>
-    <div>${window.siyuan.languages.encryptedNotebookRiskTip}</div>
+    <div>${window.scribli.languages.encryptedNotebookRiskTip}</div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
             width: isMobile() ? "92vw" : "520px"
         });
@@ -245,7 +245,7 @@ export const newEncryptedNotebook = () => {
                 return false;
             }
             if (!password) {
-                showMessage(window.siyuan.languages.masterPassword);
+                showMessage(window.scribli.languages.masterPassword);
                 return false;
             }
             btnsElement[1].disabled = true;
@@ -265,15 +265,15 @@ export const newEncryptedNotebook = () => {
 
 export const openEncryptedNotebook = (app: App, notebookId: string, name: string) => {
     const dialog = new Dialog({
-        title: window.siyuan.languages.unlockEncryptedNotebook.replace("${x}", name),
+        title: window.scribli.languages.unlockEncryptedNotebook.replace("${x}", name),
         content: `<div class="b3-dialog__content">
-    <input type="password" placeholder="${window.siyuan.languages.masterPassword}" class="b3-text-field fn__block">
+    <input type="password" placeholder="${window.scribli.languages.masterPassword}" class="b3-text-field fn__block">
     <div class="fn__hr--b"></div>
-    <div>${window.siyuan.languages.encryptedNotebookRiskTip}</div>
+    <div>${window.scribli.languages.encryptedNotebookRiskTip}</div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px"
     });

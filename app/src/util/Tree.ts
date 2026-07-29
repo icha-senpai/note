@@ -56,7 +56,7 @@ export class Tree {
     public updateData(data: IBlockTree[]) {
         this.data = data;
         if (!this.data || this.data.length === 0) {
-            this.element.innerHTML = `<ul class="b3-list b3-list--background"><li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li></ul>`;
+            this.element.innerHTML = `<ul class="b3-list b3-list--background"><li class="b3-list--empty">${window.scribli.languages.emptyContent}</li></ul>`;
         } else {
             this.element.innerHTML = this.genHTML(this.data);
             mathRender(this.element);
@@ -141,7 +141,7 @@ ${item.label !== undefined && item.label !== null ? `data-label='${item.label}'`
                 iconHTML = `<svg data-showref="true" class="b3-list-item__graphic popover__block" data-id="${item.id}" style="height: 22px;width: ${isM?20:16}px;"><use xlink:href="#${getIconByType(item.type, item.subType)}"></use></svg>`;
             } else {
                 if (item.type === "NodeDocument") {
-                    iconHTML = `<span data-showref="true" class="b3-list-item__graphic popover__block" data-id="${item.id}">${unicode2Emoji(item.ial.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].file)}</span>`;
+                    iconHTML = `<span data-showref="true" class="b3-list-item__graphic popover__block" data-id="${item.id}">${unicode2Emoji(item.ial.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file)}</span>`;
                 } else {
                     iconHTML = `<svg data-showref="true" class="b3-list-item__graphic popover__block" data-id="${item.id}"><use xlink:href="#${getIconByType(item.type, item.subType)}"></use></svg>`;
                 }
@@ -229,7 +229,7 @@ data-def-path="${item.defPath}">
             let target = event.target as HTMLElement;
             while (target && !target.isEqualNode(this.element)) {
                 if (target.classList.contains("b3-list-item__toggle") &&
-                    !target.classList.contains("fn__hidden") && !window.siyuan.ctrlIsPressed && !window.siyuan.altIsPressed) {
+                    !target.classList.contains("fn__hidden") && !window.scribli.ctrlIsPressed && !window.scribli.altIsPressed) {
                     this.toggleBlocks(target.parentElement);
                     this.setCurrent(target.parentElement);
                     event.preventDefault();
@@ -247,11 +247,11 @@ data-def-path="${item.defPath}">
                 } else if (target.tagName === "LI") {
                     this.setCurrent(target);
                     if (target.getAttribute("data-node-id") || target.getAttribute("data-treetype") === "tag") {
-                        if (this.ctrlClick && window.siyuan.ctrlIsPressed) {
+                        if (this.ctrlClick && window.scribli.ctrlIsPressed) {
                             this.ctrlClick(target, event);
-                        } else if (this.altClick && window.siyuan.altIsPressed) {
+                        } else if (this.altClick && window.scribli.altIsPressed) {
                             this.altClick(target, event);
-                        } else if (this.shiftClick && window.siyuan.shiftIsPressed) {
+                        } else if (this.shiftClick && window.scribli.shiftIsPressed) {
                             this.shiftClick(target);
                         } else if (this.click) {
                             this.click(target, event);
@@ -275,7 +275,7 @@ data-def-path="${item.defPath}">
                 event.dataTransfer.setData("text/html", liElement.outerHTML);
                 // 设置了的话 drop 就无法监听 alt event.dataTransfer.dropEffect = "move";
                 liElement.style.opacity = "0.38";
-                window.siyuan.dragElement = liElement;
+                window.scribli.dragElement = liElement;
             }
         });
         this.element.addEventListener("dragend", (event: DragEvent & { target: HTMLElement }) => {
@@ -286,7 +286,7 @@ data-def-path="${item.defPath}">
                 }
                 liElement.style.opacity = "1";
             }
-            window.siyuan.dragElement = undefined;
+            window.scribli.dragElement = undefined;
         });
     }
 

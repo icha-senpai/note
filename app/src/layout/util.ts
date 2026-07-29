@@ -34,8 +34,24 @@ import {adjustDockPadding} from "./dock/util";
 import {setTitle} from "../util/processTitle";
 import {activateQueuedAVLocate, queueAVLocateRequest} from "../protyle/render/av/locate";
 
+const CARD_MODEL_TYPE = "scribli-card";
+const DATABASE_ROW_MODEL_TYPE = "scribli-database-row";
+const LEGACY_CARD_MODEL_TYPE = "siyuan-card";
+const LEGACY_DATABASE_ROW_MODEL_TYPE = "siyuan-database-row";
+
+const normalizeBuiltInCustomModelType = (type: string) => {
+    if (type === LEGACY_CARD_MODEL_TYPE) {
+        return CARD_MODEL_TYPE;
+    }
+    if (type === LEGACY_DATABASE_ROW_MODEL_TYPE) {
+        return DATABASE_ROW_MODEL_TYPE;
+    }
+    return type;
+};
+
 const isBuiltInCustomModel = (type: string) => {
-    return type === "siyuan-card" || type === "siyuan-database-row";
+    const modelType = normalizeBuiltInCustomModelType(type);
+    return modelType === CARD_MODEL_TYPE || modelType === DATABASE_ROW_MODEL_TYPE;
 };
 
 export const setPanelFocus = (element: Element, isSaveLayout = true) => {
@@ -121,14 +137,14 @@ const dockToJSON = (dock: Dock) => {
 };
 
 export const resetLayout = () => {
-    if (window.siyuan.config.readonly) {
+    if (window.scribli.config.readonly) {
         window.location.reload();
     } else {
         fetchPost("/api/system/setUILayout", {layout: {}}, () => {
-            window.siyuan.storage[Constants.LOCAL_FILEPOSITION] = {};
-            setStorageVal(Constants.LOCAL_FILEPOSITION, window.siyuan.storage[Constants.LOCAL_FILEPOSITION]);
-            window.siyuan.storage[Constants.LOCAL_DIALOGPOSITION] = {};
-            setStorageVal(Constants.LOCAL_DIALOGPOSITION, window.siyuan.storage[Constants.LOCAL_DIALOGPOSITION]);
+            window.scribli.storage[Constants.LOCAL_FILEPOSITION] = {};
+            setStorageVal(Constants.LOCAL_FILEPOSITION, window.scribli.storage[Constants.LOCAL_FILEPOSITION]);
+            window.scribli.storage[Constants.LOCAL_DIALOGPOSITION] = {};
+            setStorageVal(Constants.LOCAL_DIALOGPOSITION, window.scribli.storage[Constants.LOCAL_DIALOGPOSITION]);
             window.location.reload();
         });
     }
@@ -142,19 +158,19 @@ export const saveLayout = () => {
         layoutJSON = {
             layout: {},
         };
-        layoutToJSON(window.siyuan.layout.layout, layoutJSON.layout, breakObj);
+        layoutToJSON(window.scribli.layout.layout, layoutJSON.layout, breakObj);
     } else {
         const useElement = document.querySelector("#barDock use");
         if (useElement) {
             layoutJSON = {
                 hideDock: useElement.getAttribute("xlink:href") === "#iconDock",
                 layout: {},
-                bottom: dockToJSON(window.siyuan.layout.bottomDock),
-                left: dockToJSON(window.siyuan.layout.leftDock),
-                right: dockToJSON(window.siyuan.layout.rightDock),
+                bottom: dockToJSON(window.scribli.layout.bottomDock),
+                left: dockToJSON(window.scribli.layout.leftDock),
+                right: dockToJSON(window.scribli.layout.rightDock),
             };
-            layoutToJSON(window.siyuan.layout.layout, layoutJSON.layout, breakObj);
-            window.siyuan.config.uiLayout = layoutJSON;
+            layoutToJSON(window.scribli.layout.layout, layoutJSON.layout, breakObj);
+            window.scribli.config.uiLayout = layoutJSON;
         }
     }
     if (Object.keys(breakObj).length > 0 && saveCount < 10) {
@@ -167,7 +183,7 @@ export const saveLayout = () => {
         if (isWindow()) {
             sessionStorage.setItem("layout", JSON.stringify(layoutJSON));
         } else {
-            if (!window.siyuan.config.readonly) {
+            if (!window.scribli.config.readonly) {
                 fetchPost("/api/system/setUILayout", {
                     layout: layoutJSON,
                     errorExit: false    // 后台不接受该参数，用于请求发生错误时退出程序
@@ -189,7 +205,7 @@ export const exportLayout = async (options: {
         const layoutJSON: any = {
             layout: {},
         };
-        layoutToJSON(window.siyuan.layout.layout, layoutJSON.layout);
+        layoutToJSON(window.scribli.layout.layout, layoutJSON.layout);
         sessionStorage.setItem("layout", JSON.stringify(layoutJSON));
         options.cb();
         return;
@@ -202,12 +218,12 @@ export const exportLayout = async (options: {
     const layoutJSON: any = {
         hideDock: useElement.getAttribute("xlink:href") === "#iconDock",
         layout: {},
-        bottom: dockToJSON(window.siyuan.layout.bottomDock),
-        left: dockToJSON(window.siyuan.layout.leftDock),
-        right: dockToJSON(window.siyuan.layout.rightDock),
+        bottom: dockToJSON(window.scribli.layout.bottomDock),
+        left: dockToJSON(window.scribli.layout.leftDock),
+        right: dockToJSON(window.scribli.layout.rightDock),
     };
-    layoutToJSON(window.siyuan.layout.layout, layoutJSON.layout);
-    if (window.siyuan.config.readonly) {
+    layoutToJSON(window.scribli.layout.layout, layoutJSON.layout);
+    if (window.scribli.config.readonly) {
         options.cb();
     } else {
         fetchPost("/api/system/setUILayout", {
@@ -223,11 +239,11 @@ export const getAllLayout = () => {
     const layoutJSON: any = {
         hideDock: document.querySelector("#barDock use").getAttribute("xlink:href") === "#iconDock",
         layout: {},
-        bottom: dockToJSON(window.siyuan.layout.bottomDock),
-        left: dockToJSON(window.siyuan.layout.leftDock),
-        right: dockToJSON(window.siyuan.layout.rightDock),
+        bottom: dockToJSON(window.scribli.layout.bottomDock),
+        left: dockToJSON(window.scribli.layout.leftDock),
+        right: dockToJSON(window.scribli.layout.rightDock),
     };
-    layoutToJSON(window.siyuan.layout.layout, layoutJSON.layout);
+    layoutToJSON(window.scribli.layout.layout, layoutJSON.layout);
     return layoutJSON;
 };
 
@@ -260,7 +276,7 @@ const ensureAgentChatDock = (layout: Pick<Config.IUiLayout, "left" | "right" | "
     }
     if (!hasAgentChat) {
         for (const key of DOCK_KEYS) {
-            const sections = Constants.SIYUAN_EMPTY_LAYOUT[key]?.data;
+            const sections = Constants.SCRIBLI_EMPTY_LAYOUT[key]?.data;
             if (!sections) {
                 continue;
             }
@@ -286,13 +302,13 @@ const ensureAgentChatDock = (layout: Pick<Config.IUiLayout, "left" | "right" | "
 
 const initInternalDock = (dockItem: Config.IUILayoutDockTab[]) => {
     dockItem.forEach((existSubItem, index) => {
-        if (window.siyuan.isPublish && (existSubItem.type === "inbox" || existSubItem.type === "agentChat")) {
+        if (window.scribli.isPublish && (existSubItem.type === "inbox" || existSubItem.type === "agentChat")) {
             dockItem.splice(index, 1);
             return;
         }
         if (existSubItem.hotkeyLangId) {
-            existSubItem.title = window.siyuan.languages[existSubItem.hotkeyLangId];
-            const km = window.siyuan.config.keymap.general[existSubItem.hotkeyLangId];
+            existSubItem.title = window.scribli.languages[existSubItem.hotkeyLangId];
+            const km = window.scribli.config.keymap.general[existSubItem.hotkeyLangId];
             existSubItem.hotkey = km ? km.custom : "";
         }
     });
@@ -309,10 +325,10 @@ const JSONToDock = (json: any, app: App) => {
     json.bottom.data.forEach((existItem: Config.IUILayoutDockTab[]) => {
         initInternalDock(existItem);
     });
-    window.siyuan.layout.centerLayout = window.siyuan.layout.layout.children[0].children[1] as Layout;
-    window.siyuan.layout.leftDock = new Dock({position: "Left", data: json.left, app});
-    window.siyuan.layout.rightDock = new Dock({position: "Right", data: json.right, app});
-    window.siyuan.layout.bottomDock = new Dock({position: "Bottom", data: json.bottom, app});
+    window.scribli.layout.centerLayout = window.scribli.layout.layout.children[0].children[1] as Layout;
+    window.scribli.layout.leftDock = new Dock({position: "Left", data: json.left, app});
+    window.scribli.layout.rightDock = new Dock({position: "Right", data: json.right, app});
+    window.scribli.layout.bottomDock = new Dock({position: "Bottom", data: json.bottom, app});
     adjustDockPadding();
 };
 
@@ -331,7 +347,7 @@ export const JSONToCenter = (
             json.children = json.children[0].children;
         }
         if (!layout) {
-            window.siyuan.layout.layout = new Layout({
+            window.scribli.layout.layout = new Layout({
                 element: document.getElementById("layouts"),
                 direction: json.direction,
                 size: json.size,
@@ -364,7 +380,7 @@ export const JSONToCenter = (
         } else {
             let title = json.title;
             if (json.lang) {
-                title = window.siyuan.languages[json.lang];
+                title = window.scribli.languages[json.lang];
             }
             child = new Tab({
                 icon: json.icon,
@@ -383,13 +399,13 @@ export const JSONToCenter = (
         }
         (layout as Wnd).addTab(child, false, false, json.activeTime);
     } else if (json.instance === "Editor" && json.blockId) {
-        const notebook = window.siyuan.notebooks.find((item) => item.id === json.notebookId);
+        const notebook = window.scribli.notebooks.find((item) => item.id === json.notebookId);
         if (notebook?.closed && isEncryptedBox(json.notebookId)) {
             (layout as Tab).headElement.removeAttribute("data-init-active");
             removedTabs.push(layout as Tab);
             return;
         }
-        if (window.siyuan.config.fileTree.openFilesUseCurrentTab) {
+        if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
             (layout as Tab).headElement.classList.add("item--unupdate");
         }
         (layout as Tab).headElement.setAttribute("data-initdata", JSON.stringify(json));
@@ -440,16 +456,17 @@ export const JSONToCenter = (
             config: json.config
         }));
     } else if (json.instance === "Custom") {
-        if (json.customModelType === "siyuan-database-row") {
+        json.customModelType = normalizeBuiltInCustomModelType(json.customModelType);
+        if (json.customModelType === DATABASE_ROW_MODEL_TYPE) {
             const notebookId = json.customModelData?.notebookId;
-            const notebook = window.siyuan.notebooks.find((item) => item.id === notebookId);
+            const notebook = window.scribli.notebooks.find((item) => item.id === notebookId);
             if (notebook?.closed && isEncryptedBox(notebookId)) {
                 (layout as Tab).headElement.removeAttribute("data-init-active");
                 removedTabs.push(layout as Tab);
                 return;
             }
         }
-        if (window.siyuan.config.fileTree.openFilesUseCurrentTab) {
+        if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
             (layout as Tab).headElement.classList.add("item--unupdate");
         }
         (layout as Tab).headElement.setAttribute("data-initdata", JSON.stringify(json));
@@ -457,7 +474,7 @@ export const JSONToCenter = (
     if ("children" in json) {
         if (Array.isArray(json.children)) {
             json.children.forEach((item: any) => {
-                JSONToCenter(app, item, layout ? child : window.siyuan.layout.layout);
+                JSONToCenter(app, item, layout ? child : window.scribli.layout.layout);
             });
         } else if (json.children && Object.keys(json.children).length > 0) {
             JSONToCenter(app, json.children, child);
@@ -468,10 +485,10 @@ export const JSONToCenter = (
 };
 
 export const JSONToLayout = (app: App, isStart: boolean) => {
-    JSONToCenter(app, window.siyuan.config.uiLayout.layout, undefined);
-    JSONToDock(window.siyuan.config.uiLayout, app);
+    JSONToCenter(app, window.scribli.config.uiLayout.layout, undefined);
+    JSONToDock(window.scribli.config.uiLayout, app);
     // 启动时不打开页签，需要移除没有钉住的页签
-    if (window.siyuan.config.fileTree.closeTabsOnStart) {
+    if (window.scribli.config.fileTree.closeTabsOnStart) {
         /// #if BROWSER
         if (!sessionStorage.getItem(Constants.LOCAL_SESSION_FIRSTLOAD)) {
             getAllTabs().forEach(item => {
@@ -563,17 +580,17 @@ export const JSONToLayout = (app: App, isStart: boolean) => {
     afterLayoutReady(app);
     saveLayout();
     // https://github.com/siyuan-note/siyuan/issues/17779
-    if (window.siyuan.layout.rightDock.layout.children[0].element.classList.contains("fn__none") &&
-        window.siyuan.layout.rightDock.layout.children[1].element.classList.contains("fn__none")) {
-        window.siyuan.layout.rightDock.layout.element.style.width = "0px";
+    if (window.scribli.layout.rightDock.layout.children[0].element.classList.contains("fn__none") &&
+        window.scribli.layout.rightDock.layout.children[1].element.classList.contains("fn__none")) {
+        window.scribli.layout.rightDock.layout.element.style.width = "0px";
     }
-    if (window.siyuan.layout.leftDock.layout.children[0].element.classList.contains("fn__none") &&
-        window.siyuan.layout.leftDock.layout.children[1].element.classList.contains("fn__none")) {
-        window.siyuan.layout.leftDock.layout.element.style.width = "0px";
+    if (window.scribli.layout.leftDock.layout.children[0].element.classList.contains("fn__none") &&
+        window.scribli.layout.leftDock.layout.children[1].element.classList.contains("fn__none")) {
+        window.scribli.layout.leftDock.layout.element.style.width = "0px";
     }
-    if (window.siyuan.layout.bottomDock.layout.children[0].element.classList.contains("fn__none") &&
-        window.siyuan.layout.bottomDock.layout.children[1].element.classList.contains("fn__none")) {
-        window.siyuan.layout.bottomDock.layout.element.style.height = "0px";
+    if (window.scribli.layout.bottomDock.layout.children[0].element.classList.contains("fn__none") &&
+        window.scribli.layout.bottomDock.layout.children[1].element.classList.contains("fn__none")) {
+        window.scribli.layout.bottomDock.layout.element.style.height = "0px";
     }
     // 等待 dock 面板动画结束
     setTimeout(() => {
@@ -671,7 +688,7 @@ export const layoutToJSON = (layout: Layout | Wnd | Tab | Model, json: any, brea
         json.config = layout.config;
     } else if (layout instanceof Custom) {
         json.instance = "Custom";
-        json.customModelType = layout.type;
+        json.customModelType = normalizeBuiltInCustomModelType(layout.type);
         json.customModelData = Object.assign({}, layout.data);
     }
 
@@ -774,7 +791,7 @@ export const resizeTopBar = () => {
     }
     barMoreElement.setAttribute("data-hideids", hideIds.join(","));
 
-    if (!window.siyuan.config.appearance.hideToolbar) {
+    if (!window.scribli.config.appearance.hideToolbar) {
         const width = dragElement.clientWidth;
         const dragRect = dragElement.getBoundingClientRect();
         const left = dragRect.left;
@@ -786,7 +803,7 @@ export const resizeTopBar = () => {
         }
     }
 
-    window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN].forEach((id: string) => {
+    window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN].forEach((id: string) => {
         toolbarElement.querySelector("#" + id)?.classList.add("fn__none");
     });
 };
@@ -795,13 +812,14 @@ export const resizeTopBar = () => {
 export const newModelByInitData = (app: App, tab: Tab, json: any) => {
     let model: Model;
     if (json.instance === "Custom") {
-        if (json.customModelType === "siyuan-card") {
+        json.customModelType = normalizeBuiltInCustomModelType(json.customModelType);
+        if (json.customModelType === CARD_MODEL_TYPE) {
             model = newCardModel({
                 app,
                 tab: tab,
                 data: json.customModelData
             });
-        } else if (json.customModelType === "siyuan-database-row") {
+        } else if (json.customModelType === DATABASE_ROW_MODEL_TYPE) {
             model = newDatabaseRowModel({
                 app,
                 tab,
@@ -854,12 +872,12 @@ export const newModelByInitData = (app: App, tab: Tab, json: any) => {
 export const pdfIsLoading = (element: HTMLElement) => {
     const isLoading = element.querySelector('.layout-tab-container > [data-loading="true"]') ? true : false;
     if (isLoading) {
-        showMessage(window.siyuan.languages.pdfIsLoading);
+        showMessage(window.scribli.languages.pdfIsLoading);
     }
     return isLoading;
 };
 
-export const getInstanceById = (id: string, layout = window.siyuan.layout.centerLayout) => {
+export const getInstanceById = (id: string, layout = window.scribli.layout.centerLayout) => {
     const _getInstanceById = (item: Layout | Wnd, id: string) => {
         if (item.id === id) {
             return item;
@@ -955,17 +973,17 @@ export const addResize = (obj: Layout | Wnd, after = true) => {
                 if (previousNowSize < 8 || nextNowSize < 8) {
                     return;
                 }
-                if (window.siyuan.layout.leftDock && window.siyuan.layout.leftDock.layout.element === previousElement &&
+                if (window.scribli.layout.leftDock && window.scribli.layout.leftDock.layout.element === previousElement &&
                     previousNowSize < getMinSize(previousElement) &&
                     // https://github.com/siyuan-note/siyuan/issues/10506
                     previousNowSize < previousSize) {
                     return;
                 }
-                if (window.siyuan.layout.rightDock && window.siyuan.layout.rightDock.layout.element === nextElement &&
+                if (window.scribli.layout.rightDock && window.scribli.layout.rightDock.layout.element === nextElement &&
                     nextNowSize < getMinSize(nextElement) && nextNowSize < nextSize) {
                     return;
                 }
-                if (window.siyuan.layout.bottomDock && window.siyuan.layout.bottomDock.layout.element === nextElement &&
+                if (window.scribli.layout.bottomDock && window.scribli.layout.bottomDock.layout.element === nextElement &&
                     nextNowSize < 64 && nextNowSize < nextSize) {
                     return;
                 }
@@ -986,13 +1004,13 @@ export const addResize = (obj: Layout | Wnd, after = true) => {
                 documentSelf.ondragstart = null;
                 documentSelf.onselectstart = null;
                 documentSelf.onselect = null;
-                adjustLayout(isWindow() ? window.siyuan.layout.centerLayout : undefined);
+                adjustLayout(isWindow() ? window.scribli.layout.centerLayout : undefined);
                 setTabPosition(true);
                 resizeTabs();
                 if (!isWindow()) {
-                    window.siyuan.layout.leftDock.setSize();
-                    window.siyuan.layout.bottomDock.setSize();
-                    window.siyuan.layout.rightDock.setSize();
+                    window.scribli.layout.leftDock.setSize();
+                    window.scribli.layout.bottomDock.setSize();
+                    window.scribli.layout.rightDock.setSize();
                 }
                 if (range) {
                     focusByRange(range);
@@ -1034,7 +1052,7 @@ export const addResize = (obj: Layout | Wnd, after = true) => {
                         }
                     });
                     previousElement.style.width = size + "px";
-                    window.siyuan.layout.leftDock.setSize();
+                    window.scribli.layout.leftDock.setSize();
                 } else if (nextElement.classList.contains("layout__dockr")) {
                     document.querySelectorAll("#dockRight .dock__item--active").forEach(item => {
                         if (bigType.includes(item.getAttribute("data-type"))) {
@@ -1042,29 +1060,29 @@ export const addResize = (obj: Layout | Wnd, after = true) => {
                         }
                     });
                     nextElement.style.width = size + "px";
-                    window.siyuan.layout.rightDock.setSize();
+                    window.scribli.layout.rightDock.setSize();
                 } else {
                     previousElement.style.width = "";
                     nextElement.style.width = "";
                     previousElement.classList.add("fn__flex-1");
                     nextElement.classList.add("fn__flex-1");
                     if (resizeElement.parentElement.classList.contains("layout__dockb")) {
-                        window.siyuan.layout.bottomDock.setSize();
+                        window.scribli.layout.bottomDock.setSize();
                     }
                 }
             } else {
                 if (nextElement.classList.contains("layout__dockb")) {
                     nextElement.style.height = "232px";
-                    window.siyuan.layout.bottomDock.setSize();
+                    window.scribli.layout.bottomDock.setSize();
                 } else {
                     previousElement.style.height = "";
                     nextElement.style.height = "";
                     previousElement.classList.add("fn__flex-1");
                     nextElement.classList.add("fn__flex-1");
                     if (resizeElement.parentElement.classList.contains("layout__dockl")) {
-                        window.siyuan.layout.leftDock.setSize();
+                        window.scribli.layout.leftDock.setSize();
                     } else if (resizeElement.parentElement.classList.contains("layout__dockr")) {
-                        window.siyuan.layout.rightDock.setSize();
+                        window.scribli.layout.rightDock.setSize();
                     }
                 }
             }
@@ -1075,7 +1093,7 @@ export const addResize = (obj: Layout | Wnd, after = true) => {
     });
 };
 
-export const adjustLayout = (layout: Layout = window.siyuan.layout.centerLayout.parent) => {
+export const adjustLayout = (layout: Layout = window.scribli.layout.centerLayout.parent) => {
     layout.children.forEach((item: Layout | Wnd) => {
         item.element.style.maxWidth = "";
         item.element.removeAttribute(Constants.ATTRIBUTE_DOCK_WIDTH);

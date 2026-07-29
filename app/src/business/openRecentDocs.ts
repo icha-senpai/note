@@ -23,7 +23,7 @@ const renderRecentDocsContent = async (data: {
     data.forEach((item) => {
         if (!key || item.title.toLowerCase().includes(key.toLowerCase())) {
             tabHtml += `<li data-index="${index}" data-node-id="${item.rootID}" class="b3-list-item${index === 0 ? " b3-list-item--focus" : ""}">
-    ${unicode2Emoji(item.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].file, "b3-list-item__graphic", true)}
+    ${unicode2Emoji(item.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file, "b3-list-item__graphic", true)}
     <span class="b3-list-item__text">${escapeHtml(item.title)}</span>
 </li>`;
             index++;
@@ -39,15 +39,15 @@ const renderRecentDocsContent = async (data: {
     let dockHtml = "";
     if (!isWindow()) {
         let docIndex = 0;
-        if (!key || window.siyuan.languages.riffCard.toLowerCase().includes(key.toLowerCase())) {
+        if (!key || window.scribli.languages.riffCard.toLowerCase().includes(key.toLowerCase())) {
             dockHtml += `<li data-type="riffCard" data-index="0" class="b3-list-item${!switchPath ? " b3-list-item--focus" : ""}">
     <svg class="b3-list-item__graphic"><use xlink:href="#iconRiffCard"></use></svg>
-    <span class="b3-list-item__text">${window.siyuan.languages.riffCard}</span>
-    <span class="b3-list-item__meta">${updateHotkeyTip(window.siyuan.config.keymap.general.riffCard.custom)}</span>
+    <span class="b3-list-item__text">${window.scribli.languages.riffCard}</span>
+    <span class="b3-list-item__meta">${updateHotkeyTip(window.scribli.config.keymap.general.riffCard.custom)}</span>
 </li>`;
             docIndex++;
             if (!switchPath) {
-                switchPath = window.siyuan.languages.riffCard;
+                switchPath = window.scribli.languages.riffCard;
             }
         }
         getAllDocks().forEach((item) => {
@@ -75,7 +75,7 @@ const renderRecentDocsContent = async (data: {
 };
 
 export const openRecentDocs = () => {
-    const openRecentDocsDialog = window.siyuan.dialogs.find(item => {
+    const openRecentDocsDialog = window.scribli.dialogs.find(item => {
         if (item.element.getAttribute("data-key") === Constants.DIALOG_RECENTDOCS) {
             return true;
         }
@@ -84,7 +84,7 @@ export const openRecentDocs = () => {
         hideElements(["dialog"]);
         return;
     }
-    const sortBy = window.siyuan.storage[Constants.LOCAL_RECENT_DOCS].type as TRecentDocsSort;
+    const sortBy = window.scribli.storage[Constants.LOCAL_RECENT_DOCS].type as TRecentDocsSort;
     fetchPost("/api/storage/getRecentDocs", {sortBy}, (response) => {
         let range: Range;
         if (getSelection().rangeCount > 0) {
@@ -93,16 +93,16 @@ export const openRecentDocs = () => {
         const dialog = new Dialog({
             positionId: Constants.DIALOG_RECENTDOCS,
             title: `<div class="fn__flex">
-<div class="fn__flex-center">${window.siyuan.languages.recentDocs}</div>
+<div class="fn__flex-center">${window.scribli.languages.recentDocs}</div>
 <div class="fn__flex-1"></div>
-<input placeholder="${window.siyuan.languages.search}" class="b3-text-field fn__size200">
+<input placeholder="${window.scribli.languages.search}" class="b3-text-field fn__size200">
 <span class="fn__space"></span>
 <div class="fn__flex-center">
     <select class="b3-select" id="recentDocsSort">
-        <option value="viewedAt">${window.siyuan.languages.recentViewed}</option>
-        <option value="updated">${window.siyuan.languages.recentModified}</option>
-        <option value="openAt">${window.siyuan.languages.recentOpened}</option>
-        <option value="closedAt">${window.siyuan.languages.recentClosed}</option>
+        <option value="viewedAt">${window.scribli.languages.recentViewed}</option>
+        <option value="updated">${window.scribli.languages.recentModified}</option>
+        <option value="openAt">${window.scribli.languages.recentOpened}</option>
+        <option value="closedAt">${window.scribli.languages.recentClosed}</option>
     </select>
 </div>
 </div>`,
@@ -149,8 +149,8 @@ export const openRecentDocs = () => {
                 response = newResponse;
                 renderRecentDocsContent(newResponse.data, dialog.element, searchElement.value);
             });
-            window.siyuan.storage[Constants.LOCAL_RECENT_DOCS].type = sortSelect.value;
-            setStorageVal(Constants.LOCAL_RECENT_DOCS, window.siyuan.storage[Constants.LOCAL_RECENT_DOCS]);
+            window.scribli.storage[Constants.LOCAL_RECENT_DOCS].type = sortSelect.value;
+            setStorageVal(Constants.LOCAL_RECENT_DOCS, window.scribli.storage[Constants.LOCAL_RECENT_DOCS]);
         });
 
         renderRecentDocsContent(response.data, dialog.element);

@@ -8,7 +8,7 @@ import {upDownHint} from "../../../util/upDownHint";
 import {clearSelect} from "../../util/clear";
 
 export const avKeydown = (event: KeyboardEvent, nodeElement: HTMLElement, protyle: IProtyle) => {
-    if (!nodeElement.classList.contains("av") || !window.siyuan.menus.menu.element.classList.contains("fn__none")) {
+    if (!nodeElement.classList.contains("av") || !window.scribli.menus.menu.element.classList.contains("fn__none")) {
         return false;
     }
     if (event.isComposing) {
@@ -205,7 +205,7 @@ export const avKeydown = (event: KeyboardEvent, nodeElement: HTMLElement, protyl
 
 export const bindAVPanelKeydown = (event: KeyboardEvent) => {
     const avPanelElement = document.querySelector(".av__panel");
-    if (avPanelElement && window.siyuan.menus.menu.element.classList.contains("fn__none")) {
+    if (avPanelElement && window.scribli.menus.menu.element.classList.contains("fn__none")) {
         if ((avPanelElement.querySelector('[data-type="goSearchRollupCol"]') && !avPanelElement.querySelector(".b3-text-field")) ||
             avPanelElement.querySelector('[data-type="addAssetExist"]')) {
             const menuElement = avPanelElement.querySelector(".b3-menu__items");

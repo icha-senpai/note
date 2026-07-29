@@ -11,36 +11,36 @@ export const kernelError = () => {
     let title: string;
     let content: string;
     if (isInIOS()) {
-        title = `🍵 ${window.siyuan.languages.pleaseWait} <small>v${Constants.SIYUAN_VERSION}</small>`;
+        title = `🍵 ${window.scribli.languages.pleaseWait} <small>v${Constants.SCRIBLI_VERSION}</small>`;
         content = `<div class="b3-dialog__content">
-    <div>${window.siyuan.languages.reconnectPrompt}</div>
+    <div>${window.scribli.languages.reconnectPrompt}</div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button">${window.siyuan.languages.retry}</button>
+    <button class="b3-button">${window.scribli.languages.retry}</button>
 </div>`;
     } else {
-        title = `💔 ${window.siyuan.languages.kernelFault0} <small>v${Constants.SIYUAN_VERSION}</small>`;
+        title = `💔 ${window.scribli.languages.kernelFault0} <small>v${Constants.SCRIBLI_VERSION}</small>`;
         content = `<div class="b3-dialog__content">
-    <div>${window.siyuan.languages.kernelFault1}</div>
+    <div>${window.scribli.languages.kernelFault1}</div>
     <div class="fn__hr"></div>
-    <div><strong>${window.siyuan.languages.kernelFault3}</strong></div>
+    <div><strong>${window.scribli.languages.kernelFault3}</strong></div>
     <div class="fn__hr"></div>
     <ol class="fn__list">
     ${(isKernelInContainer()
         ? [
-            [window.siyuan.languages.kernelFault4, window.siyuan.languages.kernelFault5],
-            [window.siyuan.languages.kernelFault6, window.siyuan.languages.kernelFault7],
+            [window.scribli.languages.kernelFault4, window.scribli.languages.kernelFault5],
+            [window.scribli.languages.kernelFault6, window.scribli.languages.kernelFault7],
         ]
         : [
-            [window.siyuan.languages.kernelFault6, window.siyuan.languages.kernelFault8],
-            [window.siyuan.languages.kernelFault9, window.siyuan.languages.kernelFault10],
+            [window.scribli.languages.kernelFault6, window.scribli.languages.kernelFault8],
+            [window.scribli.languages.kernelFault9, window.scribli.languages.kernelFault10],
         ]
     ).map(([tipTitle, tipDesc]) => `<li><strong>${tipTitle}</strong><div class="fn__hr"></div><div>${tipDesc}</div><div class="fn__hr"></div></li>`).join("")}
     </ol>
-    <div class="ft__on-surface">${window.siyuan.languages.kernelFault2}</div>
+    <div class="ft__on-surface">${window.scribli.languages.kernelFault2}</div>
 </div>
 ${isBrowser() && !isInMobileApp() ? "" : `<div class="b3-dialog__action">
-    <button class="b3-button">${window.siyuan.languages.safeQuit}</button>
+    <button class="b3-button">${window.scribli.languages.safeQuit}</button>
 </div>`}`;
     }
     const dialog = new Dialog({

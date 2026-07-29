@@ -119,7 +119,7 @@ class PDFThumbnailView {
     const anchor = document.createElement("a");
     anchor.href = linkService.getAnchorUrl("#page=" + id);
     // NOTE
-    anchor.title = window.siyuan.languages.thumbPageTitle.replace('{{page}}', JSON.parse(this.#pageL10nArgs).page)
+    anchor.title = window.scribli.languages.thumbPageTitle.replace('{{page}}', JSON.parse(this.#pageL10nArgs).page)
     anchor.setAttribute("data-l10n-id", "pdfjs-thumb-page-title");
     anchor.setAttribute("data-l10n-args", this.#pageL10nArgs);
     anchor.onclick = function () {
@@ -428,7 +428,7 @@ class PDFThumbnailView {
     this.pageLabel = typeof label === "string" ? label : null;
 
     // NOTE
-    this.anchor.title = window.siyuan.languages.thumbPageTitle.replace('{{page}}', JSON.parse(this.#pageL10nArgs).page)
+    this.anchor.title = window.scribli.languages.thumbPageTitle.replace('{{page}}', JSON.parse(this.#pageL10nArgs).page)
     this.anchor.setAttribute("data-l10n-args", this.#pageL10nArgs);
 
     if (this.renderingState !== RenderingStates.FINISHED) {

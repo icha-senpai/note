@@ -90,45 +90,45 @@ export const genTabHeaderHTML = (data: IAV, showSearch: boolean, editable: boole
                 ${tabHTML}
             </div>
             <div class="fn__space"></div>
-            <span data-type="av-add" class="block__icon ariaLabel" data-position="8south" aria-label="${window.siyuan.languages.newView}">
+            <span data-type="av-add" class="block__icon ariaLabel" data-position="8south" aria-label="${window.scribli.languages.newView}">
                 <svg><use xlink:href="#iconAdd"></use></svg>
             </span>
             <div class="fn__flex-1"></div>
             <div class="fn__space"></div>
-            <span data-type="av-switcher" aria-label="${window.siyuan.languages.allViews}" data-position="8south" class="ariaLabel block__icon${data.views.length > 0 ? "" : " fn__none"}">
+            <span data-type="av-switcher" aria-label="${window.scribli.languages.allViews}" data-position="8south" class="ariaLabel block__icon${data.views.length > 0 ? "" : " fn__none"}">
                 <svg><use xlink:href="#iconDown"></use></svg>
                 <span class="fn__space"></span>
                 <small>${data.views.length}</small>
             </span>
             <div class="fn__space"></div>
-            <span data-type="av-filter" aria-label="${window.siyuan.languages.filter}" data-position="8south" class="ariaLabel block__icon${hasFilter ? " block__icon--active" : ""}">
+            <span data-type="av-filter" aria-label="${window.scribli.languages.filter}" data-position="8south" class="ariaLabel block__icon${hasFilter ? " block__icon--active" : ""}">
                 <svg><use xlink:href="#iconFilter"></use></svg>
             </span>
             <div class="fn__space"></div>
-            <span data-type="av-sort" aria-label="${window.siyuan.languages.sort}" data-position="8south" class="ariaLabel block__icon${data.view.sorts.length > 0 ? " block__icon--active" : ""}">
+            <span data-type="av-sort" aria-label="${window.scribli.languages.sort}" data-position="8south" class="ariaLabel block__icon${data.view.sorts.length > 0 ? " block__icon--active" : ""}">
                 <svg><use xlink:href="#iconSort"></use></svg>
             </span>
             <div class="fn__space"></div>
-            <button data-type="av-search-icon" aria-label="${window.siyuan.languages.search}" data-position="8south" class="ariaLabel block__icon">
+            <button data-type="av-search-icon" aria-label="${window.scribli.languages.search}" data-position="8south" class="ariaLabel block__icon">
                 <svg><use xlink:href="#iconSearch"></use></svg>
             </button>
             <div style="position: relative" class="fn__flex">
-                <div contenteditable="plaintext-only" style="${showSearch ? "width:128px" : "width:0;padding-left: 0;padding-right: 0;"}" data-type="av-search" class="b3-text-field b3-text-field--text" placeholder="${window.siyuan.languages.search}"></div>
+                <div contenteditable="plaintext-only" style="${showSearch ? "width:128px" : "width:0;padding-left: 0;padding-right: 0;"}" data-type="av-search" class="b3-text-field b3-text-field--text" placeholder="${window.scribli.languages.search}"></div>
             </div>
             <div class="fn__space"></div>
-            <span data-type="av-more" aria-label="${window.siyuan.languages.config}" data-position="8south" class="ariaLabel block__icon">
+            <span data-type="av-more" aria-label="${window.scribli.languages.config}" data-position="8south" class="ariaLabel block__icon">
                 <svg><use xlink:href="#iconSettings"></use></svg>
             </span>
             <div class="fn__space"></div>
-            ${data.isMirror ? `<span data-av-id="${data.id}" data-popover-url="/api/av/getMirrorDatabaseBlocks" class="popover__block block__icon block__icon--show ariaLabel" data-position="8south" aria-label="${window.siyuan.languages.mirrorTip}">
+            ${data.isMirror ? `<span data-av-id="${data.id}" data-popover-url="/api/av/getMirrorDatabaseBlocks" class="popover__block block__icon block__icon--show ariaLabel" data-position="8south" aria-label="${window.scribli.languages.mirrorTip}">
                 <svg><use xlink:href="#iconSplitLR"></use></svg>
             </span><div class="fn__space"></div>` : ""}
             ${editable ? `<div class="av__new fn__flex">
-                <button data-type="av-add-more" class="b3-button">${window.siyuan.languages.new}</button>
-                <button data-type="av-add-template" class="b3-button ariaLabel" data-position="8south" aria-label="${window.siyuan.languages.template}"><svg><use xlink:href="#iconDown"></use></svg></button>
+                <button data-type="av-add-more" class="b3-button">${window.scribli.languages.new}</button>
+                <button data-type="av-add-template" class="b3-button ariaLabel" data-position="8south" aria-label="${window.scribli.languages.template}"><svg><use xlink:href="#iconDown"></use></svg></button>
             </div>` : ""}
         </div>
-        <div contenteditable="${editable}" spellcheck="${window.siyuan.config.editor.spellcheck.toString()}" class="av__title${viewData.hideAttrViewName ? " fn__none" : ""}" data-title="${Lute.EscapeHTMLStr(data.name || "")}" data-tip="${window.siyuan.languages._kernel[267]}">${Lute.EscapeHTMLStr(data.name || "")}</div>
+        <div contenteditable="${editable}" spellcheck="${window.scribli.config.editor.spellcheck.toString()}" class="av__title${viewData.hideAttrViewName ? " fn__none" : ""}" data-title="${Lute.EscapeHTMLStr(data.name || "")}" data-tip="${window.scribli.languages._kernel[267]}">${Lute.EscapeHTMLStr(data.name || "")}</div>
         <div class="av__counter fn__none"></div>
     </div>`;
 };
@@ -181,7 +181,7 @@ style="width: ${column.width || "200px"};">
             calcHTML += `<div data-col-id="${column.id}" data-dtype="${column.type}" class="av__calc" style="width: ${column.width || "200px"}">&nbsp;</div>`;
         } else {
             calcHTML += `<div class="av__calc${column.calc && column.calc.operator !== "" ? " av__calc--ashow" : ""}" data-col-id="${column.id}" data-dtype="${column.type}" data-operator="${column.calc?.operator || ""}" 
-style="width: ${column.width || "200px"}">${getCalcValue(column) || `<svg><use xlink:href="#iconDown"></use></svg><small>${window.siyuan.languages.calc}</small>`}</div>`;
+style="width: ${column.width || "200px"}">${getCalcValue(column) || `<svg><use xlink:href="#iconDown"></use></svg><small>${window.scribli.languages.calc}</small>`}</div>`;
         }
         if (column.calc && column.calc.operator !== "") {
             hasCalc = true;
@@ -194,7 +194,7 @@ style="width: ${column.width || "200px"}">${getCalcValue(column) || `<svg><use x
     contentHTML += `<div class="block__icons" style="min-height: auto" data-pinindex="${pinIndex}">
     <div class="block__icon block__icon--show" data-type="av-header-more"><svg><use xlink:href="#iconMore"></use></svg></div>
     <div class="fn__space"></div>
-    <div class="block__icon block__icon--show ariaLabel" aria-label="${window.siyuan.languages.newCol}" data-type="av-header-add" data-position="4south"><svg><use xlink:href="#iconAdd"></use></svg></div>
+    <div class="block__icon block__icon--show ariaLabel" aria-label="${window.scribli.languages.newCol}" data-type="av-header-add" data-position="4south"><svg><use xlink:href="#iconAdd"></use></svg></div>
 </div>
 </div>`;
     if (virtualData?.topSpacerHeight) {
@@ -222,12 +222,12 @@ style="width: ${column.width || "200px"}">${getCalcValue(column) || `<svg><use x
     <div class="av__colsticky">
         <button class="b3-button av__button" data-type="av-add-bottom">
             <svg><use xlink:href="#iconAdd"></use></svg>
-            <span>${window.siyuan.languages.newRow}</span>
+            <span>${window.scribli.languages.newRow}</span>
         </button>
         <span class="fn__space"></span>
         <button class="b3-button av__button${data.rowCount > data.rows.length ? "" : " fn__none"}" data-type="av-load-more">
             <svg><use xlink:href="#iconArrowDown"></use></svg>
-            <span>${window.siyuan.languages.loadMore}</span>
+            <span>${window.scribli.languages.loadMore}</span>
             <svg data-type="set-page-size" data-size="${data.pageSize}"><use xlink:href="#iconMore"></use></svg>
         </button>
     </div>
@@ -253,8 +253,8 @@ export const getGroupTitleHTML = (group: IAVView, counter: number) => {
     </div>
     <span class="fn__space"></span>
     <span class="av__group-name">${nameHTML}</span>
-    ${(!counter || counter === 0) ? '<span class="fn__space"></span>' : `<span aria-label="${window.siyuan.languages.entryNum}" data-position="north" class="av__group-counter ariaLabel">${counter}</span>`}
-    <span class="av__group-icon av__group-icon--hover ariaLabel" data-type="av-add-top" data-position="north" aria-label="${window.siyuan.languages.newRow}"><svg><use xlink:href="#iconAdd"></use></svg></span>
+    ${(!counter || counter === 0) ? '<span class="fn__space"></span>' : `<span aria-label="${window.scribli.languages.entryNum}" data-position="north" class="av__group-counter ariaLabel">${counter}</span>`}
+    <span class="av__group-icon av__group-icon--hover ariaLabel" data-type="av-add-top" data-position="north" aria-label="${window.scribli.languages.newRow}"><svg><use xlink:href="#iconAdd"></use></svg></span>
 </div>`;
 };
 
@@ -997,7 +997,7 @@ export const refreshAV = (protyle: IProtyle, operation: IOperation) => {
                         operation.srcs.find((srcItem) => {
                             // 虚拟滚动/分页下条目可能不在 DOM 中，需通过渲染数据判断是否被过滤
                             if (!isItemInData(data, srcItem.itemID)) {
-                                showMessage(window.siyuan.languages.databaseItemFiltered);
+                                showMessage(window.scribli.languages.databaseItemFiltered);
                                 return true;
                             }
                         });

@@ -15,7 +15,7 @@ import type {App} from "../index";
 
 /// #if !MOBILE
 const openSettingDialog = (app: App, initialTab: TSettingTab = "editor") => {
-    window.siyuan.dialogs.find((item) => item.element.querySelector(".config__tab-container"))?.destroy();
+    window.scribli.dialogs.find((item) => item.element.querySelector(".config__tab-container"))?.destroy();
     let range: Range;
     if (getSelection().rangeCount > 0) {
         range = getSelection().getRangeAt(0);
@@ -33,9 +33,9 @@ const openSettingDialog = (app: App, initialTab: TSettingTab = "editor") => {
         <div class="config__tab-head">
             <div class="config__tab-title resize__move">
                 <svg class="b3-list-item__graphic"><use xlink:href="#iconSettings"></use></svg>
-                <span class="b3-list-item__text">${window.siyuan.languages.config}</span>
+                <span class="b3-list-item__text">${window.scribli.languages.config}</span>
             </div>
-            <input placeholder="${window.siyuan.languages.search}" class="b3-text-field fn__block">
+            <input placeholder="${window.scribli.languages.search}" class="b3-text-field fn__block">
         </div>
         <ul class="config__tab-scroll">
             ${tabListItems.join("")}

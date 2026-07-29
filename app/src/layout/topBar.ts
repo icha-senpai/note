@@ -3,7 +3,7 @@ import {
     setStorageVal,
     updateHotkeyTip
 } from "../protyle/util/compatibility";
-import {exitSiYuan, processSync} from "../dialog/processSystem";
+import {exitScribli, processSync} from "../dialog/processSystem";
 import {goBack, goForward} from "../util/backForward";
 import {syncGuide} from "../sync/syncGuide";
 import {workspaceMenu} from "../menus/workspace";
@@ -29,12 +29,12 @@ import {getWorkspaceName, setTitle} from "../util/processTitle";
 const sendTrafficLightPosition = (zoom: number) => {
     /// #if !BROWSER
     const position = Constants.SIZE_ZOOM.find((item) => item.zoom === zoom).position;
-    ipcRenderer.send(Constants.SIYUAN_CMD, {
+    ipcRenderer.send(Constants.SCRIBLI_CMD, {
         cmd: "setTrafficLightPosition",
         zoom,
         position: {
             x: position.x,
-            y: ((window.siyuan.config.appearance.hideToolbar && !isWindow()) ? 5 * zoom : 0) + position.y,
+            y: ((window.scribli.config.appearance.hideToolbar && !isWindow()) ? 5 * zoom : 0) + position.y,
         },
     });
     /// #endif
@@ -42,12 +42,12 @@ const sendTrafficLightPosition = (zoom: number) => {
 
 /** 同步顶栏隐藏后的布局（运行时切换 hideToolbar 时调用） */
 export const syncHideToolbarLayout = () => {
-    document.body.classList.toggle("body--toolbar-hide", window.siyuan.config.appearance.hideToolbar);
+    document.body.classList.toggle("body--toolbar-hide", window.scribli.config.appearance.hideToolbar);
     resizeTopBar();
     /// #if !BROWSER
     if (!isWindow()) {
-        sendTrafficLightPosition(window.siyuan.storage[Constants.LOCAL_ZOOM]);
-        if (!window.siyuan.config.appearance.hideToolbar) {
+        sendTrafficLightPosition(window.scribli.storage[Constants.LOCAL_ZOOM]);
+        if (!window.scribli.config.appearance.hideToolbar) {
             const title = document.querySelector('.layout-tab-bar .item--focus[data-type="tab-header"] .item__text')?.textContent || "";
             setTitle(title, title ? false : true);
         }
@@ -61,47 +61,47 @@ export const syncHideToolbarLayout = () => {
 export const updateBarModeIcon = () => {
     document.querySelector("#barMode use")?.setAttribute(
         "xlink:href",
-        `#icon${window.siyuan.config.appearance.modeOS ? "Mode" : (window.siyuan.config.appearance.mode === 0 ? "Light" : "Dark")}`
+        `#icon${window.scribli.config.appearance.modeOS ? "Mode" : (window.scribli.config.appearance.mode === 0 ? "Light" : "Dark")}`
     );
 };
 
 export const initBar = (app: App) => {
     const toolbarElement = document.getElementById("toolbar");
     toolbarElement.innerHTML = `
-<div id="barWorkspace" class="ariaLabel toolbar__item" aria-label="${window.siyuan.languages.mainMenu} ${updateHotkeyTip(window.siyuan.config.keymap.general.mainMenu.custom)}">
+<div id="barWorkspace" class="ariaLabel toolbar__item" aria-label="${window.scribli.languages.mainMenu} ${updateHotkeyTip(window.scribli.config.keymap.general.mainMenu.custom)}">
     <span class="toolbar__text">${getWorkspaceName()}</span>
     <svg class="toolbar__svg"><use xlink:href="#iconDown"></use></svg>
 </div>
-<div id="barSync" class="ariaLabel toolbar__item${window.siyuan.config.readonly ? " fn__none" : ""}">
+<div id="barSync" class="ariaLabel toolbar__item${window.scribli.config.readonly ? " fn__none" : ""}">
     <svg><use xlink:href="#iconCloudSucc"></use></svg>
 </div>
-<button id="barBack" class="ariaLabel toolbar__item toolbar__item--disabled" aria-label="${window.siyuan.languages.goBack} ${updateHotkeyTip(window.siyuan.config.keymap.general.goBack.custom)}">
+<button id="barBack" class="ariaLabel toolbar__item toolbar__item--disabled" aria-label="${window.scribli.languages.goBack} ${updateHotkeyTip(window.scribli.config.keymap.general.goBack.custom)}">
     <svg><use xlink:href="#iconBack"></use></svg>
 </button>
-<button id="barForward" class="ariaLabel toolbar__item toolbar__item--disabled" aria-label="${window.siyuan.languages.goForward} ${updateHotkeyTip(window.siyuan.config.keymap.general.goForward.custom)}">
+<button id="barForward" class="ariaLabel toolbar__item toolbar__item--disabled" aria-label="${window.scribli.languages.goForward} ${updateHotkeyTip(window.scribli.config.keymap.general.goForward.custom)}">
     <svg><use xlink:href="#iconForward"></use></svg>
 </button>
 <div class="fn__flex-1 fn__ellipsis" id="drag"><span class="fn__none">开发版，使用前请进行备份 Development version, please backup before use</span></div>
-<div id="toolbarAccount" class="fn__flex${window.siyuan.config.readonly ? " fn__none" : ""}"></div>
-<div id="barPlugins" class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.plugin}">
+<div id="toolbarAccount" class="fn__flex${window.scribli.config.readonly ? " fn__none" : ""}"></div>
+<div id="barPlugins" class="toolbar__item ariaLabel" aria-label="${window.scribli.languages.plugin}">
     <svg><use xlink:href="#iconPlugin"></use></svg>
 </div>
-<div id="barCommand" class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.commandPanel} ${updateHotkeyTip(window.siyuan.config.keymap.general.commandPanel.custom)}">
+<div id="barCommand" class="toolbar__item ariaLabel" aria-label="${window.scribli.languages.commandPanel} ${updateHotkeyTip(window.scribli.config.keymap.general.commandPanel.custom)}">
     <svg><use xlink:href="#iconTerminal"></use></svg>
 </div>
-<div id="barSearch" class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.globalSearch} ${updateHotkeyTip(window.siyuan.config.keymap.general.globalSearch.custom)}">
+<div id="barSearch" class="toolbar__item ariaLabel" aria-label="${window.scribli.languages.globalSearch} ${updateHotkeyTip(window.scribli.config.keymap.general.globalSearch.custom)}">
     <svg><use xlink:href="#iconSearch"></use></svg>
 </div>
-<div id="barZoom" class="toolbar__item ariaLabel${(window.siyuan.storage[Constants.LOCAL_ZOOM] === 1 || isBrowser()) ? " fn__none" : ""}" aria-label="${window.siyuan.languages.zoom}">
-    <svg><use xlink:href="#iconZoom${window.siyuan.storage[Constants.LOCAL_ZOOM] > 1 ? "In" : "Out"}"></use></svg>
+<div id="barZoom" class="toolbar__item ariaLabel${(window.scribli.storage[Constants.LOCAL_ZOOM] === 1 || isBrowser()) ? " fn__none" : ""}" aria-label="${window.scribli.languages.zoom}">
+    <svg><use xlink:href="#iconZoom${window.scribli.storage[Constants.LOCAL_ZOOM] > 1 ? "In" : "Out"}"></use></svg>
 </div>
-<div id="barMode" class="toolbar__item ariaLabel${window.siyuan.config.readonly ? " fn__none" : ""}" aria-label="${window.siyuan.languages.appearanceMode}">
-    <svg><use xlink:href="#icon${window.siyuan.config.appearance.modeOS ? "Mode" : (window.siyuan.config.appearance.mode === 0 ? "Light" : "Dark")}"></use></svg>
+<div id="barMode" class="toolbar__item ariaLabel${window.scribli.config.readonly ? " fn__none" : ""}" aria-label="${window.scribli.languages.appearanceMode}">
+    <svg><use xlink:href="#icon${window.scribli.config.appearance.modeOS ? "Mode" : (window.scribli.config.appearance.mode === 0 ? "Light" : "Dark")}"></use></svg>
 </div>
-<div id="barExit" class="ft__error toolbar__item ariaLabel${isInMobileApp() ? "" : " fn__none"}" aria-label="${window.siyuan.languages.safeQuit}">
+<div id="barExit" class="ft__error toolbar__item ariaLabel${isInMobileApp() ? "" : " fn__none"}" aria-label="${window.scribli.languages.safeQuit}">
     <svg><use xlink:href="#iconQuit"></use></svg>
 </div>
-<div id="barMore" class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.more}">
+<div id="barMore" class="toolbar__item ariaLabel" aria-label="${window.scribli.languages.more}">
     <svg><use xlink:href="#iconMore"></use></svg>
 </div>
 <div class="fn__flex" id="windowControls"></div>`;
@@ -118,13 +118,13 @@ export const initBar = (app: App) => {
                 event.stopPropagation();
                 break;
             } else if (targetId === "barMore") {
-                if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-                    window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_BAR_MORE) {
-                    window.siyuan.menus.menu.remove();
+                if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+                    window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_BAR_MORE) {
+                    window.scribli.menus.menu.remove();
                     return;
                 }
-                window.siyuan.menus.menu.remove();
-                window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_BAR_MORE);
+                window.scribli.menus.menu.remove();
+                window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_BAR_MORE);
                 (target.getAttribute("data-hideids") || "").split(",").forEach((itemId) => {
                     // data-hideids 可能为空字符串，split(",") 会得到 [""]，导致 querySelector("#") 抛出无效选择器异常
                     if (!itemId) {
@@ -133,7 +133,7 @@ export const initBar = (app: App) => {
                     const hideElement = toolbarElement.querySelector("#" + itemId);
                     const useElement = hideElement.querySelector("use");
                     const menuOptions: IMenu = {
-                        label: itemId === "toolbarAccount" ? window.siyuan.languages.account : hideElement.getAttribute("aria-label"),
+                        label: itemId === "toolbarAccount" ? window.scribli.languages.account : hideElement.getAttribute("aria-label"),
                         icon: itemId === "toolbarAccount" ? "iconAccount" : (useElement ? useElement.getAttribute("xlink:href").substring(1) : undefined),
                         click: () => {
                             if (itemId.startsWith("plugin")) {
@@ -148,10 +148,10 @@ export const initBar = (app: App) => {
                         svgElement.classList.add("b3-menu__icon");
                         menuOptions.iconHTML = svgElement.outerHTML;
                     }
-                    window.siyuan.menus.menu.append(new MenuItem(menuOptions).element);
+                    window.scribli.menus.menu.append(new MenuItem(menuOptions).element);
                 });
                 const rect = target.getBoundingClientRect();
-                window.siyuan.menus.menu.popup({x: rect.right, y: rect.bottom, isLeft: true});
+                window.scribli.menus.menu.popup({x: rect.right, y: rect.bottom, isLeft: true});
                 event.stopPropagation();
                 break;
             } else if (targetId === "barForward") {
@@ -170,39 +170,39 @@ export const initBar = (app: App) => {
                 event.stopPropagation();
                 exportLayout({
                     errorExit: true,
-                    cb: exitSiYuan,
+                    cb: exitScribli,
                 });
                 break;
             } else if (targetId === "barMode") {
-                if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-                    window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_BAR_MODE) {
-                    window.siyuan.menus.menu.remove();
+                if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+                    window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_BAR_MODE) {
+                    window.scribli.menus.menu.remove();
                     return;
                 }
-                window.siyuan.menus.menu.remove();
-                window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_BAR_MODE);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.remove();
+                window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_BAR_MODE);
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "themeLight",
-                    label: window.siyuan.languages.themeLight,
+                    label: window.scribli.languages.themeLight,
                     icon: "iconLight",
-                    current: window.siyuan.config.appearance.mode === 0 && !window.siyuan.config.appearance.modeOS,
+                    current: window.scribli.config.appearance.mode === 0 && !window.scribli.config.appearance.modeOS,
                     click: () => {
                         setMode(0);
                     }
                 }).element);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "themeDark",
-                    label: window.siyuan.languages.themeDark,
-                    current: window.siyuan.config.appearance.mode === 1 && !window.siyuan.config.appearance.modeOS,
+                    label: window.scribli.languages.themeDark,
+                    current: window.scribli.config.appearance.mode === 1 && !window.scribli.config.appearance.modeOS,
                     icon: "iconDark",
                     click: () => {
                         setMode(1);
                     }
                 }).element);
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "themeOS",
-                    label: window.siyuan.languages.themeOS,
-                    current: window.siyuan.config.appearance.modeOS,
+                    label: window.scribli.languages.themeOS,
+                    current: window.scribli.config.appearance.modeOS,
                     icon: "iconMode",
                     click: () => {
                         setMode(2);
@@ -212,11 +212,11 @@ export const initBar = (app: App) => {
                 if (rect.width === 0) {
                     rect = toolbarElement.querySelector("#barMore").getBoundingClientRect();
                 }
-                window.siyuan.menus.menu.popup({x: rect.right, y: rect.bottom, isLeft: true});
+                window.scribli.menus.menu.popup({x: rect.right, y: rect.bottom, isLeft: true});
                 event.stopPropagation();
                 break;
             } else if (targetId === "toolbarAccount") {
-                if (!window.siyuan.config.readonly) {
+                if (!window.scribli.config.readonly) {
                     openSetting(app, "sync");
                 }
                 event.stopPropagation();
@@ -237,31 +237,31 @@ export const initBar = (app: App) => {
                 event.stopPropagation();
                 break;
             } else if (targetId === "barZoom") {
-                if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-                    window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_BAR_ZOOM) {
-                    window.siyuan.menus.menu.remove();
+                if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+                    window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_BAR_ZOOM) {
+                    window.scribli.menus.menu.remove();
                     return;
                 }
-                window.siyuan.menus.menu.remove();
-                window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_BAR_ZOOM);
-                window.siyuan.menus.menu.append(new MenuItem({
-                    label: window.siyuan.languages.zoomIn,
+                window.scribli.menus.menu.remove();
+                window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_BAR_ZOOM);
+                window.scribli.menus.menu.append(new MenuItem({
+                    label: window.scribli.languages.zoomIn,
                     icon: "iconZoomIn",
                     accelerator: "⌘=",
                     click: () => {
                         setZoom("zoomIn");
                     }
                 }).element);
-                window.siyuan.menus.menu.append(new MenuItem({
-                    label: window.siyuan.languages.zoomOut,
+                window.scribli.menus.menu.append(new MenuItem({
+                    label: window.scribli.languages.zoomOut,
                     accelerator: "⌘-",
                     icon: "iconZoomOut",
                     click: () => {
                         setZoom("zoomOut");
                     }
                 }).element);
-                window.siyuan.menus.menu.append(new MenuItem({
-                    label: window.siyuan.languages.reset,
+                window.scribli.menus.menu.append(new MenuItem({
+                    label: window.scribli.languages.reset,
                     accelerator: "⌘0",
                     click: () => {
                         setZoom("restore");
@@ -271,7 +271,7 @@ export const initBar = (app: App) => {
                 if (rect.width === 0) {
                     rect = toolbarElement.querySelector("#barMore").getBoundingClientRect();
                 }
-                window.siyuan.menus.menu.popup({x: rect.right, y: rect.bottom, isLeft: true});
+                window.scribli.menus.menu.popup({x: rect.right, y: rect.bottom, isLeft: true});
                 event.stopPropagation();
                 break;
             }
@@ -284,16 +284,16 @@ export const initBar = (app: App) => {
         event.preventDefault();
         fetchPost("/api/sync/getSyncInfo", {}, (response) => {
             let html = "";
-            if (!window.siyuan.config.sync.enabled || (0 === window.siyuan.config.sync.provider && !hasFeatureAccess())) {
+            if (!window.scribli.config.sync.enabled || (0 === window.scribli.config.sync.provider && !hasFeatureAccess())) {
                 html = response.data.stat;
             } else {
-                html = window.siyuan.languages._kernel[82].replace("%s", dayjs(response.data.synced).format("YYYY-MM-DD HH:mm")) + "<br>";
+                html = window.scribli.languages._kernel[82].replace("%s", dayjs(response.data.synced).format("YYYY-MM-DD HH:mm")) + "<br>";
                 html += "&emsp;" + response.data.stat;
                 if (response.data.kernels.length > 0) {
                     html += "<br>";
-                    html += window.siyuan.languages.currentKernel + "<br>";
-                    html += "&emsp;" + response.data.kernel + "/" + window.siyuan.config.system.kernelVersion + " (" + window.siyuan.config.system.os + "/" + window.siyuan.config.system.name + ")<br>";
-                    html += window.siyuan.languages.otherOnlineKernels + "<br>";
+                    html += window.scribli.languages.currentKernel + "<br>";
+                    html += "&emsp;" + response.data.kernel + "/" + window.scribli.config.system.kernelVersion + " (" + window.scribli.config.system.os + "/" + window.scribli.config.system.name + ")<br>";
+                    html += window.scribli.languages.otherOnlineKernels + "<br>";
                     response.data.kernels.forEach((item: {
                         os: string;
                         ver: string;
@@ -307,8 +307,8 @@ export const initBar = (app: App) => {
             barSyncElement.setAttribute("aria-label", html);
         });
     });
-    barSyncElement.setAttribute("aria-label", window.siyuan.config.sync.stat || (window.siyuan.languages.syncNow + " " + updateHotkeyTip(window.siyuan.config.keymap.general.syncNow.custom)));
-    if (window.siyuan.config.appearance.hideToolbar) {
+    barSyncElement.setAttribute("aria-label", window.scribli.config.sync.stat || (window.scribli.languages.syncNow + " " + updateHotkeyTip(window.scribli.config.keymap.general.syncNow.custom)));
+    if (window.scribli.config.appearance.hideToolbar) {
         document.body.classList.add("body--toolbar-hide");
     }
 };
@@ -318,14 +318,14 @@ export const setZoom = (type: "zoomIn" | "zoomOut" | "restore") => {
     let zoom = 1;
     if (type === "zoomIn") {
         Constants.SIZE_ZOOM.find((item, index) => {
-            if (item.zoom === window.siyuan.storage[Constants.LOCAL_ZOOM]) {
+            if (item.zoom === window.scribli.storage[Constants.LOCAL_ZOOM]) {
                 zoom = Constants.SIZE_ZOOM[index + 1]?.zoom || 3;
                 return true;
             }
         });
     } else if (type === "zoomOut") {
         Constants.SIZE_ZOOM.find((item, index) => {
-            if (item.zoom === window.siyuan.storage[Constants.LOCAL_ZOOM]) {
+            if (item.zoom === window.scribli.storage[Constants.LOCAL_ZOOM]) {
                 zoom = Constants.SIZE_ZOOM[index - 1]?.zoom || 0.67;
                 return true;
             }
@@ -335,7 +335,7 @@ export const setZoom = (type: "zoomIn" | "zoomOut" | "restore") => {
     webFrame.setZoomFactor(zoom);
     setToolbarLeftMac(zoom);
     sendTrafficLightPosition(zoom);
-    window.siyuan.storage[Constants.LOCAL_ZOOM] = zoom;
+    window.scribli.storage[Constants.LOCAL_ZOOM] = zoom;
     setStorageVal(Constants.LOCAL_ZOOM, zoom);
     if (!isWindow()) {
         const barZoomElement = document.getElementById("barZoom");

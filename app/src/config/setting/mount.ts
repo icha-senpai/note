@@ -16,7 +16,7 @@ export const mountSettingTab = async (tabId: string, root: HTMLElement) => {
 
 /** 设置面板已打开且对应 Tab 已挂载时，重新 register 并整页替换 */
 export const remountOpenSettingTab = async (tabId: TSettingTab) => {
-    const dialogElement = window.siyuan.dialogs.find((d) => d.element.getAttribute("data-key") === Constants.DIALOG_SETTING)?.element;
+    const dialogElement = window.scribli.dialogs.find((d) => d.element.getAttribute("data-key") === Constants.DIALOG_SETTING)?.element;
     if (!dialogElement) {
         return;
     }

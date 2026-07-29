@@ -53,7 +53,7 @@ data-message-id="${messageId || ""}">${message}</div>`);
     }
     const id = messageId || genUUID();
     const existElement = messagesElement.querySelector(`.b3-snackbar[data-id="${id}"]`);
-    const messageVersion = message + (type === "error" ? " v" + Constants.SIYUAN_VERSION : "");
+    const messageVersion = message + (type === "error" ? " v" + Constants.SCRIBLI_VERSION : "");
     if (existElement) {
         window.clearTimeout(parseInt(existElement.getAttribute("data-timeoutid")));
         existElement.innerHTML = `<div data-type="textMenu" class="b3-snackbar__content${timeout === 0 ? " b3-snackbar__content--close" : ""}">${messageVersion}</div>${timeout === 0 ? '<svg class="b3-snackbar__close"><use xlink:href="#iconCloseRound"></use></svg>' : ""}`;
@@ -80,7 +80,7 @@ data-message-id="${messageId || ""}">${message}</div>`);
         messageHTML = messageHTML.replace("<div data-id", `<div data-timeoutid="${timeoutId}" data-id`);
     }
     messagesElement.parentElement.classList.add("b3-snackbars--show");
-    messagesElement.parentElement.style.zIndex = (++window.siyuan.zIndex).toString();
+    messagesElement.parentElement.style.zIndex = (++window.scribli.zIndex).toString();
     messagesElement.insertAdjacentHTML("afterbegin", messageHTML + "</div>");
     setTimeout(() => {
         messagesElement.querySelectorAll(".b3-snackbar--hide").forEach(item => {

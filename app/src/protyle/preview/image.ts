@@ -16,7 +16,7 @@ export const previewImages = (srcList: string[], currentSrc?: string, onHidden?:
             }
         });
         imagesElement.innerHTML = html;
-        window.siyuan.viewer = new Viewer(imagesElement, {
+        window.scribli.viewer = new Viewer(imagesElement, {
             initialViewIndex: currentSrc ? initialViewIndex : 0,
             title: [1, (image: HTMLImageElement, imageData: IObject) => {
                 let name = image.alt;
@@ -29,7 +29,7 @@ export const previewImages = (srcList: string[], currentSrc?: string, onHidden?:
             button: false,
             transition: false,
             hidden: function () {
-                window.siyuan.viewer.destroy();
+                window.scribli.viewer.destroy();
                 if (onHidden) {
                     onHidden();
                 }
@@ -47,11 +47,11 @@ export const previewImages = (srcList: string[], currentSrc?: string, onHidden?:
                 flipHorizontal: true,
                 flipVertical: true,
                 close: function () {
-                    window.siyuan.viewer.destroy();
+                    window.scribli.viewer.destroy();
                 },
             },
         });
-        window.siyuan.viewer.show();
+        window.scribli.viewer.show();
     });
 };
 

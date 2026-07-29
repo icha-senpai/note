@@ -1,7 +1,7 @@
 import {popSearch} from "./search";
 import {closePanel} from "../util/closePanel";
 import {mountHelp, newDailyNote, newEncryptedNotebook, newNotebook} from "../../util/mount";
-import {exitSiYuan, lockScreen, processSync} from "../../dialog/processSystem";
+import {exitScribli, lockScreen, processSync} from "../../dialog/processSystem";
 import {openHistory} from "../../history/history";
 import {syncGuide} from "../../sync/syncGuide";
 import {openCard} from "../../card/openCard";
@@ -46,57 +46,57 @@ export const initRightMenu = (app: App) => {
 
     menuElement.innerHTML = `<div class="b3-menu__title">
     <svg class="b3-menu__icon"><use xlink:href="#iconLeft"></use></svg>
-    <span class="b3-menu__label">${window.siyuan.languages.back}</span>
+    <span class="b3-menu__label">${window.scribli.languages.back}</span>
 </div>
 <div class="b3-menu__items">
     <div id="menuRecent" class="b3-menu__item">
-        <svg class="b3-menu__icon"><use xlink:href="#iconList"></use></svg><span class="b3-menu__label">${window.siyuan.languages.recentDocs}</span>
+        <svg class="b3-menu__icon"><use xlink:href="#iconList"></use></svg><span class="b3-menu__label">${window.scribli.languages.recentDocs}</span>
     </div>
     <div id="menuSearch" class="b3-menu__item">
-        <svg class="b3-menu__icon"><use xlink:href="#iconSearch"></use></svg><span class="b3-menu__label">${window.siyuan.languages.search}</span>
+        <svg class="b3-menu__icon"><use xlink:href="#iconSearch"></use></svg><span class="b3-menu__label">${window.scribli.languages.search}</span>
     </div>
     <div id="menuCommand" class="b3-menu__item">
-        <svg class="b3-menu__icon"><use xlink:href="#iconTerminal"></use></svg><span class="b3-menu__label">${window.siyuan.languages.commandPanel}</span>
+        <svg class="b3-menu__icon"><use xlink:href="#iconTerminal"></use></svg><span class="b3-menu__label">${window.scribli.languages.commandPanel}</span>
     </div>
-    <div class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}" id="menuSyncNow">
-        <svg class="b3-menu__icon"><use xlink:href="#iconCloudSucc"></use></svg><span class="b3-menu__label">${window.siyuan.languages.syncNow}</span>
+    <div class="b3-menu__item${window.scribli.config.readonly ? " fn__none" : ""}" id="menuSyncNow">
+        <svg class="b3-menu__icon"><use xlink:href="#iconCloudSucc"></use></svg><span class="b3-menu__label">${window.scribli.languages.syncNow}</span>
     </div>
-    <div class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}" id="menuNewDoc">
-        <svg class="b3-menu__icon"><use xlink:href="#iconFile"></use></svg><span class="b3-menu__label">${window.siyuan.languages.newFile}</span>
+    <div class="b3-menu__item${window.scribli.config.readonly ? " fn__none" : ""}" id="menuNewDoc">
+        <svg class="b3-menu__icon"><use xlink:href="#iconFile"></use></svg><span class="b3-menu__label">${window.scribli.languages.newFile}</span>
     </div>
-    <div class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}" id="menuNewNotebook">
-        <svg class="b3-menu__icon"><use xlink:href="#iconNewNoteBook"></use></svg><span class="b3-menu__label">${window.siyuan.languages.newNotebook}</span>
+    <div class="b3-menu__item${window.scribli.config.readonly ? " fn__none" : ""}" id="menuNewNotebook">
+        <svg class="b3-menu__icon"><use xlink:href="#iconNewNoteBook"></use></svg><span class="b3-menu__label">${window.scribli.languages.newNotebook}</span>
     </div>
-    <div class="b3-menu__item${(window.siyuan.config.readonly || !window.siyuan.config.notebookCrypto?.enabled) ? " fn__none" : ""}" id="menuNewEncryptedNotebook">
-        <svg class="b3-menu__icon"><use xlink:href="#iconLock"></use></svg><span class="b3-menu__label">${window.siyuan.languages.newEncryptedNotebook}</span>
+    <div class="b3-menu__item${(window.scribli.config.readonly || !window.scribli.config.notebookCrypto?.enabled) ? " fn__none" : ""}" id="menuNewEncryptedNotebook">
+        <svg class="b3-menu__icon"><use xlink:href="#iconLock"></use></svg><span class="b3-menu__label">${window.scribli.languages.newEncryptedNotebook}</span>
     </div>
-    <div class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}" id="menuImport">
-        <svg class="b3-menu__icon"><use xlink:href="#iconDatabaseBackup"></use></svg><span class="b3-menu__label">${window.siyuan.languages.dataMigration}</span>
+    <div class="b3-menu__item${window.scribli.config.readonly ? " fn__none" : ""}" id="menuImport">
+        <svg class="b3-menu__icon"><use xlink:href="#iconDatabaseBackup"></use></svg><span class="b3-menu__label">${window.scribli.languages.dataMigration}</span>
     </div>
     <div class="b3-menu__separator"></div>
-    <div id="menuNewDaily" class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}">
-        <svg class="b3-menu__icon"><use xlink:href="#iconCalendar"></use></svg><span class="b3-menu__label">${window.siyuan.languages.dailyNote}</span>
+    <div id="menuNewDaily" class="b3-menu__item${window.scribli.config.readonly ? " fn__none" : ""}">
+        <svg class="b3-menu__icon"><use xlink:href="#iconCalendar"></use></svg><span class="b3-menu__label">${window.scribli.languages.dailyNote}</span>
     </div>
-    <div id="menuCard" class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}">
-        <svg class="b3-menu__icon"><use xlink:href="#iconRiffCard"></use></svg><span class="b3-menu__label">${window.siyuan.languages.spaceRepetition}</span>
+    <div id="menuCard" class="b3-menu__item${window.scribli.config.readonly ? " fn__none" : ""}">
+        <svg class="b3-menu__icon"><use xlink:href="#iconRiffCard"></use></svg><span class="b3-menu__label">${window.scribli.languages.spaceRepetition}</span>
     </div>
-    <div class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}" id="menuLock">
-        <svg class="b3-menu__icon"><use xlink:href="#iconLock"></use></svg><span class="b3-menu__label">${window.siyuan.languages.lockScreen}</span>
+    <div class="b3-menu__item${window.scribli.config.readonly ? " fn__none" : ""}" id="menuLock">
+        <svg class="b3-menu__icon"><use xlink:href="#iconLock"></use></svg><span class="b3-menu__label">${window.scribli.languages.lockScreen}</span>
     </div>
-    <div class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}" id="menuHistory">
-        <svg class="b3-menu__icon"><use xlink:href="#iconHistory"></use></svg><span class="b3-menu__label">${window.siyuan.languages.dataHistory}</span>
+    <div class="b3-menu__item${window.scribli.config.readonly ? " fn__none" : ""}" id="menuHistory">
+        <svg class="b3-menu__icon"><use xlink:href="#iconHistory"></use></svg><span class="b3-menu__label">${window.scribli.languages.dataHistory}</span>
     </div>
     <div class="b3-menu__separator${isInMobileApp() ? "" : " fn__none"}"></div>
     <div class="b3-menu__item b3-menu__item--warning${isInMobileApp() ? "" : " fn__none"}" id="menuSafeQuit">
-        <svg class="b3-menu__icon"><use xlink:href="#iconQuit"></use></svg><span class="b3-menu__label">${window.siyuan.languages.safeQuit}</span>
+        <svg class="b3-menu__icon"><use xlink:href="#iconQuit"></use></svg><span class="b3-menu__label">${window.scribli.languages.safeQuit}</span>
     </div>
     <div class="b3-menu__separator"></div>
     ${settingTabsMenuHTML}
     <div class="b3-menu__item" id="menuPlugin">
-        <svg class="b3-menu__icon"><use xlink:href="#iconPlugin"></use></svg><span class="b3-menu__label">${window.siyuan.languages.plugin}</span>
+        <svg class="b3-menu__icon"><use xlink:href="#iconPlugin"></use></svg><span class="b3-menu__label">${window.scribli.languages.plugin}</span>
     </div>
-    <div class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}" id="menuHelp">
-        <svg class="b3-menu__icon"><use xlink:href="#iconHelp"></use></svg><span class="b3-menu__label">${window.siyuan.languages.userGuide}</span>
+    <div class="b3-menu__item${window.scribli.config.readonly ? " fn__none" : ""}" id="menuHelp">
+        <svg class="b3-menu__icon"><use xlink:href="#iconHelp"></use></svg><span class="b3-menu__label">${window.scribli.languages.userGuide}</span>
     </div>
 </div>`;
     processSync();
@@ -181,7 +181,7 @@ export const initRightMenu = (app: App) => {
             } else if (target.id === "menuSafeQuit") {
                 event.preventDefault();
                 event.stopPropagation();
-                exitSiYuan();
+                exitScribli();
                 break;
             } else if ((settingTabDef = getSettingTabFromMenuTarget(target))) {
                 openModel({

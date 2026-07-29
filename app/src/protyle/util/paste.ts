@@ -49,17 +49,17 @@ export const getTextStar = (blockElement: HTMLElement, contentOnly = false) => {
     } else if ("NodeHTMLBlock" === dataType) {
         refText = "HTML";
     } else if ("NodeAttributeView" === dataType) {
-        refText = blockElement.querySelector(".av__title").textContent || window.siyuan.languages.database;
+        refText = blockElement.querySelector(".av__title").textContent || window.scribli.languages.database;
     } else if ("NodeThematicBreak" === dataType) {
-        refText = window.siyuan.languages.line;
+        refText = window.scribli.languages.line;
     } else if ("NodeIFrame" === dataType) {
         refText = "IFrame";
     } else if ("NodeWidget" === dataType) {
-        refText = window.siyuan.languages.widget;
+        refText = window.scribli.languages.widget;
     } else if ("NodeVideo" === dataType) {
-        refText = window.siyuan.languages.video;
+        refText = window.scribli.languages.video;
     } else if ("NodeAudio" === dataType) {
-        refText = window.siyuan.languages.audio;
+        refText = window.scribli.languages.audio;
     } else if (["NodeCodeBlock", "NodeTable"].includes(dataType)) {
         refText = getPlainText(blockElement);
     } else if (blockElement.classList.contains("render-node")) {
@@ -237,14 +237,14 @@ export const enableLuteMarkdownSyntax = (protyle: IProtyle) => {
 };
 
 export const restoreLuteMarkdownSyntax = (protyle: IProtyle) => {
-    protyle.lute.SetInlineAsterisk(window.siyuan.config.editor.markdown.inlineAsterisk);
-    protyle.lute.SetGFMStrikethrough(window.siyuan.config.editor.markdown.inlineStrikethrough);
-    protyle.lute.SetInlineMath(window.siyuan.config.editor.markdown.inlineMath);
-    protyle.lute.SetSub(window.siyuan.config.editor.markdown.inlineSub);
-    protyle.lute.SetSup(window.siyuan.config.editor.markdown.inlineSup);
-    protyle.lute.SetTag(window.siyuan.config.editor.markdown.inlineTag);
-    protyle.lute.SetInlineUnderscore(window.siyuan.config.editor.markdown.inlineUnderscore);
-    protyle.lute.SetMark(window.siyuan.config.editor.markdown.inlineMark);
+    protyle.lute.SetInlineAsterisk(window.scribli.config.editor.markdown.inlineAsterisk);
+    protyle.lute.SetGFMStrikethrough(window.scribli.config.editor.markdown.inlineStrikethrough);
+    protyle.lute.SetInlineMath(window.scribli.config.editor.markdown.inlineMath);
+    protyle.lute.SetSub(window.scribli.config.editor.markdown.inlineSub);
+    protyle.lute.SetSup(window.scribli.config.editor.markdown.inlineSup);
+    protyle.lute.SetTag(window.scribli.config.editor.markdown.inlineTag);
+    protyle.lute.SetInlineUnderscore(window.scribli.config.editor.markdown.inlineUnderscore);
+    protyle.lute.SetMark(window.scribli.config.editor.markdown.inlineMark);
 };
 
 const readLocalFile = async (protyle: IProtyle, localFiles: ILocalFiles[]) => {
@@ -685,7 +685,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             let textPlainDom: string;
 
             // Auto-convert pasted URL to link format https://github.com/siyuan-note/siyuan/issues/17337
-            if (window.siyuan.config.editor.pasteURLAutoConvert) {
+            if (window.scribli.config.editor.pasteURLAutoConvert) {
                 textPlainDom = protyle.lute.Md2BlockDOMWithAutoLink(textPlain);
             } else {
                 textPlainDom = protyle.lute.Md2BlockDOM(textPlain);

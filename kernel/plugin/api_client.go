@@ -35,7 +35,7 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// injectClient adds siyuan.server to the goja context.
+// injectClient adds scribli.client to the goja context.
 func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {

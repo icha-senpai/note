@@ -21,7 +21,7 @@ import {expandFileTree} from "../layout/dock/fileTreeAnimation";
 
 export const useShell = (cmd: "showItemInFolder" | "openPath", filePath: string) => {
     /// #if !BROWSER
-    ipcRenderer.send(Constants.SIYUAN_CMD, {
+    ipcRenderer.send(Constants.SCRIBLI_CMD, {
         cmd,
         filePath: filePath
     });
@@ -32,7 +32,7 @@ export const useShell = (cmd: "showItemInFolder" | "openPath", filePath: string)
  * Check if the given URI is a valid Scribli URI protocol.
  * @param uri - the URI to check
  */
-export const isSiYuanUriProtocol = (uri: URL | string | null | undefined): boolean => {
+export const isScribliUriProtocol = (uri: URL | string | null | undefined): boolean => {
     try {
         if (uri == null) return false;
 
@@ -48,15 +48,15 @@ export const isSiYuanUriProtocol = (uri: URL | string | null | undefined): boole
 
 /**
  * Parse scribli://blocks/20221031001313-rk7sd0e?focus=1&fullscreen=1
- * @param uri - the siyuan block uri to parse
- * @returns the block id and other info, or null if the uri is not a valid siyuan block uri
+ * @param uri - the Scribli block URI to parse
+ * @returns the block id and other info, or null if the uri is not a valid Scribli block URI
  */
-export const parseSiYuanUriInfo = (uri: URL | string | null | undefined): ISiYuanUriBlockInfo | null => {
+export const parseScribliUriInfo = (uri: URL | string | null | undefined): IScribliUriBlockInfo | null => {
     try {
         if (uri == null) return null;
 
         const uriObj = uri instanceof URL ? uri : new URL(uri);
-        if (!isSiYuanUriProtocol(uriObj)) {
+        if (!isScribliUriProtocol(uriObj)) {
             return null;
         }
         if (uriObj.hostname === "blocks" && /^\/\d{14}-\w{7}/.test(uriObj.pathname)) {
@@ -82,27 +82,27 @@ export const parseSiYuanUriInfo = (uri: URL | string | null | undefined): ISiYua
     }
 };
 
-export const parseUriInfo = (): ISiYuanUriBlockInfo => {
+export const parseUriInfo = (): IScribliUriBlockInfo => {
     const searchParams = new URLSearchParams(window.location.search);
     if (searchParams.has("url")) {
-        const dataInfo = parseSiYuanUriInfo(searchParams.get("url"));
+        const dataInfo = parseScribliUriInfo(searchParams.get("url"));
         if (dataInfo != null) {
-            window.siyuan.editorIsFullscreen = dataInfo.fullscreen;
+            window.scribli.editorIsFullscreen = dataInfo.fullscreen;
             return dataInfo;
         }
     }
 
     if (window.JSAndroid) {
-        const dataInfo = parseSiYuanUriInfo(window.JSAndroid.getBlockURL());
+        const dataInfo = parseScribliUriInfo(window.JSAndroid.getBlockURL());
         if (dataInfo != null) {
-            window.siyuan.editorIsFullscreen = dataInfo.fullscreen;
+            window.scribli.editorIsFullscreen = dataInfo.fullscreen;
             return dataInfo;
         }
     }
 
-    // 支持通过 URL 查询字符串参数 `id` 和 `focus` 跳转到 Web 端指定块 https://github.com/siyuan-note/siyuan/pull/7086
+    // Supports opening a web block through the `id` and `focus` URL query parameters.
     const fullscreen = searchParams.get("fullscreen") === "1";
-    window.siyuan.editorIsFullscreen = fullscreen;
+    window.scribli.editorIsFullscreen = fullscreen;
     return {
         id: searchParams.get("id") ?? "",
         focus: searchParams.get("focus") === "1",
@@ -112,7 +112,7 @@ export const parseUriInfo = (): ISiYuanUriBlockInfo => {
 
 /* redirect to auth page */
 export const redirectToCheckAuth = async (to: string = window.location.href) => {
-    if (window.siyuan.config.readonly || window.siyuan.isPublish) {
+    if (window.scribli.config.readonly || window.scribli.isPublish) {
         return;
     }
 
@@ -145,7 +145,7 @@ export const getDisplayName = (filePath: string, basename = true, removeSY = fal
 
 export const getDocDisplayName = (name: string, titleEmpty?: boolean, escape?: boolean) => {
     if (titleEmpty) {
-        return window.siyuan.languages["_kernel"][16];
+        return window.scribli.languages["_kernel"][16];
     }
     const displayName = getDisplayName(name, true, true);
     if (escape) {
@@ -225,7 +225,7 @@ export const movePathTo = (options: {
     flashcard: boolean
     rootIDs?: string[],
 }) => {
-    const exitDialog = window.siyuan.dialogs.find((item) => {
+    const exitDialog = window.scribli.dialogs.find((item) => {
         if (item.element.querySelector("#foldList")) {
             item.destroy();
             return true;
@@ -236,7 +236,7 @@ export const movePathTo = (options: {
     }
     const dialog = new Dialog({
         title: `<div style="padding: 8px;">
-    ${options.title || window.siyuan.languages.move}
+    ${options.title || window.scribli.languages.move}
     <div style="max-height: 16px;line-height: 14px;-webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0) 0, #000 6px);padding-bottom: 4px;margin-bottom: -4px" class="ft__smaller ft__on-surface fn__hidescrollbar"></div>
 </div>`,
         content: `<div class="b3-form__icon" style="margin: 8px">
@@ -244,14 +244,14 @@ export const movePathTo = (options: {
         <svg class="svg--mid"><use xlink:href="#iconSearch"></use></svg>
         <svg class="svg--smaller"><use xlink:href="#iconDown"></use></svg>
     </span>
-    <input class="b3-text-field fn__block" style="padding-left: 42px;" value="" placeholder="${window.siyuan.languages.search}">
+    <input class="b3-text-field fn__block" style="padding-left: 42px;" value="" placeholder="${window.scribli.languages.search}">
 </div>
 <ul id="foldList" class="fn__flex-1 fn__none b3-list b3-list--background${isMobile() ? " b3-list--mobile" : ""}" style="overflow: auto;position: relative"></ul>
 <div id="foldTree" class="fn__flex-1${isMobile() ? " b3-list--mobile" : ""}" style="overflow: auto;position: relative"></div>
 <div class="fn__hr"></div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "50vw",
         height: isMobile() ? "80vh" : "70vh",
@@ -276,16 +276,16 @@ export const movePathTo = (options: {
             if (!item.closed) {
                 let countHTML = "";
                 if (options.flashcard) {
-                    countHTML = `<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.flashcardNewCard}">${item.newFlashcardCount}</span>
-<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.flashcardDueCard}">${item.dueFlashcardCount}</span>
-<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.flashcardCard}">${item.flashcardCount}</span>`;
+                    countHTML = `<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.flashcardNewCard}">${item.newFlashcardCount}</span>
+<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.flashcardDueCard}">${item.dueFlashcardCount}</span>
+<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.flashcardCard}">${item.flashcardCount}</span>`;
                 }
                 html += `<ul class="b3-list b3-list--background">
 <li class="b3-list-item${html === "" ? " b3-list-item--focus" : ""}" data-path="/" data-box="${item.id}">
     <span class="b3-list-item__toggle b3-list-item__toggle--hl">
         <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
     </span>
-    ${unicode2Emoji(item.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].note, "b3-list-item__graphic", true)}
+    ${unicode2Emoji(item.icon || window.scribli.storage[Constants.LOCAL_IMAGES].note, "b3-list-item__graphic", true)}
     <span class="b3-list-item__text">${escapeHtml(item.name)}</span>
     ${countHTML}
 </li></ul>`;
@@ -295,7 +295,7 @@ export const movePathTo = (options: {
     }, options.flashcard);
 
     const inputElement = dialog.element.querySelector(".b3-text-field") as HTMLInputElement;
-    inputElement.value = window.siyuan.storage[Constants.LOCAL_MOVE_PATH].k;
+    inputElement.value = window.scribli.storage[Constants.LOCAL_MOVE_PATH].k;
     /// #if !MOBILE
     inputElement.select();
     /// #endif
@@ -329,12 +329,12 @@ export const movePathTo = (options: {
                 let countHTML = "";
                 if (options.flashcard) {
                     countHTML = `<span class="fn__flex-1"></span>
-<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.flashcardNewCard}">${item.newFlashcardCount}</span>
-<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.flashcardDueCard}">${item.dueFlashcardCount}</span>
-<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.flashcardCard}">${item.flashcardCount}</span>`;
+<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.flashcardNewCard}">${item.newFlashcardCount}</span>
+<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.flashcardDueCard}">${item.dueFlashcardCount}</span>
+<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.flashcardCard}">${item.flashcardCount}</span>`;
                 }
                 fileHTML += `<li class="b3-list-item${fileHTML === "" ? " b3-list-item--focus" : ""}" data-path="${item.path}" data-box="${item.box}">
-    ${unicode2Emoji(item.boxIcon || window.siyuan.storage[Constants.LOCAL_IMAGES].note, "b3-list-item__graphic", true)}
+    ${unicode2Emoji(item.boxIcon || window.scribli.storage[Constants.LOCAL_IMAGES].note, "b3-list-item__graphic", true)}
     <span class="b3-list-item__showall" style="padding: 4px 0">${escapeHtml(item.hPath)}</span>
     ${countHTML}
 </li>`;
@@ -344,7 +344,7 @@ export const movePathTo = (options: {
     };
 
     const toggleMovePathHistory = () => {
-        const keys = window.siyuan.storage[Constants.LOCAL_MOVE_PATH].keys;
+        const keys = window.scribli.storage[Constants.LOCAL_MOVE_PATH].keys;
         if (!keys || keys.length === 0 || (keys.length === 1 && keys[0] === inputElement.value)) {
             return;
         }
@@ -355,10 +355,10 @@ export const movePathTo = (options: {
         menu.element.classList.add("b3-menu--list");
         menu.addItem({
             iconHTML: "",
-            label: window.siyuan.languages.clearHistory,
+            label: window.scribli.languages.clearHistory,
             click() {
-                window.siyuan.storage[Constants.LOCAL_MOVE_PATH].keys = [];
-                setStorageVal(Constants.LOCAL_MOVE_PATH, window.siyuan.storage[Constants.LOCAL_MOVE_PATH]);
+                window.scribli.storage[Constants.LOCAL_MOVE_PATH].keys = [];
+                setStorageVal(Constants.LOCAL_MOVE_PATH, window.scribli.storage[Constants.LOCAL_MOVE_PATH]);
             }
         });
         const separatorElement = menu.addSeparator(1);
@@ -378,17 +378,17 @@ export const movePathTo = (options: {
                                         return true;
                                     }
                                 });
-                                window.siyuan.storage[Constants.LOCAL_MOVE_PATH].keys = keys;
-                                setStorageVal(Constants.LOCAL_MOVE_PATH, window.siyuan.storage[Constants.LOCAL_MOVE_PATH]);
+                                window.scribli.storage[Constants.LOCAL_MOVE_PATH].keys = keys;
+                                setStorageVal(Constants.LOCAL_MOVE_PATH, window.scribli.storage[Constants.LOCAL_MOVE_PATH]);
                                 if (element.previousElementSibling?.classList.contains("b3-menu__separator") && !element.nextElementSibling) {
-                                    window.siyuan.menus.menu.remove();
+                                    window.scribli.menus.menu.remove();
                                 } else {
                                     element.remove();
                                 }
                             } else {
                                 inputElement.value = element.textContent;
                                 inputEvent();
-                                window.siyuan.menus.menu.remove();
+                                window.scribli.menus.menu.remove();
                             }
                             itemEvent.preventDefault();
                             itemEvent.stopPropagation();
@@ -419,16 +419,16 @@ export const movePathTo = (options: {
     });
     inputElement.addEventListener("blur", () => {
         if (inputElement.value) {
-            let list: string[] = window.siyuan.storage[Constants.LOCAL_MOVE_PATH].keys;
+            let list: string[] = window.scribli.storage[Constants.LOCAL_MOVE_PATH].keys;
             list.splice(0, 0, inputElement.value);
             list = Array.from(new Set(list));
-            if (list.length > window.siyuan.config.search.limit) {
-                list.splice(window.siyuan.config.search.limit, list.length - window.siyuan.config.search.limit);
+            if (list.length > window.scribli.config.search.limit) {
+                list.splice(window.scribli.config.search.limit, list.length - window.scribli.config.search.limit);
             }
-            window.siyuan.storage[Constants.LOCAL_MOVE_PATH].keys = list;
+            window.scribli.storage[Constants.LOCAL_MOVE_PATH].keys = list;
         }
-        window.siyuan.storage[Constants.LOCAL_MOVE_PATH].k = inputElement.value;
-        setStorageVal(Constants.LOCAL_MOVE_PATH, window.siyuan.storage[Constants.LOCAL_MOVE_PATH]);
+        window.scribli.storage[Constants.LOCAL_MOVE_PATH].k = inputElement.value;
+        setStorageVal(Constants.LOCAL_MOVE_PATH, window.scribli.storage[Constants.LOCAL_MOVE_PATH]);
     });
     const lineHeight = 28;
     inputElement.addEventListener("keydown", (event: KeyboardEvent) => {
@@ -440,7 +440,7 @@ export const movePathTo = (options: {
             toggleMovePathHistory();
             return;
         }
-        if (window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_MOVE_PATH_HISTORY) {
+        if (window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_MOVE_PATH_HISTORY) {
             return;
         }
         const currentPanelElement = searchListElement.classList.contains("fn__none") ? searchTreeElement : searchListElement;
@@ -638,7 +638,7 @@ export const movePathTo = (options: {
                 if (currentItemElements.length === 0) {
                     return;
                 }
-                if (options.title === window.siyuan.languages.specifyPath && isOnlyMeta(event)) {
+                if (options.title === window.scribli.languages.specifyPath && isOnlyMeta(event)) {
                     if (currentItemElements.length === 1 && currentItemElements[0] === target) {
                         // 至少需选中一个
                     } else {
@@ -686,29 +686,29 @@ const getLeaf = (liElement: HTMLElement, flashcard: boolean) => {
         notebook: notebookId,
         path: liElement.getAttribute("data-path"),
         flashcard,
-        app: Constants.SIYUAN_APPID,
+        app: Constants.SCRIBLI_APPID,
     }, response => {
         liElement.removeAttribute("data-loading");
         if (response.data.files.length === 0) {
-            showMessage(window.siyuan.languages.emptyContent);
+            showMessage(window.scribli.languages.emptyContent);
             return;
         }
         let fileHTML = "";
         response.data.files.forEach((item: IFile) => {
             let countHTML = "";
             if (flashcard) {
-                countHTML = `<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.flashcardNewCard}">${item.newFlashcardCount}</span>
-<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.flashcardDueCard}">${item.dueFlashcardCount}</span>
-<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.flashcardCard}">${item.flashcardCount}</span>`;
+                countHTML = `<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.flashcardNewCard}">${item.newFlashcardCount}</span>
+<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.flashcardDueCard}">${item.dueFlashcardCount}</span>
+<span class="counter counter--right b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.flashcardCard}">${item.flashcardCount}</span>`;
             } else if (item.count && item.count > 0) {
-                countHTML = `<span class="popover__block counter b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.ref}">${item.count}</span>`;
+                countHTML = `<span class="popover__block counter b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.ref}">${item.count}</span>`;
             }
             fileHTML += `<li data-box="${notebookId}" class="b3-list-item" data-path="${item.path}">
     <span style="padding-left: ${item.path.split("/").length * 8}px" class="b3-list-item__toggle b3-list-item__toggle--hl${item.subFileCount === 0 ? " fn__hidden" : ""}">
         <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
     </span>
-    ${unicode2Emoji(item.icon || (item.subFileCount === 0 ? window.siyuan.storage[Constants.LOCAL_IMAGES].file : window.siyuan.storage[Constants.LOCAL_IMAGES].folder), "b3-list-item__graphic", true)}
-    <span class="b3-list-item__text ariaLabel" data-position="parentE" aria-label="${getDocDisplayName(item.name, item.titleEmpty, true)} <small class='ft__on-surface'>${item.hSize}</small>${item.bookmark ? "<br>" + window.siyuan.languages.bookmark + " " + item.bookmark : ""}${item.name1 ? "<br>" + window.siyuan.languages.name + " " + item.name1 : ""}${item.alias ? "<br>" + window.siyuan.languages.alias + " " + item.alias : ""}${item.memo ? "<br>" + window.siyuan.languages.memo + " " + item.memo : ""}${item.subFileCount !== 0 ? window.siyuan.languages.includeSubFile.replace("x", item.subFileCount) : ""}<br>${window.siyuan.languages.modifiedAt} ${item.hMtime}<br>${window.siyuan.languages.createdAt} ${item.hCtime}">${getDocDisplayName(item.name, item.titleEmpty, true)}</span>
+    ${unicode2Emoji(item.icon || (item.subFileCount === 0 ? window.scribli.storage[Constants.LOCAL_IMAGES].file : window.scribli.storage[Constants.LOCAL_IMAGES].folder), "b3-list-item__graphic", true)}
+    <span class="b3-list-item__text ariaLabel" data-position="parentE" aria-label="${getDocDisplayName(item.name, item.titleEmpty, true)} <small class='ft__on-surface'>${item.hSize}</small>${item.bookmark ? "<br>" + window.scribli.languages.bookmark + " " + item.bookmark : ""}${item.name1 ? "<br>" + window.scribli.languages.name + " " + item.name1 : ""}${item.alias ? "<br>" + window.scribli.languages.alias + " " + item.alias : ""}${item.memo ? "<br>" + window.scribli.languages.memo + " " + item.memo : ""}${item.subFileCount !== 0 ? window.scribli.languages.includeSubFile.replace("x", item.subFileCount) : ""}<br>${window.scribli.languages.modifiedAt} ${item.hMtime}<br>${window.scribli.languages.createdAt} ${item.hCtime}">${getDocDisplayName(item.name, item.titleEmpty, true)}</span>
     ${countHTML}
 </li>`;
         });
@@ -723,7 +723,7 @@ const getLeaf = (liElement: HTMLElement, flashcard: boolean) => {
 
 export const getNotebookName = (id: string) => {
     let rootPath = "";
-    window.siyuan.notebooks.find((item) => {
+    window.scribli.notebooks.find((item) => {
         if (item.id === id) {
             rootPath = item.name;
             return true;
@@ -734,7 +734,7 @@ export const getNotebookName = (id: string) => {
 
 export const getNotebookIcon = (id: string) => {
     let rootPath = "";
-    window.siyuan.notebooks.find((item) => {
+    window.scribli.notebooks.find((item) => {
         if (item.id === id) {
             rootPath = item.icon;
             return true;
@@ -744,7 +744,7 @@ export const getNotebookIcon = (id: string) => {
 };
 
 export const setNotebookName = (id: string, name: string) => {
-    window.siyuan.notebooks.find((item) => {
+    window.scribli.notebooks.find((item) => {
         if (item.id === id) {
             item.name = name;
             return true;
@@ -754,7 +754,7 @@ export const setNotebookName = (id: string, name: string) => {
 
 export const getOpenNotebookCount = () => {
     let count = 0;
-    window.siyuan.notebooks.forEach(item => {
+    window.scribli.notebooks.forEach(item => {
         if (!item.closed) {
             count++;
         }
@@ -767,8 +767,8 @@ export const setNoteBook = (cb?: (notebook: INotebook[]) => void, flashcard = fa
         flashcard
     }, (response) => {
         if (!flashcard) {
-            window.siyuan.notebooks = response.data.notebooks;
-            window.siyuan.config.fileTree.boxDocEnabled = response.data.boxDocEnabled;
+            window.scribli.notebooks = response.data.notebooks;
+            window.scribli.config.fileTree.boxDocEnabled = response.data.boxDocEnabled;
         }
         if (cb) {
             cb(response.data.notebooks);
@@ -785,7 +785,7 @@ export const isEncryptedBox = (boxId: string): boolean => {
     if (!boxId) {
         return false;
     }
-    return !!window.siyuan.notebooks?.find((item) => item.id === boxId && item.encrypted);
+    return !!window.scribli.notebooks?.find((item) => item.id === boxId && item.encrypted);
 };
 
 /**

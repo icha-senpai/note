@@ -1,4 +1,4 @@
-// Lute 配置全部读取全局 window.siyuan.config / window.siyuan.emojis，跨编辑器一致，
+// Lute 配置全部读取全局 window.scribli.config / window.scribli.emojis，跨编辑器一致，
 // 因此所有 Protyle 编辑器共用同一个 Lute 实例，将内存与初始化开销从 O(编辑器数) 降为 O(1)。
 // AgentChat 不复用此共享单例，而是通过 getAgentLute 构建独立实例，使渲染不受编辑器设置影响。
 let luteInstance: Lute | undefined;
@@ -27,7 +27,7 @@ export const getLuteInstance = (): Lute | undefined => {
 /**
  * 为智能体（AgentChat）构建独立的 Lute 实例。
  *
- * 与共享单例不同：不读取 window.siyuan.config.editor.markdown 的语法开关，
+ * 与共享单例不同：不读取 window.scribli.config.editor.markdown 的语法开关，
  * 而是把所有 Markdown 行内语法（斜体/粗体/删除线/上下标/标签/行内公式/标记）硬编码启用，
  * 使 LLM 输出始终按标准 Markdown 渲染，不受用户「编辑器 → Markdown 语法设置」的影响。
  * 每次调用都返回新实例，与编辑器渲染相互隔离。
@@ -87,8 +87,8 @@ export const getAgentLute = (options: ILuteOptions): Lute => {
  */
 const setLute = (options: ILuteOptions) => {
     const lute: Lute = Lute.New();
-    lute.SetSpellcheck(window.siyuan.config.editor.spellcheck);
-    lute.SetProtyleMarkNetImg(window.siyuan.config.editor.displayNetImgMark);
+    lute.SetSpellcheck(window.scribli.config.editor.spellcheck);
+    lute.SetProtyleMarkNetImg(window.scribli.config.editor.displayNetImgMark);
     lute.SetFileAnnotationRef(true);
     lute.SetHTMLTag2TextMark(true);
     lute.SetTextMark(true);
@@ -112,24 +112,24 @@ const setLute = (options: ILuteOptions) => {
     lute.SetTag(true);
     lute.SetSuperBlock(true);
     lute.SetCallout(true);
-    lute.SetInlineAsterisk(window.siyuan.config.editor.markdown.inlineAsterisk);
-    lute.SetInlineUnderscore(window.siyuan.config.editor.markdown.inlineUnderscore);
-    lute.SetSup(window.siyuan.config.editor.markdown.inlineSup);
-    lute.SetSub(window.siyuan.config.editor.markdown.inlineSub);
-    lute.SetTag(window.siyuan.config.editor.markdown.inlineTag);
-    lute.SetInlineMath(window.siyuan.config.editor.markdown.inlineMath);
+    lute.SetInlineAsterisk(window.scribli.config.editor.markdown.inlineAsterisk);
+    lute.SetInlineUnderscore(window.scribli.config.editor.markdown.inlineUnderscore);
+    lute.SetSup(window.scribli.config.editor.markdown.inlineSup);
+    lute.SetSub(window.scribli.config.editor.markdown.inlineSub);
+    lute.SetTag(window.scribli.config.editor.markdown.inlineTag);
+    lute.SetInlineMath(window.scribli.config.editor.markdown.inlineMath);
     lute.SetGFMStrikethrough1(false);
-    lute.SetGFMStrikethrough(window.siyuan.config.editor.markdown.inlineStrikethrough);
-    lute.SetMark(window.siyuan.config.editor.markdown.inlineMark);
+    lute.SetGFMStrikethrough(window.scribli.config.editor.markdown.inlineStrikethrough);
+    lute.SetMark(window.scribli.config.editor.markdown.inlineMark);
     lute.SetSpin(true);
     lute.SetProtyleWYSIWYG(true);
     if (options.lazyLoadImage) {
         lute.SetImageLazyLoading(options.lazyLoadImage);
     }
     lute.SetBlockRef(true);
-    if (window.siyuan.emojis[0].items.length > 0) {
+    if (window.scribli.emojis[0].items.length > 0) {
         const emojis: IObject = {};
-        window.siyuan.emojis[0].items.forEach(item => {
+        window.scribli.emojis[0].items.forEach(item => {
             emojis[item.keywords] = options.emojiSite + "/" + item.unicode;
         });
         lute.PutEmojis(emojis);

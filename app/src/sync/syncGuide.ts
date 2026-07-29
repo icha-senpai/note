@@ -12,14 +12,14 @@ import {Constants} from "../constants";
 
 export const addCloudName = (cloudListElement: Element) => {
     const dialog = new Dialog({
-        title: window.siyuan.languages.cloudSyncDir,
+        title: window.scribli.languages.cloudSyncDir,
         content: `<div class="b3-dialog__content">
     <input class="b3-text-field fn__block" value="main">
-    <div class="b3-label__text">${window.siyuan.languages.reposTip}</div>
+    <div class="b3-label__text">${window.scribli.languages.reposTip}</div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
     });
@@ -54,10 +54,10 @@ export const bindSyncCloudListEvent = (cloudListElement: Element, cb?: () => voi
                         addCloudName(cloudListElement);
                         break;
                     case "removeCloud":
-                        confirmDialog(window.siyuan.languages.deleteOpConfirm, `${window.siyuan.languages.confirmDeleteCloudDir} <i>${target.parentElement.getAttribute("data-name")}</i>`, () => {
+                        confirmDialog(window.scribli.languages.deleteOpConfirm, `${window.scribli.languages.confirmDeleteCloudDir} <i>${target.parentElement.getAttribute("data-name")}</i>`, () => {
                             cloudListElement.innerHTML = '<img style="margin: 0 auto;display: block;width: 64px;height: 100%" src="/stage/loading-pure.svg">';
                             fetchPost("/api/sync/removeCloudSyncDir", {name: target.parentElement.getAttribute("data-name")}, (response) => {
-                                window.siyuan.config.sync.cloudName = response.data;
+                                window.scribli.config.sync.cloudName = response.data;
                                 renderSyncCloudList(cloudListElement, true, cb);
                             });
                         }, undefined, true);
@@ -65,7 +65,7 @@ export const bindSyncCloudListEvent = (cloudListElement: Element, cb?: () => voi
                     case "selectCloud":
                         cloudListElement.innerHTML = '<img style="margin: 0 auto;display: block;width: 64px;height: 100%" src="/stage/loading-pure.svg">';
                         fetchPost("/api/sync/setCloudSyncDir", {name: target.getAttribute("data-name")}, () => {
-                            window.siyuan.config.sync.cloudName = target.getAttribute("data-name");
+                            window.scribli.config.sync.cloudName = target.getAttribute("data-name");
                             renderSyncCloudList(cloudListElement, true, cb);
                         });
                         break;
@@ -92,7 +92,7 @@ export const renderSyncCloudList = (cloudListElement: Element, reload = false, c
         ${response.msg}
     </li>
     <li class="b3-list--empty">
-        ${window.siyuan.languages.cloudConfigTip}
+        ${window.scribli.languages.cloudConfigTip}
     </li>
 </ul>`;
         } else {
@@ -127,16 +127,16 @@ export const renderSyncCloudList = (cloudListElement: Element, reload = false, c
 <span class="ft__on-surface">${item.hSize}</span>
 <span class="b3-list-item__meta">${item.updated}</span>
 <span class="fn__flex-1 fn__space"></span>
-<span data-type="removeCloud" class="b3-tooltips b3-tooltips__w b3-list-item__action${(window.siyuan.config.sync.provider === 2 || window.siyuan.config.sync.provider === 3) ? " fn__none":""}" aria-label="${window.siyuan.languages.delete}">
+<span data-type="removeCloud" class="b3-tooltips b3-tooltips__w b3-list-item__action${(window.scribli.config.sync.provider === 2 || window.scribli.config.sync.provider === 3) ? " fn__none":""}" aria-label="${window.scribli.languages.delete}">
     <svg><use xlink:href="#iconTrashcan"></use></svg>
 </span></li>`);
                 /// #endif
             });
             syncListParts.push("</ul>");
-            if (![2, 3].includes(window.siyuan.config.sync.provider)) {
+            if (![2, 3].includes(window.scribli.config.sync.provider)) {
                 syncListParts.push(`<div class="fn__hr"></div>
 <div class="fn__flex">
-    <button class="b3-button b3-button--outline" data-type="addCloud"><svg><use xlink:href="#iconAdd"></use></svg>${window.siyuan.languages.addAttr}</button>
+    <button class="b3-button b3-button--outline" data-type="addCloud"><svg><use xlink:href="#iconAdd"></use></svg>${window.scribli.languages.addAttr}</button>
     <div class="fn__flex-1"></div>
 </div>`);
             }
@@ -148,26 +148,26 @@ export const renderSyncCloudList = (cloudListElement: Element, reload = false, c
 };
 
 export const syncGuide = (app?: App) => {
-    if (window.siyuan.config.readonly) {
+    if (window.scribli.config.readonly) {
         return;
     }
     if (app && document.querySelector("#barSync")?.classList.contains("toolbar__item--active")) {
         return;
     }
-    if (window.siyuan.config.sync.provider === 0) {
+    if (window.scribli.config.sync.provider === 0) {
         /// #if !MOBILE
         if (app) {
             openSetting(app, "sync");
         }
         /// #endif
-        showMessage(window.siyuan.languages.cloudConfigTip);
+        showMessage(window.scribli.languages.cloudConfigTip);
         return;
     }
-    if (!window.siyuan.config.repo.key) {
+    if (!window.scribli.config.repo.key) {
         setKey(true);
         return;
     }
-    if (!window.siyuan.config.sync.enabled) {
+    if (!window.scribli.config.sync.enabled) {
         setSync();
         return;
     }
@@ -175,33 +175,33 @@ export const syncGuide = (app?: App) => {
 };
 
 const syncNow = () => {
-    if (window.siyuan.config.sync.mode !== 3) {
+    if (window.scribli.config.sync.mode !== 3) {
         fetchPost("/api/sync/performSync", {});
         return;
     }
     const manualDialog = new Dialog({
-        title: window.siyuan.languages.chooseSyncDirection,
+        title: window.scribli.languages.chooseSyncDirection,
         content: `<div class="b3-dialog__content">
     <label class="fn__flex b3-label">
         <input type="radio" name="upload" value="true">
         <span class="fn__space"></span>
         <div>
-            ${window.siyuan.languages.uploadData2Cloud}
-            <div class="b3-label__text">${window.siyuan.languages.uploadData2CloudTip}</div>
+            ${window.scribli.languages.uploadData2Cloud}
+            <div class="b3-label__text">${window.scribli.languages.uploadData2CloudTip}</div>
         </div>
     </label>
     <label class="fn__flex b3-label">
         <input type="radio" name="upload" value="false">
         <span class="fn__space"></span>
         <div>
-            ${window.siyuan.languages.downloadDataFromCloud}
-            <div class="b3-label__text">${window.siyuan.languages.downloadDataFromCloudTip}</div>
+            ${window.scribli.languages.downloadDataFromCloud}
+            <div class="b3-label__text">${window.scribli.languages.downloadDataFromCloudTip}</div>
         </div>
     </label>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
     });
@@ -213,7 +213,7 @@ const syncNow = () => {
     btnsElement[1].addEventListener("click", () => {
         const uploadElement = manualDialog.element.querySelector("input[name=upload]:checked") as HTMLInputElement;
         if (!uploadElement) {
-            showMessage(window.siyuan.languages.plsChoose);
+            showMessage(window.scribli.languages.plsChoose);
             return;
         }
         fetchPost("/api/sync/performSync", {upload: uploadElement.value === "true"});
@@ -223,24 +223,24 @@ const syncNow = () => {
 
 const setSync = (key?: string, dialog?: Dialog) => {
     if (key) {
-        window.siyuan.config.repo.key = key;
+        window.scribli.config.repo.key = key;
     }
-    if (!window.siyuan.config.sync.enabled) {
+    if (!window.scribli.config.sync.enabled) {
         const listHTML = `<div class="b3-dialog__content">
-    <div class="ft__on-surface">${window.siyuan.languages.syncConfGuide3}</div>
+    <div class="ft__on-surface">${window.scribli.languages.syncConfGuide3}</div>
     <div style="display: flex;flex-direction: column;height: 40vh;">
         <img style="margin: 0 auto;display: block;width: 64px;height: 100%" src="/stage/loading-pure.svg">
     </div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button" disabled>${window.siyuan.languages.openSyncTip1}</button>
+    <button class="b3-button" disabled>${window.scribli.languages.openSyncTip1}</button>
 </div>`;
         if (dialog) {
-            dialog.element.querySelector(".b3-dialog__header").innerHTML = "🗂️ " + window.siyuan.languages.cloudSyncDir;
+            dialog.element.querySelector(".b3-dialog__header").innerHTML = "🗂️ " + window.scribli.languages.cloudSyncDir;
             dialog.element.querySelector(".b3-dialog__body").innerHTML = listHTML;
         } else {
             dialog = new Dialog({
-                title: "🗂️ " + window.siyuan.languages.cloudSyncDir,
+                title: "🗂️ " + window.scribli.languages.cloudSyncDir,
                 content: listHTML,
                 width: isMobile() ? "92vw" : "520px",
             });
@@ -256,9 +256,9 @@ const setSync = (key?: string, dialog?: Dialog) => {
         btnElement.addEventListener("click", () => {
             dialog.destroy();
             fetchPost("/api/sync/setSyncEnable", {enabled: true}, () => {
-                window.siyuan.config.sync.enabled = true;
+                window.scribli.config.sync.enabled = true;
                 processSync();
-                confirmDialog("🔄 " + window.siyuan.languages.syncConfGuide4, window.siyuan.languages.syncConfGuide5, () => {
+                confirmDialog("🔄 " + window.scribli.languages.syncConfGuide4, window.scribli.languages.syncConfGuide5, () => {
                     syncNow();
                 });
             });
@@ -267,7 +267,7 @@ const setSync = (key?: string, dialog?: Dialog) => {
         if (dialog) {
             dialog.destroy();
         }
-        confirmDialog("🔄 " + window.siyuan.languages.syncConfGuide4, window.siyuan.languages.syncConfGuide5, () => {
+        confirmDialog("🔄 " + window.scribli.languages.syncConfGuide4, window.scribli.languages.syncConfGuide5, () => {
             syncNow();
         });
     }
@@ -275,27 +275,27 @@ const setSync = (key?: string, dialog?: Dialog) => {
 
 export const setKey = (isSync: boolean, cb?: () => void) => {
     const dialog = new Dialog({
-        title: "🔑 " + window.siyuan.languages.syncConfGuide1,
+        title: "🔑 " + window.scribli.languages.syncConfGuide1,
         content: `<div class="b3-dialog__content ft__center">
     <img style="width: 260px" src="/stage/images/sync-guide.svg"/>
     <div class="fn__hr--b"></div>
-    <div class="ft__on-surface">${window.siyuan.languages.syncConfGuide2}</div>
+    <div class="ft__on-surface">${window.scribli.languages.syncConfGuide2}</div>
     <div class="fn__hr--b"></div>
-    <input class="b3-text-field fn__block ft__center" placeholder="${window.siyuan.languages.passphrase}">
+    <input class="b3-text-field fn__block ft__center" placeholder="${window.scribli.languages.passphrase}">
     <div class="fn__hr"></div>
-    <input class="b3-text-field fn__block ft__center" placeholder="${window.siyuan.languages.reEnterPassphrase}">
+    <input class="b3-text-field fn__block ft__center" placeholder="${window.scribli.languages.reEnterPassphrase}">
 </div>
 <div class="b3-dialog__action">
     <label style="display: inline-flex; align-items: center; cursor: pointer;">
         <input type="checkbox" id="confirmPassword">
         <span class="fn__space"></span>
-        ${window.siyuan.languages.confirmPassword}
+        ${window.scribli.languages.confirmPassword}
     </label>
     <span class="fn__flex-1"></span>
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button>
     <span class="fn__space"></span>
     <button class="b3-button b3-button--text" id="initKeyByPW" disabled>
-        ${window.siyuan.languages.confirm}
+        ${window.scribli.languages.confirm}
     </button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
@@ -315,19 +315,19 @@ export const setKey = (isSync: boolean, cb?: () => void) => {
     const inputElements = dialog.element.querySelectorAll(".b3-text-field") as NodeListOf<HTMLInputElement>;
     genBtnElement.addEventListener("click", () => {
         if (!inputElements[0].value || !inputElements[1].value) {
-            showMessage(window.siyuan.languages._kernel[142]);
+            showMessage(window.scribli.languages._kernel[142]);
             return;
         }
         if (inputElements[0].value !== inputElements[1].value) {
-            showMessage(window.siyuan.languages.passwordNoMatch);
+            showMessage(window.scribli.languages.passwordNoMatch);
             return;
         }
-        confirmDialog("🔑 " + window.siyuan.languages.genKeyByPW, window.siyuan.languages.initRepoKeyTip, () => {
+        confirmDialog("🔑 " + window.scribli.languages.genKeyByPW, window.scribli.languages.initRepoKeyTip, () => {
             if (!isSync) {
                 dialog.destroy();
             }
             fetchPost("/api/repo/initRepoKeyFromPassphrase", {pass: inputElements[0].value}, (response) => {
-                window.siyuan.config.repo.key = response.data.key;
+                window.scribli.config.repo.key = response.data.key;
                 if (cb) {
                     cb();
                 }

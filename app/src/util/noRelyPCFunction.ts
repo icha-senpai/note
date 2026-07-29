@@ -28,7 +28,7 @@ export const genTagList = (listElement: Element, k: string) => {
             }
         });
         if (!hasKey && response.data.k) {
-            searchHTML = `<div data-type="new" class="b3-list-item${searchHTML ? "" : " b3-list-item--focus"}"><div class="fn__flex-1">${window.siyuan.languages.new} <mark>${escapeHtml(response.data.k)}</mark></div></div>` + searchHTML;
+            searchHTML = `<div data-type="new" class="b3-list-item${searchHTML ? "" : " b3-list-item--focus"}"><div class="fn__flex-1">${window.scribli.languages.new} <mark>${escapeHtml(response.data.k)}</mark></div></div>` + searchHTML;
         }
         listElement.innerHTML = searchHTML;
     });
@@ -37,7 +37,7 @@ export const genTagList = (listElement: Element, k: string) => {
 // 需独立出来，否则移动端引用的时候会引入 pc 端大量无用代码
 export const renameTag = (labelName: string) => {
     const dialog = new Dialog({
-        title: window.siyuan.languages.rename,
+        title: window.scribli.languages.rename,
         content: `<div class="b3-dialog__content">
     <input class="b3-text-field fn__block">
     <div class="b3-list fn__flex-1 b3-list--background fn__none protyle-hint" style="position: absolute;width: calc(100% - 48px);">
@@ -45,8 +45,8 @@ export const renameTag = (labelName: string) => {
     </div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
     });
@@ -59,7 +59,7 @@ export const renameTag = (labelName: string) => {
         fetchPost("/api/tag/renameTag", {oldLabel: labelName, newLabel: inputElement.value}, () => {
             dialog.destroy();
             /// #if MOBILE
-            window.siyuan.mobile.docks.tag.update();
+            window.scribli.mobile.docks.tag.update();
             /// #else
             const dockTag = getDockByType("tag");
             (dockTag.data.tag as Tag).update();

@@ -174,7 +174,7 @@ export class AgentChat extends Model {
             emojiSite: "/emojis",
             emojis: {}
         });
-        this.defaultTitle = window.siyuan.languages.agentChat || "Agent";
+        this.defaultTitle = window.scribli.languages.agentChat || "Agent";
         this.sessionTitle = this.defaultTitle;
         this.initUI();
         this.bindEvents();
@@ -185,7 +185,7 @@ export class AgentChat extends Model {
             type: "agentChat",
             msgCallback: (data) => this.onWsMessage(data),
         });
-        // AI 配置保存走本地 patch（aiRuntime.ts 写 window.siyuan.config.ai）不广播 ws，
+        // AI 配置保存走本地 patch（aiRuntime.ts 写 window.scribli.config.ai）不广播 ws，
         // 故用两种方式兜底：window focus（跨窗口）+ MutationObserver 监听设置对话框关闭（同窗口即时）。
         window.addEventListener("focus", this.checkConfigChangedHandler);
         // 设置对话框是 Scribli 内部模态，关闭时 window 不失焦，focus 事件不触发。
@@ -202,11 +202,11 @@ export class AgentChat extends Model {
         this.checkConfigChanged();
     };
 
-    // 比较 window.siyuan.config.ai 实际可用模型数与缓存 modelOptions，不一致则刷新。
+    // 比较 window.scribli.config.ai 实际可用模型数与缓存 modelOptions，不一致则刷新。
     // 仅当处于欢迎页（无会话内容）时重渲染，以便从无模型提示块切回示例或反之；
     // 有会话内容时不重绘（避免破坏对话），refreshModelOptions 内已刷新 trigger 显示。
     private checkConfigChanged() {
-        const actualCount = AgentChat.countUsableModels(window.siyuan.config.ai);
+        const actualCount = AgentChat.countUsableModels(window.scribli.config.ai);
         if (actualCount === this.modelOptions.length) {
             return;
         }
@@ -236,7 +236,7 @@ export class AgentChat extends Model {
         const panel = this.parent.panelElement;
         panel.classList.add("fn__flex-column", "file-tree", "sy__agentChat", "dockPanel");
 
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
 
         panel.innerHTML = '<div class="agent-chat fn__flex-column fn__flex-1">' +
             '<div class="block__icons fn__hidescrollbar">' +
@@ -249,7 +249,7 @@ export class AgentChat extends Model {
             '<svg><use xlink:href="#iconFolderClock"></use></svg>' +
             "</span>" +
             '<span class="fn__space"></span>' +
-            '<span data-type="min" class="block__icon ariaLabel" data-position="north" aria-label="' + window.siyuan.languages.min + updateHotkeyAfterTip(window.siyuan.config.keymap.general.closeTab.custom) + '">' +
+            '<span data-type="min" class="block__icon ariaLabel" data-position="north" aria-label="' + window.scribli.languages.min + updateHotkeyAfterTip(window.scribli.config.keymap.general.closeTab.custom) + '">' +
             '<svg><use xlink:href="#iconMin"></use></svg>' +
             "</span>" +
             "</div>" +
@@ -391,7 +391,7 @@ export class AgentChat extends Model {
     private async openAiSetting() {
         const {openSetting} = await import("../../../config");
         // openSetting 若已有设置对话框会先销毁重建，先检测复用避免闪烁。
-        const existing = window.siyuan.dialogs.find(d => d.element.querySelector(".config__tab-container"));
+        const existing = window.scribli.dialogs.find(d => d.element.querySelector(".config__tab-container"));
         if (!existing) {
             openSetting(this.app, "ai");
         }
@@ -404,11 +404,11 @@ export class AgentChat extends Model {
         }
     }
 
-    // 从 window.siyuan.config.ai 重新计算可用模型列表，幂等可重复调用。
+    // 从 window.scribli.config.ai 重新计算可用模型列表，幂等可重复调用。
     // 与后端 HasAnyProvider()/GetModel() 判定一致：provider 和 model 均需 enabled。
     // 零模型时显式置空 selectedModel（避免 undefined 透传到后端），失效选择自动重置。
     refreshModelOptions() {
-        const aiConfig = window.siyuan.config.ai;
+        const aiConfig = window.scribli.config.ai;
         const newOptions: Array<{ id: string; name: string }> = [];
         for (const prov of aiConfig.providers || []) {
             if (!prov.enabled) {
@@ -439,7 +439,7 @@ export class AgentChat extends Model {
         // 重建 <option> 列表。无可用模型时插入一个占位项，点击 select 打开设置-人工智能。
         let html = "";
         if (this.modelOptions.length === 0) {
-            const placeholder = window.siyuan.languages.noModelConfigured || "No model configured";
+            const placeholder = window.scribli.languages.noModelConfigured || "No model configured";
             html = '<option value="" selected>' + escapeHtml(placeholder) + "</option>";
             this.modelSelect.innerHTML = html;
             this.modelSelect.disabled = true;
@@ -460,7 +460,7 @@ export class AgentChat extends Model {
     // 根据当前选中值刷新按钮上的文字（默认/低/中/高）。
     // 初始化思考强度原生 select：填充 4 个选项并绑定 change，模式与 initModelSelect 一致。
     private initReasoningEffortSelect() {
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const options: Array<{ value: string; label: string }> = [
             {value: "", label: L.reasoningEffortDefault || "Default"},
             {value: "low", label: L.reasoningEffortLow || "Low"},
@@ -525,7 +525,7 @@ export class AgentChat extends Model {
                     this.requestStartTime = Date.now();
                     this.currentThinkingDuration = 0;
                     this.currentTurnID = "";
-                    await fetchAgentSSE(text, window.siyuan.config.appearance.lang, [],
+                    await fetchAgentSSE(text, window.scribli.config.appearance.lang, [],
                         (event: ISSEResult) => {
                             if (this.sessionId !== requestSessionId) {
                                 return;
@@ -850,7 +850,7 @@ export class AgentChat extends Model {
             return;
         }
         this.removeMirrorPlaceholder();
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const el = document.createElement("div");
         el.className = "agent-chat__msg agent-chat__msg--mirror";
         el.innerHTML = '<div class="agent-chat__body agent-chat__body--mirror">' +
@@ -983,7 +983,7 @@ export class AgentChat extends Model {
         const sessionID = this.sessionId;
         if (this.pendingRecoverySessionIDs.has(sessionID) && !this.recoveryCommitTurnIDs.has(sessionID)) {
             void this.recoverInterruptedTurn(sessionID, this.currentTurnID);
-            const L = window.siyuan.languages;
+            const L = window.scribli.languages;
             showMessage(L.agentChatBusy || "This session is busy in another instance", 3000);
             return false;
         }
@@ -1184,7 +1184,7 @@ export class AgentChat extends Model {
         effects?: IToolEffects;
         status?: string
     }) {
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const el = document.createElement("div");
         el.className = "agent-chat__msg agent-chat__msg--confirm agent-chat__msg--confirmed";
         if (entry.id) {
@@ -1239,7 +1239,7 @@ export class AgentChat extends Model {
         status?: string;
         answers?: string[];
     }) {
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const el = document.createElement("div");
         // 重载后 question 不可再交互（后端已超时或会话已切换），统一显示为已确认态。
         el.className = "agent-chat__msg agent-chat__msg--question agent-chat__msg--confirmed";
@@ -1458,7 +1458,7 @@ export class AgentChat extends Model {
     private async deleteSession(id: string) {
         if (id === this.sessionId && (this.isStreaming || !!this.currentTurnID ||
             this.pendingRecoverySessionIDs.has(id))) {
-            const L = window.siyuan.languages;
+            const L = window.scribli.languages;
             showMessage(L.agentChatBusy || "This session is busy in another instance", 3000);
             return;
         }
@@ -1542,7 +1542,7 @@ export class AgentChat extends Model {
 
         await fetchAgentSSE(
             text,
-            window.siyuan.config.appearance.lang,
+            window.scribli.config.appearance.lang,
             refs,
             (event: ISSEResult) => {
                 if (this.sessionId !== requestSessionId) {
@@ -1580,7 +1580,7 @@ export class AgentChat extends Model {
         this.setStreaming(false);
         await this.reloadFromDisk(true);
         this.restorePendingEditDraft();
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         showMessage(L.agentChatBusy || "This session is busy in another instance", 3000);
     }
 
@@ -1601,7 +1601,7 @@ export class AgentChat extends Model {
     // 若未找到，则依次使用 DOM 选区所在编辑器和最近激活的页签。
     private captureEditorContext(): IEditorContext | undefined {
         /// #if MOBILE
-        const mobEditor = window.siyuan.mobile.editor || window.siyuan.mobile.popEditor;
+        const mobEditor = window.scribli.mobile.editor || window.scribli.mobile.popEditor;
         if (mobEditor?.protyle && !mobEditor.protyle.element.classList.contains("fn__none")) {
             return this.readEditorContext(mobEditor);
         }
@@ -1899,7 +1899,7 @@ export class AgentChat extends Model {
             this.finalizeStreamingBody(this.currentContent, Date.now());
         }
         this.requestStartTime = 0;
-        const configMsg = window.siyuan.languages._kernel[193] || "";
+        const configMsg = window.scribli.languages._kernel[193] || "";
         const isConfigError = !!configMsg && err.message === configMsg;
         if (isConfigError) {
             if (restoreSession) {
@@ -1979,16 +1979,16 @@ export class AgentChat extends Model {
         if (timestamp) {
             actionsHTML += '<span class="agent-chat__msg-meta agent-chat__msg-time">' + this.formatMessageTime(timestamp) + "</span>";
         }
-        actionsHTML += '<span class="block__icon block__icon--show ariaLabel agent-chat__user-copy" data-position="north" aria-label="' + window.siyuan.languages.copy + '"><svg><use xlink:href="#iconCopy"></use></svg></span>' +
-            '<span class="block__icon block__icon--show ariaLabel agent-chat__user-edit" data-position="north" aria-label="' + window.siyuan.languages.edit + '"><svg><use xlink:href="#iconEdit"></use></svg></span>' +
+        actionsHTML += '<span class="block__icon block__icon--show ariaLabel agent-chat__user-copy" data-position="north" aria-label="' + window.scribli.languages.copy + '"><svg><use xlink:href="#iconCopy"></use></svg></span>' +
+            '<span class="block__icon block__icon--show ariaLabel agent-chat__user-edit" data-position="north" aria-label="' + window.scribli.languages.edit + '"><svg><use xlink:href="#iconEdit"></use></svg></span>' +
             "</div>";
         el.insertAdjacentHTML("beforeend", actionsHTML);
         el.querySelector(".agent-chat__user-copy")?.addEventListener("click", (e) => {
             e.stopPropagation();
             navigator.clipboard.writeText(text).then(() => {
-                showMessage(window.siyuan.languages.copied, 2000);
+                showMessage(window.scribli.languages.copied, 2000);
             }).catch(() => {
-                showMessage(window.siyuan.languages.copied, 2000);
+                showMessage(window.scribli.languages.copied, 2000);
             });
         });
         const edit = (force = false) => {
@@ -2050,10 +2050,10 @@ export class AgentChat extends Model {
 
         const cancel = document.createElement("button");
         cancel.className = "b3-button b3-button--cancel";
-        cancel.textContent = window.siyuan.languages.cancel;
+        cancel.textContent = window.scribli.languages.cancel;
         const submit = document.createElement("button");
         submit.className = "b3-button b3-button--text";
-        submit.textContent = window.siyuan.languages.confirm;
+        submit.textContent = window.scribli.languages.confirm;
         actions.append(cancel, submit);
 
         const restore = () => {
@@ -2252,7 +2252,7 @@ export class AgentChat extends Model {
     }
 
     private appendThinking(reasoning: string) {
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         if (this.currentThinkingText) {
             // step 不保存 text（渲染时由 duration 经 i18n 生成）。
             // toolNames 只取本轮新增的工具（lastStepToolCount 之后的），
@@ -2317,7 +2317,7 @@ export class AgentChat extends Model {
         }
 
         if (reasoning === "processing" && this.hasInterveningCard) {
-            const L = window.siyuan.languages;
+            const L = window.scribli.languages;
             // 与 finishActiveThinking 对齐：先把本张思考卡片的耗时算出来，
             // 既用于 DOM 显示「已思考 Xs」，也用于落盘 entry.duration（重载后仍能显示正确耗时）。
             const durSec = this.currentThinkingDuration ||
@@ -2455,7 +2455,7 @@ export class AgentChat extends Model {
 
     private addCopyButton(el: HTMLElement, contentOverride?: string, timestamp?: number) {
         const content = contentOverride || this.fullContent || el.querySelector(".agent-chat__body")?.textContent || "";
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
 
         const actions = document.createElement("div");
         actions.className = "agent-chat__msg-actions";
@@ -2475,9 +2475,9 @@ export class AgentChat extends Model {
         copyBtn.addEventListener("click", (e: Event) => {
             e.stopPropagation();
             navigator.clipboard.writeText(content).then(() => {
-                showMessage(window.siyuan.languages.copied, 2000);
+                showMessage(window.scribli.languages.copied, 2000);
             }).catch(() => {
-                showMessage(window.siyuan.languages.copied, 2000);
+                showMessage(window.scribli.languages.copied, 2000);
             });
         });
         actions.appendChild(copyBtn);
@@ -2512,8 +2512,8 @@ export class AgentChat extends Model {
             return true;
         }
         return new Promise((resolve) => {
-            confirmDialog(window.siyuan.languages.confirm,
-                window.siyuan.languages.agentEditHistoryWarning,
+            confirmDialog(window.scribli.languages.confirm,
+                window.scribli.languages.agentEditHistoryWarning,
                 () => resolve(true), () => resolve(false));
         });
     }
@@ -2618,7 +2618,7 @@ export class AgentChat extends Model {
         const requestSessionId = this.sessionId;
         await fetchAgentSSE(
             lastUserText,
-            window.siyuan.config.appearance.lang,
+            window.scribli.config.appearance.lang,
             lastUserEntry.references || [],
             (event: ISSEResult) => {
                 if (this.sessionId !== requestSessionId) {
@@ -2770,7 +2770,7 @@ export class AgentChat extends Model {
         }
         this.rebuildNavMarkers();
         if (notify && savedContent && (!document.hasFocus() || document.hidden)) {
-            const L = window.siyuan.languages;
+            const L = window.scribli.languages;
             sendNotification({title: L.agentNotifyDone, timeoutType: "default"});
         }
     }
@@ -2828,7 +2828,7 @@ export class AgentChat extends Model {
             body: JSON.stringify({
                 message: userMsg,
                 model: this.getSelectedModel(),
-                language: window.siyuan.config.appearance.lang
+                language: window.scribli.config.appearance.lang
             }),
         }).then((resp) => resp.json()).then((data) => {
             if (this.sessionId === requestSessionID && data.code === 0 && data.data && data.data !== this.sessionTitle) {
@@ -2876,7 +2876,7 @@ export class AgentChat extends Model {
     }
 
     private appendSnapshotInfo(snapshotID: string, entryId?: string) {
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const shortID = snapshotID.length > 7 ? snapshotID.substring(0, 7) : snapshotID;
         const el = document.createElement("div");
         el.className = "agent-chat__msg agent-chat__msg--snapshot";
@@ -2920,7 +2920,7 @@ export class AgentChat extends Model {
     }
 
     private appendRollbackInfo(snapshotID: string, entryId?: string) {
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const shortID = snapshotID.length > 7 ? snapshotID.substring(0, 7) : snapshotID;
         const el = document.createElement("div");
         el.className = "agent-chat__msg agent-chat__msg--snapshot";
@@ -3016,7 +3016,7 @@ export class AgentChat extends Model {
         if (!effects) {
             return "";
         }
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const items: string[] = [];
         if (effects.dataEgress) {
             items.push(L.agentEffectDataEgress);
@@ -3036,7 +3036,7 @@ export class AgentChat extends Model {
     private async appendConfirm(name: string, args: Record<string, unknown>, confirmID: string, effects?: IToolEffects) {
         this.finishActiveThinking();
         this.flushThinkingStep();
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const el = document.createElement("div");
         el.className = "agent-chat__msg agent-chat__msg--confirm";
         const argsStr = JSON.stringify(args, null, 2);
@@ -3070,7 +3070,7 @@ export class AgentChat extends Model {
             const accepted = await this.postConfirm(confirmID, approved, always, sessionID, confirmEntryId);
             if (!accepted) {
                 buttons.forEach((button) => button.disabled = false);
-                showMessage(window.siyuan.languages._kernel[28], 3000);
+                showMessage(window.scribli.languages._kernel[28], 3000);
                 return;
             }
             el.classList.add("agent-chat__msg--confirmed");
@@ -3191,7 +3191,7 @@ export class AgentChat extends Model {
     private appendQuestion(questionID: string, args: Record<string, unknown>) {
         this.finishActiveThinking();
         this.flushThinkingStep();
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const rawQuestions = args.questions as Array<Record<string, unknown>>;
         if (!rawQuestions || rawQuestions.length === 0) {
             return;
@@ -3255,7 +3255,7 @@ export class AgentChat extends Model {
                 if (!accepted) {
                     (submitBtn as HTMLButtonElement).disabled = false;
                     inputs.forEach((input) => input.disabled = false);
-                    showMessage(window.siyuan.languages._kernel[28], 3000);
+                    showMessage(window.scribli.languages._kernel[28], 3000);
                     return;
                 }
                 el.classList.add("agent-chat__msg--confirmed");
@@ -3381,7 +3381,7 @@ export class AgentChat extends Model {
 
     // 由 duration 经 i18n 生成"已思考：Xs"标题文本；无 duration 时回退到"思考中..."。
     private formatThinkingHeader(duration?: number): string {
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         if (duration && duration > 0) {
             return L.agentThinkingDoneTime ? L.agentThinkingDoneTime.replace("%s", Math.round(duration) + "s") : (L.agentThinking || "Thinking");
         }
@@ -3427,7 +3427,7 @@ export class AgentChat extends Model {
             return;
         }
         this.closeTokenBreakdownPopup();
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const popup = document.createElement("div");
         popup.className = "agent-token-popup b3-menu";
         let html = '<div class="b3-menu__items">';
@@ -3468,7 +3468,7 @@ export class AgentChat extends Model {
         html += "</div>";
         popup.innerHTML = html;
         document.body.appendChild(popup);
-        popup.style.zIndex = (++window.siyuan.zIndex).toString();
+        popup.style.zIndex = (++window.scribli.zIndex).toString();
         // 定位：与模型选择弹出一致——右对齐 trigger 右边缘（width 280px 固定），垂直在 trigger 下方。
         const rect = this.tokenDisplayEl.getBoundingClientRect();
         setPosition(popup, rect.right - 280, rect.bottom, rect.height, rect.width);
@@ -3520,7 +3520,7 @@ export class AgentChat extends Model {
     // 把 contextTokenBreakdown（后端估算的 9 类 + other）格式化为 [{label, percent}]，跳过 0 值。
     // percent = 各类 token / contextTokens * 100（contextTokens 为 0 时显示 "-")。
     private formatTokenBreakdown(): Array<{ label: string; percent: string }> {
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         // 固定顺序展示（与后端 key 对应）。
         const order: Array<{ key: string; labelKey: string }> = [
             {key: "system", labelKey: "tokenCatSystem"},
@@ -3596,7 +3596,7 @@ export class AgentChat extends Model {
         }
         const tick = () => {
             const sec = Math.floor((Date.now() - this.requestStartTime) / 1000);
-            const L = window.siyuan.languages;
+            const L = window.scribli.languages;
             const live = (L.agentThinking || "Thinking") + " " + sec + "s";
             const cards = this.messagesContainer.querySelectorAll(
                 ".agent-chat__msg--thinking:not(.agent-chat__msg--thinking-done) .agent-chat__thinking-text"
@@ -3619,7 +3619,7 @@ export class AgentChat extends Model {
 
     private finishActiveThinking() {
         this.stopThinkingTimer();
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         // 耗时存为数值（用于持久化 entry.duration），"已思考：Xs" 文本只在 DOM 显示、不落盘。
         const durSec = this.requestStartTime ? (Date.now() - this.requestStartTime) / 1000 : 0;
         this.currentThinkingDuration = durSec;
@@ -3805,7 +3805,7 @@ export class AgentChat extends Model {
     }
 
     private toolCategory(name: string): string {
-        const L = window.siyuan.languages;
+        const L = window.scribli.languages;
         const m: Record<string, string | undefined> = {
             "block": L.agentCatBlock, "document": L.agentCatDoc,
             "notebook": L.agentCatNotebook, "tag": L.agentCatTag,

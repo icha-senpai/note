@@ -18,9 +18,9 @@ import {NewDocTargetByHPath, NewDocTargetSubDoc, getNewDocTargetFromSavePath, ge
 export const getBlockRefAnchorText = (title: string) => {
     const trimmed = (title || "").trim();
     if (!trimmed) {
-        return window.siyuan.languages._kernel[16];
+        return window.scribli.languages._kernel[16];
     }
-    return trimmed.substring(0, window.siyuan.config.editor.blockRefDynamicAnchorTextMaxLen);
+    return trimmed.substring(0, window.scribli.config.editor.blockRefDynamicAnchorTextMaxLen);
 };
 
 type NewDocRequest = {
@@ -38,7 +38,7 @@ type NewDocRequest = {
 /** 按配置路径创建文档；从聚焦编辑器或文件树推断上下文；可选 name 指定文档名 */
 export const newFile = (app: App, name?: string) => {
     if (getOpenNotebookCount() === 0) {
-        showMessage(window.siyuan.languages.newFileTip);
+        showMessage(window.scribli.languages.newFileTip);
         return;
     }
     const {notebookId, currentPath, hasFocusTarget} = getNewFilePath();
@@ -84,7 +84,7 @@ export const newFileInTree = (app: App, notebookId: string, currentPath: string,
 
 export const newFileBySelect = (protyle: IProtyle, selectText: string, nodeElement: HTMLElement, pathDir: string, targetNotebookId: string) => {
     const newFileName = replaceFileName(selectText.trim() ? selectText.trim() : protyle.lute.BlockDOM2Content(nodeElement.outerHTML).replace(/\n/g, "").trim());
-    const hPath = pathPosix().join(pathDir, newFileName || window.siyuan.languages._kernel[16]);
+    const hPath = pathPosix().join(pathDir, newFileName || window.scribli.languages._kernel[16]);
     fetchPost("/api/filetree/getIDsByHPath", {
         path: hPath,
         notebook: targetNotebookId
@@ -175,14 +175,14 @@ function getNewFilePath(): Pick<NewDocRequest, "notebookId" | "currentPath" | "h
         }
     }
     /// #else
-    if (window.siyuan.mobile.editor && document.getElementById("empty").classList.contains("fn__none")) {
-        notebookId = window.siyuan.mobile.editor.protyle.notebookId;
-        currentPath = window.siyuan.mobile.editor.protyle.path;
+    if (window.scribli.mobile.editor && document.getElementById("empty").classList.contains("fn__none")) {
+        notebookId = window.scribli.mobile.editor.protyle.notebookId;
+        currentPath = window.scribli.mobile.editor.protyle.path;
         hasFocusTarget = true;
     }
     /// #endif
     if (!notebookId) {
-        const openNotebook = window.siyuan.notebooks.find(item => !item.closed);
+        const openNotebook = window.scribli.notebooks.find(item => !item.closed);
         if (openNotebook) {
             notebookId = openNotebook.id;
             currentPath = "/";

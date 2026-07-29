@@ -7,7 +7,7 @@ export const getPublishAccessOptionByLevel = (level: TPublishAccessLevel) => {
     if (level == "protected") {
         return {
             iconHTML: "🔒",
-            comment: window.siyuan.languages.publishAccessProtectedComment,
+            comment: window.scribli.languages.publishAccessProtectedComment,
             visible: true,
             hasPassword: true,
             disable: false,
@@ -15,7 +15,7 @@ export const getPublishAccessOptionByLevel = (level: TPublishAccessLevel) => {
     } else if (level == "hidden") {
         return {
             iconHTML: "👻",
-            comment: window.siyuan.languages.publishAccessHiddenComment,
+            comment: window.scribli.languages.publishAccessHiddenComment,
             visible: false,
             hasPassword: false,
             disable: false,
@@ -23,7 +23,7 @@ export const getPublishAccessOptionByLevel = (level: TPublishAccessLevel) => {
     } else if (level == "private") {
         return {
             iconHTML: "🤫",
-            comment: window.siyuan.languages.publishAccessPrivateComment,
+            comment: window.scribli.languages.publishAccessPrivateComment,
             visible: false,
             hasPassword: true,
             disable: false,
@@ -31,7 +31,7 @@ export const getPublishAccessOptionByLevel = (level: TPublishAccessLevel) => {
     } else if (level == "forbidden") {
         return {
             iconHTML: "🚫",
-            comment: window.siyuan.languages.publishAccessForbiddenComment,
+            comment: window.scribli.languages.publishAccessForbiddenComment,
             visible: false,
             hasPassword: false,
             disable: true,
@@ -39,7 +39,7 @@ export const getPublishAccessOptionByLevel = (level: TPublishAccessLevel) => {
     } else {
         return {
             iconHTML: "🌐",
-            comment: window.siyuan.languages.publishAccessPublicComment,
+            comment: window.scribli.languages.publishAccessPublicComment,
             visible: true,
             hasPassword: false,
             disable: false,
@@ -74,24 +74,24 @@ export const openPublishAccessDialog = (id: string, position: IPosition, callbac
         width: isMobile() ? "80vw" : "230px",
         height: "auto",
         content: `<div class="block__icons">
-    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="public" aria-label="${window.siyuan.languages.publishAccessPublic}">${getPublishAccessOptionByLevel("public").iconHTML}</button>
+    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="public" aria-label="${window.scribli.languages.publishAccessPublic}">${getPublishAccessOptionByLevel("public").iconHTML}</button>
     <span class="fn__space"></span>
-    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="protected" aria-label="${window.siyuan.languages.publishAccessProtected}">${getPublishAccessOptionByLevel("protected").iconHTML}</button>
+    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="protected" aria-label="${window.scribli.languages.publishAccessProtected}">${getPublishAccessOptionByLevel("protected").iconHTML}</button>
     <span class="fn__space"></span>
-    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="hidden" aria-label="${window.siyuan.languages.publishAccessHidden}">${getPublishAccessOptionByLevel("hidden").iconHTML}</button>
+    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="hidden" aria-label="${window.scribli.languages.publishAccessHidden}">${getPublishAccessOptionByLevel("hidden").iconHTML}</button>
     <span class="fn__space"></span>
-    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="private" aria-label="${window.siyuan.languages.publishAccessPrivate}">${getPublishAccessOptionByLevel("private").iconHTML}</button>
+    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="private" aria-label="${window.scribli.languages.publishAccessPrivate}">${getPublishAccessOptionByLevel("private").iconHTML}</button>
     <span class="fn__space"></span>
-    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="forbidden" aria-label="${window.siyuan.languages.publishAccessForbidden}">${getPublishAccessOptionByLevel("forbidden").iconHTML}</button>
+    <button class="block__icon block__icon--show ariaLabel" data-position="north" data-level="forbidden" aria-label="${window.scribli.languages.publishAccessForbidden}">${getPublishAccessOptionByLevel("forbidden").iconHTML}</button>
     <span class="fn__flex-1"></span>
-    <button class="b3-button b3-button--text ariaLabel" data-position="north" aria-label="${window.siyuan.languages.confirm}"><svg><use xlink:href="#iconSelect"></use></svg></button>
+    <button class="b3-button b3-button--text ariaLabel" data-position="north" aria-label="${window.scribli.languages.confirm}"><svg><use xlink:href="#iconSelect"></use></svg></button>
 </div>
 <div style="padding: 0 8px 8px 8px;text-align: center;">
-    <div class="publish-access-dialog__comment">${window.siyuan.languages.publishAccessPublicComment}</div>
+    <div class="publish-access-dialog__comment">${window.scribli.languages.publishAccessPublicComment}</div>
     <div class="fn__hr"></div>
     <div class="b3-form__icon fn__none">
         <svg class="b3-form__icon-icon"><use xlink:href="#iconKey"></use></svg>
-        <input class="b3-form__icon-input b3-text-field fn__block" placeholder="${window.siyuan.languages.password}">
+        <input class="b3-form__icon-input b3-text-field fn__block" placeholder="${window.scribli.languages.password}">
     </div>
 </div>`
     });

@@ -1,7 +1,7 @@
 const CONTAINER_BACKEND_SET = new Set(["docker", "ios", "android", "harmony"]);
 
 export const isKernelInContainer = (): boolean => {
-    return CONTAINER_BACKEND_SET.has(window.siyuan.config.system.container);
+    return CONTAINER_BACKEND_SET.has(window.scribli.config.system.container);
 };
 
 export const isMobile = () => {
@@ -11,9 +11,9 @@ export const isMobile = () => {
 // "windows" | "linux" | "darwin" | "docker" | "android" | "ios" | "harmony"
 export const getBackend = () => {
     if (isKernelInContainer()) {
-        return window.siyuan.config.system.container;
+        return window.scribli.config.system.container;
     } else {
-        return window.siyuan.config.system.os;
+        return window.scribli.config.system.os;
     }
 };
 
@@ -118,7 +118,7 @@ export const duplicateNameAddOne = (name: string) => {
 // 红绿灯为原生控件不随缩放变化，缩小时按 zoom 补偿 --b3-toolbar-left-mac 避免与工具栏内容重叠
 export const setToolbarLeftMac = (zoom: number) => {
     // 非桌面端、非 macOS 不补偿（让 body--win32 的 class 规则生效）
-    if (!window.siyuan.config || getBackend() !== "darwin") {
+    if (!window.scribli.config || getBackend() !== "darwin") {
         return;
     }
     // 全屏下红绿灯隐藏，清除内联补偿让 body--fullscreen 的 5px 生效

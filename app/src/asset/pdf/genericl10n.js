@@ -28,7 +28,7 @@ class GenericL10n extends L10n {
         this._setL10n({
             formatMessages: (msg) => {
                 return new Promise(resolve => {
-                    let lang = window.siyuan.languages[msg[0].id] ||msg[0].id
+                    let lang = window.scribli.languages[msg[0].id] ||msg[0].id
                     if (msg[0].args) {
                         Object.keys(msg[0].args).forEach(key => {
                             lang = lang.replace('${' + key + '}', msg[0].args[key]);

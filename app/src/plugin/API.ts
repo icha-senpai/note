@@ -17,7 +17,7 @@ import {Setting} from "./Setting";
 import {Menu} from "./Menu";
 import {Protyle} from "../protyle";
 import {openMobileFileById} from "../mobile/editor";
-import {exitSiYuan, lockScreen} from "../dialog/processSystem";
+import {exitScribli, lockScreen} from "../dialog/processSystem";
 import {Model} from "../layout/Model";
 /// #if !MOBILE
 import {getActiveTab, getDockByType} from "../layout/tabUtil";
@@ -178,13 +178,13 @@ openTab = (options: {
             afterOpen: options.afterOpen,
             custom: {
                 icon: "iconRiffCard",
-                title: window.siyuan.languages.spaceRepetition,
+                title: window.scribli.languages.spaceRepetition,
                 data: {
                     cardType: options.card.type,
                     id: options.card.id || "",
                     title: options.card.title,
                 },
-                id: "siyuan-card"
+                id: "scribli-card"
             },
         });
     }
@@ -197,7 +197,7 @@ openTab = (options: {
 
 const getModelByDockType = (type: TDock | string) => {
     /// #if MOBILE
-    return window.siyuan.mobile.docks[type];
+    return window.scribli.mobile.docks[type];
     /// #else
     return getDockByType(type).data[type];
     /// #endif
@@ -218,8 +218,8 @@ const openAttributePanel = (options: {
 
 const saveLayout = (cb: () => void) => {
     /// #if MOBILE
-    if (window.siyuan.mobile.editor) {
-        const result = saveScroll(window.siyuan.mobile.editor.protyle);
+    if (window.scribli.mobile.editor) {
+        const result = saveScroll(window.scribli.mobile.editor.protyle);
         if (cb && result instanceof Promise) {
             result.then(() => {
                 cb();
@@ -272,7 +272,7 @@ const getActiveEditor = (wndActive = true) => {
         });
     }
     /// #else
-    editor = window.siyuan.mobile.popEditor || window.siyuan.mobile.editor;
+    editor = window.scribli.mobile.popEditor || window.scribli.mobile.editor;
     if (editor?.protyle.element.classList.contains("fn__none")) {
         return undefined;
     }
@@ -285,7 +285,7 @@ export const expandDocTree = async (options: {
     isSetCurrent?: boolean
 }) => {
     let isNotebook = false;
-    window.siyuan.notebooks.find(item => {
+    window.scribli.notebooks.find(item => {
         if (options.id === item.id) {
             isNotebook = true;
             return true;
@@ -354,7 +354,7 @@ export const API = {
     openWindow,
     openMobileFileById,
     lockScreen,
-    exitSiYuan,
+    exitScribli,
     Protyle,
     ProtyleMethod,
     Plugin,

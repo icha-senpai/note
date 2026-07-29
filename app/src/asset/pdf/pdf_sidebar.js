@@ -297,7 +297,7 @@ class PDFSidebar {
 
   #showUINotification() {
     // NOTE
-    this.toggleButton.title = window.siyuan.languages.toggleSidebarNotification2Title
+    this.toggleButton.title = window.scribli.languages.toggleSidebarNotification2Title
     // this.toggleButton.setAttribute(
     //   "data-l10n-id",
     //   "pdfjs-toggle-sidebar-notification-button"
@@ -319,7 +319,7 @@ class PDFSidebar {
 
     if (reset) {
       // NOTE
-      this.toggleButton.title = window.siyuan.languages.toggleSidebarTitle
+      this.toggleButton.title = window.scribli.languages.toggleSidebarTitle
       // this.toggleButton.setAttribute(
       //   "data-l10n-id",
       //   "pdfjs-toggle-sidebar-button"

@@ -10,7 +10,7 @@ export const closePanel = () => {
         maskElement.classList.add("fn__none");
     }, Constants.TIMEOUT_TRANSITION);
     maskElement.style.opacity = "";
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
 };
 
 export const closeModel = () => {

@@ -1,5 +1,5 @@
 import {escapeHtml} from "../../../util/escape";
-import {processSiYuanUri} from "../../../util/uri";
+import {processScribliUri} from "../../../util/uri";
 import {highlightRender} from "../../../protyle/render/highlightRender";
 import {mathRender} from "../../../protyle/render/mathRender";
 import {mermaidRender} from "../../../protyle/render/mermaidRender";
@@ -24,7 +24,7 @@ import {popSearch} from "../../../mobile/menu/search";
 import type {App} from "../../../index";
 
 export const renderTodoList = (result: string): string => {
-    const L = window.siyuan.languages;
+    const L = window.scribli.languages;
     const lines = result.split("\n");
     let html = '<div class="agent-chat__tool-card agent-chat__tool-card--todo">' +
     '<div class="agent-chat__todo-header">' +
@@ -50,7 +50,7 @@ export const renderTodoList = (result: string): string => {
 
 // hasModel=false 时渲染"未配置模型"提示块替代示例，避免用户点击示例后卡死。
 export const renderWelcomeHTML = (hasModel = true): string => {
-    const L = window.siyuan.languages;
+    const L = window.scribli.languages;
     if (!hasModel) {
         return '<div class="agent-welcome">' +
             '<div class="agent-welcome__greeting">' + (L.agentWelcomeGreeting || "Hello, I am Scribli Agent") + "</div>" +
@@ -72,7 +72,7 @@ export const renderWelcomeHTML = (hasModel = true): string => {
 };
 
 export const renderQuestionCardHTML = (rawQuestions: Array<Record<string, unknown>>, questionID: string): string => {
-    const L = window.siyuan.languages;
+    const L = window.scribli.languages;
     let html = '<div class="agent-chat__question-card">';
     if (!rawQuestions || !rawQuestions.length) {
         return html + "</div>";
@@ -120,7 +120,7 @@ export const renderQuestionCardHTML = (rawQuestions: Array<Record<string, unknow
 };
 
 export const renderRetryCardHTML = (attempt: number, maxRetries: number): string => {
-    const text = (window.siyuan.languages.agentRetrying || "Retrying (${attempt}/${maxRetries})...")
+    const text = (window.scribli.languages.agentRetrying || "Retrying (${attempt}/${maxRetries})...")
         .replace("${attempt}", attempt.toString())
         .replace("${maxRetries}", maxRetries.toString());
     return '<div class="agent-chat__thinking-card">' +
@@ -239,15 +239,15 @@ const createCopyButton = (getText: () => string): HTMLElement => {
     const btn = document.createElement("span");
     btn.className = "protyle-icon protyle-icon--only ariaLabel";
     btn.innerHTML = '<svg><use xlink:href="#iconCopy"></use></svg>';
-    btn.setAttribute("aria-label", window.siyuan.languages.copy);
+    btn.setAttribute("aria-label", window.scribli.languages.copy);
     btn.setAttribute("data-position", "4north");
     btn.addEventListener("click", (e) => {
         e.stopPropagation();
         const text = getText();
         navigator.clipboard.writeText(text).then(() => {
-            showMessage(window.siyuan.languages.copied, 2000);
+            showMessage(window.scribli.languages.copied, 2000);
         }).catch(() => {
-            showMessage(window.siyuan.languages.copied, 2000);
+            showMessage(window.scribli.languages.copied, 2000);
         });
     });
     return btn;
@@ -342,7 +342,7 @@ export const postRender = (container: HTMLElement, app?: App): void => {
         if (refID && container.contains(ref)) {
             event.preventDefault();
             event.stopPropagation();
-            void processSiYuanUri(app, "scribli://blocks/" + refID);
+            void processScribliUri(app, "scribli://blocks/" + refID);
             return;
         }
         const fileRef = target.closest('[data-type~="file-annotation-ref"][data-id]') as HTMLElement;
@@ -380,7 +380,7 @@ export const postRender = (container: HTMLElement, app?: App): void => {
         if (href) {
             event.preventDefault();
             event.stopPropagation();
-            if (!processSiYuanUri(app, href)) {
+            if (!processScribliUri(app, href)) {
                 openLink(app, href, event, event.ctrlKey || event.metaKey);
             }
         }

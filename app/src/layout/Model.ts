@@ -36,7 +36,7 @@ export class Model {
 
     public connect(options: IConnectOptions) {
         const websocketURL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ws`;
-        const ws = new WebSocket(`${websocketURL}?app=${Constants.SIYUAN_APPID}&id=${options.id}${options.type ? "&type=" + options.type : ""}`);
+        const ws = new WebSocket(`${websocketURL}?app=${Constants.SCRIBLI_APPID}&id=${options.id}${options.type ? "&type=" + options.type : ""}`);
         ws.onopen = () => {
             if (options.callback) {
                 options.callback.call(this);
@@ -45,7 +45,7 @@ export class Model {
             if (logElement) {
                 // 内核中断后无法 catch fetch 请求错误，重连会导致无法执行 transactionsTimeout
                 reloadSync(this.app, {upsertRootIDs: [], removeRootIDs: []});
-                window.siyuan.dialogs.find(item => {
+                window.scribli.dialogs.find(item => {
                     if (item.element.id === "errorLog") {
                         item.destroy();
                         return true;
@@ -56,7 +56,7 @@ export class Model {
         ws.onmessage = (event) => {
             if (options.msgCallback &&
                 // 等待 config 加载完成才接受推送 https://github.com/siyuan-note/siyuan/issues/17508
-                window.siyuan.config) {
+                window.scribli.config) {
                 const data = processMessage(JSON.parse(event.data));
                 options.msgCallback.call(this, data);
             }

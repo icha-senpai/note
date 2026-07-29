@@ -12,15 +12,15 @@ import {getSyncProviderConfigKeywords} from "./syncUi";
 import {patchSyncConfig} from "./syncRuntime";
 
 const registerSyncGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("sync", window.siyuan.languages.configGroupSync);
+    const group = tab.group("sync", window.scribli.languages.configGroupSync);
 
     group.select("sync.provider", {
-        title: window.siyuan.languages.syncProvider,
-        desc: window.siyuan.languages.syncProviderTip,
+        title: window.scribli.languages.syncProvider,
+        desc: window.scribli.languages.syncProviderTip,
         options: [
             {value: 2, label: "S3"},
             {value: 3, label: "WebDAV"},
-            ...(["std", "docker"].includes(window.siyuan.config.system.container) ? [{value: 4, label: window.siyuan.languages.localFileSystem}] : []),
+            ...(["std", "docker"].includes(window.scribli.config.system.container) ? [{value: 4, label: window.scribli.languages.localFileSystem}] : []),
         ],
         save: (value) => patchSyncConfig("sync.provider", value),
     });
@@ -30,47 +30,47 @@ const registerSyncGroup = (tab: SettingTabBuilder) => {
         html: () => '<div id="syncProviderConfig" class="b3-label config-item"></div>',
     });
     group.switch("sync.enabled", {
-        title: window.siyuan.languages.openSyncTip1,
-        desc: window.siyuan.languages.openSyncTip2,
+        title: window.scribli.languages.openSyncTip1,
+        desc: window.scribli.languages.openSyncTip2,
         save: (value) => patchSyncConfig("sync.enabled", value),
     });
     group.switch("sync.generateConflictDoc", {
-        title: window.siyuan.languages.generateConflictDoc,
-        desc: window.siyuan.languages.generateConflictDocTip,
+        title: window.scribli.languages.generateConflictDoc,
+        desc: window.scribli.languages.generateConflictDocTip,
         save: (value) => patchSyncConfig("sync.generateConflictDoc", value),
     });
     group.select("sync.mode", {
-        title: window.siyuan.languages.syncMode,
-        desc: window.siyuan.languages.syncModeTip,
+        title: window.scribli.languages.syncMode,
+        desc: window.scribli.languages.syncModeTip,
         options: [
-            {value: 1, label: window.siyuan.languages.syncMode1},
-            {value: 2, label: window.siyuan.languages.syncMode2},
-            {value: 3, label: window.siyuan.languages.syncMode3},
+            {value: 1, label: window.scribli.languages.syncMode1},
+            {value: 2, label: window.scribli.languages.syncMode2},
+            {value: 3, label: window.scribli.languages.syncMode3},
         ],
         save: (value) => patchSyncConfig("sync.mode", value),
     });
     group.number("sync.interval", {
-        title: window.siyuan.languages.syncInterval,
-        desc: window.siyuan.languages.syncIntervalTip,
+        title: window.scribli.languages.syncInterval,
+        desc: window.scribli.languages.syncIntervalTip,
         min: 30,
         max: 43200,
-        unit: window.siyuan.languages.second,
+        unit: window.scribli.languages.second,
         save: (value) => patchSyncConfig("sync.interval", value),
     });
     group.switch("sync.perception", {
-        title: window.siyuan.languages.syncPerception,
-        desc: window.siyuan.languages.syncPerceptionTip,
+        title: window.scribli.languages.syncPerception,
+        desc: window.scribli.languages.syncPerceptionTip,
         save: (value) => patchSyncConfig("sync.perception", value),
     });
     group.slot({
         key: "syncCloudDir",
-        keywords: [window.siyuan.languages.cloudSyncDir, window.siyuan.languages.cloudSyncDirTip, window.siyuan.languages.config],
+        keywords: [window.scribli.languages.cloudSyncDir, window.scribli.languages.cloudSyncDirTip, window.scribli.languages.config],
         html: () => `<div class="b3-label config-item" id="syncCloudDirBlock">
     <div class="fn__flex config-wrap">
-        ${genConfigItemMainHtml(window.siyuan.languages.cloudSyncDir, window.siyuan.languages.cloudSyncDirTip)}
+        ${genConfigItemMainHtml(window.scribli.languages.cloudSyncDir, window.scribli.languages.cloudSyncDirTip)}
         <div class="fn__space"></div>
         <button class="b3-button b3-button--outline fn__flex-center fn__size200" data-action="config">
-            <svg><use xlink:href="#iconSettings"></use></svg>${window.siyuan.languages.config}
+            <svg><use xlink:href="#iconSettings"></use></svg>${window.scribli.languages.config}
         </button>
     </div>
     <div id="syncCloudList" class="fn__none"></div>
@@ -93,42 +93,42 @@ const mountSyncCloudDir = (root: HTMLElement) => {
 };
 
 const registerRepoGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("repo", window.siyuan.languages.configGroupLocalDataRepo);
+    const group = tab.group("repo", window.scribli.languages.configGroupLocalDataRepo);
 
     group.slot({
         key: "repoKey",
         keywords: [
-            window.siyuan.languages.dataRepoKey,
-            window.siyuan.languages.dataRepoKeyTip1,
-            window.siyuan.languages.dataRepoKeyTip2,
-            window.siyuan.languages.importKey,
-            window.siyuan.languages.genKey,
-            window.siyuan.languages.genKeyByPW,
-            window.siyuan.languages.copyKey,
-            window.siyuan.languages.resetRepo,
+            window.scribli.languages.dataRepoKey,
+            window.scribli.languages.dataRepoKeyTip1,
+            window.scribli.languages.dataRepoKeyTip2,
+            window.scribli.languages.importKey,
+            window.scribli.languages.genKey,
+            window.scribli.languages.genKeyByPW,
+            window.scribli.languages.copyKey,
+            window.scribli.languages.resetRepo,
         ],
         html: () => `<div class="fn__flex b3-label config-item config-wrap">
     <div class="fn__flex-1 fn__flex-center">
-        ${genConfigItemName(window.siyuan.languages.dataRepoKey)}
+        ${genConfigItemName(window.scribli.languages.dataRepoKey)}
         <div class="fn__hr--small"></div>
         <div class="b3-label__text">
-            ${window.siyuan.languages.dataRepoKeyTip1}
+            ${window.scribli.languages.dataRepoKeyTip1}
             <div class="fn__hr--small"></div>
-            <span class="ft__error">${window.siyuan.languages.dataRepoKeyTip2}</span>
+            <span class="ft__error">${window.scribli.languages.dataRepoKeyTip2}</span>
         </div>
     </div>
     <div class="fn__space"></div>
     <div class="fn__size200 fn__flex-center fn__none" id="repoKeyActionsEmpty">
-        <button class="b3-button b3-button--outline fn__block" id="importKey"><svg><use xlink:href="#iconDownload"></use></svg>${window.siyuan.languages.importKey}</button>
+        <button class="b3-button b3-button--outline fn__block" id="importKey"><svg><use xlink:href="#iconDownload"></use></svg>${window.scribli.languages.importKey}</button>
         <div class="fn__hr"></div>
-        <button class="b3-button b3-button--outline fn__block" id="initKey"><svg><use xlink:href="#iconLock"></use></svg>${window.siyuan.languages.genKey}</button>
+        <button class="b3-button b3-button--outline fn__block" id="initKey"><svg><use xlink:href="#iconLock"></use></svg>${window.scribli.languages.genKey}</button>
         <div class="fn__hr"></div>
-        <button class="b3-button b3-button--outline fn__block" id="initKeyByPW"><svg><use xlink:href="#iconHand"></use></svg>${window.siyuan.languages.genKeyByPW}</button>
+        <button class="b3-button b3-button--outline fn__block" id="initKeyByPW"><svg><use xlink:href="#iconHand"></use></svg>${window.scribli.languages.genKeyByPW}</button>
     </div>
     <div class="fn__size200 fn__flex-center fn__none" id="repoKeyActionsSet">
-        <button class="b3-button b3-button--outline fn__block" id="copyKey"><svg><use xlink:href="#iconCopy"></use></svg>${window.siyuan.languages.copyKey}</button>
+        <button class="b3-button b3-button--outline fn__block" id="copyKey"><svg><use xlink:href="#iconCopy"></use></svg>${window.scribli.languages.copyKey}</button>
         <div class="fn__hr"></div>
-        <button class="b3-button b3-button--outline fn__block" id="resetRepo"><svg><use xlink:href="#iconUndo"></use></svg>${window.siyuan.languages.resetRepo}</button>
+        <button class="b3-button b3-button--outline fn__block" id="resetRepo"><svg><use xlink:href="#iconUndo"></use></svg>${window.scribli.languages.resetRepo}</button>
     </div>
 </div>`,
         afterMount: mountRepoKey,
@@ -136,32 +136,32 @@ const registerRepoGroup = (tab: SettingTabBuilder) => {
     group.stack({
         key: "repoPurge",
         keywords: [
-            window.siyuan.languages.dataRepoPurge,
-            window.siyuan.languages.dataRepoPurgeTip,
-            window.siyuan.languages.dataRepoAutoPurgeIndexRetentionDays,
-            window.siyuan.languages.dataRepoAutoPurgeRetentionIndexesDaily,
+            window.scribli.languages.dataRepoPurge,
+            window.scribli.languages.dataRepoPurgeTip,
+            window.scribli.languages.dataRepoAutoPurgeIndexRetentionDays,
+            window.scribli.languages.dataRepoAutoPurgeRetentionIndexesDaily,
         ],
         afterMount: (root) => {
             root.querySelector("#purgeRepo")?.addEventListener("click", () => {
-                confirmDialog("♻️ " + window.siyuan.languages.dataRepoPurge, window.siyuan.languages.dataRepoPurgeConfirm, () => {
+                confirmDialog("♻️ " + window.scribli.languages.dataRepoPurge, window.scribli.languages.dataRepoPurgeConfirm, () => {
                     fetchPost("/api/repo/purgeRepo");
                 });
             });
         },
     }, (stack) => {
-        stack.title(window.siyuan.languages.dataRepoPurge);
-        stack.desc(window.siyuan.languages.dataRepoPurgeTip);
+        stack.title(window.scribli.languages.dataRepoPurge);
+        stack.desc(window.scribli.languages.dataRepoPurgeTip);
         stack.button({
             id: "purgeRepo",
-            label: window.siyuan.languages.purge,
+            label: window.scribli.languages.purge,
             icon: "iconTrashcan",
         });
         stack.number("repo.indexRetentionDays", {
-            desc: window.siyuan.languages.dataRepoAutoPurgeIndexRetentionDays,
+            desc: window.scribli.languages.dataRepoAutoPurgeIndexRetentionDays,
             min: 1,
         });
         stack.number("repo.retentionIndexesDaily", {
-            desc: window.siyuan.languages.dataRepoAutoPurgeRetentionIndexesDaily,
+            desc: window.scribli.languages.dataRepoAutoPurgeRetentionIndexesDaily,
             min: 1,
         });
     });
@@ -171,20 +171,20 @@ const mountRepoKey = (root: HTMLElement) => {
     const emptyElement = root.querySelector("#repoKeyActionsEmpty");
     const setElement = root.querySelector("#repoKeyActionsSet");
     const toggleRepoKeyActions = () => {
-        const hasKey = Boolean(window.siyuan.config.repo.key);
+        const hasKey = Boolean(window.scribli.config.repo.key);
         emptyElement?.classList.toggle("fn__none", hasKey);
         setElement?.classList.toggle("fn__none", !hasKey);
     };
     toggleRepoKeyActions();
     root.querySelector("#importKey")?.addEventListener("click", () => {
         const passwordDialog = new Dialog({
-            title: "🔑 " + window.siyuan.languages.key,
+            title: "🔑 " + window.scribli.languages.key,
             content: `<div class="b3-dialog__content" style="display:flex">
-    <textarea spellcheck="false" style="resize: none;flex:1" class="b3-text-field fn__block" placeholder="${window.siyuan.languages.keyPlaceholder}"></textarea>
+    <textarea spellcheck="false" style="resize: none;flex:1" class="b3-text-field fn__block" placeholder="${window.scribli.languages.keyPlaceholder}"></textarea>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
             width: "520px",
             height: "260px",
@@ -198,16 +198,16 @@ const mountRepoKey = (root: HTMLElement) => {
         });
         btnsElement[1].addEventListener("click", () => {
             fetchPost("/api/repo/importRepoKey", {key: textAreaElement.value}, (response) => {
-                window.siyuan.config.repo.key = response.data.key;
+                window.scribli.config.repo.key = response.data.key;
                 toggleRepoKeyActions();
                 passwordDialog.destroy();
             });
         });
     });
     root.querySelector("#initKey")?.addEventListener("click", () => {
-        confirmDialog("🔑 " + window.siyuan.languages.genKey, window.siyuan.languages.initRepoKeyTip, () => {
+        confirmDialog("🔑 " + window.scribli.languages.genKey, window.scribli.languages.initRepoKeyTip, () => {
             fetchPost("/api/repo/initRepoKey", {}, (response) => {
-                window.siyuan.config.repo.key = response.data.key;
+                window.scribli.config.repo.key = response.data.key;
                 toggleRepoKeyActions();
             });
         });
@@ -218,14 +218,14 @@ const mountRepoKey = (root: HTMLElement) => {
         });
     });
     root.querySelector("#copyKey")?.addEventListener("click", () => {
-        writeText(window.siyuan.config.repo.key);
-        showMessage(window.siyuan.languages.copied);
+        writeText(window.scribli.config.repo.key);
+        showMessage(window.scribli.languages.copied);
     });
     root.querySelector("#resetRepo")?.addEventListener("click", () => {
-        confirmDialog("⚠️ " + window.siyuan.languages.resetRepo, window.siyuan.languages.resetRepoTip, () => {
+        confirmDialog("⚠️ " + window.scribli.languages.resetRepo, window.scribli.languages.resetRepoTip, () => {
             fetchPost("/api/repo/resetRepo", {}, () => {
-                window.siyuan.config.repo.key = "";
-                window.siyuan.config.sync.enabled = false;
+                window.scribli.config.repo.key = "";
+                window.scribli.config.sync.enabled = false;
                 processSync();
                 toggleRepoKeyActions();
             });

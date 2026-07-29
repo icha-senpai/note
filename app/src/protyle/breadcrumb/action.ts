@@ -39,9 +39,9 @@ export const fullscreen = (element: Element, btnElement?: Element) => {
     const isWindowMode = isWindow();
     const wndsTemp: Wnd[] = [];
     if (isWindowMode) {
-        getAllWnds(window.siyuan.layout.layout, wndsTemp);
-    } else if (window.siyuan.config.appearance.hideToolbar) {
-        getAllWnds(window.siyuan.layout.centerLayout, wndsTemp);
+        getAllWnds(window.scribli.layout.layout, wndsTemp);
+    } else if (window.scribli.config.appearance.hideToolbar) {
+        getAllWnds(window.scribli.layout.centerLayout, wndsTemp);
     }
     wndsTemp.find(item => {
         const headerElement = item.headersElement.parentElement;
@@ -54,13 +54,13 @@ export const fullscreen = (element: Element, btnElement?: Element) => {
     /// #endif
 
     /// #if !MOBILE
-    if ("darwin" !== window.siyuan.config.system.os && !isWindow()) {
+    if ("darwin" !== window.scribli.config.system.os && !isWindow()) {
         const windowControlsElement = document.getElementById("windowControls");
         if (isFullscreen) {
             windowControlsElement.style.zIndex = "";
         } else {
-            window.siyuan.zIndex++;
-            windowControlsElement.style.zIndex = window.siyuan.zIndex.toString();
+            window.scribli.zIndex++;
+            windowControlsElement.style.zIndex = window.scribli.zIndex.toString();
         }
     }
     /// #endif
@@ -84,11 +84,11 @@ export const fullscreen = (element: Element, btnElement?: Element) => {
     }
     /// #if !MOBILE
     if (element.classList.contains("protyle")) {
-        window.siyuan.editorIsFullscreen = !isFullscreen;
+        window.scribli.editorIsFullscreen = !isFullscreen;
     }
     getAllModels().editor.forEach(item => {
         if (element !== item.element) {
-            if (window.siyuan.editorIsFullscreen) {
+            if (window.scribli.editorIsFullscreen) {
                 if (item.element.classList.contains("fullscreen")) {
                     item.element.classList.remove("fullscreen");
                     resize(item.editor.protyle);
@@ -103,9 +103,9 @@ export const fullscreen = (element: Element, btnElement?: Element) => {
 };
 
 export const updateReadonly = (target: Element, protyle: IProtyle) => {
-    if (!window.siyuan.config.readonly && protyle.element.getAttribute("disabled-forever") !== "true") {
+    if (!window.scribli.config.readonly && protyle.element.getAttribute("disabled-forever") !== "true") {
         const isReadonly = target.querySelector("use").getAttribute("xlink:href") !== "#iconUnlock";
-        if (window.siyuan.config.editor.readOnly) {
+        if (window.scribli.config.editor.readOnly) {
             if (isReadonly) {
                 enableProtyle(protyle);
             } else {

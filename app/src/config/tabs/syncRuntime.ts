@@ -35,7 +35,7 @@ export const patchSyncConfig = (controlId: string, value: unknown) => {
         case "sync.provider": {
             const provider = value as Config.ISync["provider"];
             fetchPost("/api/sync/setSyncProvider", {provider}, () => {
-                window.siyuan.config.sync.provider = provider;
+                window.scribli.config.sync.provider = provider;
                 if (syncTabElement) {
                     refreshSyncCloudSpaceGroup(syncTabElement);
                 }
@@ -45,7 +45,7 @@ export const patchSyncConfig = (controlId: string, value: unknown) => {
         case "sync.enabled": {
             const enabled = Boolean(value) as Config.ISync["enabled"];
             fetchPost("/api/sync/setSyncEnable", {enabled}, () => {
-                window.siyuan.config.sync.enabled = enabled;
+                window.scribli.config.sync.enabled = enabled;
                 processSync();
             });
             break;
@@ -53,14 +53,14 @@ export const patchSyncConfig = (controlId: string, value: unknown) => {
         case "sync.generateConflictDoc": {
             const generateConflictDoc = Boolean(value) as Config.ISync["generateConflictDoc"];
             fetchPost("/api/sync/setSyncGenerateConflictDoc", {enabled: generateConflictDoc}, () => {
-                window.siyuan.config.sync.generateConflictDoc = generateConflictDoc;
+                window.scribli.config.sync.generateConflictDoc = generateConflictDoc;
             });
             break;
         }
         case "sync.mode": {
             const mode = value as Config.ISync["mode"];
             fetchPost("/api/sync/setSyncMode", {mode}, () => {
-                window.siyuan.config.sync.mode = mode;
+                window.scribli.config.sync.mode = mode;
                 if (syncTabElement) {
                     refreshSyncModeRelatedItems(syncTabElement);
                 }
@@ -70,7 +70,7 @@ export const patchSyncConfig = (controlId: string, value: unknown) => {
         case "sync.interval": {
             const interval = value as Config.ISync["interval"];
             fetchPost("/api/sync/setSyncInterval", {interval}, () => {
-                window.siyuan.config.sync.interval = interval;
+                window.scribli.config.sync.interval = interval;
                 processSync();
             });
             break;
@@ -78,7 +78,7 @@ export const patchSyncConfig = (controlId: string, value: unknown) => {
         case "sync.perception": {
             const perception = Boolean(value) as Config.ISync["perception"];
             fetchPost("/api/sync/setSyncPerception", {enabled: perception}, () => {
-                window.siyuan.config.sync.perception = perception;
+                window.scribli.config.sync.perception = perception;
                 processSync();
             });
             break;
@@ -87,14 +87,14 @@ export const patchSyncConfig = (controlId: string, value: unknown) => {
         case "repo.indexRetentionDays": {
             const indexRetentionDays = value as Config.IRepo["indexRetentionDays"];
             fetchPost("/api/repo/setRepoIndexRetentionDays", {days: indexRetentionDays}, () => {
-                window.siyuan.config.repo.indexRetentionDays = indexRetentionDays;
+                window.scribli.config.repo.indexRetentionDays = indexRetentionDays;
             });
             break;
         }
         case "repo.retentionIndexesDaily": {
             const retentionIndexesDaily = value as Config.IRepo["retentionIndexesDaily"];
             fetchPost("/api/repo/setRetentionIndexesDaily", {indexes: retentionIndexesDaily}, () => {
-                window.siyuan.config.repo.retentionIndexesDaily = retentionIndexesDaily;
+                window.scribli.config.repo.retentionIndexesDaily = retentionIndexesDaily;
             });
             break;
         }

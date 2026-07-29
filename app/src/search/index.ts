@@ -15,7 +15,7 @@ export class Search extends Model {
         super({
             app: options.app,
         });
-        if (window.siyuan.config.fileTree.openFilesUseCurrentTab) {
+        if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
             options.tab.headElement?.classList.add("item--unupdate");
         }
         this.element = options.tab.panelElement as HTMLElement;

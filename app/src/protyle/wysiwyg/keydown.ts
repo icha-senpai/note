@@ -198,13 +198,13 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             protyle.wysiwyg.preventKeyup = true;
         }
 
-        if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
+        if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
             (["←", "↑", "→", "↓"].includes(Constants.KEYCODELIST[event.keyCode]) || Constants.KEYCODELIST[event.keyCode] === "↩") &&
             !event.altKey && !event.shiftKey && isNotCtrl(event)) {
             event.preventDefault();
             return;
         } else if (event.key !== "Escape") {
-            window.siyuan.menus.menu.remove();
+            window.scribli.menus.menu.remove();
         }
 
         if (!["Alt", "Meta", "Shift", "Control", "CapsLock", "Escape"].includes(event.key) && protyle.options.render.breadcrumb) {
@@ -314,7 +314,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
         }
 
         const nodeType = nodeElement.getAttribute("data-type");
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.collapse.custom, event) && !event.repeat) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.collapse.custom, event) && !event.repeat) {
             getFoldBlock(protyle, nodeElement, (elements) => {
                 setFold(protyle, elements[0]);
             });
@@ -323,7 +323,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return false;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.expand.custom, event) && !event.repeat) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.expand.custom, event) && !event.repeat) {
             getFoldBlock(protyle, nodeElement, (elements) => {
                 setFold(protyle, elements[0], true);
             });
@@ -332,7 +332,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.foldRecursive.custom, event) && !event.repeat) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.foldRecursive.custom, event) && !event.repeat) {
             getFoldBlock(protyle, nodeElement, (elements) => {
                 foldBlocksRecursively(protyle, elements);
             });
@@ -341,7 +341,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.expandUp.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.expandUp.custom, event)) {
             upSelect({
                 protyle, event, nodeElement, editorElement, range,
                 cb(selectElements) {
@@ -366,7 +366,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.expandDown.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.expandDown.custom, event)) {
             downSelect({
                 protyle, event, nodeElement, editorElement, range,
                 cb(selectElements) {
@@ -476,7 +476,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.general.enter.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.general.enter.custom, event)) {
             onlyProtyleCommand({
                 protyle,
                 command: "enter",
@@ -487,7 +487,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.general.enterBack.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.general.enterBack.custom, event)) {
             onlyProtyleCommand({
                 protyle,
                 command: "enterBack",
@@ -615,7 +615,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                 protyle.gutter.renderMultipleMenu(protyle, selectElements);
             }
             const rect = nodeElement.getBoundingClientRect();
-            window.siyuan.menus.menu.popup({x: rect.left, y: rect.top, isLeft: true});
+            window.scribli.menus.menu.popup({x: rect.left, y: rect.top, isLeft: true});
             return;
         }
 
@@ -1138,14 +1138,14 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return true;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.undo.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.undo.custom, event)) {
             protyle.undo.undo(protyle);
             event.preventDefault();
             event.stopPropagation();
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.redo.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.redo.custom, event)) {
             protyle.undo.redo(protyle);
             event.preventDefault();
             event.stopPropagation();
@@ -1158,7 +1158,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
         }
         /// #endif
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.copyText.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.copyText.custom, event)) {
             // 用于标识复制文本 *
             if (selectText !== "") {
                 // 和复制块引用保持一致 https://github.com/siyuan-note/siyuan/issues/9093
@@ -1179,7 +1179,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.attr.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.attr.custom, event)) {
             const topElement = getTopAloneElement(nodeElement);
             if (selectText === "") {
                 const selectElements = protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select");
@@ -1207,7 +1207,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.rename.custom, event) && !protyle.disabled) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.rename.custom, event) && !protyle.disabled) {
             if (selectText === "") {
                 const docInfoParam: IObject = {
                     id: protyle.block.rootID
@@ -1237,8 +1237,8 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        const isNewNameFile = matchHotKey(window.siyuan.config.keymap.editor.general.newNameFile.custom, event);
-        if (isNewNameFile || matchHotKey(window.siyuan.config.keymap.editor.general.newNameSettingFile.custom, event)) {
+        const isNewNameFile = matchHotKey(window.scribli.config.keymap.editor.general.newNameFile.custom, event);
+        if (isNewNameFile || matchHotKey(window.scribli.config.keymap.editor.general.newNameSettingFile.custom, event)) {
             if (!selectText.trim() && (nodeElement.querySelector("tr") || nodeElement.querySelector("span"))) {
                 // 没选中时，都是纯文本就创建子文档 https://ld246.com/article/1663073488381/comment/1664804353295#comments
             } else {
@@ -1268,13 +1268,13 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.newContentFile.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.newContentFile.custom, event)) {
             newFileContentBySelect(protyle);
             event.preventDefault();
             event.stopPropagation();
             return;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.alignLeft.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.alignLeft.custom, event)) {
             const imgSelectElements = nodeElement.querySelectorAll(".img--select");
             if (imgSelectElements.length > 0) {
                 alignImgLeft(protyle, nodeElement, Array.from(imgSelectElements), nodeElement.getAttribute("data-node-id"), nodeElement.outerHTML);
@@ -1295,7 +1295,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.preventDefault();
             return;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.alignCenter.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.alignCenter.custom, event)) {
             const imgSelectElements = nodeElement.querySelectorAll(".img--select");
             if (imgSelectElements.length > 0) {
                 alignImgCenter(protyle, nodeElement, Array.from(imgSelectElements), nodeElement.getAttribute("data-node-id"), nodeElement.outerHTML);
@@ -1316,7 +1316,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.preventDefault();
             return;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.alignRight.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.alignRight.custom, event)) {
             let selectElements: HTMLElement[] = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select"));
             if (selectElements.length === 0) {
                 selectElements = [nodeElement];
@@ -1332,7 +1332,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.preventDefault();
             return;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.rtl.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.rtl.custom, event)) {
             let selectElements: HTMLElement[] = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select"));
             if (selectElements.length === 0) {
                 selectElements = [nodeElement];
@@ -1344,7 +1344,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.preventDefault();
             return;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.ltr.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.ltr.custom, event)) {
             let selectElements: HTMLElement[] = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select"));
             if (selectElements.length === 0) {
                 selectElements = [nodeElement];
@@ -1372,9 +1372,9 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                     !protyle.toolbar.subElement.classList.contains("fn__none")) {
                     hideElements(["toolbar", "hint", "util"], protyle);
                     protyle.hint.enableExtend = false;
-                } else if (!window.siyuan.menus.menu.element.classList.contains("fn__none")) {
+                } else if (!window.scribli.menus.menu.element.classList.contains("fn__none")) {
                     // 防止 ESC 时选中当前块
-                    window.siyuan.menus.menu.remove(true);
+                    window.scribli.menus.menu.remove(true);
                 } else if (nodeElement.classList.contains("protyle-wysiwyg--select")) {
                     hideElements(["select"], protyle);
                     countBlockWord([], protyle.block.rootID);
@@ -1391,7 +1391,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
         }
 
         // h1 - h6 hotkey
-        if (matchHotKey(window.siyuan.config.keymap.editor.heading.paragraph.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.heading.paragraph.custom, event)) {
             const selectsElement = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select"));
             if (selectsElement.length === 0) {
                 selectsElement.push(nodeElement);
@@ -1437,7 +1437,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.heading.heading1.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.heading.heading1.custom, event)) {
             turnsIntoTransaction({
                 protyle,
                 nodeElement,
@@ -1448,7 +1448,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.heading.heading2.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.heading.heading2.custom, event)) {
             turnsIntoTransaction({
                 protyle,
                 nodeElement,
@@ -1459,7 +1459,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.heading.heading3.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.heading.heading3.custom, event)) {
             turnsIntoTransaction({
                 protyle,
                 nodeElement,
@@ -1470,7 +1470,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.heading.heading4.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.heading.heading4.custom, event)) {
             turnsIntoTransaction({
                 protyle,
                 nodeElement,
@@ -1481,7 +1481,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.heading.heading5.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.heading.heading5.custom, event)) {
             turnsIntoTransaction({
                 protyle,
                 nodeElement,
@@ -1492,7 +1492,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.heading.heading6.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.heading.heading6.custom, event)) {
             turnsIntoTransaction({
                 protyle,
                 nodeElement,
@@ -1503,14 +1503,14 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.insert.code.custom, event) &&
+        if (matchHotKey(window.scribli.config.keymap.editor.insert.code.custom, event) &&
             !["NodeCodeBlock", "NodeHeading", "NodeTable"].includes(nodeType) &&
             !isInEmbedBlock(nodeElement)) {
             const editElement = getContenteditableElement(nodeElement);
             if (editElement) {
                 const html = nodeElement.outerHTML;
                 // 需要 EscapeHTMLStr https://github.com/siyuan-note/siyuan/issues/11451
-                editElement.innerHTML = "```" + window.siyuan.storage[Constants.LOCAL_CODELANG] + "\n" + Lute.EscapeHTMLStr(editElement.textContent) + "<wbr>\n```";
+                editElement.innerHTML = "```" + window.scribli.storage[Constants.LOCAL_CODELANG] + "\n" + Lute.EscapeHTMLStr(editElement.textContent) + "<wbr>\n```";
                 nodeElement.insertAdjacentHTML("afterend", protyle.lute.SpinBlockDOM(nodeElement.outerHTML));
                 const newNodeElement = nodeElement.nextElementSibling;
                 nodeElement.remove();
@@ -1523,7 +1523,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
         }
 
         // toolbar action
-        if (matchHotKey(window.siyuan.config.keymap.editor.insert.lastUsed.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.insert.lastUsed.custom, event)) {
             protyle.toolbar.range = range;
             const selectElements: Element[] = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select"));
             if (selectText === "" && selectElements.length === 0) {
@@ -1565,7 +1565,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                 return true;
             }
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.list.outdent.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.list.outdent.custom, event)) {
             const selectElements = protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select");
             if (selectElements.length > 0) {
                 let isContinuous = true;
@@ -1591,7 +1591,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             }
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.list.indent.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.list.indent.custom, event)) {
             const selectElements = protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select");
             if (selectElements.length > 0) {
                 let isContinuous = true;
@@ -1616,10 +1616,10 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                 return true;
             }
         }
-        const isMatchList = matchHotKey(window.siyuan.config.keymap.editor.insert.list.custom, event);
-        const isMatchCheck = matchHotKey(window.siyuan.config.keymap.editor.insert.check.custom, event);
-        const isMatchOList = matchHotKey(window.siyuan.config.keymap.editor.insert["ordered-list"].custom, event);
-        const isMatchQuote = matchHotKey(window.siyuan.config.keymap.editor.insert.quote.custom, event);
+        const isMatchList = matchHotKey(window.scribli.config.keymap.editor.insert.list.custom, event);
+        const isMatchCheck = matchHotKey(window.scribli.config.keymap.editor.insert.check.custom, event);
+        const isMatchOList = matchHotKey(window.scribli.config.keymap.editor.insert["ordered-list"].custom, event);
+        const isMatchQuote = matchHotKey(window.scribli.config.keymap.editor.insert.quote.custom, event);
         if ((isMatchList || isMatchOList || isMatchCheck || isMatchQuote) && !isInEmbedBlock(nodeElement)) {
             const selectsElement: HTMLElement[] = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select"));
             if (selectsElement.length === 0) {
@@ -1706,7 +1706,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.insert.table.custom, event) &&
+        if (matchHotKey(window.scribli.config.keymap.editor.insert.table.custom, event) &&
             !isInEmbedBlock(nodeElement)) {
             protyle.hint.splitChar = "/";
             protyle.hint.lastIndex = -1;
@@ -1716,7 +1716,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.list.checkToggle.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.list.checkToggle.custom, event)) {
             const taskItemElement = hasClosestByAttribute(range.startContainer, "data-subtype", "t");
             if (!taskItemElement) {
                 return;
@@ -1726,7 +1726,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.insertBefore.custom, event) &&
+        if (matchHotKey(window.scribli.config.keymap.editor.general.insertBefore.custom, event) &&
             !isInEmbedBlock(nodeElement)) {
             // https://github.com/siyuan-note/siyuan/issues/14290#issuecomment-2846594701
             nodeElement.querySelector(".img--select")?.classList.remove("img--select");
@@ -1734,7 +1734,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.preventDefault();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.insertAfter.custom, event) &&
+        if (matchHotKey(window.scribli.config.keymap.editor.general.insertAfter.custom, event) &&
             !isInEmbedBlock(nodeElement)) {
             nodeElement.querySelector(".img--select")?.classList.remove("img--select");
             insertEmptyBlock(protyle, "afterend");
@@ -1742,40 +1742,40 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.jumpToParentNext.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.jumpToParentNext.custom, event)) {
             jumpToParent(protyle, nodeElement, "next");
             event.preventDefault();
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.jumpToParent.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.jumpToParent.custom, event)) {
             jumpToParent(protyle, nodeElement, "parent");
             event.preventDefault();
             event.stopPropagation();
             return true;
         }
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.jumpToParentPrev.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.jumpToParentPrev.custom, event)) {
             jumpToParent(protyle, nodeElement, "previous");
             event.preventDefault();
             event.stopPropagation();
             return true;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.moveToUp.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.moveToUp.custom, event)) {
             event.preventDefault();
             event.stopPropagation();
             moveToUp(protyle, nodeElement, range);
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.moveToDown.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.moveToDown.custom, event)) {
             event.preventDefault();
             event.stopPropagation();
             moveToDown(protyle, nodeElement, range);
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.vLayout.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.vLayout.custom, event)) {
             event.preventDefault();
             event.stopPropagation();
             const selectsElement: HTMLElement[] = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select"));
@@ -1804,7 +1804,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.hLayout.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.hLayout.custom, event)) {
             event.preventDefault();
             event.stopPropagation();
             const selectsElement: HTMLElement[] = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select"));
@@ -1833,7 +1833,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (!event.repeat && matchHotKey(window.siyuan.config.keymap.editor.general.ai.custom, event)) {
+        if (!event.repeat && matchHotKey(window.scribli.config.keymap.editor.general.ai.custom, event)) {
             event.preventDefault();
             event.stopPropagation();
             let selectsElement: HTMLElement[] = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select"));
@@ -1844,17 +1844,17 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        if (!event.repeat && matchHotKey(window.siyuan.config.keymap.editor.general.aiWriting.custom, event)) {
+        if (!event.repeat && matchHotKey(window.scribli.config.keymap.editor.general.aiWriting.custom, event)) {
             event.preventDefault();
             event.stopPropagation();
             AIChat(protyle, nodeElement);
             return;
         }
 
-        if (!event.repeat && matchHotKey(window.siyuan.config.keymap.editor.general.openInNewTab.custom, event)) {
+        if (!event.repeat && matchHotKey(window.scribli.config.keymap.editor.general.openInNewTab.custom, event)) {
             event.preventDefault();
             event.stopPropagation();
-            const blockPanel = window.siyuan.blockPanels.find(item => {
+            const blockPanel = window.scribli.blockPanels.find(item => {
                 if (item.element.contains(nodeElement)) {
                     return true;
                 }
@@ -1881,7 +1881,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                 return;
             }
             if (!event.shiftKey) {
-                document.execCommand("insertHTML", false, window.siyuan.config.editor.codeTabSpaces === 0 ? "\t" : "".padStart(window.siyuan.config.editor.codeTabSpaces, " "));
+                document.execCommand("insertHTML", false, window.scribli.config.editor.codeTabSpaces === 0 ? "\t" : "".padStart(window.scribli.config.editor.codeTabSpaces, " "));
                 return true;
             }
         }
@@ -1904,7 +1904,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
         const refElement = hasClosestByAttribute(range.startContainer, "data-type", "block-ref");
         if (refElement) {
             const id = refElement.getAttribute("data-id");
-            if (matchHotKey(window.siyuan.config.keymap.editor.general.openBy.custom, event)) {
+            if (matchHotKey(window.scribli.config.keymap.editor.general.openBy.custom, event)) {
                 checkFold(id, (zoomIn, action, isRoot) => {
                     if (!isRoot) {
                         action.push(Constants.CB_GET_HL);
@@ -1920,7 +1920,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                 event.preventDefault();
                 event.stopPropagation();
                 return true;
-            } else if (matchHotKey(window.siyuan.config.keymap.editor.general.refTab.custom, event)) {
+            } else if (matchHotKey(window.scribli.config.keymap.editor.general.refTab.custom, event)) {
                 // 打开块引和编辑器中引用、反链、书签中点击事件需保持一致，都加载上下文
                 checkFold(id, (zoomIn) => {
                     openFileById({
@@ -1935,7 +1935,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                 event.preventDefault();
                 event.stopPropagation();
                 return true;
-            } else if (matchHotKey(window.siyuan.config.keymap.editor.general.insertRight.custom, event)) {
+            } else if (matchHotKey(window.scribli.config.keymap.editor.general.insertRight.custom, event)) {
                 checkFold(id, (zoomIn, action, isRoot) => {
                     if (!isRoot) {
                         action.push(Constants.CB_GET_HL);
@@ -1952,7 +1952,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                 event.preventDefault();
                 event.stopPropagation();
                 return true;
-            } else if (matchHotKey(window.siyuan.config.keymap.editor.general.insertBottom.custom, event)) {
+            } else if (matchHotKey(window.scribli.config.keymap.editor.general.insertBottom.custom, event)) {
                 checkFold(id, (zoomIn, action, isRoot) => {
                     if (!isRoot) {
                         action.push(Constants.CB_GET_HL);
@@ -1969,9 +1969,9 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                 event.preventDefault();
                 event.stopPropagation();
                 return true;
-            } else if (matchHotKey(window.siyuan.config.keymap.editor.general.refPopover.custom, event)) {
+            } else if (matchHotKey(window.scribli.config.keymap.editor.general.refPopover.custom, event)) {
                 // open popover
-                window.siyuan.blockPanels.push(new BlockPanel({
+                window.scribli.blockPanels.push(new BlockPanel({
                     app: protyle.app,
                     isBacklink: false,
                     targetElement: refElement,
@@ -1994,7 +1994,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
         }
 
         /// #if !BROWSER
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.showInFolder.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.showInFolder.custom, event)) {
             const aElement = hasClosestByAttribute(range.startContainer, "data-type", "a");
             if (aElement) {
                 const linkAddress = aElement.getAttribute("data-href");
@@ -2008,7 +2008,7 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
         }
         /// #endif
 
-        if (matchHotKey(window.siyuan.config.keymap.editor.general.openBy.custom, event)) {
+        if (matchHotKey(window.scribli.config.keymap.editor.general.openBy.custom, event)) {
             const aElement = hasClosestByAttribute(range.startContainer, "data-type", "a");
             if (aElement) {
                 openLink(protyle.app, aElement.getAttribute("data-href"), undefined, false);

@@ -18,7 +18,7 @@ import {fetchPost} from "../../util/fetch";
 export const initWindowEvent = (app: App) => {
     let lastEncryptedNotebookTouch = 0;
     const touchEncryptedNotebooks = () => {
-        if (window.siyuan.isPublish) {
+        if (window.scribli.isPublish) {
             return;
         }
         const now = Date.now();
@@ -33,10 +33,10 @@ export const initWindowEvent = (app: App) => {
     document.addEventListener("touchstart", touchEncryptedNotebooks, {passive: true});
 
     document.body.addEventListener("mouseleave", () => {
-        if (window.siyuan.layout.leftDock) {
-            window.siyuan.layout.leftDock.hideDock();
-            window.siyuan.layout.rightDock.hideDock();
-            window.siyuan.layout.bottomDock.hideDock();
+        if (window.scribli.layout.leftDock) {
+            window.scribli.layout.leftDock.hideDock();
+            window.scribli.layout.rightDock.hideDock();
+            window.scribli.layout.bottomDock.hideDock();
         }
         document.querySelectorAll(".protyle-gutters").forEach(item => {
             item.classList.add("fn__none");
@@ -46,7 +46,7 @@ export const initWindowEvent = (app: App) => {
     });
     let mouseIsEnter = false;
     document.body.addEventListener("mouseenter", () => {
-        if (window.siyuan.layout.leftDock) {
+        if (window.scribli.layout.leftDock) {
             mouseIsEnter = true;
             setTimeout(() => {
                 mouseIsEnter = false;
@@ -80,7 +80,7 @@ export const initWindowEvent = (app: App) => {
 
     let scrollTarget: HTMLElement | false;
     window.addEventListener("dragover", (event: DragEvent & { target: HTMLElement }) => {
-        if (event.dataTransfer.types.includes(Constants.SIYUAN_DROP_TAB)) {
+        if (event.dataTransfer.types.includes(Constants.SCRIBLI_DROP_TAB)) {
             if (!hasClosestByClassName(event.target, "layout-tab-bar")) {
                 stopScrollAnimation();
             }
@@ -92,15 +92,15 @@ export const initWindowEvent = (app: App) => {
         // 拖拽标题/列表项块标时，按浮窗模型控制文档树所在浮动 dock 的显隐：
         // 鼠标在边缘触发区或面板内则展开，离开则收起 https://github.com/siyuan-note/siyuan/issues/18043
         if (!isWindow() &&
-            (!window.siyuan.layout.leftDock.pin || !window.siyuan.layout.rightDock.pin || !window.siyuan.layout.bottomDock.pin)) {
+            (!window.scribli.layout.leftDock.pin || !window.scribli.layout.rightDock.pin || !window.scribli.layout.bottomDock.pin)) {
             const fileDock = getDockByType("file");
             // 文档树所在 dock 为浮动且文档树图标激活时才处理
             if (fileDock && !fileDock.pin &&
                 document.querySelector('.dock__items > .dock__item--active[data-type="file"]')) {
                 let gutterBlockType = "";
                 for (const itemType of event.dataTransfer.types) {
-                    if (itemType.startsWith(Constants.SIYUAN_DROP_GUTTER)) {
-                        gutterBlockType = itemType.replace(Constants.SIYUAN_DROP_GUTTER, "").split(Constants.ZWSP)[0];
+                    if (itemType.startsWith(Constants.SCRIBLI_DROP_GUTTER)) {
+                        gutterBlockType = itemType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP)[0];
                         break;
                     }
                 }
@@ -159,7 +159,7 @@ export const initWindowEvent = (app: App) => {
             scrollElement = scrollTarget.querySelector(".protyle-content");
         }
         if (scrollTarget && scrollElement) {
-            if ((event.dataTransfer.types.includes(Constants.SIYUAN_DROP_FILE) && hasClosestByClassName(event.target, "layout-tab-bar")) ||
+            if ((event.dataTransfer.types.includes(Constants.SCRIBLI_DROP_FILE) && hasClosestByClassName(event.target, "layout-tab-bar")) ||
                 (event.dataTransfer.types.includes("Files") && scrollTarget.classList.contains("sy__file")) ||
                 (scrollTarget.classList.contains("protyle") && hasClosestByClassName(event.target, "dockPanel"))) {
                 stopScrollAnimation();
@@ -173,7 +173,7 @@ export const initWindowEvent = (app: App) => {
     window.addEventListener("dragend", () => {
         stopScrollAnimation();
         document.querySelector(".drag-tip")?.remove();
-        window.siyuan.dragTitle = "";
+        window.scribli.dragTitle = "";
     });
     window.addEventListener("dragleave", () => {
         stopScrollAnimation();
@@ -205,9 +205,9 @@ export const initWindowEvent = (app: App) => {
     });
 
     window.addEventListener("blur", () => {
-        window.siyuan.ctrlIsPressed = false;
-        window.siyuan.shiftIsPressed = false;
-        window.siyuan.altIsPressed = false;
+        window.scribli.ctrlIsPressed = false;
+        window.scribli.shiftIsPressed = false;
+        window.scribli.altIsPressed = false;
         document.body.classList.remove("body--shift-pressed");
         /// #if BROWSER
         setWebViewFocusable();
@@ -242,7 +242,7 @@ export const initWindowEvent = (app: App) => {
     document.addEventListener("touchend", (event) => {
         // 无条件前置取消手动桥接：触发各组件（如 Outline.bindSort）注册的 mouseup 清理回调，复位 document.onmousemove 等状态
         cancelManualTouch();
-        if (window.siyuan.touchDragActive) {
+        if (window.scribli.touchDragActive) {
             return;
         }
         if (Math.abs(startX - event.changedTouches[0].clientX) < Constants.SIZE_DRAG_THRESHOLD &&

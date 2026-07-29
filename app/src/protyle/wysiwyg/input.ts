@@ -277,8 +277,8 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
             if (realType === "NodeCodeBlock") {
                 const languageElement = realElement.querySelector(".protyle-action__language");
                 if (languageElement) {
-                    if (window.siyuan.storage[Constants.LOCAL_CODELANG] && languageElement.textContent === "") {
-                        languageElement.textContent = window.siyuan.storage[Constants.LOCAL_CODELANG];
+                    if (window.scribli.storage[Constants.LOCAL_CODELANG] && languageElement.textContent === "") {
+                        languageElement.textContent = window.scribli.storage[Constants.LOCAL_CODELANG];
                     }
                     highlightRender(realElement);
                 } else if (tempElement.content.childElementCount === 1) {

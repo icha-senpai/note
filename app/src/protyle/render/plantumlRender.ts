@@ -26,7 +26,7 @@ export const plantumlRender = (element: Element, cdn = Constants.PROTYLE_CDN) =>
                 return;
             }
             try {
-                const url = `${window.siyuan.config.editor.plantUMLServePath}${window.plantumlEncoder.encode(Lute.UnEscapeHTMLStr(e.getAttribute("data-content")))}`;
+                const url = `${window.scribli.config.editor.plantUMLServePath}${window.plantumlEncoder.encode(Lute.UnEscapeHTMLStr(e.getAttribute("data-content")))}`;
                 renderElement.innerHTML = `<object type="image/svg+xml" data="${url}"/>`;
                 renderElement.classList.remove("ft__error");
                 renderElement.firstElementChild.addEventListener("error", () => {

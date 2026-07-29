@@ -45,21 +45,21 @@ export class Dock {
     }) {
         switch (options.position) {
             case "Left":
-                this.layout = window.siyuan.layout.layout.children[0].children[0] as Layout;
+                this.layout = window.scribli.layout.layout.children[0].children[0] as Layout;
                 this.resizeElement = this.layout.element.nextElementSibling as HTMLElement;
                 this.layout.element.classList.add("layout__dockl");
                 this.layout.element.insertAdjacentHTML("beforeend", '<div class="layout__dockresize layout__dockresize--lr"></div>');
                 this.elements = Array.from(document.querySelectorAll(`#dock${options.position} .dock__items`));
                 break;
             case "Right":
-                this.layout = window.siyuan.layout.layout.children[0].children[2] as Layout;
+                this.layout = window.scribli.layout.layout.children[0].children[2] as Layout;
                 this.resizeElement = this.layout.element.previousElementSibling as HTMLElement;
                 this.layout.element.classList.add("layout__dockr");
                 this.layout.element.insertAdjacentHTML("beforeend", '<div class="layout__dockresize layout__dockresize--lr"></div>');
                 this.elements = Array.from(document.querySelectorAll(`#dock${options.position} .dock__items`));
                 break;
             case "Bottom":
-                this.layout = window.siyuan.layout.layout.children[1] as Layout;
+                this.layout = window.scribli.layout.layout.children[1] as Layout;
                 this.resizeElement = this.layout.element.previousElementSibling as HTMLElement;
                 this.layout.element.classList.add("layout__dockb");
                 this.layout.element.insertAdjacentHTML("beforeend", '<div class="layout__dockresize"></div>');
@@ -118,7 +118,7 @@ export class Dock {
                 moveItem.innerHTML = "<svg></svg>";
                 moveItem.id = "dockMoveItem";
                 documentSelf.onmousemove = (moveEvent: MouseEvent) => {
-                    if (window.siyuan.config.readonly ||
+                    if (window.scribli.config.readonly ||
                         Math.abs(moveEvent.clientY - event.clientY) < Constants.SIZE_DRAG_THRESHOLD &&
                         Math.abs(moveEvent.clientX - event.clientX) < Constants.SIZE_DRAG_THRESHOLD) {
                         return;
@@ -207,15 +207,15 @@ export class Dock {
                     item.style.opacity = "";
                     if (!moveItem.classList.contains("fn__none")) {
                         let dock;
-                        if (window.siyuan.layout.leftDock.elements[0].contains(moveItem) ||
-                            window.siyuan.layout.leftDock.elements[1].contains(moveItem)) {
-                            dock = window.siyuan.layout.leftDock;
-                        } else if (window.siyuan.layout.rightDock.elements[0].contains(moveItem) ||
-                            window.siyuan.layout.rightDock.elements[1].contains(moveItem)) {
-                            dock = window.siyuan.layout.rightDock;
-                        } else if (window.siyuan.layout.bottomDock.elements[0].contains(moveItem) ||
-                            window.siyuan.layout.bottomDock.elements[1].contains(moveItem)) {
-                            dock = window.siyuan.layout.bottomDock;
+                        if (window.scribli.layout.leftDock.elements[0].contains(moveItem) ||
+                            window.scribli.layout.leftDock.elements[1].contains(moveItem)) {
+                            dock = window.scribli.layout.leftDock;
+                        } else if (window.scribli.layout.rightDock.elements[0].contains(moveItem) ||
+                            window.scribli.layout.rightDock.elements[1].contains(moveItem)) {
+                            dock = window.scribli.layout.rightDock;
+                        } else if (window.scribli.layout.bottomDock.elements[0].contains(moveItem) ||
+                            window.scribli.layout.bottomDock.elements[1].contains(moveItem)) {
+                            dock = window.scribli.layout.bottomDock;
                         }
                         dock.add(dock.elements[0].contains(moveItem) ? 0 : 1,
                             item, moveItem.previousElementSibling?.getAttribute("data-type"));
@@ -293,7 +293,7 @@ export class Dock {
             };
         });
 
-        if (window.siyuan.config.uiLayout.hideDock) {
+        if (window.scribli.config.uiLayout.hideDock) {
             this.elements[0].parentElement.classList.add("fn__none");
         }
         if (!this.pin) {
@@ -356,9 +356,9 @@ export class Dock {
             document.querySelector(".block__popover") ||
             document.querySelector("#commonMenu:not(.fn__none)")
         ) && (
-            window.siyuan.layout.leftDock?.layout.element.style.opacity === "1" ||
-            window.siyuan.layout.rightDock?.layout.element.style.opacity === "1" ||
-            window.siyuan.layout.bottomDock?.layout.element.style.opacity === "1"
+            window.scribli.layout.leftDock?.layout.element.style.opacity === "1" ||
+            window.scribli.layout.rightDock?.layout.element.style.opacity === "1" ||
+            window.scribli.layout.bottomDock?.layout.element.style.opacity === "1"
         )) {
             return;
         }
@@ -367,7 +367,7 @@ export class Dock {
             this.layout.element.style.opacity = "1";
         }
         this.layout.element.style.transform = "";
-        this.layout.element.style.zIndex = (++window.siyuan.zIndex).toString();
+        this.layout.element.style.zIndex = (++window.scribli.zIndex).toString();
         if (this.position === "Left") {
             this.layout.element.style.left = `${this.elements[0].clientWidth}px`;
         } else if (this.position === "Right") {
@@ -896,7 +896,7 @@ export class Dock {
             } else if (item.type === "tags") {
                 item.icon = "iconTag";
             }
-            html += `<span data-height="${item.size.height}" data-width="${item.size.width}" data-type="${item.type}" data-index="${index}" data-hotkey="${item.hotkey || ""}" data-hotkeylangid="${item.hotkeyLangId || ""}" data-title="${item.title}" class="dock__item${item.show ? " dock__item--active" : ""} ariaLabel" aria-label="<span style='white-space:pre'>${item.title} ${item.hotkey ? updateHotkeyTip(item.hotkey) : ""}${window.siyuan.languages.dockTip}</span>">
+            html += `<span data-height="${item.size.height}" data-width="${item.size.width}" data-type="${item.type}" data-index="${index}" data-hotkey="${item.hotkey || ""}" data-hotkeylangid="${item.hotkeyLangId || ""}" data-title="${item.title}" class="dock__item${item.show ? " dock__item--active" : ""} ariaLabel" aria-label="<span style='white-space:pre'>${item.title} ${item.hotkey ? updateHotkeyTip(item.hotkey) : ""}${window.scribli.languages.dockTip}</span>">
     <svg><use xlink:href="#${item.icon}"></use></svg>
 </span>`;
             this.data[item.type] = true;
@@ -911,12 +911,12 @@ export class Dock {
             this.elements[index].innerHTML = html;
         }
         // https://github.com/siyuan-note/siyuan/issues/8614
-        if (!window.siyuan.config.uiLayout.hideDock) {
+        if (!window.scribli.config.uiLayout.hideDock) {
             this.elements[0].parentElement.classList.remove("fn__none");
         }
         // plugin
         if (typeof tabIndex === "number") {
-            if (!window.siyuan.config.uiLayout.hideDock) {
+            if (!window.scribli.config.uiLayout.hideDock) {
                 adjustDockPadding();
             }
             if (data[0].show) {
@@ -944,10 +944,10 @@ export class Dock {
     }) {
         this.app.plugins.find(pluginItem => {
             if (Object.keys(pluginItem.docks).includes(dockType)) {
-                if (!window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][pluginItem.name][dockType]) {
-                    window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][pluginItem.name][dockType] = pluginItem.docks[dockType].config;
+                if (!window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][pluginItem.name][dockType]) {
+                    window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][pluginItem.name][dockType] = pluginItem.docks[dockType].config;
                 }
-                const dockConfig = window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][pluginItem.name][dockType];
+                const dockConfig = window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][pluginItem.name][dockType];
                 Object.keys(options).forEach((item: "position" | "size" | "index" | "show") => {
                     // size 需按字段合并，否则会整体覆盖、丢失用户已拖动的尺寸
                     if (item === "size") {
@@ -956,7 +956,7 @@ export class Dock {
                         dockConfig[item] = options[item];
                     }
                 });
-                setStorageVal(Constants.LOCAL_PLUGIN_DOCKS, window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS]);
+                setStorageVal(Constants.LOCAL_PLUGIN_DOCKS, window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS]);
                 return true;
             }
         });

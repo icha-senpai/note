@@ -9,8 +9,8 @@ export const renderSnippet = () => {
         response.data.snippets.forEach((item: ISnippet) => {
             const id = `snippet${item.type === "css" ? "CSS" : "JS"}${item.id}`;
             let exitElement = document.getElementById(id) as HTMLScriptElement | HTMLStyleElement;
-            if ((!window.siyuan.config.snippet.enabledCSS && item.type === "css") ||
-                (!window.siyuan.config.snippet.enabledJS && item.type === "js")) {
+            if ((!window.scribli.config.snippet.enabledCSS && item.type === "css") ||
+                (!window.scribli.config.snippet.enabledJS && item.type === "js")) {
                 if (exitElement) {
                     exitElement.remove();
                 }
@@ -65,32 +65,32 @@ export const openSnippets = () => {
 <div class="fn__flex-1" style="overflow:auto;padding: 16px 24px">
     <div>
         <div class="fn__flex">
-            <input data-type="css" data-action="search" type="text" placeholder="${window.siyuan.languages.search}" class="b3-text-field fn__block">
+            <input data-type="css" data-action="search" type="text" placeholder="${window.scribli.languages.search}" class="b3-text-field fn__block">
             <div class="fn__space"></div>
-            <span aria-label="${window.siyuan.languages.addAttr} CSS" id="addCodeSnippetCSS" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show">
+            <span aria-label="${window.scribli.languages.addAttr} CSS" id="addCodeSnippetCSS" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show">
                 <svg><use xlink:href="#iconAdd"></use></svg>
             </span>
             <div class="fn__space"></div>
-            <input data-action="toggleCSS" class="b3-switch fn__flex-center" type="checkbox"${window.siyuan.config.snippet.enabledCSS ? " checked" : ""}>
+            <input data-action="toggleCSS" class="b3-switch fn__flex-center" type="checkbox"${window.scribli.config.snippet.enabledCSS ? " checked" : ""}>
         </div>
         ${cssHTML}
     </div>
     <div class="fn__none">
         <div class="fn__flex">
-            <input data-type="js" data-action="search" type="text" placeholder="${window.siyuan.languages.search}" class="b3-text-field fn__block">
+            <input data-type="js" data-action="search" type="text" placeholder="${window.scribli.languages.search}" class="b3-text-field fn__block">
             <div class="fn__space"></div>
-            <span aria-label="${window.siyuan.languages.addAttr} JS" id="addCodeSnippetJS" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show">
+            <span aria-label="${window.scribli.languages.addAttr} JS" id="addCodeSnippetJS" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show">
                 <svg><use xlink:href="#iconAdd"></use></svg>
             </span>
             <div class="fn__space"></div>
-            <input data-action="toggleJS" class="b3-switch fn__flex-center" type="checkbox"${window.siyuan.config.snippet.enabledJS ? " checked" : ""}>
+            <input data-action="toggleJS" class="b3-switch fn__flex-center" type="checkbox"${window.scribli.config.snippet.enabledJS ? " checked" : ""}>
         </div>
         ${jsHTML}
     </div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
             destroyCallback: (options) => {
                 if (options?.cancel === "true") {
@@ -189,23 +189,23 @@ const filterSnippet = (dialog: Dialog, inputItem: HTMLInputElement) => {
 const genSnippet = (options: ISnippet) => {
     return `<div data-id="${options.id || ""}" data-type="${options.type}">
     <div class="fn__hr--b"></div>
-    <label class="fn__flex${window.siyuan.config.publish.enable ? "" : " fn__none"}">
+    <label class="fn__flex${window.scribli.config.publish.enable ? "" : " fn__none"}">
         <input data-type="disabledInPublish" type="checkbox" class="b3-switch fn__flex-center" ${options.disabledInPublish ? "" : " checked"}>
         <div class="fn__space"></div>
-        <span class="fn__flex-center">${window.siyuan.languages.publishService}</span>
+        <span class="fn__flex-center">${window.scribli.languages.publishService}</span>
     </label>
     <div class="fn__hr"></div>
     <div class="fn__flex">
-        <input type="text" class="fn__flex-1 b3-text-field" placeholder="${window.siyuan.languages.title}">
+        <input type="text" class="fn__flex-1 b3-text-field" placeholder="${window.scribli.languages.title}">
         <div class="fn__space"></div>
-        <span aria-label="${window.siyuan.languages.remove}" data-action="remove" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show">
+        <span aria-label="${window.scribli.languages.remove}" data-action="remove" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show">
             <svg><use xlink:href="#iconTrashcan"></use></svg>
         </span>
         <div class="fn__space"></div>
         <input data-type="snippet" class="b3-switch fn__flex-center" type="checkbox"${options.enabled ? " checked" : ""}>
     </div>
     <div class="fn__hr"></div>
-    <textarea class="fn__block b3-text-field" placeholder="${window.siyuan.languages.codeSnippet}" style="resize: vertical;font-family:var(--b3-font-family-code)" spellcheck="false"></textarea>
+    <textarea class="fn__block b3-text-field" placeholder="${window.scribli.languages.codeSnippet}" style="resize: vertical;font-family:var(--b3-font-family-code)" spellcheck="false"></textarea>
     <div class="fn__hr--b"></div>
 </div>`;
 };
@@ -218,9 +218,9 @@ const setSnippetPost = (dialog: Dialog, snippets: ISnippet[], removeIds: string[
                 rmElement.remove();
             }
         });
-        window.siyuan.config.snippet.enabledCSS = (dialog.element.querySelector('.b3-switch[data-action="toggleCSS"]') as HTMLInputElement).checked;
-        window.siyuan.config.snippet.enabledJS = (dialog.element.querySelector('.b3-switch[data-action="toggleJS"]') as HTMLInputElement).checked;
-        fetchPost("/api/setting/setSnippet", window.siyuan.config.snippet);
+        window.scribli.config.snippet.enabledCSS = (dialog.element.querySelector('.b3-switch[data-action="toggleCSS"]') as HTMLInputElement).checked;
+        window.scribli.config.snippet.enabledJS = (dialog.element.querySelector('.b3-switch[data-action="toggleJS"]') as HTMLInputElement).checked;
+        fetchPost("/api/setting/setSnippet", window.scribli.config.snippet);
         dialog.destroy({cancel: "true"});
     });
 };
@@ -238,12 +238,12 @@ const setSnippet = (dialog: Dialog, oldSnippets: ISnippet[], removeIds: string[]
         });
     });
     if (objEquals(oldSnippets, snippets) &&
-        window.siyuan.config.snippet.enabledCSS === (dialog.element.querySelector('.b3-switch[data-action="toggleCSS"]') as HTMLInputElement).checked &&
-        window.siyuan.config.snippet.enabledJS === (dialog.element.querySelector('.b3-switch[data-action="toggleJS"]') as HTMLInputElement).checked) {
+        window.scribli.config.snippet.enabledCSS === (dialog.element.querySelector('.b3-switch[data-action="toggleCSS"]') as HTMLInputElement).checked &&
+        window.scribli.config.snippet.enabledJS === (dialog.element.querySelector('.b3-switch[data-action="toggleJS"]') as HTMLInputElement).checked) {
         dialog.destroy({cancel: "true"});
     } else {
         if (confirm) {
-            confirmDialog(window.siyuan.languages.save, window.siyuan.languages.snippetsTip, () => {
+            confirmDialog(window.scribli.languages.save, window.scribli.languages.snippetsTip, () => {
                 setSnippetPost(dialog, snippets, removeIds);
             });
         } else {

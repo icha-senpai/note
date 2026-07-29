@@ -11,11 +11,11 @@ export const getLayoutHTML = (data: IAV) => {
     if (["gallery", "kanban"].includes(data.viewType)) {
         let coverFromTitle = "";
         if (view.coverFrom === 0) {
-            coverFromTitle = window.siyuan.languages.calcOperatorNone;
+            coverFromTitle = window.scribli.languages.calcOperatorNone;
         } else if (view.coverFrom === 1) {
-            coverFromTitle = window.siyuan.languages.contentImage;
+            coverFromTitle = window.scribli.languages.contentImage;
         } else if (view.coverFrom === 3) {
-            coverFromTitle = window.siyuan.languages.contentBlock;
+            coverFromTitle = window.scribli.languages.contentBlock;
         } else {
             view.fields.find(item => {
                 if (item.type === "mAsset" && item.id === view.coverFromAssetKeyID) {
@@ -25,30 +25,30 @@ export const getLayoutHTML = (data: IAV) => {
             });
         }
         html = `<button class="b3-menu__item" data-type="set-gallery-cover">
-    <span class="fn__flex-center">${window.siyuan.languages.cardPreview1}</span>
+    <span class="fn__flex-center">${window.scribli.languages.cardPreview1}</span>
     <span class="fn__flex-1"></span>
     <span class="b3-menu__accelerator">${coverFromTitle}</span>
     <svg class="b3-menu__icon b3-menu__icon--small"><use xlink:href="#iconRight"></use></svg>
 </button>
 <button class="b3-menu__item" data-type="set-gallery-ratio">
-    <span class="fn__flex-center">${window.siyuan.languages.cardAspectRatio}</span>
+    <span class="fn__flex-center">${window.scribli.languages.cardAspectRatio}</span>
     <span class="fn__flex-1"></span>
     <span class="b3-menu__accelerator">${getCardAspectRatio(view.cardAspectRatio)}</span>
     <svg class="b3-menu__icon b3-menu__icon--small"><use xlink:href="#iconRight"></use></svg>
 </button>
 <button class="b3-menu__item" data-type="set-gallery-size">
-    <span class="fn__flex-center">${window.siyuan.languages.cardSize}</span>
+    <span class="fn__flex-center">${window.scribli.languages.cardSize}</span>
     <span class="fn__flex-1"></span>
-    <span class="b3-menu__accelerator">${view.cardSize === 0 ? window.siyuan.languages.small : (view.cardSize === 1 ? window.siyuan.languages.medium : window.siyuan.languages.large)}</span>
+    <span class="b3-menu__accelerator">${view.cardSize === 0 ? window.scribli.languages.small : (view.cardSize === 1 ? window.scribli.languages.medium : window.scribli.languages.large)}</span>
     <svg class="b3-menu__icon b3-menu__icon--small"><use xlink:href="#iconRight"></use></svg>
 </button>
 <label class="b3-menu__item">
-    <span class="fn__flex-center">${window.siyuan.languages.fitImage}</span>
+    <span class="fn__flex-center">${window.scribli.languages.fitImage}</span>
     <span class="fn__space fn__flex-1"></span>
     <input data-type="toggle-gallery-fit" type="checkbox" class="b3-switch b3-switch--menu" ${view.fitImage ? "checked" : ""}>
 </label>
 <label class="b3-menu__item">
-    <span class="fn__flex-center">${window.siyuan.languages.displayFieldName}</span>
+    <span class="fn__flex-center">${window.scribli.languages.displayFieldName}</span>
     <span class="fn__space fn__flex-1"></span>
     <input data-type="toggle-gallery-name" type="checkbox" class="b3-switch b3-switch--menu" ${view.displayFieldName ? "checked" : ""}>
 </label>`;
@@ -58,7 +58,7 @@ export const getLayoutHTML = (data: IAV) => {
         <span class="block__icon" style="padding: 8px;margin-left: -4px;" data-type="go-config">
             <svg><use xlink:href="#iconLeft"></use></svg>
         </span>
-        <span class="b3-menu__label ft__center">${window.siyuan.languages.layout}</span>
+        <span class="b3-menu__label ft__center">${window.scribli.languages.layout}</span>
     </button>
     <button class="b3-menu__separator"></button>
     <button class="b3-menu__item" data-type="nobg">
@@ -66,47 +66,47 @@ export const getLayoutHTML = (data: IAV) => {
             <div data-type="set-layout" data-view-type="table" class="av__layout-item${data.viewType === "table" ? " av__layout-item--select" : ""}">
                 <svg><use xlink:href="#iconTable"></use></svg>
                 <div class="fn__hr"></div>
-                <div>${window.siyuan.languages.table}</div>
+                <div>${window.scribli.languages.table}</div>
             </div>
             <div data-type="set-layout" data-view-type="kanban" class="av__layout-item${data.viewType === "kanban" ? " av__layout-item--select" : ""}">
                 <svg><use xlink:href="#iconBoard"></use></svg>
                 <div class="fn__hr"></div>
-                <div>${window.siyuan.languages.kanban}</div>
+                <div>${window.scribli.languages.kanban}</div>
             </div>
             <div data-type="set-layout" data-view-type="gallery" class="av__layout-item${data.viewType === "gallery" ? " av__layout-item--select" : ""}">
                 <svg><use xlink:href="#iconGallery"></use></svg>
                 <div class="fn__hr"></div>
-                <div>${window.siyuan.languages.gallery}</div>
+                <div>${window.scribli.languages.gallery}</div>
             </div>
         </div>
     </button>
     <label class="b3-menu__item">
-        <span class="fn__flex-center">${window.siyuan.languages.showTitle}</span>
+        <span class="fn__flex-center">${window.scribli.languages.showTitle}</span>
         <span class="fn__space fn__flex-1"></span>
         <input data-type="toggle-view-title" type="checkbox" class="b3-switch b3-switch--menu" ${view.hideAttrViewName ? "" : "checked"}>
     </label>
     ${html}
     <label class="b3-menu__item">
-        <span class="fn__flex-center">${window.siyuan.languages.showAllEntriesIcons}</span>
+        <span class="fn__flex-center">${window.scribli.languages.showAllEntriesIcons}</span>
         <span class="fn__space fn__flex-1"></span>
         <input data-type="toggle-entries-icons" type="checkbox" class="b3-switch b3-switch--menu" ${view.showIcon ? "checked" : ""}>
     </label>
     <label class="b3-menu__item">
-        <span class="fn__flex-center">${window.siyuan.languages.wrapAllFields}</span>
+        <span class="fn__flex-center">${window.scribli.languages.wrapAllFields}</span>
         <span class="fn__space fn__flex-1"></span>
         <input data-type="toggle-entries-wrap" type="checkbox" class="b3-switch b3-switch--menu" ${view.wrapField ? "checked" : ""}>
     </label>`;
     if (data.viewType === "kanban" && ["select", "mSelect"].includes(data.view.groups?.[0]?.groupValue?.type)) {
         html += `<label class="b3-menu__item">
-    <span class="fn__flex-center">${window.siyuan.languages.useBackground}</span>
+    <span class="fn__flex-center">${window.scribli.languages.useBackground}</span>
     <span class="fn__space fn__flex-1"></span>
     <input data-type="toggle-kanban-bg" type="checkbox" class="b3-switch b3-switch--menu" ${view.fillColBackgroundColor ? "checked" : ""}>
 </label>`;
     }
     return html + `<button class="b3-menu__item" data-type="set-page-size" data-size="${view.pageSize}">
-        <span class="fn__flex-center">${window.siyuan.languages.entryNum}</span>
+        <span class="fn__flex-center">${window.scribli.languages.entryNum}</span>
         <span class="fn__flex-1"></span>
-        <span class="b3-menu__accelerator">${view.pageSize === Constants.SIZE_DATABASE_MAZ_SIZE ? window.siyuan.languages.all : view.pageSize}</span>
+        <span class="b3-menu__accelerator">${view.pageSize === Constants.SIZE_DATABASE_MAZ_SIZE ? window.scribli.languages.all : view.pageSize}</span>
         <svg class="b3-menu__icon b3-menu__icon--small"><use xlink:href="#iconRight"></use></svg>
     </button>
 </div>`;

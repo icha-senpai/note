@@ -16,17 +16,17 @@ import {getAllEditor} from "../layout/getAll";
 export const validateName = (name: string, targetElement?: HTMLElement) => {
     if (/\r\n|\r|\n|\u2028|\u2029|\t/.test(name)) {
         if (targetElement) {
-            showTooltip(window.siyuan.languages.fileNameRule, targetElement, "error");
+            showTooltip(window.scribli.languages.fileNameRule, targetElement, "error");
         } else {
-            showMessage(window.siyuan.languages.fileNameRule);
+            showMessage(window.scribli.languages.fileNameRule);
         }
         return false;
     }
     if (name.length > Constants.SIZE_TITLE) {
         if (targetElement) {
-            showTooltip(window.siyuan.languages["_kernel"]["106"], targetElement, "error");
+            showTooltip(window.scribli.languages["_kernel"]["106"], targetElement, "error");
         } else {
-            showMessage(window.siyuan.languages["_kernel"]["106"]);
+            showMessage(window.scribli.languages["_kernel"]["106"]);
         }
         return false;
     }
@@ -35,7 +35,7 @@ export const validateName = (name: string, targetElement?: HTMLElement) => {
 
 export const replaceFileName = (name: string) => {
     if (name.indexOf("/") > -1) {
-        showMessage(window.siyuan.languages.fileNameRule);
+        showMessage(window.scribli.languages.fileNameRule);
         name = name.replace(/\//g, "／");
     }
     return name.replace(/\r\n|\r|\n|\u2028|\u2029|\t|/g, "").substring(0, Constants.SIZE_TITLE);
@@ -53,16 +53,16 @@ export const rename = (options: {
     empty?: boolean
     range?: Range,
 }) => {
-    if (window.siyuan.config.readonly) {
+    if (window.scribli.config.readonly) {
         return;
     }
     const initialName = options.empty ? "" : options.name;
     const dialog = new Dialog({
-        title: window.siyuan.languages.rename,
+        title: window.scribli.languages.rename,
         content: `<div class="b3-dialog__content"><input class="b3-text-field fn__block" value=""></div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
         destroyCallback() {
@@ -95,7 +95,7 @@ export const rename = (options: {
         name = replaceFileName(name);
         if (options.type === "notebook") {
             if (!name) {
-                name = window.siyuan.languages.untitled;
+                name = window.scribli.languages.untitled;
             }
             fetchPost("/api/notebook/renameNotebook", {
                 notebook: options.notebookId,
@@ -116,11 +116,11 @@ export const rename = (options: {
 
 export const renameAsset = (assetPath: string) => {
     const dialog = new Dialog({
-        title: window.siyuan.languages.rename,
+        title: window.scribli.languages.rename,
         content: `<div class="b3-dialog__content"><input class="b3-text-field fn__block" value=""></div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
     });

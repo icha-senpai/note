@@ -478,13 +478,13 @@ export const openCalcMenu = async (protyle: IProtyle, calcElement: HTMLElement, 
         click() {
             menu.close();
             const dialog = new Dialog({
-                title: window.siyuan.languages.calcOperatorTemplate,
+                title: window.scribli.languages.calcOperatorTemplate,
                 content: `<div class="b3-dialog__content">
-    <textarea spellcheck="false" class="fn__block b3-text-field" placeholder="${escapeAttr(window.siyuan.languages.rollupTemplateTip)}" rows="8" style="resize: vertical;font-family: var(--b3-font-family-code);">${currentTemplate}</textarea>
+    <textarea spellcheck="false" class="fn__block b3-text-field" placeholder="${escapeAttr(window.scribli.languages.rollupTemplateTip)}" rows="8" style="resize: vertical;font-family: var(--b3-font-family-code);">${currentTemplate}</textarea>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                 width: "520px",
             });
@@ -522,67 +522,67 @@ export const getCalcValue = (column: IAVColumn) => {
     let value = "";
     switch (column.calc.operator) {
         case "Count all":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultCountAll}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultCountAll}</small>`;
             break;
         case "Count values":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultCountValues}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultCountValues}</small>`;
             break;
         case "Count unique values":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultCountUniqueValues}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultCountUniqueValues}</small>`;
             break;
         case "Count empty":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultCountEmpty}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultCountEmpty}</small>`;
             break;
         case "Count not empty":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultCountNotEmpty}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultCountNotEmpty}</small>`;
             break;
         case "Percent empty":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultPercentEmpty}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultPercentEmpty}</small>`;
             break;
         case "Percent not empty":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultPercentNotEmpty}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultPercentNotEmpty}</small>`;
             break;
         case "Percent unique values":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultPercentUniqueValues}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultPercentUniqueValues}</small>`;
             break;
         case "Sum":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultSum}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultSum}</small>`;
             break;
         case  "Average":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultAverage}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultAverage}</small>`;
             break;
         case  "Median":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultMedian}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultMedian}</small>`;
             break;
         case  "Min":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultMin}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultMin}</small>`;
             break;
         case  "Max":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultMax}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultMax}</small>`;
             break;
         case  "Range":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcResultRange}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcResultRange}</small>`;
             break;
         case  "Earliest":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcOperatorEarliest}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcOperatorEarliest}</small>`;
             break;
         case  "Latest":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.calcOperatorLatest}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.calcOperatorLatest}</small>`;
             break;
         case  "Checked":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.checked}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.checked}</small>`;
             break;
         case  "Unchecked":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.unchecked}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.unchecked}</small>`;
             break;
         case  "Percent checked":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.percentChecked}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.percentChecked}</small>`;
             break;
         case  "Percent unchecked":
-            value = `<span>${resultCalc.formattedContent}</span><small>${window.siyuan.languages.percentUnchecked}</small>`;
+            value = `<span>${resultCalc.formattedContent}</span><small>${window.scribli.languages.percentUnchecked}</small>`;
             break;
         case  "Template":
-            value = `<span>${resultCalc.formattedContent ?? resultCalc.content}</span><small>${window.siyuan.languages.calcResultTemplate}</small>`;
+            value = `<span>${resultCalc.formattedContent ?? resultCalc.content}</span><small>${window.scribli.languages.calcResultTemplate}</small>`;
             break;
     }
     return value;
@@ -592,51 +592,51 @@ export const getNameByOperator = (operator: string, isRollup: boolean) => {
     switch (operator) {
         case undefined:
         case "":
-            return isRollup ? window.siyuan.languages.original : window.siyuan.languages.calcOperatorNone;
+            return isRollup ? window.scribli.languages.original : window.scribli.languages.calcOperatorNone;
         case "Unique values": // 仅汇总字段的汇总方式在使用
-            return window.siyuan.languages.uniqueValues;
+            return window.scribli.languages.uniqueValues;
         case "Count all":
-            return window.siyuan.languages.calcOperatorCountAll;
+            return window.scribli.languages.calcOperatorCountAll;
         case "Count values":
-            return window.siyuan.languages.calcOperatorCountValues;
+            return window.scribli.languages.calcOperatorCountValues;
         case "Count unique values":
-            return window.siyuan.languages.calcOperatorCountUniqueValues;
+            return window.scribli.languages.calcOperatorCountUniqueValues;
         case "Count empty":
-            return window.siyuan.languages.calcOperatorCountEmpty;
+            return window.scribli.languages.calcOperatorCountEmpty;
         case "Count not empty":
-            return window.siyuan.languages.calcOperatorCountNotEmpty;
+            return window.scribli.languages.calcOperatorCountNotEmpty;
         case "Percent empty":
-            return window.siyuan.languages.calcOperatorPercentEmpty;
+            return window.scribli.languages.calcOperatorPercentEmpty;
         case "Percent not empty":
-            return window.siyuan.languages.calcOperatorPercentNotEmpty;
+            return window.scribli.languages.calcOperatorPercentNotEmpty;
         case "Percent unique values":
-            return window.siyuan.languages.calcOperatorPercentUniqueValues;
+            return window.scribli.languages.calcOperatorPercentUniqueValues;
         case "Checked":
-            return window.siyuan.languages.checked;
+            return window.scribli.languages.checked;
         case "Unchecked":
-            return window.siyuan.languages.unchecked;
+            return window.scribli.languages.unchecked;
         case "Percent checked":
-            return window.siyuan.languages.percentChecked;
+            return window.scribli.languages.percentChecked;
         case "Percent unchecked":
-            return window.siyuan.languages.percentUnchecked;
+            return window.scribli.languages.percentUnchecked;
         case "Sum":
-            return window.siyuan.languages.calcOperatorSum;
+            return window.scribli.languages.calcOperatorSum;
         case "Average":
-            return window.siyuan.languages.calcOperatorAverage;
+            return window.scribli.languages.calcOperatorAverage;
         case "Median":
-            return window.siyuan.languages.calcOperatorMedian;
+            return window.scribli.languages.calcOperatorMedian;
         case "Min":
-            return window.siyuan.languages.calcOperatorMin;
+            return window.scribli.languages.calcOperatorMin;
         case "Max":
-            return window.siyuan.languages.calcOperatorMax;
+            return window.scribli.languages.calcOperatorMax;
         case "Range":
-            return window.siyuan.languages.calcOperatorRange;
+            return window.scribli.languages.calcOperatorRange;
         case "Earliest":
-            return window.siyuan.languages.calcOperatorEarliest;
+            return window.scribli.languages.calcOperatorEarliest;
         case "Latest":
-            return window.siyuan.languages.calcOperatorLatest;
+            return window.scribli.languages.calcOperatorLatest;
         case "Template":
-            return window.siyuan.languages.calcOperatorTemplate;
+            return window.scribli.languages.calcOperatorTemplate;
         default:
             return "";
     }

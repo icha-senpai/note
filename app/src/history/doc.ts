@@ -47,9 +47,9 @@ const renderDoc = (element: HTMLElement, currentPage: number, id: string) => {
         pageNumElement.textContent = currentPage.toString();
         const pageInfoElement = nextElement.nextElementSibling.nextElementSibling;
         pageInfoElement.classList.remove("fn__none");
-        pageInfoElement.textContent = window.siyuan.languages.pageCountAndHistoryCount.replace("${x}", response.data.pageCount).replace("${y}", response.data.totalCount);
+        pageInfoElement.textContent = window.scribli.languages.pageCountAndHistoryCount.replace("${x}", response.data.pageCount).replace("${y}", response.data.totalCount);
         if (response.data.histories.length === 0) {
-            listElement.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+            listElement.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
             return;
         }
         let logsHTML = "";
@@ -57,7 +57,7 @@ const renderDoc = (element: HTMLElement, currentPage: number, id: string) => {
             logsHTML += `<li class="b3-list-item b3-list-item--hide-action" data-created="${item}">
     <span class="b3-list-item__text">${dayjs(parseInt(item) * 1000).format("YYYY-MM-DD HH:mm:ss")}</span>
     <span class="fn__space"></span>
-    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.siyuan.languages.rollback}">
+    <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.scribli.languages.rollback}">
         <svg><use xlink:href="#iconUndo"></use></svg>
     </span>
 </li>`;
@@ -74,25 +74,25 @@ export const openDocHistory = (options: {
 }) => {
     const contentHTML = `<div class="history__action">
     <div class="block__icons">
-        <span data-type="docprevious" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.siyuan.languages.previousLabel}"><svg><use xlink:href="#iconLeft"></use></svg></span>
+        <span data-type="docprevious" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.scribli.languages.previousLabel}"><svg><use xlink:href="#iconLeft"></use></svg></span>
         <button class="b3-button b3-button--text ft__selectnone" data-type="jumpRepoPage" disabled>1</button>
-        <span data-type="docnext" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.siyuan.languages.nextLabel}"><svg><use xlink:href="#iconRight"></use></svg></span>
+        <span data-type="docnext" class="block__icon block__icon--show b3-tooltips b3-tooltips__e" disabled="disabled" aria-label="${window.scribli.languages.nextLabel}"><svg><use xlink:href="#iconRight"></use></svg></span>
         <span class="fn__space"></span>
-        <span class="ft__on-surface fn__flex-shrink ft__selectnone fn__none">${window.siyuan.languages.pageCountAndHistoryCount}</span>
+        <span class="ft__on-surface fn__flex-shrink ft__selectnone fn__none">${window.scribli.languages.pageCountAndHistoryCount}</span>
         <span class="fn__space"></span>
         <div class="fn__flex-1"></div>
         <select data-type="opselect" class="b3-select">
-            <option value="all" selected>${window.siyuan.languages.allOp}</option>
-            <option value="update">${window.siyuan.languages.historyUpdate}</option>
-            <option value="format">${window.siyuan.languages.historyFormat}</option>
-            <option value="sync">${window.siyuan.languages.historySync}</option>
-            <option value="replace">${window.siyuan.languages.historyReplace}</option>
-            <option value="outline">${window.siyuan.languages.historyOutline}</option>
+            <option value="all" selected>${window.scribli.languages.allOp}</option>
+            <option value="update">${window.scribli.languages.historyUpdate}</option>
+            <option value="format">${window.scribli.languages.historyFormat}</option>
+            <option value="sync">${window.scribli.languages.historySync}</option>
+            <option value="replace">${window.scribli.languages.historyReplace}</option>
+            <option value="outline">${window.scribli.languages.historyOutline}</option>
         </select>
     </div>
 </div>
 <div class="fn__flex fn__flex-1 history__panel">
-    <ul class="b3-list b3-list--background history__side" ${isMobile() ? "" : `style="width: ${window.siyuan.storage[Constants.LOCAL_HISTORY].sideDocWidth}"`}>
+    <ul class="b3-list b3-list--background history__side" ${isMobile() ? "" : `style="width: ${window.scribli.storage[Constants.LOCAL_HISTORY].sideDocWidth}"`}>
         <li class="fn__loading"><img style="height: 64px;width: 64px" src="/stage/loading-pure.svg"></li>
     </ul>
     <div class="history__resize"></div>
@@ -146,9 +146,9 @@ export const openDocHistory = (options: {
                 getHistoryPath(target.parentElement, opElement.value, options.id, (item) => {
                     const dataPath = item.path;
                     isLoading = false;
-                    const confirmTip = window.siyuan.languages.rollbackConfirm.replace("${name}", escapeHtml(item.title))
+                    const confirmTip = window.scribli.languages.rollbackConfirm.replace("${name}", escapeHtml(item.title))
                         .replace("${time}", target.previousElementSibling.previousElementSibling.textContent.trim());
-                    confirmDialog("⚠️ " + window.siyuan.languages.rollback, confirmTip, () => {
+                    confirmDialog("⚠️ " + window.scribli.languages.rollback, confirmTip, () => {
                         fetchPost("/api/history/rollbackDocHistory", {
                             historyPath: dataPath
                         });
@@ -195,7 +195,7 @@ export const openDocHistory = (options: {
             } else if (type === "jumpRepoPage") {
                 const totalPage = parseInt(target.getAttribute("data-totalpage") || "1");
                 confirmDialog(
-                    window.siyuan.languages.jumpToPage.replace("${x}", totalPage),
+                    window.scribli.languages.jumpToPage.replace("${x}", totalPage),
                     `<input class="b3-text-field fn__block" type="number" min="1" max="${totalPage}" value="${pageNumElement.textContent}">`,
                     (confirmD) => {
                         const inputElement = confirmD.element.querySelector(".b3-text-field") as HTMLInputElement;

@@ -73,7 +73,7 @@ export class Scroll {
             index: parseInt(this.inputElement.value),
             id: protyle.block.parentID,
             mode: 0,
-            size: window.siyuan.config.editor.dynamicLoadBlocks,
+            size: window.scribli.config.editor.dynamicLoadBlocks,
         };
         if (isEncryptedBox(protyle.notebookId)) {
             getDocParam.notebook = protyle.notebookId;

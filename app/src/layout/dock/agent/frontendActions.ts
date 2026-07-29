@@ -52,10 +52,10 @@ registerAction({
         const query = (args.query as string | undefined)?.trim();
         const {openSetting} = await import("../../../config");
         // openSetting() has a quirk: if a settings dialog already exists, it DESTROYS it and
-        // returns the destroyed dialog (the splice from window.siyuan.dialogs is deferred via
+        // returns the destroyed dialog (the splice from window.scribli.dialogs is deferred via
         // setTimeout, so it can't be detected synchronously). To guarantee the panel is visible
         // after this call, check first: if one is already open, reuse it; otherwise open fresh.
-        const existing = window.siyuan.dialogs.find(d => d.element.querySelector(".config__tab-container"));
+        const existing = window.scribli.dialogs.find(d => d.element.querySelector(".config__tab-container"));
         let dialog = existing;
         if (!dialog) {
             dialog = openSetting(app);

@@ -20,7 +20,7 @@ import {
 } from "./aiUi";
 
 const registerAiProvidersGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("providers", window.siyuan.languages.apiProvider);
+    const group = tab.group("providers", window.scribli.languages.apiProvider);
 
     group.slot({
         key: "providers",
@@ -32,7 +32,7 @@ const registerAiProvidersGroup = (tab: SettingTabBuilder) => {
 
 const registerAiEditingGroup = (tab: SettingTabBuilder) => {
     const groupId = "editing";
-    const group = tab.group(groupId, window.siyuan.languages.editor);
+    const group = tab.group(groupId, window.scribli.languages.editor);
 
     group.slot({
         key: "editingModelPicker",
@@ -41,19 +41,19 @@ const registerAiEditingGroup = (tab: SettingTabBuilder) => {
         afterMount: (root) => mountModelPickerBlock(root, groupId),
     });
     group.number("ai.editing.maxCompletionTokens", {
-        title: window.siyuan.languages.apiMaxTokens,
-        desc: window.siyuan.languages.apiMaxTokensTip,
+        title: window.scribli.languages.apiMaxTokens,
+        desc: window.scribli.languages.apiMaxTokensTip,
         min: 0,
     });
     group.number("ai.editing.maxHistoryMessages", {
-        title: window.siyuan.languages.apiMaxContexts,
-        desc: window.siyuan.languages.apiMaxContextsTip,
+        title: window.scribli.languages.apiMaxContexts,
+        desc: window.scribli.languages.apiMaxContextsTip,
         min: 1,
         max: 64,
     });
     group.number("ai.editing.temperature", {
-        title: window.siyuan.languages.apiTemperature,
-        desc: window.siyuan.languages.apiTemperatureTip,
+        title: window.scribli.languages.apiTemperature,
+        desc: window.scribli.languages.apiTemperatureTip,
         min: 0,
         max: 2,
         step: "0.1",
@@ -62,7 +62,7 @@ const registerAiEditingGroup = (tab: SettingTabBuilder) => {
 
 const registerAiAgentGroup = (tab: SettingTabBuilder) => {
     const groupId = "agent";
-    const group = tab.group(groupId, window.siyuan.languages.agentChat);
+    const group = tab.group(groupId, window.scribli.languages.agentChat);
 
     group.slot({
         key: "agentModelPicker",
@@ -71,45 +71,45 @@ const registerAiAgentGroup = (tab: SettingTabBuilder) => {
         afterMount: (root) => mountModelPickerBlock(root, groupId),
     });
     group.number("ai.agent.maxCompletionTokens", {
-        title: window.siyuan.languages.apiMaxTokens,
-        desc: window.siyuan.languages.apiMaxTokensTip,
+        title: window.scribli.languages.apiMaxTokens,
+        desc: window.scribli.languages.apiMaxTokensTip,
         min: 0,
     });
     group.number("ai.agent.maxToolCallRounds", {
-        title: window.siyuan.languages.agentMaxToolCallRounds,
-        desc: window.siyuan.languages.agentMaxToolCallRoundsTip,
+        title: window.scribli.languages.agentMaxToolCallRounds,
+        desc: window.scribli.languages.agentMaxToolCallRoundsTip,
         min: 0,
     });
     group.number("ai.agent.temperature", {
-        title: window.siyuan.languages.apiTemperature,
-        desc: window.siyuan.languages.apiTemperatureTip,
+        title: window.scribli.languages.apiTemperature,
+        desc: window.scribli.languages.apiTemperatureTip,
         min: 0,
         max: 2,
         step: "0.1",
     });
     group.number("ai.agent.sessionTimeout", {
-        title: window.siyuan.languages.agentTimeout,
-        desc: window.siyuan.languages.agentTimeoutTip,
+        title: window.scribli.languages.agentTimeout,
+        desc: window.scribli.languages.agentTimeoutTip,
         min: 0,
         max: 3600,
         unit: "s",
     });
     group.number("ai.agent.streamIdleTimeout", {
-        title: window.siyuan.languages.agentStreamIdleTimeout,
-        desc: window.siyuan.languages.agentStreamIdleTimeoutTip,
+        title: window.scribli.languages.agentStreamIdleTimeout,
+        desc: window.scribli.languages.agentStreamIdleTimeoutTip,
         min: 1,
         max: 600,
         unit: "s",
     });
     group.number("ai.agent.confirmTimeout", {
-        title: window.siyuan.languages.agentConfirmTimeout,
-        desc: window.siyuan.languages.agentConfirmTimeoutTip,
+        title: window.scribli.languages.agentConfirmTimeout,
+        desc: window.scribli.languages.agentConfirmTimeoutTip,
         min: 0,
         unit: "s",
     });
     group.number("ai.agent.maxRetries", {
-        title: window.siyuan.languages.agentMaxRetries,
-        desc: window.siyuan.languages.agentMaxRetriesTip,
+        title: window.scribli.languages.agentMaxRetries,
+        desc: window.scribli.languages.agentMaxRetriesTip,
         min: 0,
         max: 10,
     });
@@ -117,7 +117,7 @@ const registerAiAgentGroup = (tab: SettingTabBuilder) => {
 
 const registerAiVisionGroup = (tab: SettingTabBuilder) => {
     const groupId = "vision";
-    const group = tab.group(groupId, window.siyuan.languages.aiImageUnderstanding);
+    const group = tab.group(groupId, window.scribli.languages.aiImageUnderstanding);
 
     group.slot({
         key: "visionModelPicker",
@@ -126,8 +126,8 @@ const registerAiVisionGroup = (tab: SettingTabBuilder) => {
         afterMount: (root) => mountModelPickerBlock(root, groupId),
     });
     group.number("ai.vision.requestTimeout", {
-        title: window.siyuan.languages.apiTimeout,
-        desc: window.siyuan.languages.apiTimeoutTip,
+        title: window.scribli.languages.apiTimeout,
+        desc: window.scribli.languages.apiTimeoutTip,
         min: 1,
         max: 600,
         unit: "s",
@@ -136,7 +136,7 @@ const registerAiVisionGroup = (tab: SettingTabBuilder) => {
 
 const registerAiImageGenerationGroup = (tab: SettingTabBuilder) => {
     const groupId = "imageGeneration";
-    const group = tab.group(groupId, window.siyuan.languages.aiImageGeneration);
+    const group = tab.group(groupId, window.scribli.languages.aiImageGeneration);
 
     group.slot({
         key: "imageGenerationModelPicker",
@@ -145,8 +145,8 @@ const registerAiImageGenerationGroup = (tab: SettingTabBuilder) => {
         afterMount: (root) => mountModelPickerBlock(root, groupId),
     });
     group.number("ai.imageGeneration.requestTimeout", {
-        title: window.siyuan.languages.apiTimeout,
-        desc: window.siyuan.languages.apiTimeoutTip,
+        title: window.scribli.languages.apiTimeout,
+        desc: window.scribli.languages.apiTimeoutTip,
         min: 1,
         max: 600,
         unit: "s",
@@ -154,7 +154,7 @@ const registerAiImageGenerationGroup = (tab: SettingTabBuilder) => {
 };
 
 const registerAiMcpGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("mcp", window.siyuan.languages.configGroupMcp);
+    const group = tab.group("mcp", window.scribli.languages.configGroupMcp);
 
     group.slot({
         key: "mcpServers",
@@ -165,36 +165,36 @@ const registerAiMcpGroup = (tab: SettingTabBuilder) => {
 };
 
 const registerAiEmbeddingGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("embedding", window.siyuan.languages.configGroupEmbedding);
+    const group = tab.group("embedding", window.scribli.languages.configGroupEmbedding);
 
     group.switch("ai.embedding.enabled", {
-        title: window.siyuan.languages.semanticSearch,
-        desc: window.siyuan.languages.semanticSearchTip,
+        title: window.scribli.languages.semanticSearch,
+        desc: window.scribli.languages.semanticSearchTip,
     });
     group.textBlock("ai.embedding.baseURL", {
-        title: window.siyuan.languages.apiBaseURL,
-        desc: window.siyuan.languages.apiBaseURLEmbeddingTip,
+        title: window.scribli.languages.apiBaseURL,
+        desc: window.scribli.languages.apiBaseURLEmbeddingTip,
         mode: "input-text",
     });
     group.textBlock("ai.embedding.apiKey", {
-        title: window.siyuan.languages.apiKey,
-        desc: window.siyuan.languages.apiKeyTip,
+        title: window.scribli.languages.apiKey,
+        desc: window.scribli.languages.apiKeyTip,
         mode: "input-password",
     });
     group.textBlock("ai.embedding.name", {
-        title: window.siyuan.languages.apiModel,
-        desc: window.siyuan.languages.apiModelTip,
+        title: window.scribli.languages.apiModel,
+        desc: window.scribli.languages.apiModelTip,
         mode: "input-text",
         afterMount: mountEmbeddingTestBtn,
     });
     group.number("ai.embedding.dimensions", {
-        title: window.siyuan.languages.apiDimensions,
-        desc: window.siyuan.languages.apiDimensionsTip,
+        title: window.scribli.languages.apiDimensions,
+        desc: window.scribli.languages.apiDimensionsTip,
         min: 0,
     });
     group.number("ai.embedding.timeout", {
-        title: window.siyuan.languages.apiTimeout,
-        desc: window.siyuan.languages.apiTimeoutTip,
+        title: window.scribli.languages.apiTimeout,
+        desc: window.scribli.languages.apiTimeoutTip,
         min: 1,
         unit: "s",
     });
@@ -202,16 +202,16 @@ const registerAiEmbeddingGroup = (tab: SettingTabBuilder) => {
     // 独立的嵌入索引重建按钮，不与全局重建索引耦合
     group.button({
         id: "rebuildEmbeddingIndex",
-        title: window.siyuan.languages.rebuildEmbeddingIndex,
-        desc: window.siyuan.languages.rebuildEmbeddingIndexTip,
-        label: window.siyuan.languages.rebuildEmbeddingIndex,
+        title: window.scribli.languages.rebuildEmbeddingIndex,
+        desc: window.scribli.languages.rebuildEmbeddingIndexTip,
+        label: window.scribli.languages.rebuildEmbeddingIndex,
         icon: "iconRefresh",
         afterMount: (root) => {
             root.querySelector("#rebuildEmbeddingIndex")?.addEventListener("click", () => {
-                confirmDialog(window.siyuan.languages.rebuildEmbeddingIndex,
-                    window.siyuan.languages.rebuildEmbeddingIndexConfirmTip, () => {
+                confirmDialog(window.scribli.languages.rebuildEmbeddingIndex,
+                    window.scribli.languages.rebuildEmbeddingIndexConfirmTip, () => {
                     fetchPost("/api/ai/reindexEmbedding", {}, () => {
-                        showMessage(window.siyuan.languages.rebuildEmbeddingIndexStarted);
+                        showMessage(window.scribli.languages.rebuildEmbeddingIndexStarted);
                     });
                 });
             });
@@ -228,37 +228,37 @@ const registerAiEmbeddingGroup = (tab: SettingTabBuilder) => {
 };
 
 const registerAiRerankGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("rerank", window.siyuan.languages.configGroupRerank);
+    const group = tab.group("rerank", window.scribli.languages.configGroupRerank);
 
     group.switch("ai.rerank.enabled", {
-        title: window.siyuan.languages.rerankModel,
-        desc: window.siyuan.languages.rerankTip,
+        title: window.scribli.languages.rerankModel,
+        desc: window.scribli.languages.rerankTip,
     });
     group.textBlock("ai.rerank.endpoint", {
-        title: window.siyuan.languages.apiEndpoint,
-        desc: window.siyuan.languages.apiEndpointRerankTip,
+        title: window.scribli.languages.apiEndpoint,
+        desc: window.scribli.languages.apiEndpointRerankTip,
         mode: "input-text",
     });
     group.textBlock("ai.rerank.apiKey", {
-        title: window.siyuan.languages.apiKey,
-        desc: window.siyuan.languages.apiKeyTip,
+        title: window.scribli.languages.apiKey,
+        desc: window.scribli.languages.apiKeyTip,
         mode: "input-password",
     });
     group.textBlock("ai.rerank.name", {
-        title: window.siyuan.languages.apiModel,
-        desc: window.siyuan.languages.apiModelTip,
+        title: window.scribli.languages.apiModel,
+        desc: window.scribli.languages.apiModelTip,
         mode: "input-text",
         afterMount: mountRerankTestBtn,
     });
     group.number("ai.rerank.candidateCount", {
-        title: window.siyuan.languages.rerankCandidateCount,
-        desc: window.siyuan.languages.rerankCandidateCountTip,
+        title: window.scribli.languages.rerankCandidateCount,
+        desc: window.scribli.languages.rerankCandidateCountTip,
         min: 5,
         max: 100,
     });
     group.number("ai.rerank.timeout", {
-        title: window.siyuan.languages.apiTimeout,
-        desc: window.siyuan.languages.apiTimeoutTip,
+        title: window.scribli.languages.apiTimeout,
+        desc: window.scribli.languages.apiTimeoutTip,
         min: 1,
         unit: "s",
     });

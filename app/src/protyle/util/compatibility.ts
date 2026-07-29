@@ -6,7 +6,7 @@ import {ipcRenderer} from "electron";
 /// #endif
 import {getDefaultSubType, getDefaultType} from "../../search/getDefault";
 import {hideMessage, showMessage} from "../../dialog/message";
-import {isSiYuanUriProtocol} from "../../util/pathName";
+import {isScribliUriProtocol} from "../../util/pathName";
 import {isBrowser} from "../../util/functions";
 import type {App} from "../../index";
 
@@ -83,7 +83,7 @@ export const saveExportFile = async (uri: string, msgId?: string) => {
         if (!fileName) {
             fileName = "download";
         }
-        const result = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+        const result = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
             cmd: "showSaveDialog",
             defaultPath: fileName,
             properties: ["showOverwriteConfirmation"],
@@ -108,7 +108,7 @@ export const saveExportFile = async (uri: string, msgId?: string) => {
         if (msgId) {
             hideMessage(msgId);
         }
-        showMessage(window.siyuan.languages.exported);
+        showMessage(window.scribli.languages.exported);
         return;
     } catch (e) {
         if (msgId) {
@@ -161,11 +161,11 @@ export const readText = () => {
         return window.JSHarmony.readClipboard();
     }
     if (typeof navigator.clipboard === "undefined") {
-        alert(window.siyuan.languages.clipboardPermissionDenied);
+        alert(window.scribli.languages.clipboardPermissionDenied);
         return "";
     }
     return navigator.clipboard.readText().catch(() => {
-        alert(window.siyuan.languages.clipboardPermissionDenied);
+        alert(window.scribli.languages.clipboardPermissionDenied);
     }) || "";
 };
 
@@ -173,8 +173,8 @@ export const readText = () => {
 export const getLocalFiles = async () => {
     // 不再支持 PC 浏览器 https://github.com/siyuan-note/siyuan/issues/7206
     let localFiles: ILocalFiles[] = [];
-    if ("darwin" === window.siyuan.config.system.os) {
-        const xmlString = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+    if ("darwin" === window.scribli.config.system.os) {
+        const xmlString = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
             cmd: "clipboardRead",
             format: "NSFilenamesPboardType",
         });
@@ -220,12 +220,12 @@ export const readClipboard = async () => {
         return text;
     }
     if (typeof navigator.clipboard === "undefined") {
-        alert(window.siyuan.languages.clipboardPermissionDenied);
+        alert(window.scribli.languages.clipboardPermissionDenied);
         return text;
     }
     try {
         const clipboardContents = await navigator.clipboard.read().catch(() => {
-            alert(window.siyuan.languages.clipboardPermissionDenied);
+            alert(window.scribli.languages.clipboardPermissionDenied);
         });
         if (!clipboardContents) {
             return text;
@@ -338,11 +338,11 @@ export const isNotCtrl = (event: KeyboardEvent | MouseEvent) => {
 };
 
 export const isHuawei = () => {
-    return window.siyuan.config.system.osPlatform.toLowerCase().indexOf("huawei") > -1;
+    return window.scribli.config.system.osPlatform.toLowerCase().indexOf("huawei") > -1;
 };
 
 export const isDisabledFeature = (feature: string): boolean => {
-    return window.siyuan.config.system.disabledFeatures?.indexOf(feature) > -1;
+    return window.scribli.config.system.disabledFeatures?.indexOf(feature) > -1;
 };
 
 export const isIPhone = () => {
@@ -389,11 +389,11 @@ export const isWindows = () => {
 };
 
 export const isInAndroid = () => {
-    return window.siyuan.config.system.container === "android" && window.JSAndroid;
+    return window.scribli.config.system.container === "android" && window.JSAndroid;
 };
 
 export const isInIOS = () => {
-    return window.siyuan.config.system.container === "ios" && window.webkit?.messageHandlers;
+    return window.scribli.config.system.container === "ios" && window.webkit?.messageHandlers;
 };
 
 export const isInMobileApp = () => {
@@ -404,7 +404,7 @@ export const isInMobileApp = () => {
 };
 
 export const isInHarmony = () => {
-    return window.siyuan.config.system.container === "harmony" && window.JSHarmony;
+    return window.scribli.config.system.container === "harmony" && window.JSHarmony;
 };
 
 export const isInEdge = () => {
@@ -470,7 +470,7 @@ export const updateHotkeyTip = (hotkey: string) => {
 
 export const getLocalStorage = (cb: () => void) => {
     fetchPost("/api/storage/getLocalStorage", undefined, (response) => {
-        window.siyuan.storage = response.data;
+        window.scribli.storage = response.data;
         // 历史数据迁移
         const defaultStorage: any = {};
         defaultStorage[Constants.LOCAL_SEARCHASSET] = {
@@ -488,7 +488,7 @@ export const getLocalStorage = (cb: () => void) => {
             row: "",
             layout: 0,
         };
-        Constants.SIYUAN_ASSETS_SEARCH.forEach(type => {
+        Constants.SCRIBLI_ASSETS_SEARCH.forEach(type => {
             defaultStorage[Constants.LOCAL_SEARCHASSET].types[type] = true;
         });
         defaultStorage[Constants.LOCAL_SEARCHKEYS] = {
@@ -567,7 +567,7 @@ export const getLocalStorage = (cb: () => void) => {
             r: "",
             types: getDefaultType(),
             subTypes: getDefaultSubType(),
-            replaceTypes: Object.assign({}, Constants.SIYUAN_DEFAULT_REPLACETYPES),
+            replaceTypes: Object.assign({}, Constants.SCRIBLI_DEFAULT_REPLACETYPES),
         };
         defaultStorage[Constants.LOCAL_ZOOM] = 1;
         defaultStorage[Constants.LOCAL_MOVE_PATH] = {keys: [], k: ""};
@@ -586,37 +586,37 @@ export const getLocalStorage = (cb: () => void) => {
                     const parseData = JSON.parse(response.data[key]);
                     if (typeof parseData === "number") {
                         // https://github.com/siyuan-note/siyuan/issues/8852 Object.assign 会导致 number to Number
-                        window.siyuan.storage[key] = parseData;
+                        window.scribli.storage[key] = parseData;
                     } else {
-                        window.siyuan.storage[key] = Object.assign(defaultStorage[key], parseData);
+                        window.scribli.storage[key] = Object.assign(defaultStorage[key], parseData);
                     }
                 } catch (e) {
-                    window.siyuan.storage[key] = defaultStorage[key];
+                    window.scribli.storage[key] = defaultStorage[key];
                 }
             } else if (typeof response.data[key] === "undefined") {
-                window.siyuan.storage[key] = defaultStorage[key];
+                window.scribli.storage[key] = defaultStorage[key];
             }
         });
         // 搜索数据添加 replaceTypes 兼容
-        if (!window.siyuan.storage[Constants.LOCAL_SEARCHDATA].replaceTypes ||
-            Object.keys(window.siyuan.storage[Constants.LOCAL_SEARCHDATA].replaceTypes).length === 0) {
-            window.siyuan.storage[Constants.LOCAL_SEARCHDATA].replaceTypes = Object.assign({}, Constants.SIYUAN_DEFAULT_REPLACETYPES);
+        if (!window.scribli.storage[Constants.LOCAL_SEARCHDATA].replaceTypes ||
+            Object.keys(window.scribli.storage[Constants.LOCAL_SEARCHDATA].replaceTypes).length === 0) {
+            window.scribli.storage[Constants.LOCAL_SEARCHDATA].replaceTypes = Object.assign({}, Constants.SCRIBLI_DEFAULT_REPLACETYPES);
         }
         // Migrate stored search data to include subTypes when absent
-        if (!window.siyuan.storage[Constants.LOCAL_SEARCHDATA].subTypes ||
-            Object.keys(window.siyuan.storage[Constants.LOCAL_SEARCHDATA].subTypes).length === 0) {
-            window.siyuan.storage[Constants.LOCAL_SEARCHDATA].subTypes = getDefaultSubType();
+        if (!window.scribli.storage[Constants.LOCAL_SEARCHDATA].subTypes ||
+            Object.keys(window.scribli.storage[Constants.LOCAL_SEARCHDATA].subTypes).length === 0) {
+            window.scribli.storage[Constants.LOCAL_SEARCHDATA].subTypes = getDefaultSubType();
         }
         cb();
     });
 };
 
 export const setStorageVal = (key: string, val: any, cb?: () => void) => {
-    if (window.siyuan.config.readonly || window.siyuan.isPublish) {
+    if (window.scribli.config.readonly || window.scribli.isPublish) {
         return;
     }
     fetchPost("/api/storage/setLocalStorageVal", {
-        app: Constants.SIYUAN_APPID,
+        app: Constants.SCRIBLI_APPID,
         key,
         val,
     }, () => {
@@ -630,8 +630,8 @@ export const initWindowOpenOverride = (app: App, openExternal?: (url: string) =>
     const originalOpen = window.open;
     window.open = function (url?: string | URL, target?: string, features?: string): WindowProxy | null {
         const urlStr = typeof url === "string" ? url : (url ? String(url) : "");
-        if (isSiYuanUriProtocol(urlStr) && (!isBrowser() || isInMobileApp() || target !== "_blank")) {
-            void import("../../util/uri").then(({processSiYuanUri}) => processSiYuanUri(app, urlStr));
+        if (isScribliUriProtocol(urlStr) && (!isBrowser() || isInMobileApp() || target !== "_blank")) {
+            void import("../../util/uri").then(({processScribliUri}) => processScribliUri(app, urlStr));
             return null;
         }
         if (isInMobileApp() && urlStr && openExternal) {
@@ -650,10 +650,10 @@ export const initNativeDialogOverride = () => {
 
     window.alert = function (message: string) {
         try {
-            ipcRenderer.sendSync(Constants.SIYUAN_ALERT_DIALOG, {
-                title: window.siyuan.languages.siyuanNote,
+            ipcRenderer.sendSync(Constants.SCRIBLI_ALERT_DIALOG, {
+                title: window.scribli.languages.siyuanNote,
                 message,
-                buttons: [window.siyuan.languages.confirm],
+                buttons: [window.scribli.languages.confirm],
                 noLink: true,
             });
             return undefined;
@@ -664,10 +664,10 @@ export const initNativeDialogOverride = () => {
 
     window.confirm = function (message: string): boolean {
         try {
-            const buttonIndex = ipcRenderer.sendSync(Constants.SIYUAN_CONFIRM_DIALOG, {
-                title: window.siyuan?.languages?.siyuanNote || "Scribli",
+            const buttonIndex = ipcRenderer.sendSync(Constants.SCRIBLI_CONFIRM_DIALOG, {
+                title: window.scribli?.languages?.siyuanNote || "Scribli",
                 message,
-                buttons: [window.siyuan?.languages?.cancel || "Cancel", window.siyuan?.languages?.confirm || "OK"],
+                buttons: [window.scribli?.languages?.cancel || "Cancel", window.scribli?.languages?.confirm || "OK"],
                 cancelId: 0,
                 defaultId: 1,
                 noLink: true,

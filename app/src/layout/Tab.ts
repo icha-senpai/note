@@ -52,13 +52,13 @@ export class Tab {
                     event.dataTransfer.setData("text/html", tabElement.outerHTML);
                     const modeJSON = {id: this.id};
                     layoutToJSON(this, modeJSON);
-                    event.dataTransfer.setData(Constants.SIYUAN_DROP_TAB, JSON.stringify(modeJSON));
+                    event.dataTransfer.setData(Constants.SCRIBLI_DROP_TAB, JSON.stringify(modeJSON));
                     event.dataTransfer.dropEffect = "move";
                     tabElement.style.opacity = "0.38";
-                    window.siyuan.dragElement = this.headElement;
+                    window.scribli.dragElement = this.headElement;
                 }
                 /// #if !BROWSER
-                ipcRenderer.send(Constants.SIYUAN_SEND_WINDOWS, {cmd: "resetTabsStyle", data: "removeRegionStyle"});
+                ipcRenderer.send(Constants.SCRIBLI_SEND_WINDOWS, {cmd: "resetTabsStyle", data: "removeRegionStyle"});
                 /// #endif
             });
             this.headElement.addEventListener("dragend", (event: DragEvent & { target: HTMLElement }) => {
@@ -74,7 +74,7 @@ export class Tab {
                         openNewWindow(this);
                     }
                 }, Constants.TIMEOUT_LOAD); // 等待主进程发送关闭消息
-                ipcRenderer.send(Constants.SIYUAN_SEND_WINDOWS, {cmd: "resetTabsStyle", data: "rmDragStyle"});
+                ipcRenderer.send(Constants.SCRIBLI_SEND_WINDOWS, {cmd: "resetTabsStyle", data: "rmDragStyle"});
                 /// #else
                 document.querySelectorAll(".layout-tab-bars--drag").forEach(item => {
                     item.classList.remove("layout-tab-bars--drag");
@@ -83,7 +83,7 @@ export class Tab {
                     tabItem.remove();
                 });
                 /// #endif
-                window.siyuan.dragElement = undefined;
+                window.scribli.dragElement = undefined;
                 if (event.dataTransfer.dropEffect === "none") {
                     // 按 esc 取消的时候应该还原在 dragover 时交换的 tab
                     this.parent.children.forEach((item, index) => {
@@ -98,7 +98,7 @@ export class Tab {
                     });
                 }
                 /// #if !BROWSER
-                ipcRenderer.send(Constants.SIYUAN_SEND_WINDOWS, {cmd: "resetTabsStyle", data: "addRegionStyle"});
+                ipcRenderer.send(Constants.SCRIBLI_SEND_WINDOWS, {cmd: "resetTabsStyle", data: "addRegionStyle"});
                 /// #endif
             });
         }

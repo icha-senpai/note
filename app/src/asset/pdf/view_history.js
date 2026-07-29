@@ -65,7 +65,7 @@ class ViewHistory {
       return;
     }
     // NOTE
-    window.siyuan.storage["pdfjs.history"] = databaseStr
+    window.scribli.storage["pdfjs.history"] = databaseStr
     setStorageVal("pdfjs.history", databaseStr)
     // localStorage.setItem("pdfjs.history", databaseStr);
   }
@@ -75,7 +75,7 @@ class ViewHistory {
       return sessionStorage.getItem("pdfjs.history");
     }
     // NOTE
-    return window.siyuan.storage["pdfjs.history"];
+    return window.scribli.storage["pdfjs.history"];
     // return localStorage.getItem("pdfjs.history");
   }
 

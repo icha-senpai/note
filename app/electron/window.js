@@ -818,7 +818,7 @@ const chooseWorkspacePath = async (langData) => {
         fs.mkdirSync(defaultWorkspace, {mode: 0o755, recursive: true});
     }
 
-    const result = await ipcRenderer.invoke("siyuan-get", {
+    const result = await ipcRenderer.invoke("scribli-get", {
         cmd: "showOpenDialog",
         defaultPath: defaultWorkspace,
         properties: ["openDirectory", "createDirectory"],
@@ -861,7 +861,7 @@ const initWindowChrome = () => {
         document.body.classList.add("darwin");
     }
     document.getElementById("close").addEventListener("click", () => {
-        ipcRenderer.send("siyuan-first-quit");
+        ipcRenderer.send("scribli-first-quit");
     });
     document.getElementById("min").addEventListener("click", () => {
         ipcRenderer.send("scribli-cmd", "minimize");

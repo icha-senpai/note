@@ -11,7 +11,7 @@ import {resize} from "../protyle/util/resize";
 import {Menu} from "../plugin/Menu";
 
 export const openSearchUnRef = (element: HTMLElement, editor: Protyle) => {
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
     element.previousElementSibling.previousElementSibling.classList.add("fn__none");
     element.classList.remove("fn__none");
     if (element.querySelector("#searchUnRefResult").innerHTML) {
@@ -23,7 +23,7 @@ export const openSearchUnRef = (element: HTMLElement, editor: Protyle) => {
     if (element.querySelector("#searchUnRefList").innerHTML !== "") {
         return;
     }
-    const localSearch = window.siyuan.storage[Constants.LOCAL_SEARCHUNREF] as ISearchAssetOption;
+    const localSearch = window.scribli.storage[Constants.LOCAL_SEARCHUNREF] as ISearchAssetOption;
     if (localSearch.layout === 1) {
         if (localSearch.col) {
             editor.protyle.element.style.width = localSearch.col;
@@ -67,8 +67,8 @@ export const openSearchUnRef = (element: HTMLElement, editor: Protyle) => {
             documentSelf.ondragstart = null;
             documentSelf.onselectstart = null;
             documentSelf.onselect = null;
-            window.siyuan.storage[Constants.LOCAL_SEARCHUNREF][direction === "lr" ? "col" : "row"] = nextElement[direction === "lr" ? "clientWidth" : "clientHeight"] + "px";
-            setStorageVal(Constants.LOCAL_SEARCHUNREF, window.siyuan.storage[Constants.LOCAL_SEARCHUNREF]);
+            window.scribli.storage[Constants.LOCAL_SEARCHUNREF][direction === "lr" ? "col" : "row"] = nextElement[direction === "lr" ? "clientWidth" : "clientHeight"] + "px";
+            setStorageVal(Constants.LOCAL_SEARCHUNREF, window.scribli.storage[Constants.LOCAL_SEARCHUNREF]);
             if (direction === "lr") {
                 resize(editor.protyle);
             }
@@ -78,8 +78,8 @@ export const openSearchUnRef = (element: HTMLElement, editor: Protyle) => {
         editor.protyle.element.style[localSearch.layout === 1 ? "width" : "height"] = "";
         editor.protyle.element.classList.add("fn__flex-1");
         const direction = localSearch.layout === 1 ? "lr" : "tb";
-        window.siyuan.storage[Constants.LOCAL_SEARCHUNREF][direction === "lr" ? "col" : "row"] = "";
-        setStorageVal(Constants.LOCAL_SEARCHUNREF, window.siyuan.storage[Constants.LOCAL_SEARCHUNREF]);
+        window.scribli.storage[Constants.LOCAL_SEARCHUNREF][direction === "lr" ? "col" : "row"] = "";
+        setStorageVal(Constants.LOCAL_SEARCHUNREF, window.scribli.storage[Constants.LOCAL_SEARCHUNREF]);
         if (direction === "lr") {
             resize(editor.protyle);
         }
@@ -127,9 +127,9 @@ ${getAttr(item)}
             element.querySelector(".search__drag")?.classList.add("fn__none");
         }
         element.querySelector("#searchUnRefResult").innerHTML = `${page}/${response.data.pageCount || 1}<span class="fn__space"></span>
-<span class="ft__on-surface">${window.siyuan.languages.findInDoc.replace("${x}", response.data.matchedRootCount).replace("${y}", response.data.matchedBlockCount)}</span>`;
+<span class="ft__on-surface">${window.scribli.languages.findInDoc.replace("${x}", response.data.matchedRootCount).replace("${y}", response.data.matchedBlockCount)}</span>`;
         element.querySelector("#searchUnRefList").innerHTML = resultHTML || `<div class="search__empty">
-    ${window.siyuan.languages.emptyContent}
+    ${window.scribli.languages.emptyContent}
 </div>`;
     });
 };
@@ -139,15 +139,15 @@ export const unRefMoreMenu = (target: Element, element: Element, edit: Protyle) 
     if (menu.isOpen) {
         return;
     }
-    const localData = window.siyuan.storage[Constants.LOCAL_SEARCHUNREF];
+    const localData = window.scribli.storage[Constants.LOCAL_SEARCHUNREF];
     /// #if !MOBILE
     menu.addItem({
         icon: "iconLayout",
-        label: window.siyuan.languages.layout,
+        label: window.scribli.languages.layout,
         type: "submenu",
         submenu: [{
             iconHTML: "",
-            label: window.siyuan.languages.topBottomLayout,
+            label: window.scribli.languages.topBottomLayout,
             current: localData.layout === 0,
             click() {
                 element.querySelector(".search__layout").classList.remove("search__layout--row");
@@ -160,11 +160,11 @@ export const unRefMoreMenu = (target: Element, element: Element, edit: Protyle) 
                 }
                 resize(edit.protyle);
                 localData.layout = 0;
-                setStorageVal(Constants.LOCAL_SEARCHUNREF, window.siyuan.storage[Constants.LOCAL_SEARCHUNREF]);
+                setStorageVal(Constants.LOCAL_SEARCHUNREF, window.scribli.storage[Constants.LOCAL_SEARCHUNREF]);
             }
         }, {
             iconHTML: "",
-            label: window.siyuan.languages.leftRightLayout,
+            label: window.scribli.languages.leftRightLayout,
             current: localData.layout === 1,
             click() {
                 element.querySelector(".search__layout").classList.add("search__layout--row");
@@ -177,14 +177,14 @@ export const unRefMoreMenu = (target: Element, element: Element, edit: Protyle) 
                 }
                 resize(edit.protyle);
                 localData.layout = 1;
-                setStorageVal(Constants.LOCAL_SEARCHUNREF, window.siyuan.storage[Constants.LOCAL_SEARCHUNREF]);
+                setStorageVal(Constants.LOCAL_SEARCHUNREF, window.scribli.storage[Constants.LOCAL_SEARCHUNREF]);
             }
         }]
     });
     /// #endif
     menu.addItem({
         icon: "iconRefresh",
-        label: window.siyuan.languages.refresh,
+        label: window.scribli.languages.refresh,
         click() {
             const loadingElement =  element.parentElement.querySelector(".fn__loading") as HTMLElement;
             loadingElement.classList.remove("fn__none");

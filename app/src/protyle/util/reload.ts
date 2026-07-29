@@ -19,28 +19,28 @@ export const reloadProtyle = (protyle: IProtyle, focus: boolean, updateReadonly?
         removeLoading(protyle);
         return;
     }
-    if (window.siyuan.config.editor.displayBookmarkIcon) {
+    if (window.scribli.config.editor.displayBookmarkIcon) {
         protyle.wysiwyg.element.classList.add("protyle-wysiwyg--attr");
     } else {
         protyle.wysiwyg.element.classList.remove("protyle-wysiwyg--attr");
     }
     // RTL 切换时同步 .protyle 元素的 .rtl 类名
-    if (window.siyuan.config.editor.rtl) {
+    if (window.scribli.config.editor.rtl) {
         protyle.element.classList.add("rtl");
     } else {
         protyle.element.classList.remove("rtl");
     }
     if (protyle.title) {
         protyle.title.element.removeAttribute("data-render");
-        protyle.title.element.setAttribute("spellcheck", window.siyuan.config.editor.spellcheck.toString());
-        if (window.siyuan.config.editor.displayBookmarkIcon) {
+        protyle.title.element.setAttribute("spellcheck", window.scribli.config.editor.spellcheck.toString());
+        if (window.scribli.config.editor.displayBookmarkIcon) {
             protyle.title.element.classList.add("protyle-wysiwyg--attr");
         } else {
             protyle.title.element.classList.remove("protyle-wysiwyg--attr");
         }
     }
-    protyle.lute.SetProtyleMarkNetImg(window.siyuan.config.editor.displayNetImgMark);
-    protyle.lute.SetSpellcheck(window.siyuan.config.editor.spellcheck);
+    protyle.lute.SetProtyleMarkNetImg(window.scribli.config.editor.displayNetImgMark);
+    protyle.lute.SetSpellcheck(window.scribli.config.editor.spellcheck);
     restoreLuteMarkdownSyntax(protyle);
     protyle.lute.SetGFMStrikethrough1(false);
     addLoading(protyle);

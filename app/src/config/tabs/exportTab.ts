@@ -7,101 +7,101 @@ import {Constants} from "../../constants";
 import {exportConfigApi} from "./exportRuntime";
 
 const registerExportReferencesGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("references", window.siyuan.languages.configGroupReferences);
+    const group = tab.group("references", window.scribli.languages.configGroupReferences);
 
     group.switch("export.includeSubDocs", {
-        title: window.siyuan.languages.includeSubDocs,
-        desc: window.siyuan.languages.includeSubDocsTip,
+        title: window.scribli.languages.includeSubDocs,
+        desc: window.scribli.languages.includeSubDocsTip,
     });
     group.switch("export.includeRelatedDocs", {
-        title: window.siyuan.languages.includeRelatedDocs,
-        desc: window.siyuan.languages.includeRelatedDocsTip,
+        title: window.scribli.languages.includeRelatedDocs,
+        desc: window.scribli.languages.includeRelatedDocsTip,
     });
     group.select("export.blockRefMode", {
-        title: window.siyuan.languages.ref,
-        desc: window.siyuan.languages.export11,
+        title: window.scribli.languages.ref,
+        desc: window.scribli.languages.export11,
         options: [
-            {value: 2, label: window.siyuan.languages.export2},
-            {value: 3, label: window.siyuan.languages.export3},
-            {value: 4, label: window.siyuan.languages.export4},
+            {value: 2, label: window.scribli.languages.export2},
+            {value: 3, label: window.scribli.languages.export3},
+            {value: 4, label: window.scribli.languages.export4},
         ],
     });
     group.select("export.blockEmbedMode", {
-        title: window.siyuan.languages.blockEmbed,
-        desc: window.siyuan.languages.export12,
+        title: window.scribli.languages.blockEmbed,
+        desc: window.scribli.languages.export12,
         options: [
-            {value: 0, label: window.siyuan.languages.export0},
-            {value: 1, label: window.siyuan.languages.export1},
+            {value: 0, label: window.scribli.languages.export0},
+            {value: 1, label: window.scribli.languages.export1},
         ],
     });
 };
 
 const registerExportFormatGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("format", window.siyuan.languages.configGroupFormat);
+    const group = tab.group("format", window.scribli.languages.configGroupFormat);
 
     group.switch("export.markdownYFM", {
-        title: window.siyuan.languages.export23,
-        desc: window.siyuan.languages.export24,
+        title: window.scribli.languages.export23,
+        desc: window.scribli.languages.export24,
     });
     group.switch("export.addTitle", {
-        title: window.siyuan.languages.export17,
-        desc: window.siyuan.languages.export18,
+        title: window.scribli.languages.export17,
+        desc: window.scribli.languages.export18,
     });
     group.switch("export.paragraphBeginningSpace", {
-        title: window.siyuan.languages.paragraphBeginningSpace,
-        desc: window.siyuan.languages.md4,
+        title: window.scribli.languages.paragraphBeginningSpace,
+        desc: window.scribli.languages.md4,
     });
     group.switch("export.removeAssetsID", {
-        title: window.siyuan.languages.removeAssetsID,
-        desc: window.siyuan.languages.removeAssetsIDTip,
+        title: window.scribli.languages.removeAssetsID,
+        desc: window.scribli.languages.removeAssetsIDTip,
     });
     group.switch("export.inlineMemo", {
-        title: window.siyuan.languages.export31,
-        desc: window.siyuan.languages.export32,
+        title: window.scribli.languages.export31,
+        desc: window.scribli.languages.export32,
     });
     group.textPair({
-        title: window.siyuan.languages.export13,
-        desc: window.siyuan.languages.export14,
+        title: window.scribli.languages.export13,
+        desc: window.scribli.languages.export14,
         leftId: "export.blockRefTextLeft",
         rightId: "export.blockRefTextRight",
     });
     group.textPair({
-        title: window.siyuan.languages.export15,
-        desc: window.siyuan.languages.export16,
+        title: window.scribli.languages.export15,
+        desc: window.scribli.languages.export16,
         leftId: "export.tagOpenMarker",
         rightId: "export.tagCloseMarker",
     });
 };
 
 const registerExportPdfGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("pdf", window.siyuan.languages.configGroupPDF);
+    const group = tab.group("pdf", window.scribli.languages.configGroupPDF);
 
     group.select("export.fileAnnotationRefMode", {
-        title: window.siyuan.languages.export5,
-        desc: window.siyuan.languages.export6,
+        title: window.scribli.languages.export5,
+        desc: window.scribli.languages.export6,
         options: [
-            {value: 0, label: window.siyuan.languages.export7},
-            {value: 1, label: window.siyuan.languages.export8},
+            {value: 0, label: window.scribli.languages.export7},
+            {value: 1, label: window.scribli.languages.export8},
         ],
     });
     group.text("export.pdfFooter", {
-        title: window.siyuan.languages.export21,
-        desc: window.siyuan.languages.export22,
+        title: window.scribli.languages.export21,
+        desc: window.scribli.languages.export22,
     });
     group.stack({
         key: "pdfWatermark",
         keywords: [
-            window.siyuan.languages.export27,
-            window.siyuan.languages.export28,
-            window.siyuan.languages.export29,
+            window.scribli.languages.export27,
+            window.scribli.languages.export28,
+            window.scribli.languages.export29,
         ],
     }, (stack) => {
-        stack.title(window.siyuan.languages.export27);
-        stack.desc(window.siyuan.languages.export28);
+        stack.title(window.scribli.languages.export27);
+        stack.desc(window.scribli.languages.export28);
         stack.textBlock("export.pdfWatermarkStr", {
             mode: "input-text",
         });
-        stack.desc(`<a href="https://pdfcpu.io/core/watermark#description" target="_blank">${window.siyuan.languages.export29}</a>`);
+        stack.desc(`<a href="https://pdfcpu.io/core/watermark#description" target="_blank">${window.scribli.languages.export29}</a>`);
         stack.textBlock("export.pdfWatermarkDesc", {
             mode: "textarea",
         });
@@ -109,23 +109,23 @@ const registerExportPdfGroup = (tab: SettingTabBuilder) => {
 };
 
 const registerExportImagesGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("images", window.siyuan.languages.configGroupImages);
+    const group = tab.group("images", window.scribli.languages.configGroupImages);
 
     group.stack({
         key: "imageWatermark",
         keywords: [
-            window.siyuan.languages.export30,
-            window.siyuan.languages.export28,
-            window.siyuan.languages.export29,
-            window.siyuan.languages.export10,
+            window.scribli.languages.export30,
+            window.scribli.languages.export28,
+            window.scribli.languages.export29,
+            window.scribli.languages.export10,
         ],
     }, (stack) => {
-        stack.title(window.siyuan.languages.export30);
-        stack.desc(window.siyuan.languages.export28);
+        stack.title(window.scribli.languages.export30);
+        stack.desc(window.scribli.languages.export28);
         stack.textBlock("export.imageWatermarkStr", {
             mode: "input-text",
         });
-        stack.desc(`${window.siyuan.languages.export29}<div class="fn__hr--small"></div>${window.siyuan.languages.export10}`);
+        stack.desc(`${window.scribli.languages.export29}<div class="fn__hr--small"></div>${window.scribli.languages.export10}`);
         stack.textBlock("export.imageWatermarkDesc", {
             mode: "textarea",
         });
@@ -134,34 +134,34 @@ const registerExportImagesGroup = (tab: SettingTabBuilder) => {
 
 /// #if !BROWSER
 const registerExportPandocGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("pandoc", window.siyuan.languages.configGroupPandoc);
+    const group = tab.group("pandoc", window.scribli.languages.configGroupPandoc);
 
     group.stack({
         key: "pandocBin",
         keywords: [
-            window.siyuan.languages.export19,
-            window.siyuan.languages.export20,
-            window.siyuan.languages.reset,
-            window.siyuan.languages.config,
+            window.scribli.languages.export19,
+            window.scribli.languages.export20,
+            window.scribli.languages.reset,
+            window.scribli.languages.config,
         ],
         afterMount: mountExportPandocStack,
     }, (stack) => {
-        stack.title(`${window.siyuan.languages.export19}<span class="fn__space"></span><a href="javascript:void(0)" id="pandocBinPathDisplay" style="word-break: break-all">${Lute.EscapeHTMLStr(window.siyuan.config.export.pandocBin)}</a>`);
+        stack.title(`${window.scribli.languages.export19}<span class="fn__space"></span><a href="javascript:void(0)" id="pandocBinPathDisplay" style="word-break: break-all">${Lute.EscapeHTMLStr(window.scribli.config.export.pandocBin)}</a>`);
         stack.button({
             id: "pandocBinReset",
-            label: window.siyuan.languages.reset,
+            label: window.scribli.languages.reset,
             icon: "iconUndo",
         });
-        stack.desc(window.siyuan.languages.export20);
+        stack.desc(window.scribli.languages.export20);
         stack.button({
             id: "pandocBinChooser",
-            label: window.siyuan.languages.config,
+            label: window.scribli.languages.config,
             icon: "iconSettings",
         });
     });
     group.textBlock("export.pandocParams", {
-        title: window.siyuan.languages.export25,
-        desc: window.siyuan.languages.export26,
+        title: window.scribli.languages.export25,
+        desc: window.scribli.languages.export26,
         mode: "textarea",
     });
 };
@@ -171,14 +171,14 @@ const mountExportPandocStack = (root: HTMLElement) => {
         exportConfigApi.patch("export.pandocBin", "");
     });
     root.querySelector("#pandocBinPathDisplay")?.addEventListener("click", () => {
-        if (window.siyuan.config.export.pandocBin) {
-            useShell("showItemInFolder", window.siyuan.config.export.pandocBin);
+        if (window.scribli.config.export.pandocBin) {
+            useShell("showItemInFolder", window.scribli.config.export.pandocBin);
         }
     });
     root.querySelector("#pandocBinChooser")?.addEventListener("click", async () => {
-        const localPath = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+        const localPath = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
             cmd: "showOpenDialog",
-            defaultPath: window.siyuan.config.system.homeDir,
+            defaultPath: window.scribli.config.system.homeDir,
             properties: ["openFile", "showHiddenFiles"],
         });
         if (!localPath.filePaths.length) {

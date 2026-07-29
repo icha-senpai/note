@@ -253,12 +253,12 @@ export const formatNumber = (options: {
 
 export const getLabelByNumberFormat = (format: string) => {
     if ("" === format) {
-        return window.siyuan.languages.numberFormatNone;
+        return window.scribli.languages.numberFormatNone;
     } else if ("commas" === format) {
-        return window.siyuan.languages.numberFormatCommas;
+        return window.scribli.languages.numberFormatCommas;
     } else if ("percent" === format) {
-        return window.siyuan.languages.numberFormatPercent;
+        return window.scribli.languages.numberFormatPercent;
     }
 
-    return window.siyuan.languages["numberFormat" + format];
+    return window.scribli.languages["numberFormat" + format];
 };

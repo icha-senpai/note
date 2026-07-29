@@ -36,7 +36,7 @@ class App {
 
     constructor() {
         addBaseURL();
-        this.appId = Constants.SIYUAN_APPID;
+        this.appId = Constants.SCRIBLI_APPID;
 
         const mainWs = new Model({app: this});
         mainWs.connect({
@@ -55,7 +55,7 @@ class App {
                                 appearanceConfigApi.apply(data.data);
                                 break;
                             case "setSnippet":
-                                window.siyuan.config.snippet = data.data;
+                                window.scribli.config.snippet = data.data;
                                 renderSnippet();
                                 break;
                             case "setDefRefCount":
@@ -77,31 +77,31 @@ class App {
                                 reloadSync(this, data.data);
                                 break;
                             case "readonly":
-                                window.siyuan.config.editor.readOnly = data.data;
+                                window.scribli.config.editor.readOnly = data.data;
                                 hideAllElements(["util"]);
                                 break;
                             case "setConf":
-                                window.siyuan.config = data.data;
+                                window.scribli.config = data.data;
                                 break;
                             case "progress":
                                 progressLoading(data);
                                 break;
                             case "setLocalStorageVal":
-                                if (window.siyuan.storage) {
-                                    window.siyuan.storage[data.data.key] = data.data.val;
+                                if (window.scribli.storage) {
+                                    window.scribli.storage[data.data.key] = data.data.val;
                                 }
                                 break;
                             case "setLocalStorageVals":
                                 Object.keys(data.data.keyVals).forEach((k) => {
-                                    window.siyuan.storage[k] = data.data.keyVals[k];
+                                    window.scribli.storage[k] = data.data.keyVals[k];
                                 });
                                 break;
                             case "removeLocalStorageVal":
-                                delete window.siyuan.storage[data.data.key];
+                                delete window.scribli.storage[data.data.key];
                                 break;
                             case "removeLocalStorageVals":
                                 data.data.keys.forEach((k: string) => {
-                                    delete window.siyuan.storage[k];
+                                    delete window.scribli.storage[k];
                                 });
                                 break;
                             case "rename":
@@ -157,7 +157,7 @@ class App {
                                 progressBackgroundTask(data.data.tasks);
                                 break;
                             case "refreshtheme":
-                                if ((window.siyuan.config.appearance.mode === 1 && window.siyuan.config.appearance.themeDark !== "midnight") || (window.siyuan.config.appearance.mode === 0 && window.siyuan.config.appearance.themeLight !== "daylight")) {
+                                if ((window.scribli.config.appearance.mode === 1 && window.scribli.config.appearance.themeDark !== "midnight") || (window.scribli.config.appearance.mode === 0 && window.scribli.config.appearance.themeLight !== "daylight")) {
                                     (document.getElementById("themeStyle") as HTMLLinkElement).href = data.data.theme;
                                 } else {
                                     (document.getElementById("themeDefaultStyle") as HTMLLinkElement).href = data.data.theme;
@@ -171,7 +171,7 @@ class App {
                 }
         });
 
-        window.siyuan = {
+        window.scribli = {
             zIndex: 10,
             reqIds: {},
             backStack: [],
@@ -183,17 +183,18 @@ class App {
             altIsPressed: false,
             ws: mainWs,
         };
+        window.siyuan = window.scribli;
         fetchPost("/api/system/getConf", {}, async (response) => {
-            addScriptSync(`${Constants.PROTYLE_CDN}/js/lute/lute.min.js?v=${Constants.SIYUAN_VERSION}`, "protyleLuteScript");
-            addScript(`${Constants.PROTYLE_CDN}/js/protyle-html.js?v=${Constants.SIYUAN_VERSION}`, "protyleWcHtmlScript");
-            window.siyuan.config = response.data.conf;
+            addScriptSync(`${Constants.PROTYLE_CDN}/js/lute/lute.min.js?v=${Constants.SCRIBLI_VERSION}`, "protyleLuteScript");
+            addScript(`${Constants.PROTYLE_CDN}/js/protyle-html.js?v=${Constants.SCRIBLI_VERSION}`, "protyleWcHtmlScript");
+            window.scribli.config = response.data.conf;
             setBodyHighlight();
-            window.siyuan.isPublish = response.data.isPublish;
+            window.scribli.isPublish = response.data.isPublish;
             await loadPlugins(this);
             getLocalStorage(() => {
-                fetchGet(`/appearance/langs/${window.siyuan.config.appearance.lang}.json?v=${Constants.SIYUAN_VERSION}`, (lauguages: IObject) => {
-                    window.siyuan.languages = lauguages;
-                    window.siyuan.menus = new Menus(this);
+                fetchGet(`/appearance/langs/${window.scribli.config.appearance.lang}.json?v=${Constants.SCRIBLI_VERSION}`, (lauguages: IObject) => {
+                    window.scribli.languages = lauguages;
+                    window.scribli.menus = new Menus(this);
                     init(this);
                     setTitle("", true);
                     initMessage();

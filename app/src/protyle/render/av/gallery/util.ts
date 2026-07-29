@@ -19,7 +19,7 @@ export const setGalleryCover = (options: {
     menu.addItem({
         iconHTML: "",
         checked: options.view.coverFrom === 0,
-        label: window.siyuan.languages.calcOperatorNone,
+        label: window.scribli.languages.calcOperatorNone,
         click() {
             transaction(options.protyle, [{
                 action: "setAttrViewCoverFrom",
@@ -33,13 +33,13 @@ export const setGalleryCover = (options: {
                 data: options.view.coverFrom
             }]);
             options.view.coverFrom = 0;
-            targetNameElement.textContent = window.siyuan.languages.calcOperatorNone;
+            targetNameElement.textContent = window.scribli.languages.calcOperatorNone;
         }
     });
     menu.addItem({
         iconHTML: "",
         checked: options.view.coverFrom === 3,
-        label: window.siyuan.languages.contentBlock,
+        label: window.scribli.languages.contentBlock,
         click() {
             transaction(options.protyle, [{
                 action: "setAttrViewCoverFrom",
@@ -53,13 +53,13 @@ export const setGalleryCover = (options: {
                 data: options.view.coverFrom
             }]);
             options.view.coverFrom = 3;
-            targetNameElement.textContent = window.siyuan.languages.contentBlock;
+            targetNameElement.textContent = window.scribli.languages.contentBlock;
         }
     });
     menu.addItem({
         iconHTML: "",
         checked: options.view.coverFrom === 1,
-        label: window.siyuan.languages.contentImage,
+        label: window.scribli.languages.contentImage,
         click() {
             transaction(options.protyle, [{
                 action: "setAttrViewCoverFrom",
@@ -73,7 +73,7 @@ export const setGalleryCover = (options: {
                 data: options.view.coverFrom
             }]);
             options.view.coverFrom = 1;
-            targetNameElement.textContent = window.siyuan.languages.contentImage;
+            targetNameElement.textContent = window.scribli.languages.contentImage;
         }
     });
     let addedSeparator = false;
@@ -134,7 +134,7 @@ export const setGallerySize = (options: {
     menu.addItem({
         iconHTML: "",
         checked: options.view.cardSize === 0,
-        label: window.siyuan.languages.small,
+        label: window.scribli.languages.small,
         click() {
             transaction(options.protyle, [{
                 action: "setAttrViewCardSize",
@@ -150,13 +150,13 @@ export const setGallerySize = (options: {
                 viewID
             }]);
             options.view.cardSize = 0;
-            targetNameElement.textContent = window.siyuan.languages.small;
+            targetNameElement.textContent = window.scribli.languages.small;
         }
     });
     menu.addItem({
         iconHTML: "",
         checked: options.view.cardSize === 1,
-        label: window.siyuan.languages.medium,
+        label: window.scribli.languages.medium,
         click() {
             transaction(options.protyle, [{
                 action: "setAttrViewCardSize",
@@ -172,13 +172,13 @@ export const setGallerySize = (options: {
                 viewID
             }]);
             options.view.cardSize = 1;
-            targetNameElement.textContent = window.siyuan.languages.medium;
+            targetNameElement.textContent = window.scribli.languages.medium;
         }
     });
     menu.addItem({
         iconHTML: "",
         checked: options.view.cardSize === 2,
-        label: window.siyuan.languages.large,
+        label: window.scribli.languages.large,
         click() {
             transaction(options.protyle, [{
                 action: "setAttrViewCardSize",
@@ -194,7 +194,7 @@ export const setGallerySize = (options: {
                 viewID
             }]);
             options.view.cardSize = 2;
-            targetNameElement.textContent = window.siyuan.languages.large;
+            targetNameElement.textContent = window.scribli.languages.large;
         }
     });
     const rect = options.target.getBoundingClientRect();
@@ -280,7 +280,7 @@ export const editGalleryItem = (target: Element) => {
     if (itemElement) {
         const fieldsElement = itemElement.querySelector(".av__gallery-fields");
         if (fieldsElement) {
-            target.setAttribute("aria-label", window.siyuan.languages[fieldsElement.classList.contains("av__gallery-fields--edit") ? "displayEmptyFields" : "hideEmptyFields"]);
+            target.setAttribute("aria-label", window.scribli.languages[fieldsElement.classList.contains("av__gallery-fields--edit") ? "displayEmptyFields" : "hideEmptyFields"]);
             fieldsElement.classList.toggle("av__gallery-fields--edit");
         }
     }

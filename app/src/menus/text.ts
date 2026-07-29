@@ -7,7 +7,7 @@ export const textMenu = (target: Element) => {
     }
     menu.addItem({
         id: "copy",
-        label: window.siyuan.languages.copy,
+        label: window.scribli.languages.copy,
         icon: "iconCopy",
         click() {
             if (getSelection().rangeCount === 0) {
@@ -22,7 +22,7 @@ export const textMenu = (target: Element) => {
     });
     menu.addItem({
         id: "selectAll",
-        label: window.siyuan.languages.selectAll,
+        label: window.scribli.languages.selectAll,
         icon: "iconSelectAll",
         click() {
             if (getSelection().rangeCount === 0) {

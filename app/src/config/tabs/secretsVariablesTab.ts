@@ -9,7 +9,7 @@ import {
 } from "./secretsVariablesUi";
 
 const registerSecretsGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("secrets", window.siyuan.languages.secrets);
+    const group = tab.group("secrets", window.scribli.languages.secrets);
 
     group.slot({
         key: "secrets",
@@ -20,7 +20,7 @@ const registerSecretsGroup = (tab: SettingTabBuilder) => {
 };
 
 const registerVariablesGroup = (tab: SettingTabBuilder) => {
-    const group = tab.group("variables", window.siyuan.languages.variables);
+    const group = tab.group("variables", window.scribli.languages.variables);
 
     group.slot({
         key: "variables",

@@ -13,24 +13,24 @@ import {normalizeSearchText} from "../search/normalize";
 import {genButtonRowHtml, genConfigGroup} from "../render/render";
 import type {Plugin} from "../../plugin";
 const keymapToolbarSearchStrings = (): string[] => [
-    window.siyuan.languages.keymapTip,
-    window.siyuan.languages.keymapTip2,
-    window.siyuan.languages.refresh,
-    window.siyuan.languages.reset,
+    window.scribli.languages.keymapTip,
+    window.scribli.languages.keymapTip2,
+    window.scribli.languages.refresh,
+    window.scribli.languages.reset,
 ];
 
 const genKeymapToolbarHtml = () => genConfigGroup(
     genButtonRowHtml(
         "keymapRefreshBtn",
-        window.siyuan.languages.keymapTip,
+        window.scribli.languages.keymapTip,
         undefined,
-        window.siyuan.languages.refresh,
+        window.scribli.languages.refresh,
         "iconRefresh",
     ) + genButtonRowHtml(
         "keymapResetBtn",
-        window.siyuan.languages.keymapTip2,
+        window.scribli.languages.keymapTip2,
         undefined,
-        window.siyuan.languages.reset,
+        window.scribli.languages.reset,
         "iconUndo",
     ),
 );
@@ -47,22 +47,22 @@ const bindKeymapToolbar = (root: HTMLElement) => {
         });
     });
     root.querySelector("#keymapResetBtn")?.addEventListener("click", () => {
-        confirmDialog("⚠️ " + window.siyuan.languages.reset, window.siyuan.languages.confirmReset, () => {
+        confirmDialog("⚠️ " + window.scribli.languages.reset, window.scribli.languages.confirmReset, () => {
             fetchPost("/api/setting/setKeymap", {
-                data: Constants.SIYUAN_KEYMAP,
+                data: Constants.SCRIBLI_KEYMAP,
             }, () => {
                 /// #if !BROWSER
-                ipcRenderer.send(Constants.SIYUAN_CMD, {
+                ipcRenderer.send(Constants.SCRIBLI_CMD, {
                     cmd: "writeLog",
                     msg: "user reset keymap",
                 });
-                if (window.siyuan.config.keymap.general.toggleWin.default !== window.siyuan.config.keymap.general.toggleWin.custom) {
-                    ipcRenderer.send(Constants.SIYUAN_CMD, {
+                if (window.scribli.config.keymap.general.toggleWin.default !== window.scribli.config.keymap.general.toggleWin.custom) {
+                    ipcRenderer.send(Constants.SCRIBLI_CMD, {
                         cmd: "unregisterGlobalShortcut",
-                        accelerator: window.siyuan.config.keymap.general.toggleWin.custom,
+                        accelerator: window.scribli.config.keymap.general.toggleWin.custom,
                     });
                 }
-                sendGlobalShortcut(window.siyuan.ws.app);
+                sendGlobalShortcut(window.scribli.ws.app);
                 /// #endif
                 void exportLayout({
                     cb() {
@@ -112,7 +112,7 @@ export const mountKeymapTab = async (root: HTMLElement, keywords?: string) => {
 };
 
 export const collectKeymapTabSearchStrings = (): string[] => [
-    window.siyuan.languages.keymap,
+    window.scribli.languages.keymap,
     ...keymapToolbarSearchStrings(),
     ...buildKeymapKeywords(),
     ...buildKeymapCommandTexts(),
@@ -121,17 +121,17 @@ export const collectKeymapTabSearchStrings = (): string[] => [
 
 const buildKeymapKeywords = (): string[] => [
     // 输入框占位符和按钮文案
-    window.siyuan.languages.search,
-    window.siyuan.languages.keymap,
-    window.siyuan.languages.clear,
+    window.scribli.languages.search,
+    window.scribli.languages.keymap,
+    window.scribli.languages.clear,
     // 命令分组标题
-    window.siyuan.languages.general,
-    window.siyuan.languages.editor,
-    window.siyuan.languages.element,
-    window.siyuan.languages.headings,
-    window.siyuan.languages.list1,
-    window.siyuan.languages.table,
-    window.siyuan.languages.plugin,
+    window.scribli.languages.general,
+    window.scribli.languages.editor,
+    window.scribli.languages.element,
+    window.scribli.languages.headings,
+    window.scribli.languages.list1,
+    window.scribli.languages.table,
+    window.scribli.languages.plugin,
     // 命令名
     ...buildKeymapCommandTexts(),
     // 有命令的插件名
@@ -141,18 +141,18 @@ const buildKeymapKeywords = (): string[] => [
 const buildKeymapCommandTexts = (): string[] => {
     const out: string[] = [];
     const pushKey = (key: string) => {
-        const text = window.siyuan.languages[key];
+        const text = window.scribli.languages[key];
         if (text) {
             out.push(text);
         }
     };
-    Object.keys(Constants.SIYUAN_KEYMAP.general).forEach(pushKey);
-    Object.keys(Constants.SIYUAN_KEYMAP.editor.general).forEach((key) => {
-        // TODO 把 window.siyuan.languages.duplicate 直接换成 "创建副本 / 创建镜像副本"，
-        // 原先使用 window.siyuan.languages.duplicate 的其他地方换成用新的键
+    Object.keys(Constants.SCRIBLI_KEYMAP.general).forEach(pushKey);
+    Object.keys(Constants.SCRIBLI_KEYMAP.editor.general).forEach((key) => {
+        // TODO 把 window.scribli.languages.duplicate 直接换成 "创建副本 / 创建镜像副本"，
+        // 原先使用 window.scribli.languages.duplicate 的其他地方换成用新的键
         if (key === "duplicate") {
-            const duplicate = window.siyuan.languages.duplicate;
-            const duplicateMirror = window.siyuan.languages.duplicateMirror;
+            const duplicate = window.scribli.languages.duplicate;
+            const duplicateMirror = window.scribli.languages.duplicateMirror;
             if (duplicate && duplicateMirror) {
                 out.push(`${duplicate} / ${duplicateMirror}`);
             }
@@ -160,16 +160,16 @@ const buildKeymapCommandTexts = (): string[] => {
             pushKey(key);
         }
     });
-    Object.keys(Constants.SIYUAN_KEYMAP.editor.heading).forEach(pushKey);
-    Object.keys(Constants.SIYUAN_KEYMAP.editor.insert).forEach(pushKey);
-    Object.keys(Constants.SIYUAN_KEYMAP.editor.list).forEach(pushKey);
-    Object.keys(Constants.SIYUAN_KEYMAP.editor.table).forEach(pushKey);
+    Object.keys(Constants.SCRIBLI_KEYMAP.editor.heading).forEach(pushKey);
+    Object.keys(Constants.SCRIBLI_KEYMAP.editor.insert).forEach(pushKey);
+    Object.keys(Constants.SCRIBLI_KEYMAP.editor.list).forEach(pushKey);
+    Object.keys(Constants.SCRIBLI_KEYMAP.editor.table).forEach(pushKey);
     return out;
 };
 
 const buildKeymapPluginDisplayNames = (): string[] => {
     const names: string[] = [];
-    window.siyuan.ws.app.plugins.forEach((item) => {
+    window.scribli.ws.app.plugins.forEach((item) => {
         if (pluginHasKeymapItems(item) && item.displayName) {
             names.push(item.displayName);
         }
@@ -194,17 +194,17 @@ const genKeymapListHtml = () => {
     const generalHtml = genKeymapItem("general");
 
     const editorHtml = ([
-        [window.siyuan.languages.general, "general"],
-        [window.siyuan.languages.element, "insert"],
-        [window.siyuan.languages.headings, "heading"],
-        [window.siyuan.languages.list1, "list"],
-        [window.siyuan.languages.table, "table"],
+        [window.scribli.languages.general, "general"],
+        [window.scribli.languages.element, "insert"],
+        [window.scribli.languages.headings, "heading"],
+        [window.scribli.languages.list1, "list"],
+        [window.scribli.languages.table, "table"],
     ] as const).map(([title, segment]) =>
         genKeymapToggle(title) + `<div class="b3-list__panel fn__none">${genKeymapItem("editor" + Constants.ZWSP + segment)}</div>`
     ).join("");
 
     const pluginHtmlParts: string[] = [];
-    for (const item of window.siyuan.ws.app.plugins) {
+    for (const item of window.scribli.ws.app.plugins) {
         if (!pluginHasKeymapItems(item)) {
             continue;
         }
@@ -216,22 +216,22 @@ const genKeymapListHtml = () => {
 
     return `<div class="b3-label file-tree config-keymap config-item" id="keymapList">
     <div class="fn__flex config-wrap">
-        <input id="keymapInput" class="b3-text-field fn__flex-1" placeholder="${window.siyuan.languages.search}">
+        <input id="keymapInput" class="b3-text-field fn__flex-1" placeholder="${window.scribli.languages.search}">
         <div class="fn__space"></div>
         <label class="b3-form__icon fn__flex-1 searchByKeyLabel" style="overflow: visible">
             <svg class="b3-form__icon-icon"><use xlink:href="#iconKeymap"></use></svg>
-            <input id="searchByKey" style="font-family: var(--b3-font-family-kbd);font-variant-emoji: text;" data-keymap="" class="b3-form__icon-input b3-text-field fn__block" spellcheck="false" autocomplete="off" inputmode="none" readonly placeholder="${window.siyuan.languages.keymap}">
+            <input id="searchByKey" style="font-family: var(--b3-font-family-kbd);font-variant-emoji: text;" data-keymap="" class="b3-form__icon-input b3-text-field fn__block" spellcheck="false" autocomplete="off" inputmode="none" readonly placeholder="${window.scribli.languages.keymap}">
         </label>
         <div class="fn__space"></div>
         <button id="clearSearchBtn" class="b3-button b3-button--outline fn__flex-center fn__size200">
             <svg><use xlink:href="#iconClose"></use></svg>
-            ${window.siyuan.languages.clear}
+            ${window.scribli.languages.clear}
         </button>
     </div>
     <div class="fn__hr"></div>
-    ${genKeymapListBlock(window.siyuan.languages.general, generalHtml)}
-    ${genKeymapListBlock(window.siyuan.languages.editor, editorHtml, true)}
-    ${genKeymapListBlock(window.siyuan.languages.plugin, pluginHtml, true)}
+    ${genKeymapListBlock(window.scribli.languages.general, generalHtml)}
+    ${genKeymapListBlock(window.scribli.languages.editor, editorHtml, true)}
+    ${genKeymapListBlock(window.scribli.languages.plugin, pluginHtml, true)}
 </div>`;
 };
 
@@ -239,10 +239,10 @@ const genKeymapRowHtml = (label: string, dataKey: string, custom: string, defaul
     const keyValue = updateHotkeyTip(custom);
     return `<label class="b3-list-item b3-list-item--narrow b3-list-item--hide-action">
     <span class="b3-list-item__text">${label}</span>
-    <span data-type="reset" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.reset}">
+    <span data-type="reset" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.reset}">
         <svg><use xlink:href="#iconUndo"></use></svg>
     </span>
-    <span data-type="clear" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.remove}">
+    <span data-type="clear" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.remove}">
         <svg><use xlink:href="#iconTrashcan"></use></svg>
     </span>
     <span data-type="update" class="config-keymap__key">${keyValue}</span>
@@ -263,14 +263,14 @@ const getKeymapTemplateAndConfig = (keys: string): {
     const parts = keys.split(Constants.ZWSP);
     if (parts.length === 1 && parts[0] === "general") {
         return {
-            template: Constants.SIYUAN_KEYMAP.general,
-            config: window.siyuan.config.keymap.general,
+            template: Constants.SCRIBLI_KEYMAP.general,
+            config: window.scribli.config.keymap.general,
         };
     }
     if (parts[0] === "editor" && isEditorKeymapSegment(parts[1])) {
         return {
-            template: Constants.SIYUAN_KEYMAP.editor[parts[1]],
-            config: window.siyuan.config.keymap.editor[parts[1]],
+            template: Constants.SCRIBLI_KEYMAP.editor[parts[1]],
+            config: window.scribli.config.keymap.editor[parts[1]],
         };
     }
     return {template: {}, config: {}};
@@ -279,16 +279,16 @@ const getKeymapTemplateAndConfig = (keys: string): {
 const genKeymapItem = (keys: string) => {
     const {template, config} = getKeymapTemplateAndConfig(keys);
     const html: string[] = [];
-    // 使用固定的 Constants.SIYUAN_KEYMAP 来保证每次生成的选项顺序一致
+    // 使用固定的 Constants.SCRIBLI_KEYMAP 来保证每次生成的选项顺序一致
     // 避免在设置快捷键之后关闭设置重新打开设置之后选项顺序改变
     for (const key of Object.keys(template)) {
-        if (!window.siyuan.languages[key]) {
+        if (!window.scribli.languages[key]) {
             continue;
         }
         const item = config[key] ?? template[key];
-        let keymapName = window.siyuan.languages[key];
+        let keymapName = window.scribli.languages[key];
         if ("editor" + Constants.ZWSP + "general" === keys && key === "duplicate") {
-            keymapName = `${window.siyuan.languages.duplicate} / ${window.siyuan.languages.duplicateMirror}`;
+            keymapName = `${window.scribli.languages.duplicate} / ${window.scribli.languages.duplicateMirror}`;
         }
         html.push(genKeymapRowHtml(keymapName, keys + Constants.ZWSP + key, item.custom, item.default));
     }
@@ -329,9 +329,9 @@ const buildKeymapPluginCommandHtml = (item: Plugin) => {
         if (typeof toolbarItem === "string" || Constants.INLINE_TYPE.concat("|").includes(toolbarItem.name)) {
             continue;
         }
-        const toolbarKeymap = window.siyuan.config.keymap.plugin[item.name][toolbarItem.name];
+        const toolbarKeymap = window.scribli.config.keymap.plugin[item.name][toolbarItem.name];
         html.push(genKeymapRowHtml(
-            toolbarItem.tip || window.siyuan.languages[toolbarItem.lang],
+            toolbarItem.tip || window.scribli.languages[toolbarItem.lang],
             pluginKeyPrefix + toolbarItem.name,
             toolbarKeymap.custom,
             toolbarKeymap.default,
@@ -339,7 +339,7 @@ const buildKeymapPluginCommandHtml = (item: Plugin) => {
     }
 
     for (const key of Object.keys(item.docks)) {
-        const dockKeymap = window.siyuan.config.keymap.plugin[item.name][key];
+        const dockKeymap = window.scribli.config.keymap.plugin[item.name][key];
         html.push(genKeymapRowHtml(
             item.docks[key].config.title,
             pluginKeyPrefix + key,
@@ -364,10 +364,10 @@ const bindKeymapList = (root: HTMLElement) => {
         searchKeymapList(keymapListElement, searchElement.value, searchKeymapElement.dataset.keymap);
     });
     searchKeymapElement.addEventListener("focus", () => {
-        sendUnregisterGlobalShortcut(window.siyuan.ws.app);
+        sendUnregisterGlobalShortcut(window.scribli.ws.app);
     });
     searchKeymapElement.addEventListener("blur", () => {
-        sendGlobalShortcut(window.siyuan.ws.app);
+        sendGlobalShortcut(window.scribli.ws.app);
     });
     // 捕获阶段优先于其它监听，确保 keydown 在 IME/全局逻辑之前处理
     // 按键搜索框只录物理键位，不接收文本输入；readonly 可避免 IME 抢占 keydown
@@ -462,7 +462,7 @@ const bindKeymapList = (root: HTMLElement) => {
                 (isMac() && keys[0] === "general" && ["goToEditTabNext", "goToEditTabPrev"].includes(keys[1]) && keymapStr.includes("⌘")))
             ) {
                 // TODO 还应该禁止单个数字或字母作为快捷键？
-                showMessage(`${window.siyuan.languages.invalid} [${adoptKeymapStr}]`, undefined, undefined, "keymapInvalid");
+                showMessage(`${window.scribli.languages.invalid} [${adoptKeymapStr}]`, undefined, undefined, "keymapInvalid");
                 hasConflict = true;
             } else {
                 hideMessage("keymapInvalid");
@@ -486,7 +486,7 @@ const bindKeymapList = (root: HTMLElement) => {
                 }
                 // 目前插件注册的命令没有限制跟已有命令重复，所以这里可能有多个冲突
                 if (conflictTips.length > 0) {
-                    showMessage(`${adoptKeymapStr} ${window.siyuan.languages.conflict} [${conflictTips.join("] [")}]`, undefined, undefined, "keymapConflict");
+                    showMessage(`${adoptKeymapStr} ${window.scribli.languages.conflict} [${conflictTips.join("] [")}]`, undefined, undefined, "keymapConflict");
                     hasConflict = true;
                 } else {
                     hideMessage("keymapConflict");
@@ -506,7 +506,7 @@ const bindKeymapList = (root: HTMLElement) => {
         if (!inputElement) {
             return;
         }
-        sendGlobalShortcut(window.siyuan.ws.app);
+        sendGlobalShortcut(window.scribli.ws.app);
         setTimeout(() => {
             inputElement.classList.add("fn__none");
             inputElement.previousElementSibling.textContent = inputElement.value;
@@ -517,7 +517,7 @@ const bindKeymapList = (root: HTMLElement) => {
         if (!getKeymapInput(event.target)) {
             return;
         }
-        sendUnregisterGlobalShortcut(window.siyuan.ws.app);
+        sendUnregisterGlobalShortcut(window.scribli.ws.app);
     });
 };
 
@@ -643,8 +643,8 @@ const toggleKeymapSearchItem = (editorKeymapElement: HTMLElement, isFiltering: b
 };
 
 const setKeymapFromDom = (root: HTMLElement) => {
-    const data: Config.IKeymap = JSON.parse(JSON.stringify(Constants.SIYUAN_KEYMAP));
-    data.plugin = window.siyuan.config.keymap.plugin || {};
+    const data: Config.IKeymap = JSON.parse(JSON.stringify(Constants.SCRIBLI_KEYMAP));
+    data.plugin = window.scribli.config.keymap.plugin || {};
     root.querySelectorAll("label.b3-list-item input").forEach((item) => {
         const keys = item.getAttribute("data-key").split(Constants.ZWSP);
         const newHotkey = item.getAttribute("data-value");
@@ -654,14 +654,14 @@ const setKeymapFromDom = (root: HTMLElement) => {
             data.editor[keys[1]][keys[2]].custom = newHotkey;
         } else if (keys[0] === "plugin") {
             data.plugin[keys[1]][keys[2]].custom = newHotkey;
-            const plugin = window.siyuan.ws.app.plugins.find((item) => item.name === keys[1]);
+            const plugin = window.scribli.ws.app.plugins.find((item) => item.name === keys[1]);
             const command = plugin?.commands.find((item) => item.langKey === keys[2]);
             if (!command) {
                 return;
             }
             /// #if !BROWSER
             if (command.globalCallback && command.customHotkey && command.customHotkey !== newHotkey) {
-                ipcRenderer.send(Constants.SIYUAN_CMD, {
+                ipcRenderer.send(Constants.SCRIBLI_CMD, {
                     cmd: "unregisterGlobalShortcut",
                     accelerator: command.customHotkey,
                 });
@@ -670,23 +670,23 @@ const setKeymapFromDom = (root: HTMLElement) => {
             command.customHotkey = newHotkey;
         }
     });
-    const oldToggleWin = window.siyuan.config.keymap.general.toggleWin.custom;
-    window.siyuan.config.keymap = data;
+    const oldToggleWin = window.scribli.config.keymap.general.toggleWin.custom;
+    window.scribli.config.keymap = data;
     fetchPost("/api/setting/setKeymap", {
         data,
     }, () => {
         /// #if !BROWSER
-        ipcRenderer.send(Constants.SIYUAN_CMD, {
+        ipcRenderer.send(Constants.SCRIBLI_CMD, {
             cmd: "writeLog",
-            msg: "user update keymap:" + JSON.stringify(window.siyuan.config.keymap),
+            msg: "user update keymap:" + JSON.stringify(window.scribli.config.keymap),
         });
-        if (oldToggleWin !== window.siyuan.config.keymap.general.toggleWin.custom) {
-            ipcRenderer.send(Constants.SIYUAN_CMD, {
+        if (oldToggleWin !== window.scribli.config.keymap.general.toggleWin.custom) {
+            ipcRenderer.send(Constants.SCRIBLI_CMD, {
                 cmd: "unregisterGlobalShortcut",
                 accelerator: oldToggleWin,
             });
         }
-        sendGlobalShortcut(window.siyuan.ws.app);
+        sendGlobalShortcut(window.scribli.ws.app);
         /// #endif
     });
 };

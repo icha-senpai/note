@@ -12,13 +12,13 @@ import {getDefaultSubType} from "./getDefault";
 
 export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => void) => {
     const filterDialog = new Dialog({
-        title: window.siyuan.languages.searchType,
+        title: window.scribli.languages.searchType,
         content: `<div class="b3-dialog__content">
     <label class="fn__flex b3-label">
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconMath"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.math}
+            ${window.scribli.languages.math}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="mathBlock" type="checkbox"${config.types.mathBlock ? " checked" : ""}>
@@ -27,7 +27,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconTable"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.table}
+            ${window.scribli.languages.table}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="table" type="checkbox"${config.types.table ? " checked" : ""}>
@@ -36,7 +36,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconParagraph"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.paragraph}
+            ${window.scribli.languages.paragraph}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="paragraph" type="checkbox"${config.types.paragraph ? " checked" : ""}>
@@ -48,7 +48,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconHeadings"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.headings}
+            ${window.scribli.languages.headings}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="heading" type="checkbox"${config.types.heading ? " checked" : ""}>
@@ -57,7 +57,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         ${(["h1", "h2", "h3", "h4", "h5", "h6"] as const).map((h) => `
         <label class="fn__flex b3-label">
             <div class="fn__flex-1 fn__flex-center">
-                ${window.siyuan.languages["heading" + h.charAt(1)]}
+                ${window.scribli.languages["heading" + h.charAt(1)]}
             </div>
             <span class="fn__space"></span>
             <input class="b3-switch fn__flex-center" data-subtype="${h}" type="checkbox"${config.subTypes?.[h] ? " checked" : ""}>
@@ -67,7 +67,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconCode"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.code}
+            ${window.scribli.languages.code}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="codeBlock" type="checkbox"${config.types.codeBlock ? " checked" : ""}>
@@ -85,7 +85,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconDatabase"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.database}
+            ${window.scribli.languages.database}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="databaseBlock" type="checkbox"${config.types.databaseBlock ? " checked" : ""}>
@@ -94,7 +94,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconSQL"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.embedBlock}
+            ${window.scribli.languages.embedBlock}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="embedBlock" type="checkbox"${config.types.embedBlock ? " checked" : ""}>
@@ -103,7 +103,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconVideo"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.video}
+            ${window.scribli.languages.video}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="videoBlock" type="checkbox"${config.types.videoBlock ? " checked" : ""}>
@@ -112,7 +112,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconRecord"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.audio}
+            ${window.scribli.languages.audio}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="audioBlock" type="checkbox"${config.types.audioBlock ? " checked" : ""}>
@@ -130,7 +130,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconBoth"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.widget}
+            ${window.scribli.languages.widget}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="widgetBlock" type="checkbox"${config.types.widgetBlock ? " checked" : ""}>
@@ -139,7 +139,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconQuote"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.quote} <sup>[1]</sup>
+            ${window.scribli.languages.quote} <sup>[1]</sup>
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="blockquote" type="checkbox"${config.types.blockquote ? " checked" : ""}>
@@ -148,7 +148,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconCallout"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.callout} <sup>[1]</sup>
+            ${window.scribli.languages.callout} <sup>[1]</sup>
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="callout" type="checkbox"${config.types.callout ? " checked" : ""}>
@@ -157,7 +157,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconSuper"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.superBlock} <sup>[1]</sup>
+            ${window.scribli.languages.superBlock} <sup>[1]</sup>
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="superBlock" type="checkbox"${config.types.superBlock ? " checked" : ""}>
@@ -169,24 +169,24 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconList"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.list1} <sup>[1] [2]</sup>
+            ${window.scribli.languages.list1} <sup>[1] [2]</sup>
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="list" type="checkbox"${config.types.list ? " checked" : ""}>
     </div>
     <div class="fn__none" style="padding-left: 20px;">
         <label class="fn__flex b3-label">
-            <div class="fn__flex-1 fn__flex-center">${window.siyuan.languages["ordered-list"]}</div>
+            <div class="fn__flex-1 fn__flex-center">${window.scribli.languages["ordered-list"]}</div>
             <span class="fn__space"></span>
             <input class="b3-switch fn__flex-center" data-subtype="o" type="checkbox"${config.subTypes?.o ? " checked" : ""}>
         </label>
         <label class="fn__flex b3-label">
-            <div class="fn__flex-1 fn__flex-center">${window.siyuan.languages.unorderedList}</div>
+            <div class="fn__flex-1 fn__flex-center">${window.scribli.languages.unorderedList}</div>
             <span class="fn__space"></span>
             <input class="b3-switch fn__flex-center" data-subtype="u" type="checkbox"${config.subTypes?.u ? " checked" : ""}>
         </label>
         <label class="fn__flex b3-label">
-            <div class="fn__flex-1 fn__flex-center">${window.siyuan.languages.check}</div>
+            <div class="fn__flex-1 fn__flex-center">${window.scribli.languages.check}</div>
             <span class="fn__space"></span>
             <input class="b3-switch fn__flex-center" data-subtype="t" type="checkbox"${config.subTypes?.t ? " checked" : ""}>
         </label>
@@ -196,7 +196,7 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconListItem"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.listItem} <sup>[1]</sup>
+            ${window.scribli.languages.listItem} <sup>[1]</sup>
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="listItem" type="checkbox"${config.types.listItem ? " checked" : ""}>
@@ -205,20 +205,20 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
         <svg class="ft__on-surface svg fn__flex-center"><use xlink:href="#iconFile"></use></svg>
         <span class="fn__space"></span>
         <div class="fn__flex-1 fn__flex-center">
-            ${window.siyuan.languages.doc}
+            ${window.scribli.languages.doc}
         </div>
         <span class="fn__space"></span>
         <input class="b3-switch fn__flex-center" data-type="document" type="checkbox"${config.types.document ? " checked" : ""}>
     </label>
     <span class="fn__space"></span>
     <div class="fn__flex-1">
-        <div class="b3-label__text">[1] ${window.siyuan.languages.containerBlockTip1}</div>
-        <div class="b3-label__text">[2] ${window.siyuan.languages.searchSubTypeListTip}</div>
+        <div class="b3-label__text">[1] ${window.scribli.languages.containerBlockTip1}</div>
+        <div class="b3-label__text">[2] ${window.scribli.languages.searchSubTypeListTip}</div>
     </div>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "600px",
         height: "70vh",
@@ -288,30 +288,30 @@ export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => vo
             }
         });
         cb();
-        window.siyuan.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
-        setStorageVal(Constants.LOCAL_SEARCHDATA, window.siyuan.storage[Constants.LOCAL_SEARCHDATA]);
+        window.scribli.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
+        setStorageVal(Constants.LOCAL_SEARCHDATA, window.scribli.storage[Constants.LOCAL_SEARCHDATA]);
         filterDialog.destroy();
     });
 };
 
 export const replaceFilterMenu = (config: Config.IUILayoutTabSearchConfig) => {
     let html = "";
-    Object.keys(Constants.SIYUAN_DEFAULT_REPLACETYPES).forEach((key: keyof Config.IUILayoutTabSearchConfigReplaceTypes) => {
+    Object.keys(Constants.SCRIBLI_DEFAULT_REPLACETYPES).forEach((key: keyof Config.IUILayoutTabSearchConfigReplaceTypes) => {
         html += `<label class="fn__flex b3-label">
     <span class="fn__space"></span>
     <div class="fn__flex-1 fn__flex-center">
-        ${window.siyuan.languages.replaceTypes[key]}
+        ${window.scribli.languages.replaceTypes[key]}
     </div>
     <span class="fn__space"></span>
     <input class="b3-switch fn__flex-center" data-type="${key}" type="checkbox"${config.replaceTypes[key] ? " checked" : ""}>
 </label>`;
     });
     const filterDialog = new Dialog({
-        title: window.siyuan.languages.replaceType,
+        title: window.scribli.languages.replaceType,
         content: `<div class="b3-dialog__content">${html}</div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
         height: "70vh",
@@ -325,39 +325,39 @@ export const replaceFilterMenu = (config: Config.IUILayoutTabSearchConfig) => {
         filterDialog.element.querySelectorAll(".b3-switch").forEach((item: HTMLInputElement) => {
             config.replaceTypes[item.getAttribute("data-type") as keyof (typeof config.replaceTypes)] = item.checked;
         });
-        window.siyuan.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
-        setStorageVal(Constants.LOCAL_SEARCHDATA, window.siyuan.storage[Constants.LOCAL_SEARCHDATA]);
+        window.scribli.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
+        setStorageVal(Constants.LOCAL_SEARCHDATA, window.scribli.storage[Constants.LOCAL_SEARCHDATA]);
         filterDialog.destroy();
     });
 };
 
 export const queryMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => void) => {
-    if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-        window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_SEARCH_METHOD) {
-        window.siyuan.menus.menu.remove();
+    if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+        window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_SEARCH_METHOD) {
+        window.scribli.menus.menu.remove();
         return;
     }
-    window.siyuan.menus.menu.remove();
-    window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_SEARCH_METHOD);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.remove();
+    window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_SEARCH_METHOD);
+    window.scribli.menus.menu.append(new MenuItem({
         icon: "iconExact",
-        label: window.siyuan.languages.keyword,
+        label: window.scribli.languages.keyword,
         current: config.method === 0,
         click() {
             config.method = 0;
             cb();
         }
     }).element);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         icon: "iconQuote",
-        label: window.siyuan.languages.querySyntax,
+        label: window.scribli.languages.querySyntax,
         current: config.method === 1,
         click() {
             config.method = 1;
             cb();
         }
     }).element);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         icon: "iconDatabase",
         label: "SQL",
         current: config.method === 2,
@@ -366,19 +366,19 @@ export const queryMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => voi
             cb();
         }
     }).element);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         icon: "iconRegex",
-        label: window.siyuan.languages.regex,
+        label: window.scribli.languages.regex,
         current: config.method === 3,
         click() {
             config.method = 3;
             cb();
         }
     }).element);
-    if (window.siyuan.config.ai.embedding.enabled) {
-        window.siyuan.menus.menu.append(new MenuItem({
+    if (window.scribli.config.ai.embedding.enabled) {
+        window.scribli.menus.menu.append(new MenuItem({
             icon: "iconSparkles",
-            label: window.siyuan.languages.semanticSearch,
+            label: window.scribli.languages.semanticSearch,
             current: config.method === 4,
             click() {
                 config.method = 4;
@@ -397,8 +397,8 @@ const saveCriterionData = (config: Config.IUILayoutTabSearchConfig,
     const criterion = config;
     criterion.name = value;
     criteriaData.push(Object.assign({}, criterion));
-    window.siyuan.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
-    setStorageVal(Constants.LOCAL_SEARCHDATA, window.siyuan.storage[Constants.LOCAL_SEARCHDATA]);
+    window.scribli.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
+    setStorageVal(Constants.LOCAL_SEARCHDATA, window.scribli.storage[Constants.LOCAL_SEARCHDATA]);
     fetchPost("/api/storage/setCriterion", {criterion}, () => {
         saveDialog.destroy();
         const criteriaElement = element.querySelector("#criteria").firstElementChild;
@@ -412,13 +412,13 @@ export const saveCriterion = (config: Config.IUILayoutTabSearchConfig,
                               criteriaData: Config.IUILayoutTabSearchConfig[],
                               element: Element) => {
     const saveDialog = new Dialog({
-        title: window.siyuan.languages.saveCriterion,
+        title: window.scribli.languages.saveCriterion,
         content: `<div class="b3-dialog__content">
-        <input class="b3-text-field fn__block" placeholder="${window.siyuan.languages.memo}">
+        <input class="b3-text-field fn__block" placeholder="${window.scribli.languages.memo}">
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
     });
@@ -434,7 +434,7 @@ export const saveCriterion = (config: Config.IUILayoutTabSearchConfig,
         const inputElement = saveDialog.element.querySelector("input");
         const value = inputElement.value.trim();
         if (!value) {
-            showMessage(window.siyuan.languages["_kernel"]["142"]);
+            showMessage(window.scribli.languages["_kernel"]["142"]);
             return;
         }
         if (isMobile()) {
@@ -457,7 +457,7 @@ export const saveCriterion = (config: Config.IUILayoutTabSearchConfig,
         });
         inputElement.blur();
         if (hasSameName && !hasSameConfig) {
-            confirmDialog(window.siyuan.languages.confirm, window.siyuan.languages.searchOverwrite, () => {
+            confirmDialog(window.scribli.languages.confirm, window.scribli.languages.searchOverwrite, () => {
                 Array.from(criteriaElement.children).forEach(item => {
                     if (item.textContent === value) {
                         item.remove();
@@ -476,7 +476,7 @@ export const saveCriterion = (config: Config.IUILayoutTabSearchConfig,
                 saveDialog.destroy();
             } else {
                 const removeName = hasSameName === value ? hasSameConfig : hasSameName;
-                confirmDialog(window.siyuan.languages.confirm, window.siyuan.languages.searchRemoveName.replace("${x}", removeName).replace("${y}", value), () => {
+                confirmDialog(window.scribli.languages.confirm, window.scribli.languages.searchRemoveName.replace("${x}", removeName).replace("${y}", value), () => {
                     Array.from(criteriaElement.children).forEach(item => {
                         if (item.textContent === hasSameConfig || item.textContent === hasSameName) {
                             item.remove();
@@ -493,7 +493,7 @@ export const saveCriterion = (config: Config.IUILayoutTabSearchConfig,
                 });
             }
         } else if (!hasSameName && hasSameConfig) {
-            confirmDialog(window.siyuan.languages.confirm, window.siyuan.languages.searchUpdateName.replace("${x}", hasSameConfig).replace("${y}", value), () => {
+            confirmDialog(window.scribli.languages.confirm, window.scribli.languages.searchUpdateName.replace("${x}", hasSameConfig).replace("${y}", value), () => {
                 Array.from(criteriaElement.children).forEach(item => {
                     if (item.textContent === hasSameConfig) {
                         item.remove();
@@ -520,41 +520,41 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
                                cb: () => void,
                                removeCriterion: () => void,
                                layoutMenu?: () => void) => {
-    if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-        window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_SEARCH_MORE) {
-        window.siyuan.menus.menu.remove();
+    if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+        window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_SEARCH_MORE) {
+        window.scribli.menus.menu.remove();
         return;
     }
-    window.siyuan.menus.menu.remove();
-    window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_SEARCH_MORE);
+    window.scribli.menus.menu.remove();
+    window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_SEARCH_MORE);
     /// #if MOBILE
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         iconHTML: "",
-        label: window.siyuan.languages.listInvalidRefBlocks,
+        label: window.scribli.languages.listInvalidRefBlocks,
         click() {
             goUnRef();
         }
     }).element);
-    window.siyuan.menus.menu.append(new MenuItem({type: "separator"}).element);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({type: "separator"}).element);
+    window.scribli.menus.menu.append(new MenuItem({
         iconHTML: "",
-        label: window.siyuan.languages.searchType,
+        label: window.scribli.languages.searchType,
         click() {
             filterMenu(config, () => {
                 updateSearchResult(config, element, true);
             });
         }
     }).element);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         iconHTML: "",
-        label: window.siyuan.languages.replaceType,
+        label: window.scribli.languages.replaceType,
         click() {
             replaceFilterMenu(config);
         }
     }).element);
     const searchMethodSubmenu = [{
         icon: "iconExact",
-        label: window.siyuan.languages.keyword,
+        label: window.scribli.languages.keyword,
         current: config.method === 0,
         click() {
             config.method = 0;
@@ -563,7 +563,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
         }
     }, {
         icon: "iconQuote",
-        label: window.siyuan.languages.querySyntax,
+        label: window.scribli.languages.querySyntax,
         current: config.method === 1,
         click() {
             config.method = 1;
@@ -581,7 +581,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
         }
     }, {
         icon: "iconRegex",
-        label: window.siyuan.languages.regex,
+        label: window.scribli.languages.regex,
         current: config.method === 3,
         click() {
             config.method = 3;
@@ -589,10 +589,10 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
             updateSearchResult(config, element, true);
         }
     }];
-    if (window.siyuan.config.ai.embedding.enabled) {
+    if (window.scribli.config.ai.embedding.enabled) {
         searchMethodSubmenu.push({
             icon: "iconSparkles",
-            label: window.siyuan.languages.semanticSearch,
+            label: window.scribli.languages.semanticSearch,
             current: config.method === 4,
             click() {
                 config.method = 4;
@@ -601,16 +601,16 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
             }
         });
     }
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         iconHTML: "",
-        label: window.siyuan.languages.searchMethod,
+        label: window.scribli.languages.searchMethod,
         type: "submenu",
         submenu: searchMethodSubmenu
     }).element);
     /// #endif
     const sortMenu = [{
         iconHTML: "",
-        label: window.siyuan.languages.type,
+        label: window.scribli.languages.type,
         current: config.sort === 0,
         click() {
             config.sort = 0;
@@ -618,7 +618,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
         }
     }, {
         iconHTML: "",
-        label: window.siyuan.languages.createdASC,
+        label: window.scribli.languages.createdASC,
         current: config.sort === 1,
         click() {
             config.sort = 1;
@@ -626,7 +626,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
         }
     }, {
         iconHTML: "",
-        label: window.siyuan.languages.createdDESC,
+        label: window.scribli.languages.createdDESC,
         current: config.sort === 2,
         click() {
             config.sort = 2;
@@ -634,7 +634,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
         }
     }, {
         iconHTML: "",
-        label: window.siyuan.languages.modifiedASC,
+        label: window.scribli.languages.modifiedASC,
         current: config.sort === 3,
         click() {
             config.sort = 3;
@@ -642,7 +642,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
         }
     }, {
         iconHTML: "",
-        label: window.siyuan.languages.modifiedDESC,
+        label: window.scribli.languages.modifiedDESC,
         current: config.sort === 4,
         click() {
             config.sort = 4;
@@ -650,7 +650,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
         }
     }, {
         iconHTML: "",
-        label: window.siyuan.languages.sortByRankAsc,
+        label: window.scribli.languages.sortByRankAsc,
         current: config.sort === 6,
         click() {
             config.sort = 6;
@@ -658,7 +658,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
         }
     }, {
         iconHTML: "",
-        label: window.siyuan.languages.sortByRankDesc,
+        label: window.scribli.languages.sortByRankDesc,
         current: config.sort === 7,
         click() {
             config.sort = 7;
@@ -668,7 +668,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
     if (config.group === 1) {
         sortMenu.push({
             iconHTML: "",
-            label: window.siyuan.languages.sortByContent,
+            label: window.scribli.languages.sortByContent,
             current: config.sort === 5,
             click() {
                 config.sort = 5;
@@ -676,19 +676,19 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
             }
         });
     }
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         iconHTML: "",
-        label: window.siyuan.languages.sort,
+        label: window.scribli.languages.sort,
         type: "submenu",
         submenu: sortMenu,
     }).element);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         iconHTML: "",
-        label: window.siyuan.languages.group,
+        label: window.scribli.languages.group,
         type: "submenu",
         submenu: [{
             iconHTML: "",
-            label: window.siyuan.languages.noGroupBy,
+            label: window.scribli.languages.noGroupBy,
             current: config.group === 0,
             click() {
                 if (isMobile()) {
@@ -705,7 +705,7 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
             }
         }, {
             iconHTML: "",
-            label: window.siyuan.languages.groupByDoc,
+            label: window.scribli.languages.groupByDoc,
             current: config.group === 1,
             click() {
                 if (isMobile()) {
@@ -722,17 +722,17 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
     if (layoutMenu) {
         layoutMenu();
     }
-    window.siyuan.menus.menu.append(new MenuItem({type: "separator"}).element);
-    window.siyuan.menus.menu.append(new MenuItem({
-        label: window.siyuan.languages.saveCriterion,
+    window.scribli.menus.menu.append(new MenuItem({type: "separator"}).element);
+    window.scribli.menus.menu.append(new MenuItem({
+        label: window.scribli.languages.saveCriterion,
         iconHTML: "",
         click() {
             saveCriterion(config, criteriaData, element);
         }
     }).element);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         iconHTML: "",
-        label: window.siyuan.languages.removeCriterion,
+        label: window.scribli.languages.removeCriterion,
         click() {
             removeCriterion();
         }
@@ -769,9 +769,9 @@ export const initCriteriaMenu = (element: HTMLElement, data: Config.IUILayoutTab
     ${html}
 </div>
 <span class="fn__flex-1"></span>
-<button data-type="saveCriterion" class="b3-button b3-button--small b3-button--outline fn__flex-center">${window.siyuan.languages.saveCriterion}</button>
+<button data-type="saveCriterion" class="b3-button b3-button--small b3-button--outline fn__flex-center">${window.scribli.languages.saveCriterion}</button>
 <span class="fn__space"></span>
-<button data-type="removeCriterion" aria-label="${window.siyuan.languages.useCriterion}" class="ariaLabel b3-button b3-button--small b3-button--outline fn__flex-center fn__flex-shrink" data-position="9south">${window.siyuan.languages.removeCriterion}</button>
+<button data-type="removeCriterion" aria-label="${window.scribli.languages.useCriterion}" class="ariaLabel b3-button b3-button--small b3-button--outline fn__flex-center fn__flex-shrink" data-position="9south">${window.scribli.languages.removeCriterion}</button>
 <span class="fn__space"></span>`;
         /// #endif
     });

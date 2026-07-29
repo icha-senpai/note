@@ -16,19 +16,19 @@ export const genCardItem = (item: ICardPackage) => {
     <span>${escapeHtml(item.name)}</span>
     <span class="b3-list-item__meta">${item.size}</span>
 </span>
-<span data-type="rename" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.rename}">
+<span data-type="rename" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.rename}">
     <svg><use xlink:href="#iconEdit"></use></svg>
 </span>
-<span data-type="delete" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.delete}">
+<span data-type="delete" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.delete}">
     <svg><use xlink:href="#iconTrashcan"></use></svg>
 </span>
-<span data-type="view" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.cardPreview}">
+<span data-type="view" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.cardPreview}">
     <svg><use xlink:href="#iconEye"></use></svg>
 </span>
-<span data-type="remove" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.removeDeck}">
+<span data-type="remove" class="b3-list-item__action b3-list-item__action--warning b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.removeDeck}">
     <svg><use xlink:href="#iconMin"></use></svg>
 </span>
-<span data-type="add" style="display: flex" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.addDeck}">
+<span data-type="add" style="display: flex" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.addDeck}">
     <svg><use xlink:href="#iconAdd"></use></svg>
 </span>
 <span class="b3-list-item__meta${isMobile() ? " fn__none" : ""}">${item.updated}</span>
@@ -36,7 +36,7 @@ export const genCardItem = (item: ICardPackage) => {
 };
 
 export const makeCard = (app: App, ids: string[]) => {
-    window.siyuan.dialogs.find(item => {
+    window.scribli.dialogs.find(item => {
         if (item.element.getAttribute("data-key") === Constants.DIALOG_MAKECARD) {
             hideElements(["dialog"]);
             return true;
@@ -51,16 +51,16 @@ export const makeCard = (app: App, ids: string[]) => {
             positionId: Constants.DIALOG_MAKECARD,
             width: isMobile() ? "92vw" : "50vw",
             height: "70vh",
-            title: window.siyuan.languages.riffCard,
+            title: window.scribli.languages.riffCard,
             content: `<div class="b3-dialog__content fn__flex-column" style="box-sizing: border-box;height: 100%">
     <div class="fn__flex">
         <input class="b3-text-field fn__flex-1">
         <span class="fn__space"></span>
-        <span data-type="create" class="block__icon block__icon--show b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.createDeck}">
+        <span data-type="create" class="block__icon block__icon--show b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.createDeck}">
             <svg><use xlink:href="#iconAdd"></use></svg>
         </span>
         <span class="fn__space"></span>
-        <span data-type="viewall" class="block__icon block__icon--show b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.cardPreview}">
+        <span data-type="viewall" class="block__icon block__icon--show b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.cardPreview}">
             <svg><use xlink:href="#iconEye"></use></svg>
         </span>
     </div>
@@ -85,7 +85,7 @@ export const makeCard = (app: App, ids: string[]) => {
                             inputElement.value = "";
                         });
                     } else {
-                        msgId = showMessage(window.siyuan.languages._kernel[142]);
+                        msgId = showMessage(window.scribli.languages._kernel[142]);
                         inputElement.focus();
                     }
                     event.stopPropagation();
@@ -112,7 +112,7 @@ export const makeCard = (app: App, ids: string[]) => {
                     event.preventDefault();
                     break;
                 } else if (type === "delete") {
-                    confirmDialog(window.siyuan.languages.deleteOpConfirm, `${window.siyuan.languages.confirmDelete} <b>${escapeHtml(target.parentElement.getAttribute("data-name"))}</b>?`, () => {
+                    confirmDialog(window.scribli.languages.deleteOpConfirm, `${window.scribli.languages.confirmDelete} <b>${escapeHtml(target.parentElement.getAttribute("data-name"))}</b>?`, () => {
                         fetchPost("/api/riff/removeRiffDeck", {
                             deckID: target.parentElement.getAttribute("data-id"),
                         }, () => {
@@ -130,17 +130,17 @@ export const makeCard = (app: App, ids: string[]) => {
                     event.preventDefault();
                     break;
                 } else if (type === "viewall") {
-                    viewCards(app, "", window.siyuan.languages.all, "");
+                    viewCards(app, "", window.scribli.languages.all, "");
                     event.stopPropagation();
                     event.preventDefault();
                     break;
                 } else if (type === "rename") {
                     const renameDialog = new Dialog({
-                        title: window.siyuan.languages.rename,
+                        title: window.scribli.languages.rename,
                         content: `<div class="b3-dialog__content"><input class="b3-text-field fn__block" value=""></div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                         width: isMobile() ? "92vw" : "520px",
                     });

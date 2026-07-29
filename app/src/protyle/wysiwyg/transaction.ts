@@ -99,9 +99,9 @@ const promiseTransaction = (options: {
     // 受影响的嵌入块需推迟到事务提交后再渲染，否则其查询请求会早于写入到达内核而拿到旧数据
     const pendingEmbedElements = new Set<Element>();
     /// #if MOBILE
-    if (((0 !== window.siyuan.config.sync.provider && hasFeatureAccess()) ||
-            (0 === window.siyuan.config.sync.provider && hasFeatureAccess())) &&
-        window.siyuan.config.repo.key && window.siyuan.config.sync.enabled) {
+    if (((0 !== window.scribli.config.sync.provider && hasFeatureAccess()) ||
+            (0 === window.scribli.config.sync.provider && hasFeatureAccess())) &&
+        window.scribli.config.repo.key && window.scribli.config.sync.enabled) {
         document.getElementById("toolbarSync").classList.remove("fn__none");
     }
     /// #endif
@@ -405,7 +405,7 @@ const promiseTransaction = (options: {
     }
     queueTransaction(protyle, () => fetchPost("/api/transactions", {
         session: protyle.id,
-        app: Constants.SIYUAN_APPID,
+        app: Constants.SCRIBLI_APPID,
         transactions: [{
             doOperations: options.doOperations,
             undoOperations: options.undoOperations,// 目前用于 ws 推送更新大纲
@@ -761,7 +761,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                 if (data.new[Constants.CUSTOM_SY_READONLY] !== data.old[Constants.CUSTOM_SY_READONLY]) {
                     let customReadOnly = data.new[Constants.CUSTOM_SY_READONLY];
                     if (!customReadOnly) {
-                        customReadOnly = window.siyuan.config.editor.readOnly ? "true" : "false";
+                        customReadOnly = window.scribli.config.editor.readOnly ? "true" : "false";
                     }
                     if (customReadOnly === "true") {
                         disabledProtyle(protyle);
@@ -773,7 +773,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                     data.new["title-img"] !== data.old["title-img"] ||
                     data.new.tags !== data.old.tags && protyle.background) {
                     /// #if MOBILE
-                    protyle = window.siyuan.mobile.editor.protyle;
+                    protyle = window.scribli.mobile.editor.protyle;
                     /// #endif
                     protyle.background.ial.icon = data.new.icon;
                     protyle.background.ial.tags = data.new.tags;
@@ -849,7 +849,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
             }
             if (updateElements.length === 0) {
                 // 页签拖入浮窗 https://github.com/siyuan-note/siyuan/issues/6647
-                window.siyuan.blockPanels.forEach((item) => {
+                window.scribli.blockPanels.forEach((item) => {
                     const updateCloneElement = item.element.querySelector(`[data-node-id="${operation.id}"]`);
                     if (updateCloneElement) {
                         updateElements.push(updateCloneElement.cloneNode(true) as Element);
@@ -1510,7 +1510,7 @@ export const turnsOneInto = async (options: {
             item.removeAttribute("fold");
             const response = await fetchSyncPost("/api/transactions", {
                 session: options.protyle.id,
-                app: Constants.SIYUAN_APPID,
+                app: Constants.SCRIBLI_APPID,
                 transactions: [{
                     doOperations: [{
                         action: "unfoldHeading",
@@ -1609,8 +1609,8 @@ export const transaction = (protyle: IProtyle, doOperations: IOperation[], undoO
     if (!protyle) {
         // 文档树中点开属性->数据库后的变更操作 & 文档树添加到数据库
         fetchPost("/api/transactions", {
-            session: Constants.SIYUAN_APPID,
-            app: Constants.SIYUAN_APPID,
+            session: Constants.SCRIBLI_APPID,
+            app: Constants.SCRIBLI_APPID,
             transactions: [{
                 doOperations
             }]
@@ -1618,7 +1618,7 @@ export const transaction = (protyle: IProtyle, doOperations: IOperation[], undoO
         return;
     }
     if (undoOperations) {
-        if (window.siyuan.config.fileTree.openFilesUseCurrentTab && protyle.model) {
+        if (window.scribli.config.fileTree.openFilesUseCurrentTab && protyle.model) {
             protyle.model.headElement.classList.remove("item--unupdate");
         }
         protyle.updated = true;
@@ -1712,7 +1712,7 @@ const processFold = (operation: IOperation, protyle: IProtyle) => {
             const getDocParam: IObject = {
                 id: protyle.wysiwyg.element.lastElementChild.getAttribute("data-node-id"),
                 mode: 2,
-                size: window.siyuan.config.editor.dynamicLoadBlocks,
+                size: window.scribli.config.editor.dynamicLoadBlocks,
             };
             if (isEncryptedBox(protyle.notebookId)) {
                 getDocParam.notebook = protyle.notebookId;

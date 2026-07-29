@@ -101,8 +101,8 @@ export class Toolbar {
                 if (typeof toolbarItem.hotkey !== "string") {
                     toolbarItem.hotkey = "";
                 }
-                if (window.siyuan.config.keymap.plugin && window.siyuan.config.keymap.plugin[item.name] && window.siyuan.config.keymap.plugin[item.name][toolbarItem.name]) {
-                    toolbarItem.hotkey = window.siyuan.config.keymap.plugin[item.name][toolbarItem.name].custom;
+                if (window.scribli.config.keymap.plugin && window.scribli.config.keymap.plugin[item.name] && window.scribli.config.keymap.plugin[item.name][toolbarItem.name]) {
+                    toolbarItem.hotkey = window.scribli.config.keymap.plugin[item.name][toolbarItem.name].custom;
                 }
                 /// #if MOBILE
                 if (inlineToolbarElement) {
@@ -169,8 +169,8 @@ export class Toolbar {
                 if (typeof toolbarItem.hotkey !== "string") {
                     toolbarItem.hotkey = "";
                 }
-                if (window.siyuan.config.keymap.plugin && window.siyuan.config.keymap.plugin[item.name] && window.siyuan.config.keymap.plugin[item.name][toolbarItem.name]) {
-                    toolbarItem.hotkey = window.siyuan.config.keymap.plugin[item.name][toolbarItem.name].custom;
+                if (window.scribli.config.keymap.plugin && window.scribli.config.keymap.plugin[item.name] && window.scribli.config.keymap.plugin[item.name][toolbarItem.name]) {
+                    toolbarItem.hotkey = window.scribli.config.keymap.plugin[item.name][toolbarItem.name].custom;
                 }
             });
             protyle.options.toolbar = toolbarKeyToMenu(pluginToolbar);
@@ -934,7 +934,7 @@ export class Toolbar {
         // https://github.com/siyuan-note/siyuan/issues/17814
         nodeElement.setAttribute(Constants.ATTRIBUTE_EDITING, "true");
         hideElements(["hint", "select"], protyle);
-        window.siyuan.menus.menu.remove();
+        window.scribli.menus.menu.remove();
         const id = nodeElement.getAttribute("data-node-id");
         const types = (renderElement.getAttribute("data-type") || "").split(" ");
         const html = oldHTML || nodeElement.outerHTML;
@@ -943,10 +943,10 @@ export class Toolbar {
         const isInlineMemo = types.includes("inline-memo");
         switch (renderElement.getAttribute("data-subtype")) {
             case "abc":
-                title = window.siyuan.languages.staff;
+                title = window.scribli.languages.staff;
                 break;
             case "echarts":
-                title = window.siyuan.languages.chart;
+                title = window.scribli.languages.chart;
                 break;
             case "flowchart":
                 title = "Flow Chart";
@@ -961,23 +961,23 @@ export class Toolbar {
                 placeholder = `- foo
   - bar
 - baz`;
-                title = window.siyuan.languages.mindmap;
+                title = window.scribli.languages.mindmap;
                 break;
             case "plantuml":
                 title = "UML";
                 break;
             case "math":
                 if (types.includes("NodeMathBlock")) {
-                    title = window.siyuan.languages.math;
+                    title = window.scribli.languages.math;
                 } else {
-                    title = window.siyuan.languages["inline-math"];
+                    title = window.scribli.languages["inline-math"];
                 }
                 break;
         }
         if (types.includes("NodeBlockQueryEmbed")) {
-            title = window.siyuan.languages.blockEmbed;
+            title = window.scribli.languages.blockEmbed;
         } else if (isInlineMemo) {
-            title = window.siyuan.languages.memo;
+            title = window.scribli.languages.memo;
         }
         this.clearSubElement();
         this.subElement.style.padding = "0";
@@ -992,17 +992,17 @@ export class Toolbar {
         ${title}
     </span>
     <span class="fn__space"></span>
-    <button data-type="refresh" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw block__icon--active${types.includes("NodeBlockQueryEmbed") ? " fn__none" : ""}" aria-label="${window.siyuan.languages.refresh}"><svg><use xlink:href="#iconRefresh"></use></svg></button>
+    <button data-type="refresh" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw block__icon--active${types.includes("NodeBlockQueryEmbed") ? " fn__none" : ""}" aria-label="${window.scribli.languages.refresh}"><svg><use xlink:href="#iconRefresh"></use></svg></button>
     <span class="fn__space"></span>
-    <button data-type="before" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw${protyle.disabled ? " fn__none" : ""}" aria-label="${window.siyuan.languages.insertBefore}"><svg><use xlink:href="#iconBefore"></use></svg></button>
+    <button data-type="before" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw${protyle.disabled ? " fn__none" : ""}" aria-label="${window.scribli.languages.insertBefore}"><svg><use xlink:href="#iconBefore"></use></svg></button>
     <span class="fn__space${protyle.disabled ? " fn__none" : ""}"></span>
-    <button data-type="after" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw${protyle.disabled ? " fn__none" : ""}" aria-label="${window.siyuan.languages.insertAfter}"><svg><use xlink:href="#iconAfter"></use></svg></button>
+    <button data-type="after" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw${protyle.disabled ? " fn__none" : ""}" aria-label="${window.scribli.languages.insertAfter}"><svg><use xlink:href="#iconAfter"></use></svg></button>
     <span class="fn__space${protyle.disabled ? " fn__none" : ""}"></span>
-    <button data-type="export" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw" aria-label="${window.siyuan.languages.export} ${window.siyuan.languages.image}"><svg><use xlink:href="#iconImage"></use></svg></button>
+    <button data-type="export" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw" aria-label="${window.scribli.languages.export} ${window.scribli.languages.image}"><svg><use xlink:href="#iconImage"></use></svg></button>
     <span class="fn__space"></span>
-    <button data-type="pin" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw" aria-label="${window.siyuan.languages.pin}"><svg><use xlink:href="#iconPin"></use></svg></button>
+    <button data-type="pin" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw" aria-label="${window.scribli.languages.pin}"><svg><use xlink:href="#iconPin"></use></svg></button>
     <span class="fn__space"></span>
-    <button data-type="close" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw" aria-label="${window.siyuan.languages.close}"><svg><use xlink:href="#iconClose"></use></svg></button>
+    <button data-type="close" class="block__icon block__icon--show b3-tooltips b3-tooltips__nw" aria-label="${window.scribli.languages.close}"><svg><use xlink:href="#iconClose"></use></svg></button>
 </div>
 <div class="protyle-util__scroll"><div class="fn__flex"><div class="protyle-linenumber__rows"></div><textarea ${protyle.disabled ? " readonly" : ""} spellcheck="false" class="b3-text-field b3-text-field--text fn__flex-1" placeholder="${placeholder}" style="overflow:hidden;resize:none;font-family: var(--b3-font-family-code);"></textarea></div></div></div>
 <div class="resize__rd"></div><div class="resize__ld"></div><div class="resize__lt"></div><div class="resize__rt"></div><div class="resize__r"></div><div class="resize__d"></div><div class="resize__t"></div><div class="resize__l"></div>`;
@@ -1070,12 +1070,12 @@ export class Toolbar {
             if (!btnElement) {
                 if (event.detail === 2) {
                     const pingElement = headerElement.querySelector('[data-type="pin"]');
-                    if (pingElement.getAttribute("aria-label") === window.siyuan.languages.unpin) {
+                    if (pingElement.getAttribute("aria-label") === window.scribli.languages.unpin) {
                         pingElement.querySelector("svg use").setAttribute("xlink:href", "#iconPin");
-                        pingElement.setAttribute("aria-label", window.siyuan.languages.pin);
+                        pingElement.setAttribute("aria-label", window.scribli.languages.pin);
                     } else {
                         pingElement.querySelector("svg use").setAttribute("xlink:href", "#iconUnpin");
-                        pingElement.setAttribute("aria-label", window.siyuan.languages.unpin);
+                        pingElement.setAttribute("aria-label", window.scribli.languages.unpin);
                     }
                     event.preventDefault();
                     event.stopPropagation();
@@ -1085,16 +1085,16 @@ export class Toolbar {
             event.stopPropagation();
             switch (btnElement.getAttribute("data-type")) {
                 case "close":
-                    this.subElement.querySelector('[data-type="pin"]').setAttribute("aria-label", window.siyuan.languages.pin);
+                    this.subElement.querySelector('[data-type="pin"]').setAttribute("aria-label", window.scribli.languages.pin);
                     hideElements(["util"], protyle);
                     break;
                 case "pin":
-                    if (btnElement.getAttribute("aria-label") === window.siyuan.languages.unpin) {
+                    if (btnElement.getAttribute("aria-label") === window.scribli.languages.unpin) {
                         btnElement.querySelector("svg use").setAttribute("xlink:href", "#iconPin");
-                        btnElement.setAttribute("aria-label", window.siyuan.languages.pin);
+                        btnElement.setAttribute("aria-label", window.scribli.languages.pin);
                     } else {
                         btnElement.querySelector("svg use").setAttribute("xlink:href", "#iconUnpin");
-                        btnElement.setAttribute("aria-label", window.siyuan.languages.unpin);
+                        btnElement.setAttribute("aria-label", window.scribli.languages.unpin);
                     }
                     break;
                 case "refresh":
@@ -1114,7 +1114,7 @@ export class Toolbar {
             }
         });
         const exportImg = () => {
-            const msgId = showMessage(window.siyuan.languages.exporting, 0);
+            const msgId = showMessage(window.scribli.languages.exporting, 0);
             if (renderElement.getAttribute("data-subtype") === "plantuml") {
                 fetch(renderElement.querySelector("object").getAttribute("data")).then(function (response) {
                     return response.blob();
@@ -1186,7 +1186,7 @@ export class Toolbar {
         textElement.addEventListener("keydown", (event: KeyboardEvent) => {
             event.stopPropagation();
             // 阻止 ctrl+m 缩小窗口 https://github.com/siyuan-note/siyuan/issues/5541
-            if (matchHotKey(window.siyuan.config.keymap.editor.insert["inline-math"].custom, event)) {
+            if (matchHotKey(window.scribli.config.keymap.editor.insert["inline-math"].custom, event)) {
                 event.preventDefault();
                 return;
             }
@@ -1194,7 +1194,7 @@ export class Toolbar {
                 return;
             }
             if (event.key === "Escape" || matchHotKey("⌘↩", event)) {
-                this.subElement.querySelector('[data-type="pin"]').setAttribute("aria-label", window.siyuan.languages.pin);
+                this.subElement.querySelector('[data-type="pin"]').setAttribute("aria-label", window.scribli.languages.pin);
                 hideElements(["util"], protyle);
             } else if (event.key === "Tab") {
                 // https://github.com/siyuan-note/siyuan/issues/5270
@@ -1224,7 +1224,7 @@ export class Toolbar {
                 const tempElement = document.createElement("template");
                 tempElement.innerHTML = protyle.lute.SpinBlockDOM(nodeElement.outerHTML);
                 if (tempElement.content.childElementCount > 1) {
-                    showMessage(window.siyuan.languages.htmlBlockTip);
+                    showMessage(window.scribli.languages.htmlBlockTip);
                 }
             } else if (isInlineMemo && !noChange) {
                 let inlineMemoElements;
@@ -1312,7 +1312,7 @@ export class Toolbar {
                 updateTransaction(protyle, nodeElement, html);
             }
         };
-        this.subElement.style.zIndex = (++window.siyuan.zIndex).toString();
+        this.subElement.style.zIndex = (++window.scribli.zIndex).toString();
         this.subElement.classList.remove("fn__none");
         const nodeRect = renderElement.getBoundingClientRect();
         this.element.classList.add("fn__none");
@@ -1336,16 +1336,16 @@ export class Toolbar {
             return;
         }
         hideElements(["hint"], protyle);
-        window.siyuan.menus.menu.remove();
+        window.scribli.menus.menu.remove();
         this.range = getEditorRange(nodeElement);
         this.clearSubElement();
         this.subElement.innerHTML = `<div data-id="codeLanguage" class="fn__flex-column" style="max-height:50vh">
-    <input placeholder="${window.siyuan.languages.search}" style="margin: 0 8px 4px 8px" class="b3-text-field"/>
+    <input placeholder="${window.scribli.languages.search}" style="margin: 0 8px 4px 8px" class="b3-text-field"/>
     <div class="b3-list fn__flex-1 b3-list--background" style="position: relative"></div>
 </div>`;
         const listElement = this.subElement.lastElementChild.lastElementChild as HTMLElement;
 
-        let html = `<div data-id="clearLanguage" class="b3-list-item">${window.siyuan.languages.clear}</div>`;
+        let html = `<div data-id="clearLanguage" class="b3-list-item">${window.scribli.languages.clear}</div>`;
         let hljsLanguages = Constants.ALIAS_CODE_LANGUAGES.concat(window.hljs?.listLanguages() ?? []).sort();
 
         const eventDetail = {languages: hljsLanguages, type: "init", listElement};
@@ -1395,7 +1395,7 @@ export class Toolbar {
         inputElement.addEventListener("input", (event) => {
             const value = inputElement.value.trim();
             let matchLanguages;
-            let html = `<div data-id="clearLanguage" class="b3-list-item">${window.siyuan.languages.clear}</div>`;
+            let html = `<div data-id="clearLanguage" class="b3-list-item">${window.scribli.languages.clear}</div>`;
             let isMatchLanguages = false;
             // Sort
             if (value) {
@@ -1459,7 +1459,7 @@ export class Toolbar {
             }
             this.updateLanguage(languageElements, protyle, listElement.textContent);
         });
-        this.subElement.style.zIndex = (++window.siyuan.zIndex).toString();
+        this.subElement.style.zIndex = (++window.scribli.zIndex).toString();
         this.subElement.classList.remove("fn__none");
         /// #if !MOBILE
         const nodeRect = languageElements[0].getBoundingClientRect();
@@ -1473,7 +1473,7 @@ export class Toolbar {
 
     public showMultiSelectMode(protyle: IProtyle, blockElement: HTMLElement) {
         blockElement.classList.add("protyle-wysiwyg--select");
-        window.siyuan.menus.menu.remove();
+        window.scribli.menus.menu.remove();
         this.clearSubElement();
         this.subElement.style.width = window.innerWidth - 16 + "px";
         this.subElement.style.padding = "0";
@@ -1487,7 +1487,7 @@ export class Toolbar {
     <span class="fn__space"></span>
     <button class="block__icon block__icon--show" data-type="exitMultiSelectMode"><svg><use xlink:href="#iconClose"></use></svg></button>
 </div>`;
-        this.subElement.style.zIndex = (++window.siyuan.zIndex).toString();
+        this.subElement.style.zIndex = (++window.scribli.zIndex).toString();
         this.subElement.classList.remove("fn__none");
         this.subElement.firstElementChild.addEventListener("click", (event) => {
             let target = event.target as HTMLElement;
@@ -1501,7 +1501,7 @@ export class Toolbar {
                     break;
                 } else if (target.dataset.type === "menu") {
                     protyle.gutter.renderMenu(protyle, protyle.wysiwyg.element.querySelector(".protyle-wysiwyg--select"));
-                    window.siyuan.menus.menu.fullscreen();
+                    window.scribli.menus.menu.fullscreen();
                     event.preventDefault();
                     event.stopPropagation();
                     break;
@@ -1517,7 +1517,7 @@ export class Toolbar {
     public showTpl(protyle: IProtyle, nodeElement: HTMLElement, range: Range) {
         this.range = range;
         hideElements(["hint"], protyle);
-        window.siyuan.menus.menu.remove();
+        window.scribli.menus.menu.remove();
         this.clearSubElement();
         this.subElement.innerHTML = `<div style="max-height:50vh" class="fn__flex">
 <div class="fn__flex-column" style="${isMobile() ? "width: 100%" : "width: 256px"}">
@@ -1594,15 +1594,15 @@ export class Toolbar {
                     searchHTML += `<div data-value="${item.path}" class="b3-list-item--hide-action b3-list-item${index === 0 ? " b3-list-item--focus" : ""}">
 <span class="b3-list-item__text">${item.content}</span>`;
                     /// #if !BROWSER
-                    searchHTML += `<span data-type="open" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.showInFolder}">
+                    searchHTML += `<span data-type="open" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.showInFolder}">
     <svg><use xlink:href="#iconFolder"></use></svg>
 </span>`;
                     /// #endif
-                    searchHTML += `<span data-type="remove" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.remove}">
+                    searchHTML += `<span data-type="remove" class="b3-list-item__action b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.remove}">
     <svg><use xlink:href="#iconTrashcan"></use></svg>
 </span></div>`;
                 });
-                listElement.innerHTML = searchHTML || `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+                listElement.innerHTML = searchHTML || `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
 
                 if (!previewPath) {
                     previewPath = response.data.templates[0]?.path;
@@ -1648,10 +1648,10 @@ export class Toolbar {
             }
             /// #endif
             if (iconElement && iconElement.getAttribute("data-type") === "remove") {
-                confirmDialog(window.siyuan.languages.remove, window.siyuan.languages.confirmDelete + "?", () => {
+                confirmDialog(window.scribli.languages.remove, window.scribli.languages.confirmDelete + "?", () => {
                     fetchPost("/api/search/removeTemplate", {path: iconElement.parentElement.getAttribute("data-value")}, () => {
                         if (iconElement.parentElement.parentElement.childElementCount === 1) {
-                            iconElement.parentElement.parentElement.innerHTML = `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+                            iconElement.parentElement.parentElement.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
                             previewTemplate("", previewElement, protyle.block.parentID);
                         } else {
                             if (iconElement.parentElement.classList.contains("b3-list-item--focus")) {
@@ -1689,7 +1689,7 @@ export class Toolbar {
                 event.stopPropagation();
             }
         });
-        this.subElement.style.zIndex = (++window.siyuan.zIndex).toString();
+        this.subElement.style.zIndex = (++window.scribli.zIndex).toString();
         this.subElement.classList.remove("fn__none");
         this.element.classList.add("fn__none");
         inputElement.select();
@@ -1699,7 +1699,7 @@ export class Toolbar {
     public showWidget(protyle: IProtyle, nodeElement: HTMLElement, range: Range) {
         this.range = range;
         hideElements(["hint"], protyle);
-        window.siyuan.menus.menu.remove();
+        window.scribli.menus.menu.remove();
         this.clearSubElement();
         this.subElement.innerHTML = `<div class="fn__flex-column" style="max-height:50vh">
     <input style="margin: 0 8px 4px 8px" class="b3-text-field"/>
@@ -1766,7 +1766,7 @@ export class Toolbar {
             }
             hintRenderWidget(listElement.dataset.content, protyle);
         });
-        this.subElement.style.zIndex = (++window.siyuan.zIndex).toString();
+        this.subElement.style.zIndex = (++window.scribli.zIndex).toString();
         this.subElement.classList.remove("fn__none");
         this.element.classList.add("fn__none");
         inputElement.select();
@@ -1850,17 +1850,17 @@ export class Toolbar {
             } else if (action === "back") {
                 this.subElement.lastElementChild.innerHTML = html;
             } else if (action === "more") {
-                this.subElement.lastElementChild.innerHTML = `<button class="keyboard__action${hasCopy ? "" : " fn__none"}" data-action="copyPlainText"><span>${window.siyuan.languages.copyPlainText}</span></button>
+                this.subElement.lastElementChild.innerHTML = `<button class="keyboard__action${hasCopy ? "" : " fn__none"}" data-action="copyPlainText"><span>${window.scribli.languages.copyPlainText}</span></button>
 <div class="keyboard__split${hasCopy ? "" : " fn__none"}"></div>
-<button class="keyboard__action${protyle.disabled ? " fn__none" : ""}" data-action="pasteAsPlainText"><span>${window.siyuan.languages.pasteAsPlainText}</span></button>
+<button class="keyboard__action${protyle.disabled ? " fn__none" : ""}" data-action="pasteAsPlainText"><span>${window.scribli.languages.pasteAsPlainText}</span></button>
 <div class="keyboard__split${protyle.disabled ? " fn__none" : ""}"></div>
-<button class="keyboard__action${protyle.disabled ? " fn__none" : ""}" data-action="pasteEscaped"><span>${window.siyuan.languages.pasteEscaped}</span></button>
+<button class="keyboard__action${protyle.disabled ? " fn__none" : ""}" data-action="pasteEscaped"><span>${window.scribli.languages.pasteEscaped}</span></button>
 <div class="keyboard__split${protyle.disabled ? " fn__none" : ""}"></div>
 <button class="keyboard__action" data-action="back"><svg><use xlink:href="#iconBack"></use></svg></button>`;
                 setPosition(this.subElement, rangePosition.left, rangePosition.top + 28, this.LINE_HEIGHT);
             }
         });
-        this.subElement.style.zIndex = (++window.siyuan.zIndex).toString();
+        this.subElement.style.zIndex = (++window.scribli.zIndex).toString();
         this.subElement.classList.remove("fn__none");
         this.element.classList.add("fn__none");
         const rangePosition = getSelectionPosition(nodeElement, range);
@@ -1943,7 +1943,7 @@ export class Toolbar {
     }
 
     private updateLanguage(languageElements: HTMLElement[], protyle: IProtyle, selectedLang: string) {
-        const currentLang = selectedLang === window.siyuan.languages.clear ? "" : selectedLang;
+        const currentLang = selectedLang === window.scribli.languages.clear ? "" : selectedLang;
 
         if (protyle.app && protyle.app.plugins) {
             protyle.app.plugins.forEach((plugin: any) => {
@@ -1955,9 +1955,9 @@ export class Toolbar {
             });
         }
 
-        if (!Constants.SIYUAN_RENDER_CODE_LANGUAGES.includes(currentLang)) {
-            window.siyuan.storage[Constants.LOCAL_CODELANG] = currentLang;
-            setStorageVal(Constants.LOCAL_CODELANG, window.siyuan.storage[Constants.LOCAL_CODELANG]);
+        if (!Constants.SCRIBLI_RENDER_CODE_LANGUAGES.includes(currentLang)) {
+            window.scribli.storage[Constants.LOCAL_CODELANG] = currentLang;
+            setStorageVal(Constants.LOCAL_CODELANG, window.scribli.storage[Constants.LOCAL_CODELANG]);
         }
         const doOperations: IOperation[] = [];
         const undoOperations: IOperation[] = [];
@@ -1970,9 +1970,9 @@ export class Toolbar {
                     data: nodeElement.outerHTML,
                     action: "update"
                 });
-                item.textContent = selectedLang === window.siyuan.languages.clear ? "" : selectedLang;
+                item.textContent = selectedLang === window.scribli.languages.clear ? "" : selectedLang;
                 const editElement = getContenteditableElement(nodeElement);
-                if (Constants.SIYUAN_RENDER_CODE_LANGUAGES.includes(currentLang)) {
+                if (Constants.SCRIBLI_RENDER_CODE_LANGUAGES.includes(currentLang)) {
                     nodeElement.dataset.content = editElement.textContent.trim();
                     nodeElement.dataset.subtype = currentLang;
                     nodeElement.className = "render-node";

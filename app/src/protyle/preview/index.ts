@@ -3,7 +3,7 @@ import {focusByRange} from "../util/selection";
 import {openByMobile} from "../../editor/openLink";
 import {showMessage} from "../../dialog/message";
 import {isLocalPath, pathPosix} from "../../util/pathName";
-import {processSiYuanUri} from "../../util/uri";
+import {processScribliUri} from "../../util/uri";
 import {previewDocImage} from "./image";
 import {getDiagramBlock, previewDiagram} from "./diagram";
 import {Constants} from "../../constants";
@@ -50,22 +50,22 @@ export class Preview {
             }
             switch (action) {
                 case "desktop":
-                    actionHtml.push(`<button type="button" class="protyle-preview__action--current" data-type="desktop">${window.siyuan.languages.desktop}</button>`);
+                    actionHtml.push(`<button type="button" class="protyle-preview__action--current" data-type="desktop">${window.scribli.languages.desktop}</button>`);
                     break;
                 case "tablet":
-                    actionHtml.push(`<button type="button" data-type="tablet">${window.siyuan.languages.tablet}</button>`);
+                    actionHtml.push(`<button type="button" data-type="tablet">${window.scribli.languages.tablet}</button>`);
                     break;
                 case "mobile":
-                    actionHtml.push(`<button type="button" data-type="mobile">${window.siyuan.languages.mobile}</button>`);
+                    actionHtml.push(`<button type="button" data-type="mobile">${window.scribli.languages.mobile}</button>`);
                     break;
                 case "mp-wechat":
-                    actionHtml.push(`<button type="button" data-type="mp-wechat" class="b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.copyToWechatMP}"><svg><use xlink:href="#iconMp"></use></svg></button>`);
+                    actionHtml.push(`<button type="button" data-type="mp-wechat" class="b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.copyToWechatMP}"><svg><use xlink:href="#iconMp"></use></svg></button>`);
                     break;
                 case "zhihu":
-                    actionHtml.push(`<button type="button" data-type="zhihu" class="b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.copyToZhihu}"><svg><use xlink:href="#iconZhihu"></use></svg></button>`);
+                    actionHtml.push(`<button type="button" data-type="zhihu" class="b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.copyToZhihu}"><svg><use xlink:href="#iconZhihu"></use></svg></button>`);
                     break;
                 case "yuque":
-                    actionHtml.push(`<button type="button" data-type="yuque" class="b3-tooltips b3-tooltips__w" aria-label="${window.siyuan.languages.copyToYuque}"><svg><use xlink:href="#iconYuque"></use></svg></button>`);
+                    actionHtml.push(`<button type="button" data-type="yuque" class="b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.copyToYuque}"><svg><use xlink:href="#iconYuque"></use></svg></button>`);
                     break;
             }
         }
@@ -101,12 +101,12 @@ export class Preview {
                             openBy(linkAddress, "folder");
                         } else if (event.shiftKey) {
                             openBy(linkAddress, "app");
-                        } else if (Constants.SIYUAN_ASSETS_EXTS.includes(pathPosix().extname((linkAddress).split("?")[0]))) {
+                        } else if (Constants.SCRIBLI_ASSETS_EXTS.includes(pathPosix().extname((linkAddress).split("?")[0]))) {
                             openAsset(protyle.app, linkAddress.split("?page")[0], parseInt(getSearch("page", linkAddress)));
                         }
                         /// #endif
                     } else {
-                        if (processSiYuanUri(protyle.app, linkAddress)) {
+                        if (processScribliUri(protyle.app, linkAddress)) {
                             break;
                         }
                         /// #if !BROWSER
@@ -167,7 +167,7 @@ export class Preview {
                     });
                 }
                 /// #else
-                window.siyuan.mobile.docks.outline?.setCurrentByPreview(nodeElement);
+                window.scribli.mobile.docks.outline?.setCurrentByPreview(nodeElement);
                 /// #endif
                 const diagramElement = getDiagramBlock(nodeElement);
                 if (diagramElement) {
@@ -207,7 +207,7 @@ export class Preview {
                 processRender(protyle.preview.previewElement);
                 highlightRender(protyle.preview.previewElement);
                 avRender(protyle.preview.previewElement, protyle);
-                speechRender(protyle.preview.previewElement, window.siyuan.config.appearance.lang);
+                speechRender(protyle.preview.previewElement, window.scribli.config.appearance.lang);
                 protyle.preview.previewElement.scrollTop = oldScrollTop;
                 loadingElement.remove();
             });
@@ -290,7 +290,7 @@ export class Preview {
                 adjustHeadingLevel: true,
             }, (response) => {
                 writeText(response.data);
-                showMessage(`${window.siyuan.languages.pasteToYuque}`);
+                showMessage(`${window.scribli.languages.pasteToYuque}`);
             });
             return;
         }
@@ -331,7 +331,7 @@ export class Preview {
         this.element.lastElementChild.remove();
         focusByRange(cloneRange);
         if (type) {
-            showMessage(`${type === "zhihu" ? window.siyuan.languages.pasteToZhihu : window.siyuan.languages.pasteToWechatMP}`);
+            showMessage(`${type === "zhihu" ? window.scribli.languages.pasteToZhihu : window.scribli.languages.pasteToWechatMP}`);
         }
     }
 

@@ -23,7 +23,7 @@ import (
 	"github.com/samber/lo"
 )
 
-// injectServer adds siyuan.server to the goja context.
+// injectServer adds scribli.server to the goja context.
 func injectServer(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {

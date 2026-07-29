@@ -36,7 +36,7 @@ import {
 
 const replace = (element: Element, config: Config.IUILayoutTabSearchConfig, isAll: boolean) => {
     if (config.method === 2) {
-        showMessage(window.siyuan.languages._kernel[132]);
+        showMessage(window.scribli.languages._kernel[132]);
         return;
     }
     const searchListElement = element.querySelector("#searchList");
@@ -78,7 +78,7 @@ const replace = (element: Element, config: Config.IUILayoutTabSearchConfig, isAl
             updateSearchResult(config, element, false);
             return;
         }
-        reloadProtyle(window.siyuan.mobile.editor.protyle, false);
+        reloadProtyle(window.scribli.mobile.editor.protyle, false);
 
         let newId = currentLiElement.getAttribute("data-node-id");
         if (currentLiElement.nextElementSibling) {
@@ -152,10 +152,10 @@ const updateConfig = (element: Element, newConfig: Config.IUILayoutTabSearchConf
     }
     (element.querySelector("#toolbarReplace") as HTMLInputElement).value = newConfig.r;
     config = JSON.parse(JSON.stringify(newConfig));
-    window.siyuan.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
-    setStorageVal(Constants.LOCAL_SEARCHDATA, window.siyuan.storage[Constants.LOCAL_SEARCHDATA]);
+    window.scribli.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
+    setStorageVal(Constants.LOCAL_SEARCHDATA, window.scribli.storage[Constants.LOCAL_SEARCHDATA]);
     updateSearchResult(config, element);
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
     return config;
 };
 
@@ -175,7 +175,7 @@ const onRecentBlocks = (data: IBlock[], config: Config.IUILayoutTabSearchConfig,
 <span class="b3-list-item__toggle b3-list-item__toggle--hl">
     <svg class="b3-list-item__arrow b3-list-item__arrow--open"><use xlink:href="#iconRight"></use></svg>
 </span>
-${unicode2Emoji(getNotebookIcon(item.box) || window.siyuan.storage[Constants.LOCAL_IMAGES].note, "b3-list-item__graphic", true)}
+${unicode2Emoji(getNotebookIcon(item.box) || window.scribli.storage[Constants.LOCAL_IMAGES].note, "b3-list-item__graphic", true)}
 <span class="b3-list-item__text" style="color: var(--b3-theme-on-surface)">${escapeHtml(title)}</span>
 </div><div>`;
             item.children.forEach((childItem) => {
@@ -221,15 +221,15 @@ ${childItem.tag ? `<span class="b3-list-item__meta b3-list-item__meta--ellipsis"
         `<div class="b3-list-item b3-list-item--focus" data-type="search-new">
     <svg class="b3-list-item__graphic"><use xlink:href="#iconFile"></use></svg>
     <span class="b3-list-item__text">
-        ${window.siyuan.languages.newFile} <mark>${(document.querySelector("#toolbarSearch") as HTMLInputElement).value}</mark>
+        ${window.scribli.languages.newFile} <mark>${(document.querySelector("#toolbarSearch") as HTMLInputElement).value}</mark>
     </span>
 </div>`;
     listElement.scrollTop = 0;
     let countHTML = "";
     if (response && response.data.matchedBlockCount > 0) {
-        let text = window.siyuan.languages.findInDoc.replace("${x}", response.data.matchedRootCount).replace("${y}", response.data.matchedBlockCount);
+        let text = window.scribli.languages.findInDoc.replace("${x}", response.data.matchedRootCount).replace("${y}", response.data.matchedBlockCount);
         if (response.data.docMode) {
-            text = window.siyuan.languages.matchDoc.replace("${x}", response.data.matchedRootCount);
+            text = window.scribli.languages.matchDoc.replace("${x}", response.data.matchedRootCount);
         }
         countHTML = `<span class="fn__flex-center">${text}</span>
 <span class="fn__flex-1"></span>
@@ -342,8 +342,8 @@ const initSearchEvent = (app: App, element: Element, config: Config.IUILayoutTab
     searchInputElement.addEventListener("blur", () => {
         if (config.removed) {
             config.k = searchInputElement.value;
-            window.siyuan.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
-            setStorageVal(Constants.LOCAL_SEARCHDATA, window.siyuan.storage[Constants.LOCAL_SEARCHDATA]);
+            window.scribli.storage[Constants.LOCAL_SEARCHDATA] = Object.assign({}, config);
+            setStorageVal(Constants.LOCAL_SEARCHDATA, window.scribli.storage[Constants.LOCAL_SEARCHDATA]);
         }
         saveKeyList("keys", searchInputElement.value);
     });
@@ -367,7 +367,7 @@ const initSearchEvent = (app: App, element: Element, config: Config.IUILayoutTab
     const assetsElement = document.querySelector("#searchAssetsPanel");
     const unRefElement = document.querySelector("#searchUnRefPanel");
     const searchListElement = element.querySelector("#searchList") as HTMLElement;
-    const localSearch = window.siyuan.storage[Constants.LOCAL_SEARCHASSET] as ISearchAssetOption;
+    const localSearch = window.scribli.storage[Constants.LOCAL_SEARCHASSET] as ISearchAssetOption;
     element.addEventListener("click", (event: MouseEvent) => {
         let target = event.target as HTMLElement;
         while (target && (target !== element)) {
@@ -434,7 +434,7 @@ const initSearchEvent = (app: App, element: Element, config: Config.IUILayoutTab
                         page: 1,
                         types: getDefaultType(),
                         subTypes: getDefaultSubType(),
-                        replaceTypes: Object.assign({}, Constants.SIYUAN_DEFAULT_REPLACETYPES),
+                        replaceTypes: Object.assign({}, Constants.SCRIBLI_DEFAULT_REPLACETYPES),
                     }, config, true);
                 }
                 if (target.parentElement.parentElement.childElementCount === 1) {
@@ -531,7 +531,7 @@ const initSearchEvent = (app: App, element: Element, config: Config.IUILayoutTab
                         });
                     },
                     flashcard: false,
-                    title: window.siyuan.languages.specifyPath
+                    title: window.scribli.languages.specifyPath
                 });
                 event.stopPropagation();
                 event.preventDefault();
@@ -581,11 +581,11 @@ const initSearchEvent = (app: App, element: Element, config: Config.IUILayoutTab
                         page: 1,
                         types: getDefaultType(),
                         subTypes: getDefaultSubType(),
-                        replaceTypes: Object.assign({}, Constants.SIYUAN_DEFAULT_REPLACETYPES),
+                        replaceTypes: Object.assign({}, Constants.SCRIBLI_DEFAULT_REPLACETYPES),
                     }, config, true);
                     element.querySelector("#criteria .b3-chip--current")?.classList.remove("b3-chip--current");
                 });
-                window.siyuan.menus.menu.fullscreen();
+                window.scribli.menus.menu.fullscreen();
                 event.stopPropagation();
                 event.preventDefault();
                 break;
@@ -683,8 +683,8 @@ const initSearchEvent = (app: App, element: Element, config: Config.IUILayoutTab
                 } else if (target.getAttribute("data-type") === "search-item") {
                     const id = target.getAttribute("data-node-id");
                     if (id) {
-                        if (window.siyuan.mobile.editor?.protyle) {
-                            preventScroll(window.siyuan.mobile.editor.protyle);
+                        if (window.scribli.mobile.editor?.protyle) {
+                            preventScroll(window.scribli.mobile.editor.protyle);
                         }
                         checkFold(id, (zoomIn) => {
                             openMobileFileById(app, id, zoomIn ? [Constants.CB_GET_ALL] : [Constants.CB_GET_HL, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL]);
@@ -694,7 +694,7 @@ const initSearchEvent = (app: App, element: Element, config: Config.IUILayoutTab
                         if (!target.classList.contains("b3-list-item--focus")) {
                             element.querySelector("#searchAssetList .b3-list-item--focus").classList.remove("b3-list-item--focus");
                             target.classList.add("b3-list-item--focus");
-                            renderPreview(element.querySelector("#searchAssetPreview"), target.dataset.id, (element.querySelector("#searchAssetInput") as HTMLInputElement).value, window.siyuan.storage[Constants.LOCAL_SEARCHASSET].method);
+                            renderPreview(element.querySelector("#searchAssetPreview"), target.dataset.id, (element.querySelector("#searchAssetInput") as HTMLInputElement).value, window.scribli.storage[Constants.LOCAL_SEARCHASSET].method);
                         } else if (target.classList.contains("b3-list-item--focus")) {
                             renderNextAssetMark(element.querySelector("#searchAssetPreview"));
                         }
@@ -713,8 +713,8 @@ const initSearchEvent = (app: App, element: Element, config: Config.IUILayoutTab
 };
 
 export const popSearch = (app: App, searchConfig?: Config.IUILayoutTabSearchConfig) => {
-    const config: Config.IUILayoutTabSearchConfig = JSON.parse(JSON.stringify(window.siyuan.storage[Constants.LOCAL_SEARCHDATA]));
-    if (config.method === 4 && !window.siyuan.config.ai.embedding.enabled) {
+    const config: Config.IUILayoutTabSearchConfig = JSON.parse(JSON.stringify(window.scribli.storage[Constants.LOCAL_SEARCHDATA]));
+    if (config.method === 4 && !window.scribli.config.ai.embedding.enabled) {
         config.method = 0;
     }
     const rangeText = (getCurrentEditor()?.protyle.toolbar.range || (getSelection().rangeCount > 0 ? getSelection().getRangeAt(0) : document.createRange())).toString();
@@ -749,7 +749,7 @@ export const popSearch = (app: App, searchConfig?: Config.IUILayoutTabSearchConf
         <svg class="svg--mid"><use xlink:href="#iconSearch"></use></svg>
         <svg class="svg--smaller"><use xlink:href="#iconDown"></use></svg>
     </span>
-    <input id="toolbarSearch" placeholder="${window.siyuan.languages.showRecentUpdatedBlocks}" class="toolbar__title fn__block" autocomplete="off" autocorrect="off" spellcheck="false">
+    <input id="toolbarSearch" placeholder="${window.scribli.languages.showRecentUpdatedBlocks}" class="toolbar__title fn__block" autocomplete="off" autocorrect="off" spellcheck="false">
     <svg id="toolbarSearchNew" class="toolbar__icon"><use xlink:href="#iconFile"></use></svg>
 </div>`,
         html: `<div class="fn__flex-column" style="height: 100%">
@@ -761,9 +761,9 @@ export const popSearch = (app: App, searchConfig?: Config.IUILayoutTabSearchConf
         <input id="toolbarReplace" class="toolbar__title">
         <svg class="fn__rotate fn__none toolbar__icon"><use xlink:href="#iconRefresh"></use></svg>
         <div class="fn__space"></div>
-        <button data-type="replace-all" class="b3-button b3-button--outline fn__flex-center">${window.siyuan.languages.replaceAll}</button>
+        <button data-type="replace-all" class="b3-button b3-button--outline fn__flex-center">${window.scribli.languages.replaceAll}</button>
         <div class="fn__space"></div>
-        <button data-type="replace" class="b3-button b3-button--outline fn__flex-center">${window.siyuan.languages.replace}</button>
+        <button data-type="replace" class="b3-button b3-button--outline fn__flex-center">${window.scribli.languages.replace}</button>
         <div class="fn__space"></div>
     </div>
     <div id="criteria" style="background-color: var(--b3-theme-background);"></div>
@@ -799,7 +799,7 @@ export const popSearch = (app: App, searchConfig?: Config.IUILayoutTabSearchConf
                 <svg class="svg--mid"><use xlink:href="#iconSearch"></use></svg>
                 <svg class="svg--smaller"><use xlink:href="#iconDown"></use></svg>
             </span>
-            <input id="searchAssetInput" placeholder="${window.siyuan.languages.keyword}" class="toolbar__title fn__block">
+            <input id="searchAssetInput" placeholder="${window.scribli.languages.keyword}" class="toolbar__title fn__block">
         </div>
         <div class="toolbar">
             <span class="fn__space"></span>
@@ -858,7 +858,7 @@ const goAsset = () => {
     if (listElement.innerHTML) {
         return;
     }
-    const localSearch = window.siyuan.storage[Constants.LOCAL_SEARCHASSET] as ISearchAssetOption;
+    const localSearch = window.scribli.storage[Constants.LOCAL_SEARCHASSET] as ISearchAssetOption;
     const inputElement = assetsElement.querySelector("input");
     inputElement.value = localSearch.k;
     inputElement.addEventListener("compositionend", (event: InputEvent) => {
@@ -887,7 +887,7 @@ const goAsset = () => {
 };
 
 export const goUnRef = () => {
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
     const unRefElement = document.querySelector("#searchUnRefPanel");
     unRefElement.classList.remove("fn__none");
     const listElement = unRefElement.querySelector("#searchUnRefList");
@@ -926,11 +926,11 @@ const getUnRefListMobile = (element: Element, page = 1) => {
 <span class="b3-list-item__text b3-list-item__meta">${title}</span>
 </div>`;
         });
-        element.querySelector("#searchUnRefResult").innerHTML = `<span class="fn__flex-center">${window.siyuan.languages.findInDoc.replace("${x}", response.data.matchedRootCount).replace("${y}", response.data.matchedBlockCount)}</span>
+        element.querySelector("#searchUnRefResult").innerHTML = `<span class="fn__flex-center">${window.scribli.languages.findInDoc.replace("${x}", response.data.matchedRootCount).replace("${y}", response.data.matchedBlockCount)}</span>
 <span class="fn__flex-1"></span>
 <span class="fn__flex-center">${page}/${response.data.pageCount || 1}</span>`;
         element.querySelector("#searchUnRefList").innerHTML = resultHTML || `<div class="search__empty">
-    ${window.siyuan.languages.emptyContent}
+    ${window.scribli.languages.emptyContent}
 </div>`;
     });
 };

@@ -28,16 +28,16 @@ export const fillContent = (protyle: IProtyle, data: string, elements: Element[]
 
 const editDialog = (customName: string, customMemo: string) => {
     const dialog = new Dialog({
-        title: window.siyuan.languages.update,
+        title: window.scribli.languages.update,
         content: `<div class="b3-dialog__content">
-    <input class="b3-text-field fn__block" placeholder="${window.siyuan.languages.memo}">
+    <input class="b3-text-field fn__block" placeholder="${window.scribli.languages.memo}">
     <div class="fn__hr"></div>
-    <textarea class="b3-text-field fn__block" placeholder="${window.siyuan.languages.aiCustomAction}"></textarea>
+    <textarea class="b3-text-field fn__block" placeholder="${window.scribli.languages.aiCustomAction}"></textarea>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--remove">${window.siyuan.languages.delete}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--remove">${window.scribli.languages.delete}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
     });
@@ -54,27 +54,27 @@ const editDialog = (customName: string, customMemo: string) => {
         dialog.destroy();
     });
     btnsElement[2].addEventListener("click", () => {
-        window.siyuan.storage[Constants.LOCAL_AI].find((subItem: {
+        window.scribli.storage[Constants.LOCAL_AI].find((subItem: {
             name: string,
             memo: string
         }) => {
             if (customName === subItem.name && customMemo === subItem.memo) {
                 subItem.name = nameElement.value;
                 subItem.memo = customElement.value;
-                setStorageVal(Constants.LOCAL_AI, window.siyuan.storage[Constants.LOCAL_AI]);
+                setStorageVal(Constants.LOCAL_AI, window.scribli.storage[Constants.LOCAL_AI]);
                 return true;
             }
         });
         dialog.destroy();
     });
     btnsElement[0].addEventListener("click", () => {
-        window.siyuan.storage[Constants.LOCAL_AI].find((subItem: {
+        window.scribli.storage[Constants.LOCAL_AI].find((subItem: {
             name: string,
             memo: string
         }, index: number) => {
             if (customName === subItem.name && customMemo === subItem.memo) {
-                window.siyuan.storage[Constants.LOCAL_AI].splice(index, 1);
-                setStorageVal(Constants.LOCAL_AI, window.siyuan.storage[Constants.LOCAL_AI]);
+                window.scribli.storage[Constants.LOCAL_AI].splice(index, 1);
+                setStorageVal(Constants.LOCAL_AI, window.scribli.storage[Constants.LOCAL_AI]);
                 return true;
             }
         });
@@ -85,16 +85,16 @@ const editDialog = (customName: string, customMemo: string) => {
 
 const customDialog = (protyle: IProtyle, ids: string[], elements: Element[]) => {
     const dialog = new Dialog({
-        title: window.siyuan.languages.aiCustomAction,
+        title: window.scribli.languages.aiCustomAction,
         content: `<div class="b3-dialog__content">
-    <input class="b3-text-field fn__block" value="" placeholder="${window.siyuan.languages.memo}">
+    <input class="b3-text-field fn__block" value="" placeholder="${window.scribli.languages.memo}">
     <div class="fn__hr"></div>
-    <textarea class="b3-text-field fn__block" placeholder="${window.siyuan.languages.aiCustomAction}"></textarea>
+    <textarea class="b3-text-field fn__block" placeholder="${window.scribli.languages.aiCustomAction}"></textarea>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.use}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.save}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.use}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.save}</button>
 </div>`,
         width: isMobile() ? "92vw" : "520px",
     });
@@ -110,7 +110,7 @@ const customDialog = (protyle: IProtyle, ids: string[], elements: Element[]) => 
     });
     btnsElement[1].addEventListener("click", () => {
         if (!customElement.value) {
-            showMessage(window.siyuan.languages["_kernel"][142]);
+            showMessage(window.scribli.languages["_kernel"][142]);
             return;
         }
         fetchPost("/api/ai/chatGPTWithAction", {
@@ -123,14 +123,14 @@ const customDialog = (protyle: IProtyle, ids: string[], elements: Element[]) => 
     });
     btnsElement[2].addEventListener("click", () => {
         if (!nameElement.value && !customElement.value) {
-            showMessage(window.siyuan.languages["_kernel"][142]);
+            showMessage(window.scribli.languages["_kernel"][142]);
             return;
         }
-        window.siyuan.storage[Constants.LOCAL_AI].push({
+        window.scribli.storage[Constants.LOCAL_AI].push({
             name: nameElement.value,
             memo: customElement.value
         });
-        setStorageVal(Constants.LOCAL_AI, window.siyuan.storage[Constants.LOCAL_AI]);
+        setStorageVal(Constants.LOCAL_AI, window.scribli.storage[Constants.LOCAL_AI]);
         dialog.destroy();
     });
     nameElement.focus();
@@ -156,7 +156,7 @@ const filterAI = (element: HTMLElement, inputElement: HTMLInputElement) => {
 };
 
 export const AIActions = (elements: Element[], protyle: IProtyle) => {
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
     const ids: string[] = [];
     elements.forEach(item => {
         ids.push(item.getAttribute("data-node-id"));
@@ -165,7 +165,7 @@ export const AIActions = (elements: Element[], protyle: IProtyle) => {
         focusByRange(protyle.toolbar.range);
     });
     let customHTML = "";
-    window.siyuan.storage[Constants.LOCAL_AI].forEach((item: { name: string, memo: string }, index: number) => {
+    window.scribli.storage[Constants.LOCAL_AI].forEach((item: { name: string, memo: string }, index: number) => {
         customHTML += `<div data-action="${escapeAttr(item.memo || item.name)}" data-position="10west" data-index="${index}" class="b3-list-item b3-list-item--narrow ariaLabel" aria-label="${escapeAriaLabel(item.memo)}">
     <span class="b3-list-item__text">${escapeHtml(item.name)}</span>
     <span data-type="edit" class="b3-list-item__action"><svg><use xlink:href="#iconEdit"></use></svg></span>
@@ -183,24 +183,24 @@ export const AIActions = (elements: Element[], protyle: IProtyle) => {
     <div class="fn__hr"></div>
     <div class="b3-list fn__flex-1 b3-list--background">
        <div class="b3-list-item b3-list-item--narrow b3-list-item--focus" data-action="Continue writing">
-            ${window.siyuan.languages.aiContinueWrite}
+            ${window.scribli.languages.aiContinueWrite}
         </div>
         <div class="b3-menu__separator"></div>
-        <div class="b3-list-item b3-list-item--narrow" data-action="${window.siyuan.languages.aiExtractSummary}">
-            ${window.siyuan.languages.aiExtractSummary}
+        <div class="b3-list-item b3-list-item--narrow" data-action="${window.scribli.languages.aiExtractSummary}">
+            ${window.scribli.languages.aiExtractSummary}
         </div>
-        <div class="b3-list-item b3-list-item--narrow" data-action="${window.siyuan.languages.aiBrainStorm}">
-            ${window.siyuan.languages.aiBrainStorm}
+        <div class="b3-list-item b3-list-item--narrow" data-action="${window.scribli.languages.aiBrainStorm}">
+            ${window.scribli.languages.aiBrainStorm}
         </div>
-        <div class="b3-list-item b3-list-item--narrow" data-action="${window.siyuan.languages.aiFixGrammarSpell}">
-            ${window.siyuan.languages.aiFixGrammarSpell}
+        <div class="b3-list-item b3-list-item--narrow" data-action="${window.scribli.languages.aiFixGrammarSpell}">
+            ${window.scribli.languages.aiFixGrammarSpell}
         </div>
         <div class="b3-list-item b3-list-item--narrow" data-action="${clearContext}">
-            ${window.siyuan.languages.clearContext}
+            ${window.scribli.languages.clearContext}
         </div>
         <div class="b3-menu__separator"></div>
         <div class="b3-list-item b3-list-item--narrow" data-type="custom">
-            ${window.siyuan.languages.aiCustomAction}
+            ${window.scribli.languages.aiCustomAction}
         </div>
         ${customHTML}
     </div>
@@ -240,7 +240,7 @@ export const AIActions = (elements: Element[], protyle: IProtyle) => {
                             fillContent(protyle, response.data, elements);
                         });
                         if (currentElement.dataset.action === clearContext) {
-                            showMessage(window.siyuan.languages.clearContextSucc);
+                            showMessage(window.scribli.languages.clearContextSucc);
                         } else {
                             menu.close();
                         }
@@ -260,7 +260,7 @@ export const AIActions = (elements: Element[], protyle: IProtyle) => {
                 let target = event.target as HTMLElement;
                 while (target && (target !== element)) {
                     if (target.classList.contains("b3-list-item__action")) {
-                        const subItem = window.siyuan.storage[Constants.LOCAL_AI][target.parentElement.dataset.index];
+                        const subItem = window.scribli.storage[Constants.LOCAL_AI][target.parentElement.dataset.index];
                         editDialog(subItem.name, subItem.memo);
                         menu.close();
                         event.stopPropagation();
@@ -275,7 +275,7 @@ export const AIActions = (elements: Element[], protyle: IProtyle) => {
                                 fillContent(protyle, response.data, elements);
                             });
                             if (target.dataset.action === clearContext) {
-                                showMessage(window.siyuan.languages.clearContextSucc);
+                                showMessage(window.scribli.languages.clearContextSucc);
                             } else {
                                 menu.close();
                             }

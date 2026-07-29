@@ -44,7 +44,7 @@ export const mermaidRender = (element: Element, cdn = Constants.PROTYLE_CDN) => 
                     rightPadding: 20
                 }
             };
-            if (window.siyuan.config.appearance.mode === 1) {
+            if (window.scribli.config.appearance.mode === 1) {
                 config.theme = "dark";
             }
             window.mermaid.initialize(config);

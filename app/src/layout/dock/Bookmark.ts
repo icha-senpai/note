@@ -31,18 +31,18 @@ export class Bookmark extends Model {
         this.element = tab.panelElement;
         this.element.classList.add("fn__flex-column", "file-tree", "sy__bookmark", "dockPanel");
         this.element.innerHTML = `<div class="block__icons">
-    <div class="block__logo fn__flex-1">${window.siyuan.languages.bookmark}</div>
-    <span data-type="refresh" class="block__icon ariaLabel" data-position="north" aria-label="${window.siyuan.languages.refresh}"><svg><use xlink:href='#iconRefresh'></use></svg></span>
+    <div class="block__logo fn__flex-1">${window.scribli.languages.bookmark}</div>
+    <span data-type="refresh" class="block__icon ariaLabel" data-position="north" aria-label="${window.scribli.languages.refresh}"><svg><use xlink:href='#iconRefresh'></use></svg></span>
     <span class="fn__space"></span>
-    <span data-type="expand" class="block__icon ariaLabel" data-position="north" aria-label="${window.siyuan.languages.expand}${updateHotkeyAfterTip(window.siyuan.config.keymap.editor.general.expand.custom)}">
+    <span data-type="expand" class="block__icon ariaLabel" data-position="north" aria-label="${window.scribli.languages.expand}${updateHotkeyAfterTip(window.scribli.config.keymap.editor.general.expand.custom)}">
         <svg><use xlink:href="#iconExpand"></use></svg>
     </span>
     <span class="fn__space"></span>
-    <span data-type="collapse" class="block__icon ariaLabel" data-position="north" aria-label="${window.siyuan.languages.collapse}${updateHotkeyAfterTip(window.siyuan.config.keymap.editor.general.collapse.custom)}">
+    <span data-type="collapse" class="block__icon ariaLabel" data-position="north" aria-label="${window.scribli.languages.collapse}${updateHotkeyAfterTip(window.scribli.config.keymap.editor.general.collapse.custom)}">
         <svg><use xlink:href="#iconContract"></use></svg>
     </span>
     <span class="fn__space"></span>
-    <span data-type="min" class="block__icon ariaLabel" data-position="north" aria-label="${window.siyuan.languages.min}${updateHotkeyAfterTip(window.siyuan.config.keymap.general.closeTab.custom)}"><svg><use xlink:href='#iconMin'></use></svg></span>
+    <span data-type="min" class="block__icon ariaLabel" data-position="north" aria-label="${window.scribli.languages.min}${updateHotkeyAfterTip(window.scribli.config.keymap.general.closeTab.custom)}"><svg><use xlink:href='#iconMin'></use></svg></span>
 </div>
 <div class="fn__flex-1" style="margin-bottom: 8px"></div>`;
         this.tree = new Tree({
@@ -107,26 +107,26 @@ export class Bookmark extends Model {
             },
             blockExtHTML: '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
             topExtHTML: '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
-            blockDraggable: !window.siyuan.config.readonly,
+            blockDraggable: !window.scribli.config.readonly,
             dragStart: (element, event) => {
                 const id = element.dataset.nodeId;
                 if (!id) {
                     return false;
                 }
-                event.dataTransfer.setData(Constants.SIYUAN_DROP_BLOCK_REF, JSON.stringify({
+                event.dataTransfer.setData(Constants.SCRIBLI_DROP_BLOCK_REF, JSON.stringify({
                     ids: [id],
-                    workspaceDir: window.siyuan.config.system.workspaceDir,
+                    workspaceDir: window.scribli.config.system.workspaceDir,
                 }));
                 event.dataTransfer.effectAllowed = "copyMove";
                 element.style.opacity = "0.38";
-                window.siyuan.dragElement = undefined;
-                window.siyuan.dragTitle = element.querySelector(".b3-list-item__text")?.textContent?.trim() || "";
+                window.scribli.dragElement = undefined;
+                window.scribli.dragTitle = element.querySelector(".b3-list-item__text")?.textContent?.trim() || "";
                 return true;
             },
             dragEnd: (element) => {
                 element.style.opacity = "1";
-                window.siyuan.dragElement = undefined;
-                window.siyuan.dragTitle = "";
+                window.scribli.dragElement = undefined;
+                window.scribli.dragTitle = "";
                 this.dragenterCounter = 0;
                 this.clearDropTarget();
                 return true;
@@ -254,7 +254,7 @@ export class Bookmark extends Model {
                 target.classList.add("dragover");
                 this.dragoverElement = target;
             }
-            event.dataTransfer.dropEffect = event.dataTransfer.types.includes(Constants.SIYUAN_DROP_BLOCK_REF) ? "move" : "copy";
+            event.dataTransfer.dropEffect = event.dataTransfer.types.includes(Constants.SCRIBLI_DROP_BLOCK_REF) ? "move" : "copy";
             event.preventDefault();
         });
         this.tree.element.addEventListener("dragleave", () => {
@@ -278,7 +278,7 @@ export class Bookmark extends Model {
                 return;
             }
             const bookmark = target.classList.contains("b3-list--empty") ?
-                window.siyuan.languages.default : target.dataset.bookmark;
+                window.scribli.languages.default : target.dataset.bookmark;
             if (!bookmark) {
                 return;
             }
@@ -294,36 +294,36 @@ export class Bookmark extends Model {
     }
 
     private isSupportedDrop(dataTransfer: DataTransfer) {
-        if (window.siyuan.config.readonly) {
+        if (window.scribli.config.readonly) {
             return false;
         }
-        if (dataTransfer.types.includes(Constants.SIYUAN_DROP_BLOCK_REF)) {
+        if (dataTransfer.types.includes(Constants.SCRIBLI_DROP_BLOCK_REF)) {
             return true;
         }
-        const gutterType = Array.from(dataTransfer.types).find(type => type.startsWith(Constants.SIYUAN_DROP_GUTTER));
+        const gutterType = Array.from(dataTransfer.types).find(type => type.startsWith(Constants.SCRIBLI_DROP_GUTTER));
         if (gutterType) {
-            const gutterTypes = gutterType.replace(Constants.SIYUAN_DROP_GUTTER, "").split(Constants.ZWSP);
+            const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
             const isAttributeViewItem = gutterTypes[0] === "nodeattributeviewrowmenu" ||
                 gutterTypes[0] === "nodeattributeviewrow" ||
                 (gutterTypes[0] === "nodeattributeview" && ["viewtab", "col", "galleryitem"].includes(gutterTypes[1] || ""));
             if (isAttributeViewItem || gutterTypes[0] === "nodethematicbreak") {
                 return false;
             }
-            if (gutterTypes[3] && gutterTypes[3] !== window.siyuan.config.system.workspaceDir.toLowerCase()) {
+            if (gutterTypes[3] && gutterTypes[3] !== window.scribli.config.system.workspaceDir.toLowerCase()) {
                 return false;
             }
             return true;
         }
-        return dataTransfer.types.includes(Constants.SIYUAN_DROP_FILE) ||
-            dataTransfer.types.includes(Constants.SIYUAN_DROP_TAB);
+        return dataTransfer.types.includes(Constants.SCRIBLI_DROP_FILE) ||
+            dataTransfer.types.includes(Constants.SCRIBLI_DROP_TAB);
     }
 
     private getDropBlockIds(dataTransfer: DataTransfer) {
         const ids: string[] = [];
-        if (dataTransfer.types.includes(Constants.SIYUAN_DROP_BLOCK_REF)) {
+        if (dataTransfer.types.includes(Constants.SCRIBLI_DROP_BLOCK_REF)) {
             try {
-                const data = JSON.parse(dataTransfer.getData(Constants.SIYUAN_DROP_BLOCK_REF));
-                if (data.workspaceDir?.toLowerCase() === window.siyuan.config.system.workspaceDir.toLowerCase() &&
+                const data = JSON.parse(dataTransfer.getData(Constants.SCRIBLI_DROP_BLOCK_REF));
+                if (data.workspaceDir?.toLowerCase() === window.scribli.config.system.workspaceDir.toLowerCase() &&
                     Array.isArray(data.ids)) {
                     ids.push(...data.ids);
                 }
@@ -331,15 +331,15 @@ export class Bookmark extends Model {
                 console.warn("parse bookmark drop block reference data failed", e);
             }
         } else {
-            const gutterType = Array.from(dataTransfer.types).find(type => type.startsWith(Constants.SIYUAN_DROP_GUTTER));
+            const gutterType = Array.from(dataTransfer.types).find(type => type.startsWith(Constants.SCRIBLI_DROP_GUTTER));
             if (gutterType) {
-                const gutterTypes = gutterType.replace(Constants.SIYUAN_DROP_GUTTER, "").split(Constants.ZWSP);
+                const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
                 ids.push(...(gutterTypes[2] || "").split(","));
-            } else if (dataTransfer.types.includes(Constants.SIYUAN_DROP_FILE)) {
-                ids.push(...dataTransfer.getData(Constants.SIYUAN_DROP_FILE).split(","));
-            } else if (dataTransfer.types.includes(Constants.SIYUAN_DROP_TAB)) {
+            } else if (dataTransfer.types.includes(Constants.SCRIBLI_DROP_FILE)) {
+                ids.push(...dataTransfer.getData(Constants.SCRIBLI_DROP_FILE).split(","));
+            } else if (dataTransfer.types.includes(Constants.SCRIBLI_DROP_TAB)) {
                 try {
-                    const tabData = JSON.parse(dataTransfer.getData(Constants.SIYUAN_DROP_TAB));
+                    const tabData = JSON.parse(dataTransfer.getData(Constants.SCRIBLI_DROP_TAB));
                     if (tabData.children?.instance === "Editor") {
                         ids.push(tabData.children.rootId);
                     }

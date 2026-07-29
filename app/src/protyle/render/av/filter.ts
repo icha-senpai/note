@@ -207,7 +207,7 @@ export const getFiltersHTML = (data: IAV) => {
     measureEl.style.cssText = "position:absolute;visibility:hidden;font-size:14px;white-space:nowrap;";
     document.body.appendChild(measureEl);
     let andOrTextWidth = 0;
-    [window.siyuan.languages.filterWhen, window.siyuan.languages.filterCombinationAnd, window.siyuan.languages.filterCombinationOr].forEach(t => {
+    [window.scribli.languages.filterWhen, window.scribli.languages.filterCombinationAnd, window.scribli.languages.filterCombinationOr].forEach(t => {
         measureEl.textContent = t;
         andOrTextWidth = Math.max(andOrTextWidth, measureEl.offsetWidth);
     });
@@ -215,13 +215,13 @@ export const getFiltersHTML = (data: IAV) => {
     // 宽度需容纳文字 + b3-select 的左右 padding（8 + 26）+ 余量
     const andOrControlWidth = andOrTextWidth + 36;
     const genAndOrSelect = (groupPath: string, combination: string) =>
-        `<select class="b3-select" data-type="toggleCombination" data-path="${groupPath}" style="width:${andOrControlWidth}px;"><option value="and" ${combination === "and" ? "selected" : ""}>${window.siyuan.languages.filterCombinationAnd}</option><option value="or" ${combination === "or" ? "selected" : ""}>${window.siyuan.languages.filterCombinationOr}</option></select>`;
+        `<select class="b3-select" data-type="toggleCombination" data-path="${groupPath}" style="width:${andOrControlWidth}px;"><option value="and" ${combination === "and" ? "selected" : ""}>${window.scribli.languages.filterCombinationAnd}</option><option value="or" ${combination === "or" ? "selected" : ""}>${window.scribli.languages.filterCombinationOr}</option></select>`;
 
     const genWhenLabel = () =>
-        `<span class="av__filter-label ft__on-surface" style="width:${andOrControlWidth}px;">${window.siyuan.languages.filterWhen}</span>`;
+        `<span class="av__filter-label ft__on-surface" style="width:${andOrControlWidth}px;">${window.scribli.languages.filterWhen}</span>`;
 
     const genAndOrLabel = (combination: string) =>
-        `<span class="av__filter-label ft__on-surface" style="width:${andOrControlWidth}px;">${combination === "or" ? window.siyuan.languages.filterCombinationOr : window.siyuan.languages.filterCombinationAnd}</span>`;
+        `<span class="av__filter-label ft__on-surface" style="width:${andOrControlWidth}px;">${combination === "or" ? window.scribli.languages.filterCombinationOr : window.scribli.languages.filterCombinationAnd}</span>`;
 
     const genNodeHTML = (node: IAVFilter, path: string, depth: number, groupPath: string, groupCombination: string, index: number = 0): string => {
         if (!node) {
@@ -242,8 +242,8 @@ export const getFiltersHTML = (data: IAV) => {
 
             const depthClass = `av__filter-group-children--depth${Math.min(depth, 3)}`;
             const addConditionBtn = depth >= 3
-                ? `<span class="block__icon block__icon--text ariaLabel" data-position="4north" data-type="addFilter" data-path="${path}" aria-label="${window.siyuan.languages.addFilterCondition}"><svg><use xlink:href="#iconAdd"></use></svg>${window.siyuan.languages.addFilterCondition}</span>`
-                : `<span class="block__icon block__icon--text ariaLabel" data-position="4north" data-type="addFilterCondition" data-path="${path}" data-depth="${depth}" aria-label="${window.siyuan.languages.addFilterCondition}"><svg><use xlink:href="#iconAdd"></use></svg>${window.siyuan.languages.addFilterCondition}<svg><use xlink:href="#iconDown"></use></svg></span>`;
+                ? `<span class="block__icon block__icon--text ariaLabel" data-position="4north" data-type="addFilter" data-path="${path}" aria-label="${window.scribli.languages.addFilterCondition}"><svg><use xlink:href="#iconAdd"></use></svg>${window.scribli.languages.addFilterCondition}</span>`
+                : `<span class="block__icon block__icon--text ariaLabel" data-position="4north" data-type="addFilterCondition" data-path="${path}" data-depth="${depth}" aria-label="${window.scribli.languages.addFilterCondition}"><svg><use xlink:href="#iconAdd"></use></svg>${window.scribli.languages.addFilterCondition}<svg><use xlink:href="#iconDown"></use></svg></span>`;
 
             const andOrHTML = 0 === index ? genWhenLabel() : 1 === index ? genAndOrSelect(groupPath, groupCombination) : genAndOrLabel(groupCombination);
             return `<div class="av__filter-group-item" data-path="${path}">
@@ -254,7 +254,7 @@ export const getFiltersHTML = (data: IAV) => {
         ${childrenHTML}
         <div class="av__filter-group-actions">${addConditionBtn}</div>
     </div>
-    <svg class="b3-menu__action ariaLabel" data-position="4west" data-type="moreFilter" data-path="${path}" aria-label="${window.siyuan.languages.more}"><use xlink:href="#iconMore"></use></svg>
+    <svg class="b3-menu__action ariaLabel" data-position="4west" data-type="moreFilter" data-path="${path}" aria-label="${window.scribli.languages.more}"><use xlink:href="#iconMore"></use></svg>
 </div>`;
         }
 
@@ -278,7 +278,7 @@ export const getFiltersHTML = (data: IAV) => {
         const fieldWrapper = `<span class="av__field-wrapper ariaLabel" data-position="4west" aria-label="${escapeAttr(colData.name)}">${iconHTML}${fieldSelect}</span>`;
         const inlineHTML = genInlineFilterHTML(node, colData, path);
         const leafAndOrHTML = 0 === index ? genWhenLabel() : 1 === index ? genAndOrSelect(groupPath, groupCombination) : genAndOrLabel(groupCombination);
-        return `<div class="b3-menu__item av__filter-row" data-path="${path}" data-column="${node.column}">${leafAndOrHTML}<div class="fn__flex-1 av__filter-rowinner">${fieldWrapper}${inlineHTML}</div><svg class="b3-menu__action ariaLabel" data-position="4west" data-type="moreFilter" data-path="${path}" aria-label="${window.siyuan.languages.more}"><use xlink:href="#iconMore"></use></svg></div>`;
+        return `<div class="b3-menu__item av__filter-row" data-path="${path}" data-column="${node.column}">${leafAndOrHTML}<div class="fn__flex-1 av__filter-rowinner">${fieldWrapper}${inlineHTML}</div><svg class="b3-menu__action ariaLabel" data-position="4west" data-type="moreFilter" data-path="${path}" aria-label="${window.scribli.languages.more}"><use xlink:href="#iconMore"></use></svg></div>`;
     };
 
     const isRootGroup = data.view.filters.length === 1 && (data.view.filters[0].filters || data.view.filters[0].combination);
@@ -296,18 +296,18 @@ export const getFiltersHTML = (data: IAV) => {
     <span class="block__icon" style="padding: 8px;margin-left: -4px;" data-type="go-config">
         <svg><use xlink:href="#iconLeft"></use></svg>
     </span>
-    <span class="b3-menu__label ft__center">${window.siyuan.languages.filter}</span>
+    <span class="b3-menu__label ft__center">${window.scribli.languages.filter}</span>
 </button>
 <button class="b3-menu__separator"></button>
 ${html}
 <button class="b3-menu__item" data-type="addFilterCondition" data-path="" data-depth="0">
     <svg class="b3-menu__icon"><use xlink:href="#iconAdd"></use></svg>
-    <span class="b3-menu__label av__filter-add-label">${window.siyuan.languages.addFilterCondition}</span>
+    <span class="b3-menu__label av__filter-add-label">${window.scribli.languages.addFilterCondition}</span>
     <svg class="av__filter-arrow"><use xlink:href="#iconDown"></use></svg>
 </button>
 <button class="b3-menu__item b3-menu__item--warning${leafCount > 0 ? "" : " fn__none"}" data-type="removeFilters">
     <svg class="b3-menu__icon"><use xlink:href="#iconTrashcan"></use></svg>
-    <span class="b3-menu__label">${window.siyuan.languages.removeFilters}</span>
+    <span class="b3-menu__label">${window.scribli.languages.removeFilters}</span>
 </button>
 </div>`;
 };
@@ -359,41 +359,41 @@ const getOperatorSelectByType = (type: TAVCol, currentOperator: string): string 
     const opt = (value: string, label: string) => `<option ${value === currentOperator ? "selected" : ""} value="${value}">${label}</option>`;
     switch (type) {
         case "checkbox":
-            return opt("=", window.siyuan.languages.filterOperatorIs) + opt("!=", window.siyuan.languages.filterOperatorIsNot);
+            return opt("=", window.scribli.languages.filterOperatorIs) + opt("!=", window.scribli.languages.filterOperatorIsNot);
         case "block":
         case "mAsset":
         case "text":
         case "url":
         case "phone":
         case "email":
-            return opt("=", window.siyuan.languages.filterOperatorIs) + opt("!=", window.siyuan.languages.filterOperatorIsNot) +
-                opt("Contains", window.siyuan.languages.filterOperatorContains) + opt("Does not contains", window.siyuan.languages.filterOperatorDoesNotContain) +
-                opt("Starts with", window.siyuan.languages.filterOperatorStartsWith) + opt("Ends with", window.siyuan.languages.filterOperatorEndsWith) +
-                opt("Is empty", window.siyuan.languages.filterOperatorIsEmpty) + opt("Is not empty", window.siyuan.languages.filterOperatorIsNotEmpty);
+            return opt("=", window.scribli.languages.filterOperatorIs) + opt("!=", window.scribli.languages.filterOperatorIsNot) +
+                opt("Contains", window.scribli.languages.filterOperatorContains) + opt("Does not contains", window.scribli.languages.filterOperatorDoesNotContain) +
+                opt("Starts with", window.scribli.languages.filterOperatorStartsWith) + opt("Ends with", window.scribli.languages.filterOperatorEndsWith) +
+                opt("Is empty", window.scribli.languages.filterOperatorIsEmpty) + opt("Is not empty", window.scribli.languages.filterOperatorIsNotEmpty);
         case "template":
-            return opt("=", window.siyuan.languages.filterOperatorIs) + opt("!=", window.siyuan.languages.filterOperatorIsNot) +
-                opt("Contains", window.siyuan.languages.filterOperatorContains) + opt("Does not contains", window.siyuan.languages.filterOperatorDoesNotContain) +
-                opt("Starts with", window.siyuan.languages.filterOperatorStartsWith) + opt("Ends with", window.siyuan.languages.filterOperatorEndsWith) +
-                opt("Is empty", window.siyuan.languages.filterOperatorIsEmpty) + opt("Is not empty", window.siyuan.languages.filterOperatorIsNotEmpty) +
+            return opt("=", window.scribli.languages.filterOperatorIs) + opt("!=", window.scribli.languages.filterOperatorIsNot) +
+                opt("Contains", window.scribli.languages.filterOperatorContains) + opt("Does not contains", window.scribli.languages.filterOperatorDoesNotContain) +
+                opt("Starts with", window.scribli.languages.filterOperatorStartsWith) + opt("Ends with", window.scribli.languages.filterOperatorEndsWith) +
+                opt("Is empty", window.scribli.languages.filterOperatorIsEmpty) + opt("Is not empty", window.scribli.languages.filterOperatorIsNotEmpty) +
                 opt(">", "&gt;") + opt("<", "&lt;") + opt(">=", "&GreaterEqual;") + opt("<=", "&le;");
         case "date":
         case "created":
         case "updated":
-            return opt("=", window.siyuan.languages.filterOperatorIs) + opt(">", window.siyuan.languages.filterOperatorIsAfter) +
-                opt("<", window.siyuan.languages.filterOperatorIsBefore) + opt(">=", window.siyuan.languages.filterOperatorIsOnOrAfter) +
-                opt("<=", window.siyuan.languages.filterOperatorIsOnOrBefore) + opt("Is between", window.siyuan.languages.filterOperatorIsBetween) +
-                opt("Is empty", window.siyuan.languages.filterOperatorIsEmpty) + opt("Is not empty", window.siyuan.languages.filterOperatorIsNotEmpty);
+            return opt("=", window.scribli.languages.filterOperatorIs) + opt(">", window.scribli.languages.filterOperatorIsAfter) +
+                opt("<", window.scribli.languages.filterOperatorIsBefore) + opt(">=", window.scribli.languages.filterOperatorIsOnOrAfter) +
+                opt("<=", window.scribli.languages.filterOperatorIsOnOrBefore) + opt("Is between", window.scribli.languages.filterOperatorIsBetween) +
+                opt("Is empty", window.scribli.languages.filterOperatorIsEmpty) + opt("Is not empty", window.scribli.languages.filterOperatorIsNotEmpty);
         case "number":
             return opt("=", "=") + opt("!=", "!=") + opt(">", "&gt;") + opt("<", "&lt;") +
                 opt(">=", "&GreaterEqual;") + opt("<=", "&le;") +
-                opt("Is empty", window.siyuan.languages.filterOperatorIsEmpty) + opt("Is not empty", window.siyuan.languages.filterOperatorIsNotEmpty);
+                opt("Is empty", window.scribli.languages.filterOperatorIsEmpty) + opt("Is not empty", window.scribli.languages.filterOperatorIsNotEmpty);
         case "mSelect":
         case "relation":
-            return opt("Contains", window.siyuan.languages.filterOperatorContains) + opt("Does not contains", window.siyuan.languages.filterOperatorDoesNotContain) +
-                opt("Is empty", window.siyuan.languages.filterOperatorIsEmpty) + opt("Is not empty", window.siyuan.languages.filterOperatorIsNotEmpty);
+            return opt("Contains", window.scribli.languages.filterOperatorContains) + opt("Does not contains", window.scribli.languages.filterOperatorDoesNotContain) +
+                opt("Is empty", window.scribli.languages.filterOperatorIsEmpty) + opt("Is not empty", window.scribli.languages.filterOperatorIsNotEmpty);
         case "select":
-            return opt("=", window.siyuan.languages.filterOperatorIs) + opt("!=", window.siyuan.languages.filterOperatorIsNot) +
-                opt("Is empty", window.siyuan.languages.filterOperatorIsEmpty) + opt("Is not empty", window.siyuan.languages.filterOperatorIsNotEmpty);
+            return opt("=", window.scribli.languages.filterOperatorIs) + opt("!=", window.scribli.languages.filterOperatorIsNot) +
+                opt("Is empty", window.scribli.languages.filterOperatorIsEmpty) + opt("Is not empty", window.scribli.languages.filterOperatorIsNotEmpty);
         default:
             return "";
     }
@@ -491,9 +491,9 @@ const genInlineFilterHTML = (filter: IAVFilter, colData: IAVColumn, path: string
     // 量化器 select（rollup/mAsset 才有）
     const quantifierSelect = (isRollup || valueType === "mAsset")
         ? `<select class="b3-select" data-type="quantifier" data-path="${path}">
-<option ${(!filter.quantifier || filter.quantifier === "Any") ? "selected" : ""} value="Any">${window.siyuan.languages.filterQuantifierAny}</option>
-<option ${filter.quantifier === "All" ? "selected" : ""} value="All">${window.siyuan.languages.filterQuantifierAll}</option>
-<option ${filter.quantifier === "None" ? "selected" : ""} value="None">${window.siyuan.languages.filterQuantifierNone}</option>
+<option ${(!filter.quantifier || filter.quantifier === "Any") ? "selected" : ""} value="Any">${window.scribli.languages.filterQuantifierAny}</option>
+<option ${filter.quantifier === "All" ? "selected" : ""} value="All">${window.scribli.languages.filterQuantifierAll}</option>
+<option ${filter.quantifier === "None" ? "selected" : ""} value="None">${window.scribli.languages.filterQuantifierNone}</option>
 </select>`
         : "";
 
@@ -512,7 +512,7 @@ const genInlineFilterHTML = (filter: IAVFilter, colData: IAVColumn, path: string
         valueHTML = `<input class="b3-text-field b3-text-field--text av__filter-num" value="${content}" data-type="filterValue" data-path="${path}">`;
     } else if (valueType === "checkbox") {
         const isChecked = filterValue?.checkbox?.checked;
-        valueHTML = `<select class="b3-select" data-type="filterValue" data-path="${path}"><option value="true" ${isChecked ? "selected" : ""}>${window.siyuan.languages.checked}</option><option value="false" ${!isChecked ? "selected" : ""}>${window.siyuan.languages.unchecked}</option></select>`;
+        valueHTML = `<select class="b3-select" data-type="filterValue" data-path="${path}"><option value="true" ${isChecked ? "selected" : ""}>${window.scribli.languages.checked}</option><option value="false" ${!isChecked ? "selected" : ""}>${window.scribli.languages.unchecked}</option></select>`;
     } else if (["date", "created", "updated"].includes(valueType)) {
         valueHTML = genInlineDateHTML(filter, valueType, path);
     } else if (valueType === "select" || valueType === "mSelect") {
@@ -547,23 +547,23 @@ const genInlineDateHTML = (filter: IAVFilter, valueType: TAVCol, path: string): 
 
     const dateBlock = (suffix: "" | "2", relativeDate: IAVRelativeDate, dateVal: any, showToday: boolean): string => {
         const dateTypeSel = `<select class="b3-select" data-type="dateType${suffix}" data-path="${path}">
-<option value="time"${!relativeDate ? " selected" : ""}>${window.siyuan.languages.includeTime}</option>
-<option value="custom"${relativeDate ? " selected" : ""}>${window.siyuan.languages.relativeToToday}</option>
+<option value="time"${!relativeDate ? " selected" : ""}>${window.scribli.languages.includeTime}</option>
+<option value="custom"${relativeDate ? " selected" : ""}>${window.scribli.languages.relativeToToday}</option>
 </select>`;
         const absDate = `<input value="${(dateVal && (dateVal.isNotEmpty || (suffix === "2" ? dateVal.isNotEmpty2 : valueType !== "date"))) ? formatAbsDate(suffix === "2" ? dateVal.content2 : dateVal.content) : ""}" type="date" max="9999-12-31" class="b3-text-field b3-text-field--text" data-type="absDate${suffix}" data-path="${path}" style="${relativeDate ? "display:none;" : ""}">`;
         const relDir = `<select class="b3-select" data-type="dataDirection${suffix}" data-path="${path}" style="${!relativeDate ? "display:none;" : ""}">
-<option value="-1"${relativeDate?.direction === -1 ? " selected" : ""}>${window.siyuan.languages.pastDate}</option>
-<option value="1"${relativeDate?.direction === 1 ? " selected" : ""}>${window.siyuan.languages.nextDate}</option>
-<option value="0"${showToday ? " selected" : ""}>${window.siyuan.languages.current}</option>
+<option value="-1"${relativeDate?.direction === -1 ? " selected" : ""}>${window.scribli.languages.pastDate}</option>
+<option value="1"${relativeDate?.direction === 1 ? " selected" : ""}>${window.scribli.languages.nextDate}</option>
+<option value="0"${showToday ? " selected" : ""}>${window.scribli.languages.current}</option>
 </select>`;
         // “当前”方向下数量 count 无意义（后端按单位取今天/本周/本月/今年），故仅隐藏 relCount；
         // 但单位 relUnit 必须保留，以便用户选择天/周/月/年
         const relCount = `<input type="number" min="1" step="1" value="${relativeDate?.count || 1}" class="b3-text-field b3-text-field--text av__filter-num" data-type="relCount${suffix}" data-path="${path}" style="${(!relativeDate || showToday) ? "display:none;" : ""}">`;
         const relUnit = `<select class="b3-select" data-type="relUnit${suffix}" data-path="${path}" style="${!relativeDate ? "display:none;" : ""}">
-<option value="0"${relativeDate?.unit === 0 ? " selected" : ""}>${window.siyuan.languages.day}</option>
-<option value="1"${(!relativeDate || relativeDate?.unit === 1) ? " selected" : ""}>${window.siyuan.languages.week}</option>
-<option value="2"${relativeDate?.unit === 2 ? " selected" : ""}>${window.siyuan.languages.month}</option>
-<option value="3"${relativeDate?.unit === 3 ? " selected" : ""}>${window.siyuan.languages.year}</option>
+<option value="0"${relativeDate?.unit === 0 ? " selected" : ""}>${window.scribli.languages.day}</option>
+<option value="1"${(!relativeDate || relativeDate?.unit === 1) ? " selected" : ""}>${window.scribli.languages.week}</option>
+<option value="2"${relativeDate?.unit === 2 ? " selected" : ""}>${window.scribli.languages.month}</option>
+<option value="3"${relativeDate?.unit === 3 ? " selected" : ""}>${window.scribli.languages.year}</option>
 </select>`;
         return `<span class="av__filter-date-row">${dateTypeSel}${absDate}${relDir}${relCount}${relUnit}</span>`;
     };
@@ -578,7 +578,7 @@ const genInlineSelectHTML = (filter: IAVFilter, colData: IAVColumn, path: string
     const isSingle = valueType === "select";
     const options = colData.options || [];
     const selectedValues = (getFilterCellValue(filter)?.mSelect || []).filter((s: IAVCellSelectValue) => s.content);
-    const placeholder = isSingle ? window.siyuan.languages.select : window.siyuan.languages.multiSelect;
+    const placeholder = isSingle ? window.scribli.languages.select : window.scribli.languages.multiSelect;
 
     // 触发器：显示已选值的 chip（与表格单元格样式一致），无选中时显示 placeholder + 下拉箭头
     const selectedChips = selectedValues.map((item: IAVCellSelectValue) => {
@@ -589,7 +589,7 @@ const genInlineSelectHTML = (filter: IAVFilter, colData: IAVColumn, path: string
 
     // 下拉面板
     const searchInput = options.length > 5
-        ? `<input class="b3-text-field" placeholder="${window.siyuan.languages.search}" data-type="filterSearch" data-path="${path}">`
+        ? `<input class="b3-text-field" placeholder="${window.scribli.languages.search}" data-type="filterSearch" data-path="${path}">`
         : "";
     const chips = options.map((option: { name: string; color: string; desc?: string }) => {
         const selected = selectedValues.some((s: IAVCellSelectValue) => s.content === option.name);
@@ -874,7 +874,7 @@ export const bindInlineFilterEvents = (panelElement: HTMLElement, data: IAV, pro
                 if (dropdown.style.display === "none") {
                     // 展开时用 fixed 定位到 trigger 下方（避免被 overflow:auto 裁剪）
                     const rect = trigger.getBoundingClientRect();
-                    dropdown.style.zIndex = (++window.siyuan.zIndex).toString();
+                    dropdown.style.zIndex = (++window.scribli.zIndex).toString();
                     dropdown.style.left = rect.left + "px";
                     dropdown.style.width = Math.max(rect.width, 120) + "px";
                     // 先临时显示以测量真实高度，再决定向上还是向下展开
@@ -926,7 +926,7 @@ export const bindInlineFilterEvents = (panelElement: HTMLElement, data: IAV, pro
         const triggerEl = menuElement.querySelector(`[data-type="selectTrigger"][data-path="${path}"]`) as HTMLElement;
         if (triggerEl && dropdown) {
             const isSingleSel = dropdown.dataset.single === "true";
-            const placeholderStr = isSingleSel ? window.siyuan.languages.select : window.siyuan.languages.multiSelect;
+            const placeholderStr = isSingleSel ? window.scribli.languages.select : window.scribli.languages.multiSelect;
             const selectedChips: string[] = [];
             dropdown.querySelectorAll('[data-type="selectOption"]').forEach((c: HTMLElement) => {
                 const u = c.querySelector("use");
@@ -998,7 +998,7 @@ export const bindInlineFilterEvents = (panelElement: HTMLElement, data: IAV, pro
                 }
                 let html = "";
                 (response.data.rows.values as IAVCellValue[] || []).forEach((item, index) => {
-                    const content = item.block?.content || window.siyuan.languages.untitled;
+                    const content = item.block?.content || window.scribli.languages.untitled;
                     html += `<div class="b3-list-item${index === 0 ? " b3-list-item--focus" : ""}" data-path="${path}" data-name="${escapeAttr(content)}">${escapeHtml(content)}</div>`;
                 });
                 listEl.innerHTML = html;
@@ -1007,7 +1007,7 @@ export const bindInlineFilterEvents = (panelElement: HTMLElement, data: IAV, pro
                     return;
                 }
                 const rect = target.getBoundingClientRect();
-                listEl.style.zIndex = (++window.siyuan.zIndex).toString();
+                listEl.style.zIndex = (++window.scribli.zIndex).toString();
                 listEl.style.left = rect.left + "px";
                 listEl.style.width = rect.width + "px";
                 listEl.style.visibility = "hidden";

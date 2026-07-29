@@ -86,7 +86,7 @@ export const handleTouchEnd = (event: TouchEvent) => {
             }
         } else if (currentTime - time > Constants.TIMEOUT_LONGPRESS) {
             // 长按：多选已在按住满阈值时触发，此处取消定时器避免重复触发
-            if (isIPhone() && !isChromeBrowser() && !window.siyuan.touchDragActive) {
+            if (isIPhone() && !isChromeBrowser() && !window.scribli.touchDragActive) {
                 target.dispatchEvent(new MouseEvent("contextmenu", {
                     bubbles: true,
                     cancelable: true,
@@ -119,15 +119,15 @@ export const handleTouchEnd = (event: TouchEvent) => {
     if (!clientY || typeof yDiff === "undefined" ||
         target.tagName === "AUDIO" ||
         hasClosestByClassName(target, "b3-dialog", true) ||
-        (window.siyuan.mobile.editor && !window.siyuan.mobile.editor.protyle.toolbar.subElement.classList.contains("fn__none")) ||
+        (window.scribli.mobile.editor && !window.scribli.mobile.editor.protyle.toolbar.subElement.classList.contains("fn__none")) ||
         hasClosestByClassName(target, "viewer-container") ||
         hasClosestByClassName(target, "keyboard") ||
         hasClosestByAttribute(target, "id", "commonMenu")
     ) {
         return;
     }
-    if (window.siyuan.mobile.editor) {
-        window.siyuan.mobile.editor.protyle.contentElement.style.overflow = "";
+    if (window.scribli.mobile.editor) {
+        window.scribli.mobile.editor.protyle.contentElement.style.overflow = "";
     }
 
     // 有些事件不经过 touchstart 和 touchmove，因此需设置为 null 不再继续执行
@@ -241,7 +241,7 @@ export const handleTouchStart = (event: TouchEvent) => {
     if (getSelection().rangeCount > 0 && hasClosestBlock(event.target as Element) &&
         editor && !editor.protyle.disabled && event.touches[0].clientY > window.innerHeight / 2 &&
         document.querySelector("#keyboardToolbar").classList.contains("fn__none")) {
-        window.siyuan.mobile.touchRange = getRangeByPoint(event.touches[0].clientX, event.touches[0].clientY);
+        window.scribli.mobile.touchRange = getRangeByPoint(event.touches[0].clientX, event.touches[0].clientY);
     }
 
     firstDirection = null;
@@ -289,7 +289,7 @@ export const handleTouchMove = (event: TouchEvent) => {
         target.tagName === "AUDIO" ||
         document.getElementById("dragGhost") ||
         hasClosestByClassName(target, "b3-dialog", true) ||
-        (window.siyuan.mobile.editor && !window.siyuan.mobile.editor.protyle.toolbar.subElement.classList.contains("fn__none")) ||
+        (window.scribli.mobile.editor && !window.scribli.mobile.editor.protyle.toolbar.subElement.classList.contains("fn__none")) ||
         hasClosestByClassName(target, "keyboard") ||
         hasClosestByClassName(target, "viewer-container") ||
         hasClosestByAttribute(target, "id", "commonMenu") || firstXY === "y"
@@ -393,9 +393,9 @@ export const handleTouchMove = (event: TouchEvent) => {
         }
 
         if (isFirstMove) {
-            sideMaskElement.style.zIndex = (++window.siyuan.zIndex).toString();
-            document.getElementById("sidebar").style.zIndex = (++window.siyuan.zIndex).toString();
-            document.getElementById("menu").style.zIndex = (++window.siyuan.zIndex).toString();
+            sideMaskElement.style.zIndex = (++window.scribli.zIndex).toString();
+            document.getElementById("sidebar").style.zIndex = (++window.scribli.zIndex).toString();
+            document.getElementById("menu").style.zIndex = (++window.scribli.zIndex).toString();
             isFirstMove = false;
         }
         const windowWidth = window.innerWidth;
@@ -430,8 +430,8 @@ export const handleTouchMove = (event: TouchEvent) => {
             transformMask((windowWidth - xDiff) / windowWidth);
         }
         activeBlur();
-        if (window.siyuan.mobile.editor) {
-            window.siyuan.mobile.editor.protyle.contentElement.style.overflow = "hidden";
+        if (window.scribli.mobile.editor) {
+            window.scribli.mobile.editor.protyle.contentElement.style.overflow = "hidden";
         }
     }
 };

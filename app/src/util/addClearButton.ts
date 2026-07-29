@@ -33,7 +33,7 @@ export const addClearButton = (options: {
     const contenteditable = !!options.inputElement.getAttribute("contenteditable");
     options.inputElement.dataset.oldPaddingRight = options.inputElement.style.paddingRight;
     options.inputElement.insertAdjacentHTML("afterend",
-        `<svg class="${options.className || "b3-form__icon-clear"} ariaLabel" aria-label="${window.siyuan.languages.clear}" style="${options.right ? "right: " + options.right + "px;" : ""}${options.height ? "height:" + options.height + "px;" : ""}${options.width ? "width:" + options.width : ""}">
+        `<svg class="${options.className || "b3-form__icon-clear"} ariaLabel" aria-label="${window.scribli.languages.clear}" style="${options.right ? "right: " + options.right + "px;" : ""}${options.height ? "height:" + options.height + "px;" : ""}${options.width ? "width:" + options.width : ""}">
 <use xlink:href="#iconCloseRound"></use></svg>`);
     const clearElement = options.inputElement.nextElementSibling;
     clearElement.addEventListener("click", () => {

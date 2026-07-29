@@ -35,72 +35,72 @@ const closeMenu = (tab: Tab) => {
         }
     });
 
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "close",
         icon: "iconClose",
-        label: window.siyuan.languages.close,
-        accelerator: window.siyuan.config.keymap.general.closeTab.custom,
+        label: window.scribli.languages.close,
+        accelerator: window.scribli.config.keymap.general.closeTab.custom,
         click: () => {
             tab.parent.removeTab(tab.id);
         }
     }).element);
     if (tab.parent.children.length > 1) {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "closeOthers",
-            label: window.siyuan.languages.closeOthers,
-            accelerator: window.siyuan.config.keymap.general.closeOthers.custom,
+            label: window.scribli.languages.closeOthers,
+            accelerator: window.scribli.config.keymap.general.closeOthers.custom,
             click() {
                 closeTabByType(tab, "closeOthers");
             }
         }).element);
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "closeAll",
-            label: window.siyuan.languages.closeAll,
-            accelerator: window.siyuan.config.keymap.general.closeAll.custom,
+            label: window.scribli.languages.closeAll,
+            accelerator: window.scribli.config.keymap.general.closeAll.custom,
             click() {
                 closeTabByType(tab, "closeAll");
             }
         }).element);
         if (unmodifiedTabs.length > 0) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "closeUnmodified",
-                label: window.siyuan.languages.closeUnmodified,
-                accelerator: window.siyuan.config.keymap.general.closeUnmodified.custom,
+                label: window.scribli.languages.closeUnmodified,
+                accelerator: window.scribli.config.keymap.general.closeUnmodified.custom,
                 click() {
                     closeTabByType(tab, "other", unmodifiedTabs);
                 }
             }).element);
         }
         if (leftTabs.length > 0) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "closeLeft",
-                label: window.siyuan.languages.closeLeft,
-                accelerator: window.siyuan.config.keymap.general.closeLeft.custom,
+                label: window.scribli.languages.closeLeft,
+                accelerator: window.scribli.config.keymap.general.closeLeft.custom,
                 click: async () => {
                     closeTabByType(tab, "other", leftTabs);
                 }
             }).element);
         }
         if (rightTabs.length > 0) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "closeRight",
-                label: window.siyuan.languages.closeRight,
-                accelerator: window.siyuan.config.keymap.general.closeRight.custom,
+                label: window.scribli.languages.closeRight,
+                accelerator: window.scribli.config.keymap.general.closeRight.custom,
                 click() {
                     closeTabByType(tab, "other", rightTabs);
                 }
             }).element);
         }
     }
-    window.siyuan.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
+    window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
 };
 
 const splitSubMenu = (app: App, tab: Tab) => {
     const subMenus: IMenu[] = [{
         id: "splitLR",
         icon: "iconSplitLR",
-        accelerator: window.siyuan.config.keymap.general.splitLR.custom,
-        label: window.siyuan.languages.splitLR,
+        accelerator: window.scribli.config.keymap.general.splitLR.custom,
+        label: window.scribli.languages.splitLR,
         click: () => {
             tab.parent.split("lr").addTab(copyTab(app, tab));
         }
@@ -109,8 +109,8 @@ const splitSubMenu = (app: App, tab: Tab) => {
         subMenus.push({
             id: "splitMoveR",
             icon: "iconLayoutRight",
-            accelerator: window.siyuan.config.keymap.general.splitMoveR.custom,
-            label: window.siyuan.languages.splitMoveR,
+            accelerator: window.scribli.config.keymap.general.splitMoveR.custom,
+            label: window.scribli.languages.splitMoveR,
             click: () => {
                 const newWnd = tab.parent.split("lr");
                 newWnd.headersElement.append(tab.headElement);
@@ -123,8 +123,8 @@ const splitSubMenu = (app: App, tab: Tab) => {
     subMenus.push({
         id: "splitTB",
         icon: "iconSplitTB",
-        accelerator: window.siyuan.config.keymap.general.splitTB.custom,
-        label: window.siyuan.languages.splitTB,
+        accelerator: window.scribli.config.keymap.general.splitTB.custom,
+        label: window.scribli.languages.splitTB,
         click: () => {
             tab.parent.split("tb").addTab(copyTab(app, tab));
         }
@@ -134,8 +134,8 @@ const splitSubMenu = (app: App, tab: Tab) => {
         subMenus.push({
             id: "splitMoveB",
             icon: "iconLayoutBottom",
-            accelerator: window.siyuan.config.keymap.general.splitMoveB.custom,
-            label: window.siyuan.languages.splitMoveB,
+            accelerator: window.scribli.config.keymap.general.splitMoveB.custom,
+            label: window.scribli.languages.splitMoveB,
             click: () => {
                 const newWnd = tab.parent.split("tb");
                 newWnd.headersElement.append(tab.headElement);
@@ -146,15 +146,15 @@ const splitSubMenu = (app: App, tab: Tab) => {
         });
     }
     let wndsTemp: Wnd[] = [];
-    getAllWnds(window.siyuan.layout.centerLayout, wndsTemp);
+    getAllWnds(window.scribli.layout.centerLayout, wndsTemp);
     if (wndsTemp.length > 1) {
         subMenus.push({
             id: "unsplit",
-            label: window.siyuan.languages.unsplit,
-            accelerator: window.siyuan.config.keymap.general.unsplit.custom,
+            label: window.scribli.languages.unsplit,
+            accelerator: window.scribli.config.keymap.general.unsplit.custom,
             click: () => {
                 let layout = tab.parent.parent;
-                while (layout.id !== window.siyuan.layout.centerLayout.id) {
+                while (layout.id !== window.scribli.layout.centerLayout.id) {
                     wndsTemp = [];
                     getAllWnds(layout, wndsTemp);
                     if (wndsTemp.length > 1) {
@@ -169,10 +169,10 @@ const splitSubMenu = (app: App, tab: Tab) => {
         });
         subMenus.push({
             id: "unsplitAll",
-            label: window.siyuan.languages.unsplitAll,
-            accelerator: window.siyuan.config.keymap.general.unsplitAll.custom,
+            label: window.scribli.languages.unsplitAll,
+            accelerator: window.scribli.config.keymap.general.unsplitAll.custom,
             click: () => {
-                unsplitWnd(window.siyuan.layout.centerLayout, window.siyuan.layout.centerLayout, false);
+                unsplitWnd(window.scribli.layout.centerLayout, window.scribli.layout.centerLayout, false);
                 resizeTabs();
             }
         });
@@ -181,12 +181,12 @@ const splitSubMenu = (app: App, tab: Tab) => {
 };
 
 export const initTabMenu = (app: App, tab: Tab) => {
-    window.siyuan.menus.menu.remove();
-    window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_TAB);
+    window.scribli.menus.menu.remove();
+    window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_TAB);
     closeMenu(tab);
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "split",
-        label: window.siyuan.languages.split,
+        label: window.scribli.languages.split,
         submenu: splitSubMenu(app, tab)
     }).element);
     const model = tab.model;
@@ -203,17 +203,17 @@ export const initTabMenu = (app: App, tab: Tab) => {
         }
     }
     if (rootId) {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "copy",
-            label: window.siyuan.languages.copy,
+            label: window.scribli.languages.copy,
             icon: "iconCopy",
             type: "submenu",
             submenu: copySubMenu([rootId], false)
         }).element);
     } else if (model && model instanceof Asset) {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "copy",
-            label: window.siyuan.languages.copy,
+            label: window.scribli.languages.copy,
             icon: "iconCopy",
             click() {
                 writeText(`[${getAssetName(model.parent.title)}${pathPosix().extname(model.path)}](${model.path})`);
@@ -221,18 +221,18 @@ export const initTabMenu = (app: App, tab: Tab) => {
         }).element);
     }
     if (tab.headElement.classList.contains("item--pin")) {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "unpin",
-            label: window.siyuan.languages.unpin,
+            label: window.scribli.languages.unpin,
             icon: "iconUnpin",
             click: () => {
                 tab.unpin();
             }
         }).element);
     } else {
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "pin",
-            label: window.siyuan.languages.pin,
+            label: window.scribli.languages.pin,
             icon: "iconPin",
             click: () => {
                 tab.pin();
@@ -240,17 +240,17 @@ export const initTabMenu = (app: App, tab: Tab) => {
         }).element);
     }
     /// #if !BROWSER
-    window.siyuan.menus.menu.append(new MenuItem({
+    window.scribli.menus.menu.append(new MenuItem({
         id: "tabToWindow",
-        label: window.siyuan.languages.tabToWindow,
-        accelerator: window.siyuan.config.keymap.general.tabToWindow.custom,
+        label: window.scribli.languages.tabToWindow,
+        accelerator: window.scribli.config.keymap.general.tabToWindow.custom,
         icon: "iconOpenWindow",
         click: () => {
             openNewWindow(tab);
         }
     }).element);
     /// #endif
-    return window.siyuan.menus.menu;
+    return window.scribli.menus.menu;
 };
 
 export const unsplitWnd = (target: Wnd | Layout, layout: Layout, onlyWnd: boolean) => {

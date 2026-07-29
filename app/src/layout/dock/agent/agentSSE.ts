@@ -131,7 +131,7 @@ export async function fetchAgentSSE(
             headers: {
                 "Content-Type": "application/json",
                 // 标识发起者 app，后端据此排除发起者自身的 ws 广播，并做实例级互斥。
-                "X-SiYuan-App-ID": Constants.SIYUAN_APPID,
+                "X-Scribli-App-ID": Constants.SCRIBLI_APPID,
             },
             body: JSON.stringify(body),
             signal: signal,
@@ -139,7 +139,7 @@ export async function fetchAgentSSE(
 
         if (!response.ok) {
             // 409 表示该会话正在其他实例对话中（实例级互斥）。优先用后端返回的 msg，否则用 i18n 兜底。
-            let msg = window.siyuan.languages._kernel[28];
+            let msg = window.scribli.languages._kernel[28];
             if (response.status === 409) {
                 try {
                     const data = await response.json();
@@ -147,7 +147,7 @@ export async function fetchAgentSSE(
                 } catch (e) {
                     // 读取 JSON 失败时使用 i18n
                 }
-                msg = window.siyuan.languages.agentChatBusy || msg;
+                msg = window.scribli.languages.agentChatBusy || msg;
             }
             await reportError(new AgentHttpError(msg, response.status));
             return;
@@ -160,17 +160,17 @@ export async function fetchAgentSSE(
             try {
                 const text = await response.text();
                 const data = text ? JSON.parse(text) : null;
-                const errMsg = (data && (data.msg || data.message)) || window.siyuan.languages._kernel[28];
+                const errMsg = (data && (data.msg || data.message)) || window.scribli.languages._kernel[28];
                 await reportError(new AgentHttpError(errMsg, response.status));
             } catch (e) {
-                await reportError(new Error(window.siyuan.languages._kernel[28]));
+                await reportError(new Error(window.scribli.languages._kernel[28]));
             }
             return;
         }
 
         const reader = response.body ? response.body.getReader() : null;
         if (!reader) {
-            await reportError(new Error(window.siyuan.languages._kernel[28]));
+            await reportError(new Error(window.scribli.languages._kernel[28]));
             return;
         }
 
@@ -234,16 +234,16 @@ export async function fetchAgentSSE(
             }
         }
         if (!terminalReceived && !signal?.aborted) {
-            await reportError(new Error(window.siyuan.languages._kernel[28]));
+            await reportError(new Error(window.scribli.languages._kernel[28]));
         }
     } catch (err) {
         const e = err as Error;
         if (e.name !== "AbortError") {
             const msg = e.message.toLowerCase();
             if (msg.indexOf("timeout") !== -1 || msg.indexOf("deadline") !== -1) {
-                await reportError(new Error(window.siyuan.languages._kernel[24]));
+                await reportError(new Error(window.scribli.languages._kernel[24]));
             } else {
-                await reportError(new Error(window.siyuan.languages._kernel[28]));
+                await reportError(new Error(window.scribli.languages._kernel[28]));
             }
         }
     }

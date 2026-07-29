@@ -54,12 +54,12 @@ export class MobileOutline extends Model {
         this.element.innerHTML = `<div class="toolbar toolbar--border toolbar--dark">
     <div class="fn__space"></div>
     <div class="toolbar__text">
-        ${window.siyuan.languages.outline}
+        ${window.scribli.languages.outline}
     </div>
     <div class="fn__space"></div>
-    <input class="b3-text-field search__label fn__none fn__size200" placeholder="${window.siyuan.languages.filterKeywordEnter}" />
+    <input class="b3-text-field search__label fn__none fn__size200" placeholder="${window.scribli.languages.filterKeywordEnter}" />
     <svg data-type="search" class="toolbar__icon"><use xlink:href='#iconFilter'></use></svg>
-    <svg data-type="keepCurrentExpand" class="toolbar__icon${window.siyuan.storage[Constants.LOCAL_OUTLINE].keepCurrentExpand ? " toolbar__icon--active" : ""}"><use xlink:href="#iconFocus"></use></svg>
+    <svg data-type="keepCurrentExpand" class="toolbar__icon${window.scribli.storage[Constants.LOCAL_OUTLINE].keepCurrentExpand ? " toolbar__icon--active" : ""}"><use xlink:href="#iconFocus"></use></svg>
     <svg data-type="expandLevel" class="toolbar__icon"><use xlink:href="#iconList"></use></svg>
     <svg data-type="expand" class="toolbar__icon"><use xlink:href="#iconExpand"></use></svg>
     <svg data-type="collapse" class="toolbar__icon"><use xlink:href="#iconContract"></use></svg>
@@ -133,8 +133,8 @@ export class MobileOutline extends Model {
                 }
                 this.saveExpendIds();
             },
-            blockExtHTML: window.siyuan.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
-            topExtHTML: window.siyuan.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
+            blockExtHTML: window.scribli.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
+            topExtHTML: window.scribli.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
         });
         // 为了快捷键的 dispatch
         this.element.querySelector('[data-type="collapse"]').addEventListener("click", () => {
@@ -158,12 +158,12 @@ export class MobileOutline extends Model {
             }
             if (iconElement.classList.contains("toolbar__icon--active")) {
                 iconElement.classList.remove("toolbar__icon--active");
-                window.siyuan.storage[Constants.LOCAL_OUTLINE].keepCurrentExpand = false;
+                window.scribli.storage[Constants.LOCAL_OUTLINE].keepCurrentExpand = false;
             } else {
                 iconElement.classList.add("toolbar__icon--active");
-                window.siyuan.storage[Constants.LOCAL_OUTLINE].keepCurrentExpand = true;
+                window.scribli.storage[Constants.LOCAL_OUTLINE].keepCurrentExpand = true;
                 let focusElement;
-                const blockElement = hasClosestBlock(window.siyuan.mobile.editor.protyle.toolbar.range?.startContainer);
+                const blockElement = hasClosestBlock(window.scribli.mobile.editor.protyle.toolbar.range?.startContainer);
                 if (blockElement) {
                     focusElement = blockElement;
                 }
@@ -172,7 +172,7 @@ export class MobileOutline extends Model {
                 }
             }
             // 保存keepCurrentExpand状态到localStorage
-            setStorageVal(Constants.LOCAL_OUTLINE, window.siyuan.storage[Constants.LOCAL_OUTLINE]);
+            setStorageVal(Constants.LOCAL_OUTLINE, window.scribli.storage[Constants.LOCAL_OUTLINE]);
         });
         this.element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
             let target = event.target as HTMLElement;
@@ -212,11 +212,11 @@ export class MobileOutline extends Model {
         const scrollElement = this.tree.element;
         const contentRect = () => scrollElement.getBoundingClientRect();
         this.element.addEventListener("touchstart", (event: TouchEvent) => {
-            if (window.siyuan.config.readonly) return;
+            if (window.scribli.config.readonly) return;
             if (this.element.getAttribute("data-loading") === "true") return;
             if (event.touches.length !== 1) return;
             // 仅当触摸到当前文档对应的编辑器时才允许拖拽排序
-            const editor = window.siyuan.mobile.editor?.protyle;
+            const editor = window.scribli.mobile.editor?.protyle;
             if (!editor || editor.disabled || editor.block.rootID !== this.blockId) return;
 
             const touch = event.touches[0];
@@ -307,7 +307,7 @@ export class MobileOutline extends Model {
                 if (!selectItem) {
                     selectItem = this.element.querySelector(".dragover__top, .dragover__bottom, .dragover") as HTMLElement;
                 }
-                const editor = window.siyuan.mobile.editor?.protyle;
+                const editor = window.scribli.mobile.editor?.protyle;
                 let hasChange = true;
                 if (selectItem && editor &&
                     (selectItem.classList.contains("dragover__top") || selectItem.classList.contains("dragover__bottom") || selectItem.classList.contains("dragover"))) {
@@ -432,7 +432,7 @@ export class MobileOutline extends Model {
                     id: nodeElement.getAttribute("data-node-id"),
                     excludeTypes: []
                 };
-                const mobileProtyle = window.siyuan.mobile.editor?.protyle;
+                const mobileProtyle = window.scribli.mobile.editor?.protyle;
                 if (mobileProtyle && mobileProtyle.block.rootID === this.blockId && isEncryptedBox(mobileProtyle.notebookId)) {
                     breadcrumbParam.notebook = mobileProtyle.notebookId;
                 }
@@ -473,7 +473,7 @@ export class MobileOutline extends Model {
         if (!currentElement) {
             return;
         }
-        if (window.siyuan.storage[Constants.LOCAL_OUTLINE].keepCurrentExpand) {
+        if (window.scribli.storage[Constants.LOCAL_OUTLINE].keepCurrentExpand) {
             let ulElement = currentElement.parentElement;
             while (ulElement && !ulElement.classList.contains("b3-list") && ulElement.tagName === "UL") {
                 ulElement.classList.remove("fn__none");
@@ -495,7 +495,7 @@ export class MobileOutline extends Model {
     }
 
     public reload(callback?: () => void) {
-        const protyle = window.siyuan.mobile.editor?.protyle;
+        const protyle = window.scribli.mobile.editor?.protyle;
         const blockId = protyle?.block.rootID || this.blockId;
         if (!blockId) {
             return;
@@ -517,7 +517,7 @@ export class MobileOutline extends Model {
             outlineParam.notebook = protyle.notebookId;
         }
         fetchPost("/api/outline/getDocOutline", outlineParam, response => {
-            if (reloadId !== this.reloadId || window.siyuan.mobile.editor?.protyle.block.rootID !== blockId) {
+            if (reloadId !== this.reloadId || window.scribli.mobile.editor?.protyle.block.rootID !== blockId) {
                 return;
             }
             this.update(response);
@@ -561,7 +561,7 @@ export class MobileOutline extends Model {
             docTitleElement.classList.add("fn__none");
             return;
         }
-        let iconHTML = unicode2Emoji(ial.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].file,
+        let iconHTML = unicode2Emoji(ial.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file,
             "b3-list-item__graphic", true);
         if (ial.icon === Constants.ZWSP && docTitleElement.firstElementChild) {
             iconHTML = docTitleElement.firstElementChild.outerHTML;
@@ -585,7 +585,7 @@ export class MobileOutline extends Model {
     }
 
     public saveExpendIds() {
-        if (window.siyuan.config.readonly || window.siyuan.isPublish) {
+        if (window.scribli.config.readonly || window.scribli.isPublish) {
             return;
         }
 
@@ -718,18 +718,18 @@ export class MobileOutline extends Model {
      * 显示展开层级菜单
      */
     private showExpandLevelMenu() {
-        window.siyuan.menus.menu.remove();
-        window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_OUTLINE_EXPAND_LEVEL);
+        window.scribli.menus.menu.remove();
+        window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_OUTLINE_EXPAND_LEVEL);
         for (let i = 1; i <= 6; i++) {
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: `heading${i}`,
                 icon: `iconH${i}`,
-                label: window.siyuan.languages[`heading${i}`],
+                label: window.scribli.languages[`heading${i}`],
                 click: () => this.expandToLevel(i)
             }).element);
         }
-        window.siyuan.menus.menu.fullscreen("bottom");
-        return window.siyuan.menus.menu;
+        window.scribli.menus.menu.fullscreen("bottom");
+        return window.scribli.menus.menu;
     }
 
     /**
@@ -834,16 +834,16 @@ export class MobileOutline extends Model {
             return; // 预览模式下不显示右键菜单
         }
         const currentLevel = this.getHeadingLevel(element);
-        window.siyuan.menus.menu.remove();
-        window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_OUTLINE_CONTEXT);
+        window.scribli.menus.menu.remove();
+        window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_OUTLINE_CONTEXT);
         const id = element.getAttribute("data-node-id");
-        if (!window.siyuan.config.readonly) {
+        if (!window.scribli.config.readonly) {
             // 升级
             if (currentLevel > 1) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "upgrade",
                     icon: "iconUp",
-                    label: window.siyuan.languages.upgrade,
+                    label: window.scribli.languages.upgrade,
                     click: () => {
                         const data = this.getProtyleAndBlockElement(element);
                         if (data) {
@@ -862,10 +862,10 @@ export class MobileOutline extends Model {
 
             // 降级
             if (currentLevel < 6) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "downgrade",
                     icon: "iconDown",
-                    label: window.siyuan.languages.downgrade,
+                    label: window.scribli.languages.downgrade,
                     click: () => {
                         const data = this.getProtyleAndBlockElement(element);
                         if (data) {
@@ -903,22 +903,22 @@ export class MobileOutline extends Model {
             }
 
             if (headingSubMenu.length > 0) {
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "tWithSubtitle",
                     type: "submenu",
                     icon: "iconRefresh",
-                    label: window.siyuan.languages.tWithSubtitle,
+                    label: window.scribli.languages.tWithSubtitle,
                     submenu: headingSubMenu
                 }).element);
             }
 
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
 
             // 在前面插入同级标题
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "insertSameLevelHeadingBefore",
                 icon: "iconBefore",
-                label: window.siyuan.languages.insertSameLevelHeadingBefore,
+                label: window.scribli.languages.insertSameLevelHeadingBefore,
                 click: () => {
                     const data = this.getProtyleAndBlockElement(element);
                     if (!data) {
@@ -944,10 +944,10 @@ export class MobileOutline extends Model {
             }).element);
 
             // 在后面插入同级标题
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "insertSameLevelHeadingAfter",
                 icon: "iconAfter",
-                label: window.siyuan.languages.insertSameLevelHeadingAfter,
+                label: window.scribli.languages.insertSameLevelHeadingAfter,
                 click: () => {
                     const data = this.getProtyleAndBlockElement(element);
                     if (!data) {
@@ -958,7 +958,7 @@ export class MobileOutline extends Model {
                     fetchPost("/api/block/getHeadingDeleteTransaction", {
                         id,
                     }, (deleteResponse) => {
-                        if (window.siyuan.mobile.editor?.protyle !== data.protyle || this.blockId !== rootID ||
+                        if (window.scribli.mobile.editor?.protyle !== data.protyle || this.blockId !== rootID ||
                             !deleteResponse.data?.doOperations?.length) {
                             return;
                         }
@@ -987,10 +987,10 @@ export class MobileOutline extends Model {
 
             // 添加子标题
             if (currentLevel < 6) { // 只有当前级别小于6时才能添加子标题
-                window.siyuan.menus.menu.append(new MenuItem({
+                window.scribli.menus.menu.append(new MenuItem({
                     id: "addChildHeading",
                     icon: "iconAdd",
-                    label: window.siyuan.languages.addChildHeading,
+                    label: window.scribli.languages.addChildHeading,
                     click: () => {
                         const data = this.getProtyleAndBlockElement(element);
                         if (!data) {
@@ -1001,7 +1001,7 @@ export class MobileOutline extends Model {
                         fetchPost("/api/block/getHeadingDeleteTransaction", {
                             id,
                         }, (deleteResponse) => {
-                            if (window.siyuan.mobile.editor?.protyle !== data.protyle || this.blockId !== rootID ||
+                            if (window.scribli.mobile.editor?.protyle !== data.protyle || this.blockId !== rootID ||
                                 !deleteResponse.data?.doOperations?.length || !deleteResponse.data?.undoOperations) {
                                 return;
                             }
@@ -1035,14 +1035,14 @@ export class MobileOutline extends Model {
                 }).element);
             }
 
-            window.siyuan.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
+            window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
         }
 
         // 复制带子标题
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "copyHeadings1",
             icon: "iconCopy",
-            label: `${window.siyuan.languages.copy} ${window.siyuan.languages.headings1}`,
+            label: `${window.scribli.languages.copy} ${window.scribli.languages.headings1}`,
             click: () => {
                 const data = this.getProtyleAndBlockElement(element);
                 fetchPost("/api/block/getHeadingChildrenDOM", {
@@ -1060,12 +1060,12 @@ export class MobileOutline extends Model {
             }
         }).element);
 
-        if (!window.siyuan.config.readonly) {
+        if (!window.scribli.config.readonly) {
             // 剪切带子标题
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "cutHeadings1",
                 icon: "iconCut",
-                label: `${window.siyuan.languages.cut} ${window.siyuan.languages.headings1}`,
+                label: `${window.scribli.languages.cut} ${window.scribli.languages.headings1}`,
                 click: () => {
                     const data = this.getProtyleAndBlockElement(element);
                     fetchPost("/api/block/getHeadingChildrenDOM", {
@@ -1110,10 +1110,10 @@ export class MobileOutline extends Model {
             }).element);
 
             // 删除
-            window.siyuan.menus.menu.append(new MenuItem({
+            window.scribli.menus.menu.append(new MenuItem({
                 id: "deleteHeadings1",
                 icon: "iconTrashcan",
-                label: `${window.siyuan.languages.delete} ${window.siyuan.languages.headings1}`,
+                label: `${window.scribli.languages.delete} ${window.scribli.languages.headings1}`,
                 click: () => {
                     const data = this.getProtyleAndBlockElement(element);
                     fetchPost("/api/block/getHeadingDeleteTransaction", {
@@ -1145,49 +1145,49 @@ export class MobileOutline extends Model {
                 }
             }).element);
         }
-        window.siyuan.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
+        window.scribli.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
 
         // 展开子标题
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "expandChildHeading",
             icon: "iconExpand",
-            label: window.siyuan.languages.expandChildHeading,
-            accelerator: "⌘" + window.siyuan.languages.clickArrow,
+            label: window.scribli.languages.expandChildHeading,
+            accelerator: "⌘" + window.scribli.languages.clickArrow,
             click: () => this.collapseChildren(element, true)
         }).element);
 
         // 折叠子标题
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "foldChildHeading",
             icon: "iconContract",
-            label: window.siyuan.languages.foldChildHeading,
-            accelerator: "⌘" + window.siyuan.languages.clickArrow,
+            label: window.scribli.languages.foldChildHeading,
+            accelerator: "⌘" + window.scribli.languages.clickArrow,
             click: () => this.collapseChildren(element, false)
         }).element);
 
         // 展开同级标题
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "expandSameLevelHeading",
             icon: "iconExpand",
-            label: window.siyuan.languages.expandSameLevelHeading,
-            accelerator: "⌥" + window.siyuan.languages.clickArrow,
+            label: window.scribli.languages.expandSameLevelHeading,
+            accelerator: "⌥" + window.scribli.languages.clickArrow,
             click: () => this.collapseSameLevel(element, true)
         }).element);
 
         // 折叠同级标题
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "foldSameLevelHeading",
             icon: "iconContract",
-            label: window.siyuan.languages.foldSameLevelHeading,
-            accelerator: "⌥" + window.siyuan.languages.clickArrow,
+            label: window.scribli.languages.foldSameLevelHeading,
+            accelerator: "⌥" + window.scribli.languages.clickArrow,
             click: () => this.collapseSameLevel(element, false)
         }).element);
 
         // 全部展开
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "expandAll",
             icon: "iconExpand",
-            label: window.siyuan.languages.expandAll,
+            label: window.scribli.languages.expandAll,
             click: () => {
                 this.tree.expandAll();
                 this.saveExpendIds();
@@ -1195,30 +1195,30 @@ export class MobileOutline extends Model {
         }).element);
 
         // 全部折叠
-        window.siyuan.menus.menu.append(new MenuItem({
+        window.scribli.menus.menu.append(new MenuItem({
             id: "foldAll",
             icon: "iconContract",
-            label: window.siyuan.languages.foldAll,
+            label: window.scribli.languages.foldAll,
             click: () => {
                 this.tree.collapseAll();
                 this.saveExpendIds();
             }
         }).element);
 
-        window.siyuan.menus.menu.fullscreen("bottom");
+        window.scribli.menus.menu.fullscreen("bottom");
     }
 
     private getProtyleAndBlockElement(element: HTMLElement) {
         const id = element.getAttribute("data-node-id");
-        if (!window.siyuan.mobile.editor?.protyle) {
+        if (!window.scribli.mobile.editor?.protyle) {
             return;
         }
-        const blockElement = window.siyuan.mobile.editor.protyle.wysiwyg.element.querySelector(`[data-node-id="${id}"]`);
+        const blockElement = window.scribli.mobile.editor.protyle.wysiwyg.element.querySelector(`[data-node-id="${id}"]`);
         if (!blockElement) {
             return;
         }
         return {
-            protyle: window.siyuan.mobile.editor.protyle, blockElement
+            protyle: window.scribli.mobile.editor.protyle, blockElement
         };
     }
 
@@ -1237,9 +1237,9 @@ export class MobileOutline extends Model {
             id: "heading" + level,
             iconHTML: "",
             icon: "iconHeading" + level,
-            label: window.siyuan.languages["heading" + level],
+            label: window.scribli.languages["heading" + level],
             click: () => {
-                const protyle = window.siyuan.mobile.editor?.protyle;
+                const protyle = window.scribli.mobile.editor?.protyle;
                 if (!protyle || !this.tree.element.querySelector(`[data-node-id="${id}"]`)) {
                     return;
                 }
@@ -1249,7 +1249,7 @@ export class MobileOutline extends Model {
                     id,
                     level
                 }, (response) => {
-                    if (window.siyuan.mobile.editor?.protyle !== protyle || this.blockId !== rootID ||
+                    if (window.scribli.mobile.editor?.protyle !== protyle || this.blockId !== rootID ||
                         !response.data?.doOperations || !response.data?.undoOperations) {
                         return;
                     }

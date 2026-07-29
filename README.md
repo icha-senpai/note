@@ -187,6 +187,7 @@ This fork changes application identity, disables official upstream cloud/account
 ## Known Limitations
 
 - Some internal package names, source paths, generated artifacts, and compatibility names may still contain inherited SiYuan identifiers.
+- Internal naming cleanup is gradual; see `docs/INTERNAL-NAMING.md` for which legacy names are preserved for compatibility.
 - Mobile packaging is not currently a Scribli-owned release path.
 - Docker publishing is disabled.
 - Runtime updates are disabled.

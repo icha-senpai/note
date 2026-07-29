@@ -18,11 +18,11 @@ export const fetchPost = (
     if (data) {
         if (["/api/search/searchRefBlock", "/api/graph/getGraph", "/api/graph/getLocalGraph",
             "/api/block/getRecentUpdatedBlocks", "/api/search/fullTextSearchBlock"].includes(url)) {
-            window.siyuan.reqIds[url] = Date.now();
+            window.scribli.reqIds[url] = Date.now();
             if (data.type === "local" && url === "/api/graph/getLocalGraph") {
                 // 当打开文档A的关系图、关系图、文档A后刷新，由于防止请求重复处理，文档A关系图无法渲染。
             } else {
-                data.reqId = window.siyuan.reqIds[url];
+                data.reqId = window.scribli.reqIds[url];
             }
         }
         // 并发导出后端接受顺序不一致
@@ -85,7 +85,7 @@ export const fetchPost = (
         }
         if (["/api/search/searchRefBlock", "/api/graph/getGraph", "/api/graph/getLocalGraph",
             "/api/block/getRecentUpdatedBlocks", "/api/search/fullTextSearchBlock"].includes(url)) {
-            if (response.data.reqId && window.siyuan.reqIds[url] && window.siyuan.reqIds[url] > response.data.reqId) {
+            if (response.data.reqId && window.scribli.reqIds[url] && window.scribli.reqIds[url] > response.data.reqId) {
                 return;
             }
         }
@@ -117,7 +117,7 @@ export const fetchPost = (
         if (url === "/api/system/exit" || url === "/api/system/setWorkspaceDir" || (
             ["/api/system/setUILayout"].includes(url) && data.errorExit // 内核中断，点关闭处理
         )) {
-            ipcRenderer.send(Constants.SIYUAN_QUIT, location.port);
+            ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
         }
         /// #endif
     });

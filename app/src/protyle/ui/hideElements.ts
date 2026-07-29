@@ -5,9 +5,9 @@ import {isIPhone} from "../util/compatibility";
 export const hideElements = (panels: string[], protyle?: IProtyle, focusHide = false) => {
     if (!protyle) {
         if (panels.includes("dialog")) {
-            const dialogLength = window.siyuan.dialogs.length;
+            const dialogLength = window.scribli.dialogs.length;
             for (let i = 0; i < dialogLength; i++) {
-                window.siyuan.dialogs[i].destroy();
+                window.scribli.dialogs[i].destroy();
             }
         }
         return;
@@ -38,7 +38,7 @@ export const hideElements = (panels: string[], protyle?: IProtyle, focusHide = f
     if (protyle.toolbar && panels.includes("util")) {
         const pinElement = protyle.toolbar.subElement.querySelector('[data-type="pin"]');
         if (!protyle.toolbar.isMultiSelectMode() &&
-            (focusHide || !pinElement || (pinElement && pinElement.getAttribute("aria-label") === window.siyuan.languages.pin))) {
+            (focusHide || !pinElement || (pinElement && pinElement.getAttribute("aria-label") === window.scribli.languages.pin))) {
             protyle.toolbar.subElement.classList.add("fn__none");
             if (protyle.toolbar.subElementCloseCB) {
                 protyle.toolbar.subElementCloseCB();
@@ -68,7 +68,7 @@ export const hideAllElements = (types: string[]) => {
             if (item.protyle.toolbar) {
                 const pinElement = item.protyle.toolbar.subElement.querySelector('[data-type="pin"]');
                 if (!item.protyle.toolbar.isMultiSelectMode() &&
-                    (!pinElement || (pinElement && pinElement.getAttribute("aria-label") === window.siyuan.languages.pin))) {
+                    (!pinElement || (pinElement && pinElement.getAttribute("aria-label") === window.scribli.languages.pin))) {
                     item.protyle.toolbar.subElement.classList.add("fn__none");
                     if (item.protyle.toolbar.subElementCloseCB) {
                         item.protyle.toolbar.subElementCloseCB();

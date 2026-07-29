@@ -14,6 +14,7 @@ import {getAllEditor} from "../layout/getAll";
 
 const requireFunc = (key: string) => {
     const modules = {
+        scribli: API,
         siyuan: API
     };
     // @ts-ignore
@@ -135,11 +136,11 @@ const updateDock = (dockItem: Config.IUILayoutDockTab[], index: number, plugin: 
             plugin.docks[tabItem.type].config.index = tabIndex;
             plugin.docks[tabItem.type].config.show = tabItem.show;
             plugin.docks[tabItem.type].config.size = tabItem.size;
-            if (!window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name]) {
-                window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name] = {};
+            if (!window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name]) {
+                window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name] = {};
             }
-            window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name][tabItem.type] = plugin.docks[tabItem.type].config;
-            setStorageVal(Constants.LOCAL_PLUGIN_DOCKS, window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS]);
+            window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name][tabItem.type] = plugin.docks[tabItem.type].config;
+            setStorageVal(Constants.LOCAL_PLUGIN_DOCKS, window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS]);
         }
     });
 };
@@ -157,11 +158,11 @@ export const afterLoadPlugin = (plugin: Plugin) => {
                 return;
             }
             if (isMobile()) {
-                if (!window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(element.id)) {
+                if (!window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(element.id)) {
                     document.querySelector("#" + settingTabToMenuId("about"))?.after(element);
                 }
             } else if (!isWindow()) {
-                if (window.siyuan.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(element.id)) {
+                if (window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN].includes(element.id)) {
                     element.classList.add("fn__none");
                 }
                 document.querySelector("#" + (element.getAttribute("data-location") === "right" ? "barPlugins" : "drag")).before(element);
@@ -205,33 +206,33 @@ export const addPluginDock = (plugin: Plugin) => {
         document.querySelector('#sidebar [data-type="sidebar-plugin-tab"]')?.classList.remove("fn__none");
     }
     /// #else
-    if (isWindow() || !window.siyuan.layout.leftDock) {
+    if (isWindow() || !window.scribli.layout.leftDock) {
         return;
     }
-    window.siyuan.config.uiLayout.left.data.forEach((dockItem: Config.IUILayoutDockTab[], index: number) => {
+    window.scribli.config.uiLayout.left.data.forEach((dockItem: Config.IUILayoutDockTab[], index: number) => {
         updateDock(dockItem, index, plugin, "Left");
     });
-    window.siyuan.config.uiLayout.right.data.forEach((dockItem: Config.IUILayoutDockTab[], index: number) => {
+    window.scribli.config.uiLayout.right.data.forEach((dockItem: Config.IUILayoutDockTab[], index: number) => {
         updateDock(dockItem, index, plugin, "Right");
     });
-    window.siyuan.config.uiLayout.bottom.data.forEach((dockItem: Config.IUILayoutDockTab[], index: number) => {
+    window.scribli.config.uiLayout.bottom.data.forEach((dockItem: Config.IUILayoutDockTab[], index: number) => {
         updateDock(dockItem, index, plugin, "Bottom");
     });
     Object.keys(plugin.docks).forEach(key => {
         if (document.querySelector(`.dock .dock__item[data-type="${key}"]`)) {
             return;
         }
-        if (!window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name]) {
-            window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name] = {};
+        if (!window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name]) {
+            window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name] = {};
         }
-        if (window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name] &&
-            window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name][key]) {
-            plugin.docks[key].config = window.siyuan.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name][key];
+        if (window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name] &&
+            window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name][key]) {
+            plugin.docks[key].config = window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS][plugin.name][key];
         }
         const dock = plugin.docks[key];
-        const hotkey = window.siyuan.config.keymap.plugin[plugin.name] ? window.siyuan.config.keymap.plugin[plugin.name][key]?.custom : undefined;
+        const hotkey = window.scribli.config.keymap.plugin[plugin.name] ? window.scribli.config.keymap.plugin[plugin.name][key]?.custom : undefined;
         if (dock.config.position.startsWith("Left")) {
-            window.siyuan.layout.leftDock.genButton([{
+            window.scribli.layout.leftDock.genButton([{
                 type: key,
                 size: dock.config.size,
                 show: dock.config.show,
@@ -240,7 +241,7 @@ export const addPluginDock = (plugin: Plugin) => {
                 hotkey
             }], dock.config.position === "LeftBottom" ? 1 : 0, dock.config.index);
         } else if (dock.config.position.startsWith("Bottom")) {
-            window.siyuan.layout.bottomDock.genButton([{
+            window.scribli.layout.bottomDock.genButton([{
                 type: key,
                 size: dock.config.size,
                 show: dock.config.show,
@@ -249,7 +250,7 @@ export const addPluginDock = (plugin: Plugin) => {
                 hotkey
             }], dock.config.position === "BottomRight" ? 1 : 0, dock.config.index);
         } else if (dock.config.position.startsWith("Right")) {
-            window.siyuan.layout.rightDock.genButton([{
+            window.scribli.layout.rightDock.genButton([{
                 type: key,
                 size: dock.config.size,
                 show: dock.config.show,

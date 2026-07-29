@@ -31,13 +31,13 @@ export class Dialog {
         this.resizeCallback = options.resizeCallback;
         this.disableClose = options.disableClose;
         this.id = genUUID();
-        window.siyuan.dialogs.push(this);
+        window.scribli.dialogs.push(this);
         this.destroyCallback = options.destroyCallback;
         this.element = document.createElement("div") as HTMLElement;
         let left;
         let top;
         if (!isMobile() && options.positionId) {
-            const dialogPosition = window.siyuan.storage[Constants.LOCAL_DIALOGPOSITION][options.positionId];
+            const dialogPosition = window.scribli.storage[Constants.LOCAL_DIALOGPOSITION][options.positionId];
             if (dialogPosition) {
                 if (dialogPosition.left + dialogPosition.width + 34 <= window.innerWidth &&
                     dialogPosition.top + dialogPosition.height <= window.innerHeight) {
@@ -48,7 +48,7 @@ export class Dialog {
                 }
             }
         }
-        this.element.innerHTML = `<div class="b3-dialog" style="z-index: ${++window.siyuan.zIndex};${typeof left === "string" ? "display:block" : ""}">
+        this.element.innerHTML = `<div class="b3-dialog" style="z-index: ${++window.scribli.zIndex};${typeof left === "string" ? "display:block" : ""}">
 <div class="b3-dialog__scrim"${options.transparent ? ' style="background-color:transparent"' : ""}></div>
 <div class="b3-dialog__container ${options.containerClassName || ""}" style="width:${options.width || "auto"};height:${options.height || "auto"};
 left:${left || "auto"};top:${top || "auto"}">
@@ -96,17 +96,17 @@ left:${left || "auto"};top:${top || "auto"}">
         this.element.classList.remove("b3-dialog--open");
         setTimeout(() => {
             // av 修改列头emoji后点击关闭emoji图标
-            if ((this.element.querySelector(".b3-dialog") as HTMLElement).style.zIndex < window.siyuan.menus.menu.element.style.zIndex) {
+            if ((this.element.querySelector(".b3-dialog") as HTMLElement).style.zIndex < window.scribli.menus.menu.element.style.zIndex) {
                 // https://github.com/siyuan-note/siyuan/issues/6783
-                window.siyuan.menus.menu.remove();
+                window.scribli.menus.menu.remove();
             }
             this.element.remove();
             if (this.destroyCallback) {
                 this.destroyCallback(options);
             }
-            window.siyuan.dialogs.find((item, index) => {
+            window.scribli.dialogs.find((item, index) => {
                 if (item.id === this.id) {
-                    window.siyuan.dialogs.splice(index, 1);
+                    window.scribli.dialogs.splice(index, 1);
                     return true;
                 }
             });

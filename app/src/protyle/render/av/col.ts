@@ -95,7 +95,7 @@ export const getEditHTML = (options: {
     <span class="block__icon${options.isCustomAttr ? " fn__none" : ""}" style="padding: 8px;margin-left: -4px;" data-type="go-properties">
         <svg><use xlink:href="#iconLeft"></use></svg>
     </span>
-    <span class="b3-menu__label ft__center">${window.siyuan.languages.edit}</span>
+    <span class="b3-menu__label ft__center">${window.scribli.languages.edit}</span>
 </button>
 <button class="b3-menu__separator" data-id="separator_1"></button>
 <button class="b3-menu__item" data-type="nobg">
@@ -104,18 +104,18 @@ export const getEditHTML = (options: {
             <span class="b3-menu__avemoji" data-col-type="${colData.type}" data-icon="${colData.icon}" data-type="update-icon">${colData.icon ? unicode2Emoji(colData.icon) : `<svg style="width: 14px;height: 14px"><use xlink:href="#${getColIconByType(colData.type)}"></use></svg>`}</span>
             <div class="b3-form__icona fn__block">
                 <input data-type="name" class="b3-text-field b3-form__icona-input" type="text">
-                <svg data-position="north" class="b3-form__icona-icon ariaLabel" aria-label="${colData.desc ? escapeAriaLabel(colData.desc) : window.siyuan.languages.addDesc}"><use xlink:href="#iconInfo"></use></svg>
+                <svg data-position="north" class="b3-form__icona-icon ariaLabel" aria-label="${colData.desc ? escapeAriaLabel(colData.desc) : window.scribli.languages.addDesc}"><use xlink:href="#iconInfo"></use></svg>
             </div>
         </div>
         <div class="fn__none">
             <div class="fn__hr"></div>
-            <textarea placeholder="${window.siyuan.languages.addDesc}" rows="1" data-type="desc" class="b3-text-field fn__block" type="text" data-value="${escapeAttr(colData.desc)}">${colData.desc}</textarea>
+            <textarea placeholder="${window.scribli.languages.addDesc}" rows="1" data-type="desc" class="b3-text-field fn__block" type="text" data-value="${escapeAttr(colData.desc)}">${colData.desc}</textarea>
         </div>
         <div class="fn__hr--small"></div>
     </div>
 </button>
 <button class="b3-menu__item" data-type="goUpdateColType" ${colData.type === "block" ? "disabled" : ""}>
-    <span class="b3-menu__label">${window.siyuan.languages.type}</span>
+    <span class="b3-menu__label">${window.scribli.languages.type}</span>
     <span class="fn__space"></span>
     <svg class="b3-menu__icon"><use xlink:href="#${getColIconByType(colData.type)}"></use></svg>
     <span class="b3-menu__accelerator" style="margin-left: 0">${getColNameByType(colData.type)}</span>
@@ -125,7 +125,7 @@ export const getEditHTML = (options: {
         html += `<button class="b3-menu__separator" data-id="separator_2"></button>
 <button class="b3-menu__item" data-type="nobg">
     <svg class="b3-menu__icon"><use xlink:href="#iconAdd"></use></svg>
-    <input data-type="addOption" class="b3-text-field fn__block" type="text" placeholder="${window.siyuan.languages.enterKey} ${window.siyuan.languages.addAttr}" style="margin: 4px 0">
+    <input data-type="addOption" class="b3-text-field fn__block" type="text" placeholder="${window.scribli.languages.enterKey} ${window.scribli.languages.addAttr}" style="margin: 4px 0">
 </button>`;
         if (!colData.options) {
             colData.options = [];
@@ -146,24 +146,24 @@ export const getEditHTML = (options: {
         html += `<button class="b3-menu__separator" data-id="separator_2"></button>
 <button class="b3-menu__item" data-type="numberFormat" data-format="${colData.numberFormat}">
     <svg class="b3-menu__icon"><use xlink:href="#iconFormat"></use></svg>
-    <span class="b3-menu__label">${window.siyuan.languages.format}</span>
+    <span class="b3-menu__label">${window.scribli.languages.format}</span>
     <span class="b3-menu__accelerator">${getLabelByNumberFormat(colData.numberFormat)}</span>
 </button>`;
     } else if (colData.type === "template") {
         html += `<button class="b3-menu__separator" data-id="separator_2"></button>
 <button class="b3-menu__item" data-type="nobg">
-    <textarea spellcheck="false" rows="${Math.min(colData.template.split("\n").length, 8)}" placeholder="${window.siyuan.languages.template}" data-type="updateTemplate" style="margin: 4px 0" rows="1" class="fn__block b3-text-field">${colData.template}</textarea>
+    <textarea spellcheck="false" rows="${Math.min(colData.template.split("\n").length, 8)}" placeholder="${window.scribli.languages.template}" data-type="updateTemplate" style="margin: 4px 0" rows="1" class="fn__block b3-text-field">${colData.template}</textarea>
 </button>`;
     } else if (colData.type === "relation") {
         const isSelf = colData.relation?.avID === options.data.id;
         html += `<button class="b3-menu__separator" data-id="separator_2"></button>
 <button class="b3-menu__item" data-type="goSearchAV" data-av-id="${colData.relation?.avID || ""}" data-old-value='${JSON.stringify(colData.relation || {})}'>
-    <span class="b3-menu__label">${window.siyuan.languages.relatedTo}</span>
-    <span class="b3-menu__accelerator">${isSelf ? window.siyuan.languages.thisDatabase : ""}</span>
+    <span class="b3-menu__label">${window.scribli.languages.relatedTo}</span>
+    <span class="b3-menu__accelerator">${isSelf ? window.scribli.languages.thisDatabase : ""}</span>
     <svg class="b3-menu__icon b3-menu__icon--small"><use xlink:href="#iconRight"></use></svg>
 </button>
 <label class="b3-menu__item">
-    <span class="fn__flex-center">${window.siyuan.languages.backRelation}</span>
+    <span class="fn__flex-center">${window.scribli.languages.backRelation}</span>
     <svg class="b3-menu__icon b3-menu__icon--small fn__none"><use xlink:href="#iconHelp"></use></svg>
     <span class="fn__space fn__flex-1"></span>
     <input data-type="backRelation" type="checkbox" class="b3-switch b3-switch--menu" ${colData.relation?.isTwoWay ? "checked" : ""}>
@@ -172,26 +172,26 @@ export const getEditHTML = (options: {
     <input data-old-value="" data-type="colName" style="margin: 8px 0 4px" class="b3-text-field fn__block" placeholder="${options.data.name} ${colData.name}">
 </div>
 <div class="b3-menu__item fn__flex-column fn__none" data-type="nobg">
-    <button style="margin: 4px 0 8px;" class="b3-button fn__block" data-type="updateRelation">${window.siyuan.languages.confirm}</button>
+    <button style="margin: 4px 0 8px;" class="b3-button fn__block" data-type="updateRelation">${window.scribli.languages.confirm}</button>
 </div>`;
     } else if (colData.type === "rollup") {
         html += '<button class="b3-menu__separator" data-id="separator_2"></button>' + getRollupHTML({colData});
     } else if (colData.type === "date") {
         html += `<button class="b3-menu__separator" data-id="separator_2"></button>
 <label class="b3-menu__item">
-    <span class="fn__flex-center">${window.siyuan.languages.fillCreated}</span>
+    <span class="fn__flex-center">${window.scribli.languages.fillCreated}</span>
     <span class="fn__space fn__flex-1"></span>
     <input data-type="fillCreated" type="checkbox" class="b3-switch b3-switch--menu" ${colData.date?.autoFillNow ? "checked" : ""}>
 </label>
 <label class="b3-menu__item">
-    <span class="fn__flex-center">${window.siyuan.languages.fillSpecificTime}</span>
+    <span class="fn__flex-center">${window.scribli.languages.fillSpecificTime}</span>
     <span class="fn__space fn__flex-1"></span>
     <input data-type="fillSpecificTime" type="checkbox" class="b3-switch b3-switch--menu" ${colData.date?.fillSpecificTime ? "checked" : ""}>
 </label>`;
     } else if (["updated", "created"].includes(colData.type)) {
         html += `<button class="b3-menu__separator" data-id="separator_2"></button>
 <label class="b3-menu__item">
-    <span class="fn__flex-center">${window.siyuan.languages.includeTime}</span>
+    <span class="fn__flex-center">${window.scribli.languages.includeTime}</span>
     <span class="fn__space fn__flex-1"></span>
     <input data-type="includeTime" type="checkbox" class="b3-switch b3-switch--menu" ${(!colData[colData.type as "updated"] || colData[colData.type as "updated"].includeTime) ? "checked" : ""}>
 </label>`;
@@ -199,18 +199,18 @@ export const getEditHTML = (options: {
     html += `<button class="b3-menu__separator" data-id="separator_3"></button>
 <label class="b3-menu__item">
     <svg class="b3-menu__icon" style=""><use xlink:href="#iconSoftWrap"></use></svg>
-    <span class="fn__flex-center">${window.siyuan.languages.wrap}</span>
+    <span class="fn__flex-center">${window.scribli.languages.wrap}</span>
     <span class="fn__space fn__flex-1"></span>
     <input type="checkbox" data-type="wrap" class="b3-switch b3-switch--menu"${colData.wrap ? " checked" : ""}>
 </label>`;
     if (colData.type !== "block") {
         html += `<button class="b3-menu__item${colData.type === "relation" ? " fn__none" : ""}" data-type="duplicateCol">
     <svg class="b3-menu__icon" style=""><use xlink:href="#iconCopy"></use></svg>
-    <span class="b3-menu__label">${window.siyuan.languages.duplicate}</span>
+    <span class="b3-menu__label">${window.scribli.languages.duplicate}</span>
 </button>
 <button class="b3-menu__item  b3-menu__item--warning" data-type="removeCol">
     <svg class="b3-menu__icon" style=""><use xlink:href="#iconTrashcan"></use></svg>
-    <span class="b3-menu__label">${window.siyuan.languages.delete}</span>
+    <span class="b3-menu__label">${window.scribli.languages.delete}</span>
 </button>`;
     }
     return `<div class="b3-menu__items">
@@ -221,7 +221,7 @@ export const getEditHTML = (options: {
         <span class="block__icon" style="padding: 8px;margin-left: -4px;" data-type="goEditCol">
             <svg><use xlink:href="#iconLeft"></use></svg>
         </span>
-        <span class="b3-menu__label ft__center">${window.siyuan.languages.edit}</span>
+        <span class="b3-menu__label ft__center">${window.scribli.languages.edit}</span>
     </button>
     <button class="b3-menu__separator"></button>
     ${genUpdateColItem("text", colData.type)}
@@ -335,7 +335,7 @@ export const bindEditEvent = (options: {
         }
     });
     descElement.addEventListener("input", () => {
-        nameElement.nextElementSibling.setAttribute("aria-label", descElement.value ? escapeHtml(descElement.value) : window.siyuan.languages.addDesc);
+        nameElement.nextElementSibling.setAttribute("aria-label", descElement.value ? escapeHtml(descElement.value) : window.scribli.languages.addDesc);
     });
     const tplElement = options.menuElement.querySelector('[data-type="updateTemplate"]') as HTMLTextAreaElement;
     if (tplElement) {
@@ -522,11 +522,11 @@ export const bindEditEvent = (options: {
         });
         if (oldValue.avID) {
             fetchPost("/api/av/getAttributeView", {id: oldValue.avID}, (response) => {
-                goSearchElement.querySelector(".b3-menu__accelerator").textContent = oldValue.avID === avID ? window.siyuan.languages.thisDatabase : (response.data.av.name || window.siyuan.languages._kernel[267]);
+                goSearchElement.querySelector(".b3-menu__accelerator").textContent = oldValue.avID === avID ? window.scribli.languages.thisDatabase : (response.data.av.name || window.scribli.languages._kernel[267]);
                 response.data.av.keyValues.find((item: { key: { id: string, name: string } }) => {
                     if (item.key.id === oldValue.backKeyID) {
-                        inputElement.setAttribute("data-old-value", item.key.name || window.siyuan.languages._kernel[272]);
-                        inputElement.value = item.key.name || window.siyuan.languages._kernel[272];
+                        inputElement.setAttribute("data-old-value", item.key.name || window.scribli.languages._kernel[272]);
+                        inputElement.value = item.key.name || window.scribli.languages._kernel[272];
                         return true;
                     }
                 });
@@ -548,27 +548,27 @@ export const getColNameByType = (type: TAVCol) => {
         case "phone":
         case "email":
         case "template":
-            return window.siyuan.languages[type];
+            return window.scribli.languages[type];
         case "mSelect":
-            return window.siyuan.languages.multiSelect;
+            return window.scribli.languages.multiSelect;
         case "relation":
-            return window.siyuan.languages.relation;
+            return window.scribli.languages.relation;
         case "rollup":
-            return window.siyuan.languages.rollup;
+            return window.scribli.languages.rollup;
         case "updated":
-            return window.siyuan.languages.updatedTime;
+            return window.scribli.languages.updatedTime;
         case "created":
-            return window.siyuan.languages.createdTime;
+            return window.scribli.languages.createdTime;
         case "url":
-            return window.siyuan.languages.link;
+            return window.scribli.languages.link;
         case "mAsset":
-            return window.siyuan.languages.assets;
+            return window.scribli.languages.assets;
         case "checkbox":
-            return window.siyuan.languages.checkbox;
+            return window.scribli.languages.checkbox;
         case "block":
-            return window.siyuan.languages["_attrView"].key;
+            return window.scribli.languages["_attrView"].key;
         case "lineNumber":
-            return window.siyuan.languages.lineNumber;
+            return window.scribli.languages.lineNumber;
     }
 };
 
@@ -697,7 +697,7 @@ const addAttrViewColAnimation = (options: {
             colData: colData || genColDataByType(options.type, options.id, options.name),
         }
     });
-    window.siyuan.menus.menu.remove();
+    window.scribli.menus.menu.remove();
 };
 
 export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElement: HTMLElement) => {
@@ -751,7 +751,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
     <span class="b3-menu__avemoji">${cellElement.dataset.icon ? unicode2Emoji(cellElement.dataset.icon) : `<svg style="height: 14px;width: 14px;"><use xlink:href="#${getColIconByType(type)}"></use></svg>`}</span>
     <div class="b3-form__icona fn__block">
         <input ${Constants.ATTRIBUTE_MENU_KEYMAP}="true" class="b3-text-field b3-form__icona-input" type="text">
-        <svg data-position="north" class="b3-form__icona-icon ariaLabel" aria-label="${oldDesc ? escapeAriaLabel(oldDesc) : window.siyuan.languages.addDesc}"><use xlink:href="#iconInfo"></use></svg>
+        <svg data-position="north" class="b3-form__icona-icon ariaLabel" aria-label="${oldDesc ? escapeAriaLabel(oldDesc) : window.scribli.languages.addDesc}"><use xlink:href="#iconInfo"></use></svg>
     </div>
     <div class="fn__space"></div>
 </div>
@@ -759,7 +759,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
     <div class="fn__hr"></div>
     <div class="fn__flex">
         <span class="fn__space"></span>
-        <textarea placeholder="${window.siyuan.languages.addDesc}" rows="1" class="b3-text-field fn__block" type="text" data-value="${escapeAttr(oldDesc)}">${oldDesc}</textarea>
+        <textarea placeholder="${window.scribli.languages.addDesc}" rows="1" class="b3-text-field fn__block" type="text" data-value="${escapeAttr(oldDesc)}">${oldDesc}</textarea>
         <span class="fn__space"></span>    
     </div>
 </div>
@@ -811,14 +811,14 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
                 }
             });
             descElement.addEventListener("input", () => {
-                inputElement.nextElementSibling.setAttribute("aria-label", descElement.value ? escapeHtml(descElement.value) : window.siyuan.languages.addDesc);
+                inputElement.nextElementSibling.setAttribute("aria-label", descElement.value ? escapeHtml(descElement.value) : window.scribli.languages.addDesc);
             });
         }
     });
     menu.addItem({
         id: "edit",
         icon: "iconEdit",
-        label: window.siyuan.languages.edit,
+        label: window.scribli.languages.edit,
         click() {
             const colName = (menu.element.querySelector(".b3-text-field") as HTMLInputElement).value;
             openMenuPanel({
@@ -842,7 +842,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
         menu.addItem({
             id: "filter",
             icon: "iconFilter",
-            label: window.siyuan.languages.filter,
+            label: window.scribli.languages.filter,
             click() {
                 fetchPost("/api/av/renderAttributeView", {
                     id: avID,
@@ -886,7 +886,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
         menu.addItem({
             id: "asc",
             icon: "iconUp",
-            label: window.siyuan.languages.asc,
+            label: window.scribli.languages.asc,
             click() {
                 fetchPost("/api/av/renderAttributeView", {
                     id: avID,
@@ -911,7 +911,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
         menu.addItem({
             id: "desc",
             icon: "iconDown",
-            label: window.siyuan.languages.desc,
+            label: window.scribli.languages.desc,
             click() {
                 fetchPost("/api/av/renderAttributeView", {
                     id: avID,
@@ -938,7 +938,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
     menu.addItem({
         id: isPin ? "unfreezeCol" : "freezeCol",
         icon: isPin ? "iconUnpin" : "iconPin",
-        label: isPin ? window.siyuan.languages.unfreezeCol : window.siyuan.languages.freezeCol,
+        label: isPin ? window.scribli.languages.unfreezeCol : window.scribli.languages.freezeCol,
         click() {
             transaction(protyle, [{
                 action: "setAttrViewColPin",
@@ -980,12 +980,12 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
     menu.addItem({
         id: "alignment",
         icon: "iconAlignSettings",
-        label: window.siyuan.languages.alignment,
+        label: window.scribli.languages.alignment,
         type: "submenu",
         submenu: [{
             id: "alignLeft",
             icon: "iconAlignLeft",
-            label: window.siyuan.languages.alignLeft,
+            label: window.scribli.languages.alignLeft,
             checked: align === "left",
             click() {
                 setAlign("left");
@@ -993,7 +993,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
         }, {
             id: "alignCenter",
             icon: "iconAlignCenter",
-            label: window.siyuan.languages.alignCenter,
+            label: window.scribli.languages.alignCenter,
             checked: align === "center",
             click() {
                 setAlign("center");
@@ -1001,7 +1001,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
         }, {
             id: "alignRight",
             icon: "iconAlignRight",
-            label: window.siyuan.languages.alignRight,
+            label: window.scribli.languages.alignRight,
             checked: align === "right",
             click() {
                 setAlign("right");
@@ -1012,7 +1012,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
         }, {
             id: "useDefaultAlign",
             icon: "",
-            label: window.siyuan.languages.useDefaultAlign,
+            label: window.scribli.languages.useDefaultAlign,
             checked: align === "",
             click() {
                 setAlign("");
@@ -1023,7 +1023,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
         menu.addItem({
             id: "hide",
             icon: "iconEyeoff",
-            label: window.siyuan.languages.hide,
+            label: window.scribli.languages.hide,
             click() {
                 transaction(protyle, [{
                     action: "setAttrViewColHidden",
@@ -1043,7 +1043,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
     }
     menu.addItem({
         icon: "iconRefresh",
-        label: window.siyuan.languages.syncColWidth,
+        label: window.scribli.languages.syncColWidth,
         click() {
             transaction(protyle, [{
                 action: "syncAttrViewTableColWidth",
@@ -1055,7 +1055,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
     });
     menu.addItem({
         icon: "iconSoftWrap",
-        label: `<label class="fn__flex fn__pointer"><span>${window.siyuan.languages.wrap}</span><span class="fn__space fn__flex-1"></span>
+        label: `<label class="fn__flex fn__pointer"><span>${window.scribli.languages.wrap}</span><span class="fn__space fn__flex-1"></span>
 <input type="checkbox" class="b3-switch b3-switch--menu"${cellElement.dataset.wrap === "true" ? " checked" : ""}></label>`,
         bind(element) {
             const wrapElement = element.querySelector(".b3-switch") as HTMLInputElement;
@@ -1084,7 +1084,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
     menu.addItem({
         id: "insertColumnLeft",
         icon: "iconInsertLeft",
-        label: window.siyuan.languages.insertColumnLeft,
+        label: window.scribli.languages.insertColumnLeft,
         click() {
             const addMenu = addCol(protyle, blockElement, cellElement.previousElementSibling?.getAttribute("data-col-id") || "");
             if (!blockElement.contains(cellElement)) {
@@ -1101,7 +1101,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
     menu.addItem({
         id: "insertColumnRight",
         icon: "iconInsertRight",
-        label: window.siyuan.languages.insertColumnRight,
+        label: window.scribli.languages.insertColumnRight,
         click() {
             const addMenu = addCol(protyle, blockElement, colId);
             if (!blockElement.contains(cellElement)) {
@@ -1120,7 +1120,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
             menu.addItem({
                 id: "duplicate",
                 icon: "iconCopy",
-                label: window.siyuan.languages.duplicate,
+                label: window.scribli.languages.duplicate,
                 click() {
                     fetchPost("/api/av/renderAttributeView", {
                         id: avID,
@@ -1139,7 +1139,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
         menu.addItem({
             id: "delete",
             icon: "iconTrashcan",
-            label: window.siyuan.languages.delete,
+            label: window.scribli.languages.delete,
             async click() {
                 if (type === "relation") {
                     const response = await fetchSyncPost("/api/av/getAttributeView", {id: avID});
@@ -1149,20 +1149,20 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
                     if (colData.key.relation?.isTwoWay) {
                         const relResponse = await fetchSyncPost("/api/av/getAttributeView", {id: colData.key.relation.avID});
                         const dialog = new Dialog({
-                            title: window.siyuan.languages.removeColConfirm,
+                            title: window.scribli.languages.removeColConfirm,
                             content: `<div class="b3-dialog__content">
-    ${window.siyuan.languages.confirmRemoveRelationField
-                                .replace("${x}", colData.key.name || window.siyuan.languages._kernel[272])
-                                .replace("${y}", relResponse.data.av.name || window.siyuan.languages._kernel[267])
+    ${window.scribli.languages.confirmRemoveRelationField
+                                .replace("${x}", colData.key.name || window.scribli.languages._kernel[272])
+                                .replace("${y}", relResponse.data.av.name || window.scribli.languages._kernel[267])
                                 .replace("${z}", relResponse.data.av.keyValues.find((item: {
                                     key: { id: string }
-                                }) => item.key.id === colData.key.relation.backKeyID).key.name || window.siyuan.languages._kernel[272])}
+                                }) => item.key.id === colData.key.relation.backKeyID).key.name || window.scribli.languages._kernel[272])}
     <div class="fn__hr--b"></div>
-    <button class="fn__block b3-button b3-button--remove" data-action="delete">${window.siyuan.languages.removeBothRelationField}</button>
+    <button class="fn__block b3-button b3-button--remove" data-action="delete">${window.scribli.languages.removeBothRelationField}</button>
     <div class="fn__hr"></div>
-    <button class="fn__block b3-button b3-button--remove" data-action="keep-relation">${window.siyuan.languages.removeButKeepRelationField}</button>
+    <button class="fn__block b3-button b3-button--remove" data-action="keep-relation">${window.scribli.languages.removeButKeepRelationField}</button>
     <div class="fn__hr"></div>
-    <button class="fn__block b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button>
+    <button class="fn__block b3-button b3-button--cancel">${window.scribli.languages.cancel}</button>
 </div>`,
                             width: isMobile() ? "92vw" : "520px",
                         });
@@ -1231,7 +1231,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
         y: cellRect.bottom,
         h: cellRect.height
     });
-    const inputElement = window.siyuan.menus.menu.element.querySelector(".b3-text-field") as HTMLInputElement;
+    const inputElement = window.scribli.menus.menu.element.querySelector(".b3-text-field") as HTMLInputElement;
     if (inputElement) {
         inputElement.select();
         inputElement.focus();
@@ -1349,13 +1349,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "text",
         icon: "iconAlignLeft",
-        label: window.siyuan.languages.text,
+        label: window.scribli.languages.text,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.text,
+                name: window.scribli.languages.text,
                 avID,
                 type: "text",
                 id,
@@ -1377,7 +1377,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "text",
-                name: window.siyuan.languages.text,
+                name: window.scribli.languages.text,
                 id,
                 previousID
             });
@@ -1387,13 +1387,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "number",
         icon: "iconNumber",
-        label: window.siyuan.languages.number,
+        label: window.scribli.languages.number,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.number,
+                name: window.scribli.languages.number,
                 avID,
                 type: "number",
                 id,
@@ -1415,7 +1415,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "number",
-                name: window.siyuan.languages.number,
+                name: window.scribli.languages.number,
                 id,
                 previousID
             });
@@ -1425,13 +1425,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "select",
         icon: "iconListItem",
-        label: window.siyuan.languages.select,
+        label: window.scribli.languages.select,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.select,
+                name: window.scribli.languages.select,
                 avID,
                 type: "select",
                 id,
@@ -1453,7 +1453,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "select",
-                name: window.siyuan.languages.select,
+                name: window.scribli.languages.select,
                 id,
                 previousID
             });
@@ -1463,13 +1463,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "multiSelect",
         icon: "iconList",
-        label: window.siyuan.languages.multiSelect,
+        label: window.scribli.languages.multiSelect,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.multiSelect,
+                name: window.scribli.languages.multiSelect,
                 avID,
                 type: "mSelect",
                 id,
@@ -1491,7 +1491,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "mSelect",
-                name: window.siyuan.languages.multiSelect,
+                name: window.scribli.languages.multiSelect,
                 id,
                 previousID
             });
@@ -1501,13 +1501,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "date",
         icon: "iconCalendar",
-        label: window.siyuan.languages.date,
+        label: window.scribli.languages.date,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.date,
+                name: window.scribli.languages.date,
                 avID,
                 type: "date",
                 id,
@@ -1529,7 +1529,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "date",
-                name: window.siyuan.languages.date,
+                name: window.scribli.languages.date,
                 id,
                 previousID
             });
@@ -1539,13 +1539,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "assets",
         icon: "iconImage",
-        label: window.siyuan.languages.assets,
+        label: window.scribli.languages.assets,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.assets,
+                name: window.scribli.languages.assets,
                 avID,
                 type: "mAsset",
                 id,
@@ -1567,7 +1567,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "mAsset",
-                name: window.siyuan.languages.assets,
+                name: window.scribli.languages.assets,
                 id,
                 previousID
             });
@@ -1577,13 +1577,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "checkbox",
         icon: "iconCheck",
-        label: window.siyuan.languages.checkbox,
+        label: window.scribli.languages.checkbox,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.checkbox,
+                name: window.scribli.languages.checkbox,
                 avID,
                 type: "checkbox",
                 id,
@@ -1605,7 +1605,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "checkbox",
-                name: window.siyuan.languages.checkbox,
+                name: window.scribli.languages.checkbox,
                 id,
                 previousID
             });
@@ -1615,13 +1615,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "link",
         icon: "iconLink",
-        label: window.siyuan.languages.link,
+        label: window.scribli.languages.link,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.link,
+                name: window.scribli.languages.link,
                 avID,
                 type: "url",
                 id,
@@ -1643,7 +1643,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "url",
-                name: window.siyuan.languages.link,
+                name: window.scribli.languages.link,
                 id,
                 previousID
             });
@@ -1653,13 +1653,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "email",
         icon: "iconEmail",
-        label: window.siyuan.languages.email,
+        label: window.scribli.languages.email,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.email,
+                name: window.scribli.languages.email,
                 avID,
                 type: "email",
                 id,
@@ -1681,7 +1681,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "email",
-                name: window.siyuan.languages.email,
+                name: window.scribli.languages.email,
                 id,
                 previousID
             });
@@ -1691,13 +1691,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "phone",
         icon: "iconPhone",
-        label: window.siyuan.languages.phone,
+        label: window.scribli.languages.phone,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.phone,
+                name: window.scribli.languages.phone,
                 avID,
                 type: "phone",
                 id,
@@ -1719,7 +1719,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "phone",
-                name: window.siyuan.languages.phone,
+                name: window.scribli.languages.phone,
                 id,
                 previousID
             });
@@ -1729,13 +1729,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "template",
         icon: "iconMath",
-        label: window.siyuan.languages.template,
+        label: window.scribli.languages.template,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.template,
+                name: window.scribli.languages.template,
                 avID,
                 type: "template",
                 id,
@@ -1757,7 +1757,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "template",
-                name: window.siyuan.languages.template,
+                name: window.scribli.languages.template,
                 id,
                 previousID
             });
@@ -1767,13 +1767,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "relation",
         icon: "iconOpen",
-        label: window.siyuan.languages.relation,
+        label: window.scribli.languages.relation,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.relation,
+                name: window.scribli.languages.relation,
                 avID,
                 type: "relation",
                 id,
@@ -1795,7 +1795,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "relation",
-                name: window.siyuan.languages.relation,
+                name: window.scribli.languages.relation,
                 id,
                 previousID
             });
@@ -1805,13 +1805,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "rollup",
         icon: "iconSearch",
-        label: window.siyuan.languages.rollup,
+        label: window.scribli.languages.rollup,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.rollup,
+                name: window.scribli.languages.rollup,
                 avID,
                 type: "rollup",
                 id,
@@ -1833,7 +1833,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "rollup",
-                name: window.siyuan.languages.rollup,
+                name: window.scribli.languages.rollup,
                 id,
                 previousID
             });
@@ -1844,13 +1844,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "lineNumber",
         icon: "iconOrderedList",
-        label: window.siyuan.languages.lineNumber,
+        label: window.scribli.languages.lineNumber,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.lineNumber,
+                name: window.scribli.languages.lineNumber,
                 avID,
                 type: "lineNumber",
                 id,
@@ -1872,7 +1872,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "lineNumber",
-                name: window.siyuan.languages.lineNumber,
+                name: window.scribli.languages.lineNumber,
                 id,
                 previousID
             });
@@ -1882,13 +1882,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "createdTime",
         icon: "iconClock",
-        label: window.siyuan.languages.createdTime,
+        label: window.scribli.languages.createdTime,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.createdTime,
+                name: window.scribli.languages.createdTime,
                 avID,
                 type: "created",
                 id,
@@ -1910,7 +1910,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "created",
-                name: window.siyuan.languages.createdTime,
+                name: window.scribli.languages.createdTime,
                 id,
                 previousID
             });
@@ -1920,13 +1920,13 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
     menu.addItem({
         id: "updatedTime",
         icon: "iconClock",
-        label: window.siyuan.languages.updatedTime,
+        label: window.scribli.languages.updatedTime,
         click() {
             const id = Lute.NewNodeID();
             const newUpdated = dayjs().format("YYYYMMDDHHmmss");
             transaction(protyle, [{
                 action: "addAttrViewCol",
-                name: window.siyuan.languages.updatedTime,
+                name: window.scribli.languages.updatedTime,
                 avID,
                 type: "updated",
                 id,
@@ -1948,7 +1948,7 @@ export const addCol = (protyle: IProtyle, blockElement: Element, previousID?: st
                 blockElement: blockElement,
                 protyle: protyle,
                 type: "updated",
-                name: window.siyuan.languages.updatedTime,
+                name: window.scribli.languages.updatedTime,
                 id,
                 previousID
             });

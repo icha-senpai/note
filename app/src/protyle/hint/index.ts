@@ -85,7 +85,7 @@ export class Hint {
                     const index = titleElement.nextElementSibling.getAttribute("data-index");
                     if (index) {
                         let html = "";
-                        window.siyuan.emojis[parseInt(index)].items.forEach(emoji => {
+                        window.scribli.emojis[parseInt(index)].items.forEach(emoji => {
                             html += `<button data-unicode="${emoji.unicode}" class="emojis__item ariaLabel" aria-label="${getEmojiDesc(emoji)}">
 ${unicode2Emoji(emoji.unicode)}</button>`;
                         });
@@ -384,7 +384,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
             if (response.data.newDoc) {
                 const blockRefText = `((newFile "${oldValue}"${Constants.ZWSP}'${response.data.k}${Lute.Caret}'))`;
                 searchHTML += `<button style="width: calc(100% - 16px)" class="b3-list-item b3-list-item--two${response.data.blocks.length === 0 ? " b3-list-item--focus" : ""}" data-value="${encodeURIComponent(blockRefText)}"><div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconFile"></use></svg>
-<span class="b3-list-item__text">${window.siyuan.languages.newFile} <mark>${response.data.k}</mark></span></div></button>`;
+<span class="b3-list-item__text">${window.scribli.languages.newFile} <mark>${response.data.k}</mark></span></div></button>`;
             }
             response.data.blocks.forEach((item: IBlock, index: number) => {
                 let blockRefHTML;
@@ -403,7 +403,7 @@ ${genHintItemHTML(item)}
 </button>`;
             });
             if (searchHTML === "") {
-                searchHTML = `<button style="width: calc(100% - 16px)" class="b3-list-item b3-list-item--two" data-value="">${window.siyuan.languages.emptyContent}</button>`;
+                searchHTML = `<button style="width: calc(100% - 16px)" class="b3-list-item b3-list-item--two" data-value="">${window.scribli.languages.emptyContent}</button>`;
             }
             this.element.lastElementChild.innerHTML = searchHTML;
             setPosition(this.element, parseInt(this.element.style.left), parseInt(this.element.style.right));
@@ -430,7 +430,7 @@ ${genHintItemHTML(item)}
 <div class="emojis__panel">${filterEmoji(value, 256)}</div>
 <div class="fn__flex${value ? " fn__none" : ""}">
     ${[
-                ["2b50", window.siyuan.languages.recentEmoji],
+                ["2b50", window.scribli.languages.recentEmoji],
                 ["1f527", getEmojiTitle(0)],
                 ["1f60d", getEmojiTitle(1)],
                 ["1f433", getEmojiTitle(2)],
@@ -779,7 +779,7 @@ ${genHintItemHTML(item)}
                 }
                 let textContent = value;
                 if (value === "```") {
-                    textContent = value + (Constants.SIYUAN_RENDER_CODE_LANGUAGES.includes(window.siyuan.storage[Constants.LOCAL_CODELANG]) ? "" : window.siyuan.storage[Constants.LOCAL_CODELANG]) + Lute.Caret + "\n```";
+                    textContent = value + (Constants.SCRIBLI_RENDER_CODE_LANGUAGES.includes(window.scribli.storage[Constants.LOCAL_CODELANG]) ? "" : window.scribli.storage[Constants.LOCAL_CODELANG]) + Lute.Caret + "\n```";
                 }
                 const editableElement = getContenteditableElement(nodeElement);
                 if (value === "![]()") { // https://github.com/siyuan-note/siyuan/issues/4586 1
@@ -950,15 +950,15 @@ ${genHintItemHTML(item)}
                 } else if (value.startsWith("<iframe") || value.startsWith("<video") || value.startsWith("<audio")) {
                     protyle.gutter.renderMenu(protyle, nodeElement);
                     const rect = nodeElement.getBoundingClientRect();
-                    window.siyuan.menus.menu.popup({
+                    window.scribli.menus.menu.popup({
                         x: rect.left,
                         y: rect.top,
                         isLeft: true
                     });
-                    const itemElement = window.siyuan.menus.menu.element.querySelector('[data-id="assetVideo"], [data-id="assetAudio"], [data-id="assetIFrame"]');
+                    const itemElement = window.scribli.menus.menu.element.querySelector('[data-id="assetVideo"], [data-id="assetAudio"], [data-id="assetIFrame"]');
                     itemElement.classList.add("b3-menu__item--show");
-                    window.siyuan.menus.menu.showSubMenu(itemElement.querySelector(".b3-menu__submenu"));
-                    window.siyuan.menus.menu.element.querySelector("textarea").focus();
+                    window.scribli.menus.menu.showSubMenu(itemElement.querySelector(".b3-menu__submenu"));
+                    window.scribli.menus.menu.element.querySelector("textarea").focus();
                 } else if (value === "---") {
                     focusBlock(nodeElement);
                 } else if (nodeElement.classList.contains("av")) {

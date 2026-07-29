@@ -30,19 +30,19 @@ export const setTabPosition = (onlyPadding = false, onlyClear = false) => {
     const isWindowMode = isWindow();
     const wndsTemp: Wnd[] = [];
     if (isWindowMode) {
-        getAllWnds(window.siyuan.layout.layout, wndsTemp);
-    } else if (window.siyuan.config.appearance.hideToolbar || onlyClear) {
-        if (!window.siyuan.layout.centerLayout) {
+        getAllWnds(window.scribli.layout.layout, wndsTemp);
+    } else if (window.scribli.config.appearance.hideToolbar || onlyClear) {
+        if (!window.scribli.layout.centerLayout) {
             return;
         }
-        getAllWnds(window.siyuan.layout.centerLayout, wndsTemp);
+        getAllWnds(window.scribli.layout.centerLayout, wndsTemp);
     }
 
     if (wndsTemp.length === 0) {
         return;
     }
 
-    const centerRect = (isWindowMode ? window.siyuan.layout.layout : window.siyuan.layout.centerLayout).element.getBoundingClientRect();
+    const centerRect = (isWindowMode ? window.scribli.layout.layout : window.scribli.layout.centerLayout).element.getBoundingClientRect();
     const toolbarDragElement = document.getElementById("drag");
     const toolbarDragRect = toolbarDragElement?.getBoundingClientRect() || {left: 0, right: 0};
     if (toolbarDragElement) {
@@ -236,52 +236,52 @@ export const resizeTabs = (isSaveLayout = true) => {
 };
 
 export const getDockByType = (type: TDock | string) => {
-    if (!window.siyuan.layout.leftDock) {
+    if (!window.scribli.layout.leftDock) {
         return undefined;
     }
-    if (window.siyuan.layout.leftDock.data[type]) {
-        return window.siyuan.layout.leftDock;
+    if (window.scribli.layout.leftDock.data[type]) {
+        return window.scribli.layout.leftDock;
     }
-    if (window.siyuan.layout.rightDock.data[type]) {
-        return window.siyuan.layout.rightDock;
+    if (window.scribli.layout.rightDock.data[type]) {
+        return window.scribli.layout.rightDock;
     }
-    if (window.siyuan.layout.bottomDock.data[type]) {
-        return window.siyuan.layout.bottomDock;
+    if (window.scribli.layout.bottomDock.data[type]) {
+        return window.scribli.layout.bottomDock;
     }
 };
 
 export const newCenterEmptyTab = (app: App) => {
     return new Tab({
         panel: `<div class="layout__empty">
-    <img class="${!window.siyuan.config.readonly ? "fn__none" : ""}" src="/stage/icon.png" style="width: 256px;margin-top: -48px;">
+    <img class="${!window.scribli.config.readonly ? "fn__none" : ""}" src="/stage/icon.png" style="width: 256px;margin-top: -48px;">
     <div class="b3-list" style="margin: 0 auto">
         <div class="b3-list-item" id="editorEmptySearch">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconSearch"></use></svg>
-            <span>${window.siyuan.languages.search}</span>
-            <span class="b3-list-item__meta">${updateHotkeyTip(window.siyuan.config.keymap.general.globalSearch.custom)}</span>
+            <span>${window.scribli.languages.search}</span>
+            <span class="b3-list-item__meta">${updateHotkeyTip(window.scribli.config.keymap.general.globalSearch.custom)}</span>
         </div>
         <div id="editorEmptyRecent" class="b3-list-item">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconRecentDocs"></use></svg>
-            <span>${window.siyuan.languages.recentDocs}</span>
-            <span class="b3-list-item__meta">${updateHotkeyTip(window.siyuan.config.keymap.general.recentDocs.custom)}</span>
+            <span>${window.scribli.languages.recentDocs}</span>
+            <span class="b3-list-item__meta">${updateHotkeyTip(window.scribli.config.keymap.general.recentDocs.custom)}</span>
         </div>
-        <div id="editorEmptyHistory" class="b3-list-item${window.siyuan.config.readonly ? " fn__none" : ""}">
+        <div id="editorEmptyHistory" class="b3-list-item${window.scribli.config.readonly ? " fn__none" : ""}">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconHistory"></use></svg>
-            <span>${window.siyuan.languages.dataHistory}</span>
-            <span class="b3-list-item__meta">${updateHotkeyTip(window.siyuan.config.keymap.general.dataHistory.custom)}</span>
+            <span>${window.scribli.languages.dataHistory}</span>
+            <span class="b3-list-item__meta">${updateHotkeyTip(window.scribli.config.keymap.general.dataHistory.custom)}</span>
         </div>
-        <div class="b3-list-item${window.siyuan.config.readonly ? " fn__none" : ""}" id="editorEmptyFile">
+        <div class="b3-list-item${window.scribli.config.readonly ? " fn__none" : ""}" id="editorEmptyFile">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconAddDoc"></use></svg>
-            <span>${window.siyuan.languages.newFile}</span>
-            <span class="b3-list-item__meta">${updateHotkeyTip(window.siyuan.config.keymap.general.newFile.custom)}</span>
+            <span>${window.scribli.languages.newFile}</span>
+            <span class="b3-list-item__meta">${updateHotkeyTip(window.scribli.config.keymap.general.newFile.custom)}</span>
         </div>
-        <div class="b3-list-item${window.siyuan.config.readonly ? " fn__none" : ""}" id="editorEmptyNewNotebook">
+        <div class="b3-list-item${window.scribli.config.readonly ? " fn__none" : ""}" id="editorEmptyNewNotebook">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconNewNoteBook"></use></svg>
-            <span>${window.siyuan.languages.newNotebook}</span>
+            <span>${window.scribli.languages.newNotebook}</span>
         </div>
-        <div class="b3-list-item${window.siyuan.config.readonly ? " fn__none" : ""}" id="editorEmptyHelp">
+        <div class="b3-list-item${window.scribli.config.readonly ? " fn__none" : ""}" id="editorEmptyHelp">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconHelp"></use></svg>
-            <span>${window.siyuan.languages.userGuide}</span>
+            <span>${window.scribli.languages.userGuide}</span>
         </div>
     </div>
 </div>`,

@@ -16,9 +16,9 @@ export const initStatus = (isWindow = false) => {
     /// #if !MOBILE
     let barDockHTML = "";
     if (!isWindow) {
-        barDockHTML = `<div id="barDock" class="toolbar__item ariaLabel${window.siyuan.config.readonly || isWindow ? " fn__none" : ""}" aria-label="${window.siyuan.languages.toggleDock} ${updateHotkeyTip(window.siyuan.config.keymap.general.toggleDock.custom)}">
+        barDockHTML = `<div id="barDock" class="toolbar__item ariaLabel${window.scribli.config.readonly || isWindow ? " fn__none" : ""}" aria-label="${window.scribli.languages.toggleDock} ${updateHotkeyTip(window.scribli.config.keymap.general.toggleDock.custom)}">
     <svg>
-        <use xlink:href="#${window.siyuan.config.uiLayout.hideDock ? "iconDock" : "iconHideDock"}"></use>
+        <use xlink:href="#${window.scribli.config.uiLayout.hideDock ? "iconDock" : "iconHideDock"}"></use>
     </svg>
 </div>`;
     }
@@ -27,7 +27,7 @@ export const initStatus = (isWindow = false) => {
 <div class="fn__flex-1"></div>
 <div class="status__backgroundtask fn__none"></div>
 <div class="status__counter"></div>
-<div id="statusHelp" class="toolbar__item ariaLabel" aria-label="${window.siyuan.languages.help}">
+<div id="statusHelp" class="toolbar__item ariaLabel" aria-label="${window.scribli.languages.help}">
     <svg><use xlink:href="#iconHelp"></use></svg>
 </div>`;
     document.querySelector("#status").addEventListener("click", (event) => {
@@ -38,58 +38,58 @@ export const initStatus = (isWindow = false) => {
                 event.stopPropagation();
                 break;
             } else if (target.classList.contains("status__backgroundtask")) {
-                if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-                    window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_STATUS_BACKGROUND_TASK) {
-                    window.siyuan.menus.menu.remove();
+                if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+                    window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_STATUS_BACKGROUND_TASK) {
+                    window.scribli.menus.menu.remove();
                     return;
                 }
-                window.siyuan.menus.menu.remove();
-                window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_STATUS_BACKGROUND_TASK);
+                window.scribli.menus.menu.remove();
+                window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_STATUS_BACKGROUND_TASK);
                 JSON.parse(target.getAttribute("data-tasks")).forEach((item: { action: string }) => {
-                    window.siyuan.menus.menu.append(new MenuItem({
+                    window.scribli.menus.menu.append(new MenuItem({
                         type: "readonly",
                         iconHTML: "",
                         label: item.action
                     }).element);
                 });
                 const rect = target.getBoundingClientRect();
-                window.siyuan.menus.menu.popup({x: rect.right, y: rect.top, isLeft: true});
+                window.scribli.menus.menu.popup({x: rect.right, y: rect.top, isLeft: true});
                 event.stopPropagation();
                 break;
             } else if (target.id === "statusHelp") {
-                if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&
-                    window.siyuan.menus.menu.element.getAttribute("data-name") === Constants.MENU_STATUS_HELP) {
-                    window.siyuan.menus.menu.remove();
+                if (!window.scribli.menus.menu.element.classList.contains("fn__none") &&
+                    window.scribli.menus.menu.element.getAttribute("data-name") === Constants.MENU_STATUS_HELP) {
+                    window.scribli.menus.menu.remove();
                     return;
                 }
-                window.siyuan.menus.menu.remove();
-                window.siyuan.menus.menu.element.setAttribute("data-name", Constants.MENU_STATUS_HELP);
-                window.siyuan.menus.menu.append(new MenuItem({
-                    label: window.siyuan.languages.userGuide,
+                window.scribli.menus.menu.remove();
+                window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_STATUS_HELP);
+                window.scribli.menus.menu.append(new MenuItem({
+                    label: window.scribli.languages.userGuide,
                     icon: "iconHelp",
-                    ignore: window.siyuan.config.readonly,
+                    ignore: window.scribli.config.readonly,
                     click: () => {
                         mountHelp();
                     }
                 }).element);
                 /// #if !BROWSER
-                window.siyuan.menus.menu.append(new MenuItem({
-                    label: window.siyuan.languages.debug,
+                window.scribli.menus.menu.append(new MenuItem({
+                    label: window.scribli.languages.debug,
                     icon: "iconBug",
                     click: () => {
-                        ipcRenderer.send(Constants.SIYUAN_CMD, "openDevTools");
+                        ipcRenderer.send(Constants.SCRIBLI_CMD, "openDevTools");
                     }
                 }).element);
                 /// #endif
-                window.siyuan.menus.menu.append(new MenuItem({
-                    label: window.siyuan.languages["_trayMenu"].openSource,
+                window.scribli.menus.menu.append(new MenuItem({
+                    label: window.scribli.languages["_trayMenu"].openSource,
                     icon: "iconGithub",
                     click: () => {
                         window.open("https://github.com/siyuan-note/siyuan");
                     }
                 }).element);
                 const rect = target.getBoundingClientRect();
-                window.siyuan.menus.menu.popup({x: rect.right, y: rect.top, isLeft: true});
+                window.scribli.menus.menu.popup({x: rect.right, y: rect.top, isLeft: true});
                 event.stopPropagation();
                 break;
             } else if (target.classList.contains("b3-menu__item")) {
@@ -109,7 +109,7 @@ export const initStatus = (isWindow = false) => {
             target = target.parentElement;
         }
     });
-    if (window.siyuan.config.appearance.hideStatusBar) {
+    if (window.scribli.config.appearance.hideStatusBar) {
         document.getElementById("status").classList.add("fn__none");
     }
     /// #endif
@@ -206,19 +206,19 @@ export const renderStatusbarCounter = (stat: {
     if (!stat) {
         return;
     }
-    let html = `<span class="ft__on-surface">${window.siyuan.languages.runeCount}</span>&nbsp;${stat.runeCount}<span class="fn__space"></span>
-<span class="ft__on-surface">${window.siyuan.languages.wordCount}</span>&nbsp;${stat.wordCount}<span class="fn__space"></span>`;
+    let html = `<span class="ft__on-surface">${window.scribli.languages.runeCount}</span>&nbsp;${stat.runeCount}<span class="fn__space"></span>
+<span class="ft__on-surface">${window.scribli.languages.wordCount}</span>&nbsp;${stat.wordCount}<span class="fn__space"></span>`;
     if (0 < stat.linkCount) {
-        html += `<span class="ft__on-surface">${window.siyuan.languages.linkCount}</span>&nbsp;${stat.linkCount}<span class="fn__space"></span>`;
+        html += `<span class="ft__on-surface">${window.scribli.languages.linkCount}</span>&nbsp;${stat.linkCount}<span class="fn__space"></span>`;
     }
     if (0 < stat.imageCount) {
-        html += `<span class="ft__on-surface">${window.siyuan.languages.imgCount}</span>&nbsp;${stat.imageCount}<span class="fn__space"></span>`;
+        html += `<span class="ft__on-surface">${window.scribli.languages.imgCount}</span>&nbsp;${stat.imageCount}<span class="fn__space"></span>`;
     }
     if (0 < stat.refCount) {
-        html += `<span class="ft__on-surface">${window.siyuan.languages.refCount}</span>&nbsp;${stat.refCount}<span class="fn__space"></span>`;
+        html += `<span class="ft__on-surface">${window.scribli.languages.refCount}</span>&nbsp;${stat.refCount}<span class="fn__space"></span>`;
     }
     if (0 < stat.blockCount) {
-        html += `<span class="ft__on-surface">${window.siyuan.languages.blockCount}</span>&nbsp;${stat.blockCount}<span class="fn__space"></span>`;
+        html += `<span class="ft__on-surface">${window.scribli.languages.blockCount}</span>&nbsp;${stat.blockCount}<span class="fn__space"></span>`;
     }
     document.querySelector("#status .status__counter").innerHTML = html;
 };

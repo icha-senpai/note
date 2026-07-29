@@ -17,14 +17,14 @@ export class MobileTags {
         this.element.innerHTML = `<div class="toolbar toolbar--border toolbar--dark">
     <div class="fn__space"></div>
     <div class="toolbar__text">
-        ${window.siyuan.languages.tag}
+        ${window.scribli.languages.tag}
     </div>
     <span class="fn__space"></span>
     <svg data-type="expand" class="toolbar__icon"><use xlink:href="#iconExpand"></use></svg>
     <span class="fn__space"></span>
     <svg data-type="collapse" class="toolbar__icon"><use xlink:href="#iconContract"></use></svg>
-    <span class="fn__space${window.siyuan.config.readonly ? " fn__none" : ""}"></span>
-    <svg data-type="sort" class="toolbar__icon${window.siyuan.config.readonly ? " fn__none" : ""}"><use xlink:href="#iconSort"></use></svg>
+    <span class="fn__space${window.scribli.config.readonly ? " fn__none" : ""}"></span>
+    <svg data-type="sort" class="toolbar__icon${window.scribli.config.readonly ? " fn__none" : ""}"><use xlink:href="#iconSort"></use></svg>
 </div>
 <div class="fn__flex-1 tagList"></div>
 <img style="position: absolute;top: 0;left: 0;height: 100%;width: 100%;padding: 30vw;box-sizing: border-box;" src="/stage/loading-pure.svg">`;
@@ -51,8 +51,8 @@ export class MobileTags {
                     page: 1,
                 });
             },
-            blockExtHTML: window.siyuan.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
-            topExtHTML: window.siyuan.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>'
+            blockExtHTML: window.scribli.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
+            topExtHTML: window.scribli.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>'
         });
         this.element.addEventListener("click", (event) => {
             let target = event.target as HTMLElement;
@@ -71,56 +71,56 @@ export class MobileTags {
                             event.stopPropagation();
                             break;
                         case "sort":
-                            window.siyuan.menus.menu.remove();
-                            window.siyuan.menus.menu.append(new MenuItem({
-                                icon: window.siyuan.config.tag.sort === 0 ? "iconSelect" : undefined,
-                                label: window.siyuan.languages.fileNameASC,
+                            window.scribli.menus.menu.remove();
+                            window.scribli.menus.menu.append(new MenuItem({
+                                icon: window.scribli.config.tag.sort === 0 ? "iconSelect" : undefined,
+                                label: window.scribli.languages.fileNameASC,
                                 click: () => {
-                                    window.siyuan.config.tag.sort = 0;
+                                    window.scribli.config.tag.sort = 0;
                                     this.update();
                                 },
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
-                                icon: window.siyuan.config.tag.sort === 1 ? "iconSelect" : undefined,
-                                label: window.siyuan.languages.fileNameDESC,
+                            window.scribli.menus.menu.append(new MenuItem({
+                                icon: window.scribli.config.tag.sort === 1 ? "iconSelect" : undefined,
+                                label: window.scribli.languages.fileNameDESC,
                                 click: () => {
-                                    window.siyuan.config.tag.sort = 1;
+                                    window.scribli.config.tag.sort = 1;
                                     this.update();
                                 },
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
-                                icon: window.siyuan.config.tag.sort === 4 ? "iconSelect" : undefined,
-                                label: window.siyuan.languages.fileNameNatASC,
+                            window.scribli.menus.menu.append(new MenuItem({
+                                icon: window.scribli.config.tag.sort === 4 ? "iconSelect" : undefined,
+                                label: window.scribli.languages.fileNameNatASC,
                                 click: () => {
-                                    window.siyuan.config.tag.sort = 4;
+                                    window.scribli.config.tag.sort = 4;
                                     this.update();
                                 },
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
-                                icon: window.siyuan.config.tag.sort === 5 ? "iconSelect" : undefined,
-                                label: window.siyuan.languages.fileNameNatDESC,
+                            window.scribli.menus.menu.append(new MenuItem({
+                                icon: window.scribli.config.tag.sort === 5 ? "iconSelect" : undefined,
+                                label: window.scribli.languages.fileNameNatDESC,
                                 click: () => {
-                                    window.siyuan.config.tag.sort = 5;
+                                    window.scribli.config.tag.sort = 5;
                                     this.update();
                                 },
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
-                                icon: window.siyuan.config.tag.sort === 7 ? "iconSelect" : undefined,
-                                label: window.siyuan.languages.refCountASC,
+                            window.scribli.menus.menu.append(new MenuItem({
+                                icon: window.scribli.config.tag.sort === 7 ? "iconSelect" : undefined,
+                                label: window.scribli.languages.refCountASC,
                                 click: () => {
-                                    window.siyuan.config.tag.sort = 7;
+                                    window.scribli.config.tag.sort = 7;
                                     this.update();
                                 },
                             }).element);
-                            window.siyuan.menus.menu.append(new MenuItem({
-                                icon: window.siyuan.config.tag.sort === 8 ? "iconSelect" : undefined,
-                                label: window.siyuan.languages.refCountDESC,
+                            window.scribli.menus.menu.append(new MenuItem({
+                                icon: window.scribli.config.tag.sort === 8 ? "iconSelect" : undefined,
+                                label: window.scribli.languages.refCountDESC,
                                 click: () => {
-                                    window.siyuan.config.tag.sort = 8;
+                                    window.scribli.config.tag.sort = 8;
                                     this.update();
                                 },
                             }).element);
-                            window.siyuan.menus.menu.popup({x: event.clientX, y: event.clientY});
+                            window.scribli.menus.menu.popup({x: event.clientX, y: event.clientY});
                             event.preventDefault();
                             event.stopPropagation();
                             break;
@@ -135,8 +135,8 @@ export class MobileTags {
     public update(ignoreMaxListHint = true) {
         this.element.lastElementChild.classList.remove("fn__none");
         fetchPost("/api/tag/getTag", {
-            sort: window.siyuan.config.tag.sort,
-            app: Constants.SIYUAN_APPID,
+            sort: window.scribli.config.tag.sort,
+            app: Constants.SCRIBLI_APPID,
             ignoreMaxListHint,
         }, response => {
             if (this.openNodes) {

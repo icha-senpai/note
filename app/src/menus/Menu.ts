@@ -17,7 +17,7 @@ export class Menu {
         this.wheelEvent = "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
 
         this.element = document.getElementById("commonMenu");
-        this.element.querySelector(".b3-menu__title .b3-menu__label").innerHTML = window.siyuan.languages.back;
+        this.element.querySelector(".b3-menu__title .b3-menu__label").innerHTML = window.scribli.languages.back;
         this.element.addEventListener(isMobile() ? "click" : "mouseover", (event) => {
             const target = event.target as Element;
             if (isMobile()) {
@@ -159,7 +159,7 @@ export class Menu {
 
     public remove(isKeyEvent = false) {
         if (isKeyEvent) {
-            const subElements = window.siyuan.menus.menu.element.querySelectorAll(".b3-menu__item--show");
+            const subElements = window.scribli.menus.menu.element.querySelectorAll(".b3-menu__item--show");
             if (subElements.length > 0) {
                 const subElement = subElements[subElements.length - 1];
                 subElement.classList.remove("b3-menu__item--show");
@@ -168,9 +168,9 @@ export class Menu {
                 return;
             }
         }
-        if (window.siyuan.menus.menu.removeCB) {
-            window.siyuan.menus.menu.removeCB();
-            window.siyuan.menus.menu.removeCB = undefined;
+        if (window.scribli.menus.menu.removeCB) {
+            window.scribli.menus.menu.removeCB();
+            window.scribli.menus.menu.removeCB = undefined;
         }
         this.removeScrollEvent();
         this.element.firstElementChild.classList.add("fn__none");
@@ -203,7 +203,7 @@ export class Menu {
             return;
         }
         window.addEventListener(isMobile() ? "touchmove" : this.wheelEvent, this.preventDefault, {passive: false});
-        this.element.style.zIndex = (++window.siyuan.zIndex).toString();
+        this.element.style.zIndex = (++window.scribli.zIndex).toString();
         this.element.classList.remove("fn__none");
         setPosition(this.element, options.x - (options.isLeft ? this.element.clientWidth : 0), options.y, options.h, options.w);
         this.updateMaxHeight(this.element, this.element.lastElementChild as HTMLElement);
@@ -227,7 +227,7 @@ export class Menu {
             return;
         }
         this.element.classList.add("b3-menu--fullscreen");
-        this.element.style.zIndex = (++window.siyuan.zIndex).toString();
+        this.element.style.zIndex = (++window.scribli.zIndex).toString();
         this.element.firstElementChild.classList.remove("fn__none");
         this.element.classList.remove("fn__none");
         window.addEventListener("touchmove", this.preventDefault, {passive: false});
@@ -289,7 +289,7 @@ export class MenuItem {
                 event.stopImmediatePropagation();
                 event.stopPropagation();
                 if (this.element.parentElement && !keepOpen) {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                 }
             });
         }
@@ -361,18 +361,18 @@ const getActionMenu = (element: Element, next: boolean) => {
 };
 
 export const bindMenuKeydown = (event: KeyboardEvent) => {
-    if (window.siyuan.menus.menu.element.classList.contains("fn__none") || event.isComposing) {
+    if (window.scribli.menus.menu.element.classList.contains("fn__none") || event.isComposing) {
         return false;
     }
     const target = event.target as HTMLElement;
     const eventCode = Constants.KEYCODELIST[event.keyCode];
-    if (window.siyuan.menus.menu.element.contains(target) && ["INPUT", "TEXTAREA"].includes(target.tagName)) {
+    if (window.scribli.menus.menu.element.contains(target) && ["INPUT", "TEXTAREA"].includes(target.tagName)) {
         if (target.getAttribute(Constants.ATTRIBUTE_MENU_KEYMAP)) {
-            const currentElement = window.siyuan.menus.menu.element.querySelector(".b3-menu__item--current");
+            const currentElement = window.scribli.menus.menu.element.querySelector(".b3-menu__item--current");
             const inputItemElement = Array.from(target.closest(".b3-menu__items")?.children || []).find((item) => item.contains(target));
             if (!currentElement || currentElement === inputItemElement) {
                 if (eventCode === "↩") {
-                    window.siyuan.menus.menu.remove();
+                    window.scribli.menus.menu.remove();
                     return true;
                 }
                 if (eventCode === "→" || eventCode === "←") {
@@ -394,13 +394,13 @@ export const bindMenuKeydown = (event: KeyboardEvent) => {
         return false;
     }
     if (eventCode === "↓" || eventCode === "↑") {
-        const currentElement = window.siyuan.menus.menu.element.querySelector(".b3-menu__item--current");
+        const currentElement = window.scribli.menus.menu.element.querySelector(".b3-menu__item--current");
         let actionMenuElement;
         if (!currentElement) {
             if (eventCode === "↑") {
-                actionMenuElement = getActionMenu(window.siyuan.menus.menu.element.lastElementChild.lastElementChild, false);
+                actionMenuElement = getActionMenu(window.scribli.menus.menu.element.lastElementChild.lastElementChild, false);
             } else {
-                actionMenuElement = getActionMenu(window.siyuan.menus.menu.element.lastElementChild.firstElementChild, true);
+                actionMenuElement = getActionMenu(window.scribli.menus.menu.element.lastElementChild.firstElementChild, true);
             }
         } else {
             currentElement.classList.remove("b3-menu__item--current", "b3-menu__item--show");
@@ -434,7 +434,7 @@ export const bindMenuKeydown = (event: KeyboardEvent) => {
         }
         return true;
     } else if (eventCode === "→") {
-        const currentElement = window.siyuan.menus.menu.element.querySelector(".b3-menu__item--current");
+        const currentElement = window.scribli.menus.menu.element.querySelector(".b3-menu__item--current");
         if (!currentElement) {
             return true;
         }
@@ -449,10 +449,10 @@ export const bindMenuKeydown = (event: KeyboardEvent) => {
         if (actionMenuElement) {
             actionMenuElement.classList.add("b3-menu__item--current");
         }
-        window.siyuan.menus.menu.showSubMenu(subMenuElement);
+        window.scribli.menus.menu.showSubMenu(subMenuElement);
         return true;
     } else if (eventCode === "←") {
-        const currentElement = window.siyuan.menus.menu.element.querySelector(".b3-menu__submenu .b3-menu__item--current");
+        const currentElement = window.scribli.menus.menu.element.querySelector(".b3-menu__submenu .b3-menu__item--current");
         if (!currentElement) {
             return true;
         }
@@ -464,7 +464,7 @@ export const bindMenuKeydown = (event: KeyboardEvent) => {
         }
         return true;
     } else if (eventCode === "↩") {
-        const currentElement = window.siyuan.menus.menu.element.querySelector(".b3-menu__item--current");
+        const currentElement = window.scribli.menus.menu.element.querySelector(".b3-menu__item--current");
         if (!currentElement) {
             return false;
         } else {
@@ -476,7 +476,7 @@ export const bindMenuKeydown = (event: KeyboardEvent) => {
                 if (actionMenuElement) {
                     actionMenuElement.classList.add("b3-menu__item--current");
                 }
-                window.siyuan.menus.menu.showSubMenu(subMenuElement);
+                window.scribli.menus.menu.showSubMenu(subMenuElement);
                 return true;
             }
             const textElement = currentElement.querySelector(".b3-text-field") as HTMLInputElement;
@@ -489,9 +489,9 @@ export const bindMenuKeydown = (event: KeyboardEvent) => {
             } else {
                 currentElement.dispatchEvent(new CustomEvent(getEventName()));
             }
-            if (window.siyuan.menus.menu.element.contains(currentElement)) {
+            if (window.scribli.menus.menu.element.contains(currentElement)) {
                 // 块标上 AI 会使用新的 menu，不能移除
-                window.siyuan.menus.menu.remove();
+                window.scribli.menus.menu.remove();
             }
         }
         return true;

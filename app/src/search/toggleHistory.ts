@@ -12,7 +12,7 @@ import {inputEvent} from "./util";
 /// #endif
 
 export const toggleReplaceHistory = (replaceInputElement: HTMLInputElement) => {
-    const list = window.siyuan.storage[Constants.LOCAL_SEARCHKEYS];
+    const list = window.scribli.storage[Constants.LOCAL_SEARCHKEYS];
     if (!list.replaceKeys || list.replaceKeys.length === 0 || (list.length === 1 && list[0] === replaceInputElement.value)) {
         return;
     }
@@ -23,10 +23,10 @@ export const toggleReplaceHistory = (replaceInputElement: HTMLInputElement) => {
     menu.element.classList.add("b3-menu--list");
     menu.addItem({
         iconHTML: "",
-        label: window.siyuan.languages.clearHistory,
+        label: window.scribli.languages.clearHistory,
         click() {
-            window.siyuan.storage[Constants.LOCAL_SEARCHKEYS].replaceKeys = [];
-            setStorageVal(Constants.LOCAL_SEARCHKEYS, window.siyuan.storage[Constants.LOCAL_SEARCHKEYS]);
+            window.scribli.storage[Constants.LOCAL_SEARCHKEYS].replaceKeys = [];
+            setStorageVal(Constants.LOCAL_SEARCHKEYS, window.scribli.storage[Constants.LOCAL_SEARCHKEYS]);
         }
     });
     const separatorElement = menu.addSeparator(1);
@@ -46,16 +46,16 @@ export const toggleReplaceHistory = (replaceInputElement: HTMLInputElement) => {
                                     return true;
                                 }
                             });
-                            window.siyuan.storage[Constants.LOCAL_SEARCHKEYS].replaceKeys = list.replaceKeys;
-                            setStorageVal(Constants.LOCAL_SEARCHKEYS, window.siyuan.storage[Constants.LOCAL_SEARCHKEYS]);
+                            window.scribli.storage[Constants.LOCAL_SEARCHKEYS].replaceKeys = list.replaceKeys;
+                            setStorageVal(Constants.LOCAL_SEARCHKEYS, window.scribli.storage[Constants.LOCAL_SEARCHKEYS]);
                             if (element.previousElementSibling?.classList.contains("b3-menu__separator") && !element.nextElementSibling) {
-                                window.siyuan.menus.menu.remove();
+                                window.scribli.menus.menu.remove();
                             } else {
                                 element.remove();
                             }
                         } else {
                             replaceInputElement.value = element.textContent;
-                            window.siyuan.menus.menu.remove();
+                            window.scribli.menus.menu.remove();
                         }
                         itemEvent.preventDefault();
                         itemEvent.stopPropagation();
@@ -80,7 +80,7 @@ export const toggleReplaceHistory = (replaceInputElement: HTMLInputElement) => {
 
 export const toggleSearchHistory = (searchElement: Element, config: Config.IUILayoutTabSearchConfig, edit: Protyle) => {
     const searchInputElement = searchElement.querySelector("#searchInput, #toolbarSearch") as HTMLInputElement;
-    const list = window.siyuan.storage[Constants.LOCAL_SEARCHKEYS];
+    const list = window.scribli.storage[Constants.LOCAL_SEARCHKEYS];
     if (!list.keys || list.keys.length === 0 || (list.length === 1 && list[0] === searchInputElement.value)) {
         return;
     }
@@ -91,10 +91,10 @@ export const toggleSearchHistory = (searchElement: Element, config: Config.IUILa
     menu.element.classList.add("b3-menu--list");
     menu.addItem({
         iconHTML: "",
-        label: window.siyuan.languages.clearHistory,
+        label: window.scribli.languages.clearHistory,
         click() {
-            window.siyuan.storage[Constants.LOCAL_SEARCHKEYS].keys = [];
-            setStorageVal(Constants.LOCAL_SEARCHKEYS, window.siyuan.storage[Constants.LOCAL_SEARCHKEYS]);
+            window.scribli.storage[Constants.LOCAL_SEARCHKEYS].keys = [];
+            setStorageVal(Constants.LOCAL_SEARCHKEYS, window.scribli.storage[Constants.LOCAL_SEARCHKEYS]);
         }
     });
     const separatorElement = menu.addSeparator(1);
@@ -114,10 +114,10 @@ export const toggleSearchHistory = (searchElement: Element, config: Config.IUILa
                                     return true;
                                 }
                             });
-                            window.siyuan.storage[Constants.LOCAL_SEARCHKEYS].keys = list.keys;
-                            setStorageVal(Constants.LOCAL_SEARCHKEYS, window.siyuan.storage[Constants.LOCAL_SEARCHKEYS]);
+                            window.scribli.storage[Constants.LOCAL_SEARCHKEYS].keys = list.keys;
+                            setStorageVal(Constants.LOCAL_SEARCHKEYS, window.scribli.storage[Constants.LOCAL_SEARCHKEYS]);
                             if (element.previousElementSibling?.classList.contains("b3-menu__separator") && !element.nextElementSibling) {
-                                window.siyuan.menus.menu.remove();
+                                window.scribli.menus.menu.remove();
                             } else {
                                 element.remove();
                             }
@@ -129,7 +129,7 @@ export const toggleSearchHistory = (searchElement: Element, config: Config.IUILa
                             /// #else
                             inputEvent(searchElement, config, edit, true);
                             /// #endif
-                            window.siyuan.menus.menu.remove();
+                            window.scribli.menus.menu.remove();
                         }
                         itemEvent.preventDefault();
                         itemEvent.stopPropagation();
@@ -154,7 +154,7 @@ export const toggleSearchHistory = (searchElement: Element, config: Config.IUILa
 
 export const toggleAssetHistory = (assetElement: Element) => {
     const assetInputElement = assetElement.querySelector("#searchAssetInput") as HTMLInputElement;
-    const keys = window.siyuan.storage[Constants.LOCAL_SEARCHASSET].keys;
+    const keys = window.scribli.storage[Constants.LOCAL_SEARCHASSET].keys;
     if (!keys || keys.length === 0 || (keys.length === 1 && keys[0] === assetInputElement.value)) {
         return;
     }
@@ -165,10 +165,10 @@ export const toggleAssetHistory = (assetElement: Element) => {
     menu.element.classList.add("b3-menu--list");
     menu.addItem({
         iconHTML: "",
-        label: window.siyuan.languages.clearHistory,
+        label: window.scribli.languages.clearHistory,
         click() {
-            window.siyuan.storage[Constants.LOCAL_SEARCHASSET].keys = [];
-            setStorageVal(Constants.LOCAL_SEARCHASSET, window.siyuan.storage[Constants.LOCAL_SEARCHASSET]);
+            window.scribli.storage[Constants.LOCAL_SEARCHASSET].keys = [];
+            setStorageVal(Constants.LOCAL_SEARCHASSET, window.scribli.storage[Constants.LOCAL_SEARCHASSET]);
         }
     });
     const separatorElement = menu.addSeparator(1);
@@ -188,17 +188,17 @@ export const toggleAssetHistory = (assetElement: Element) => {
                                     return true;
                                 }
                             });
-                            window.siyuan.storage[Constants.LOCAL_SEARCHASSET].keys = keys;
-                            setStorageVal(Constants.LOCAL_SEARCHASSET, window.siyuan.storage[Constants.LOCAL_SEARCHASSET]);
+                            window.scribli.storage[Constants.LOCAL_SEARCHASSET].keys = keys;
+                            setStorageVal(Constants.LOCAL_SEARCHASSET, window.scribli.storage[Constants.LOCAL_SEARCHASSET]);
                             if (element.previousElementSibling?.classList.contains("b3-menu__separator") && !element.nextElementSibling) {
-                                window.siyuan.menus.menu.remove();
+                                window.scribli.menus.menu.remove();
                             } else {
                                 element.remove();
                             }
                         } else {
                             assetInputElement.value = element.textContent;
                             assetInputEvent(assetElement);
-                            window.siyuan.menus.menu.remove();
+                            window.scribli.menus.menu.remove();
                         }
                         itemEvent.preventDefault();
                         itemEvent.stopPropagation();
@@ -222,28 +222,28 @@ export const toggleAssetHistory = (assetElement: Element) => {
 };
 
 export const saveKeyList = (type: "keys" | "replaceKeys", value: string) => {
-    let list: string[] = window.siyuan.storage[Constants.LOCAL_SEARCHKEYS][type];
+    let list: string[] = window.scribli.storage[Constants.LOCAL_SEARCHKEYS][type];
     list.splice(0, 0, value);
     list = Array.from(new Set(list));
-    if (list.length > window.siyuan.config.search.limit) {
-        list.splice(window.siyuan.config.search.limit, list.length - window.siyuan.config.search.limit);
+    if (list.length > window.scribli.config.search.limit) {
+        list.splice(window.scribli.config.search.limit, list.length - window.scribli.config.search.limit);
     }
     // new Set 后需重新赋值
-    window.siyuan.storage[Constants.LOCAL_SEARCHKEYS][type] = list;
-    setStorageVal(Constants.LOCAL_SEARCHKEYS, window.siyuan.storage[Constants.LOCAL_SEARCHKEYS]);
+    window.scribli.storage[Constants.LOCAL_SEARCHKEYS][type] = list;
+    setStorageVal(Constants.LOCAL_SEARCHKEYS, window.scribli.storage[Constants.LOCAL_SEARCHKEYS]);
 };
 
 export const saveAssetKeyList = (inputElement: HTMLInputElement) => {
     if (!inputElement.value) {
         return;
     }
-    let list: string[] = window.siyuan.storage[Constants.LOCAL_SEARCHASSET].keys;
+    let list: string[] = window.scribli.storage[Constants.LOCAL_SEARCHASSET].keys;
     list.splice(0, 0, inputElement.value);
     list = Array.from(new Set(list));
-    if (list.length > window.siyuan.config.search.limit) {
-        list.splice(window.siyuan.config.search.limit, list.length - window.siyuan.config.search.limit);
+    if (list.length > window.scribli.config.search.limit) {
+        list.splice(window.scribli.config.search.limit, list.length - window.scribli.config.search.limit);
     }
-    window.siyuan.storage[Constants.LOCAL_SEARCHASSET].k = inputElement.value;
-    window.siyuan.storage[Constants.LOCAL_SEARCHASSET].keys = list;
-    setStorageVal(Constants.LOCAL_SEARCHASSET, window.siyuan.storage[Constants.LOCAL_SEARCHASSET]);
+    window.scribli.storage[Constants.LOCAL_SEARCHASSET].k = inputElement.value;
+    window.scribli.storage[Constants.LOCAL_SEARCHASSET].keys = list;
+    setStorageVal(Constants.LOCAL_SEARCHASSET, window.scribli.storage[Constants.LOCAL_SEARCHASSET]);
 };

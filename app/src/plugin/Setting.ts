@@ -31,9 +31,9 @@ export class Setting {
             content: `<div class="b3-dialog__content">
 </div>
 <div class="b3-dialog__action${this.confirmCallback ? "" : " fn__none"}">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button>
     <div class="fn__space${this.confirmCallback ? "" : " fn__none"}"></div>
-    <button class="b3-button b3-button--text${this.confirmCallback ? "" : " fn__none"}">${window.siyuan.languages.save}</button>
+    <button class="b3-button b3-button--text${this.confirmCallback ? "" : " fn__none"}">${window.scribli.languages.save}</button>
 </div>`,
             width: this.width,
             height: this.height,

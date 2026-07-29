@@ -29,7 +29,7 @@ export class Editor extends Model {
         super({
             app: options.app,
         });
-        if (window.siyuan.config.fileTree.openFilesUseCurrentTab) {
+        if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
             options.tab.headElement.classList.add("item--unupdate");
         }
         this.headElement = options.tab.headElement;
@@ -63,7 +63,7 @@ export class Editor extends Model {
             typewriterMode: true,
             scrollPosition: options.scrollPosition,
             after: (editor) => {
-                if (window.siyuan.editorIsFullscreen) {
+                if (window.scribli.editorIsFullscreen) {
                     fullscreen(editor.protyle.element);
                     setPadding(editor.protyle);
                 }

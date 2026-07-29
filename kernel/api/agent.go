@@ -111,7 +111,7 @@ func agentChat(c *gin.Context) {
 		streamIdleTimeout = 120 * time.Second
 	}
 
-	app := c.GetHeader("X-SiYuan-App-ID")
+	app := c.GetHeader("X-Scribli-App-ID")
 
 	sessionsMu.Lock()
 	if _, ok := runningSessions[req.SessionID]; ok {
@@ -442,7 +442,7 @@ func removeSession(c *gin.Context) {
 		return
 	}
 
-	broadcastAgentSessionChanged(c.GetHeader("X-SiYuan-App-ID"), req.ID, "delete")
+	broadcastAgentSessionChanged(c.GetHeader("X-Scribli-App-ID"), req.ID, "delete")
 	ret := gulu.Ret.NewResult()
 	c.JSON(http.StatusOK, ret)
 }
@@ -466,7 +466,7 @@ func saveSession(c *gin.Context) {
 	}
 	sessionsMu.Lock()
 	running := runningSessions[meta.ID]
-	if running != nil && running.app != c.GetHeader("X-SiYuan-App-ID") {
+	if running != nil && running.app != c.GetHeader("X-Scribli-App-ID") {
 		sessionsMu.Unlock()
 		ret := gulu.Ret.NewResult()
 		ret.Code = -1
@@ -478,7 +478,7 @@ func saveSession(c *gin.Context) {
 	if commitTurnID == "" {
 		commitTurnID = meta.RecoveryTurnID
 	}
-	if running != nil && commitTurnID == "" && c.GetHeader("X-SiYuan-Agent-Checkpoint") != "2" && running.terminal && running.turnID != "" {
+	if running != nil && commitTurnID == "" && c.GetHeader("X-Scribli-Agent-Checkpoint") != "2" && running.terminal && running.turnID != "" {
 		var payload map[string]any
 		if err := gulu.JSON.UnmarshalJSON(body, &payload); err != nil {
 			sessionsMu.Unlock()
@@ -510,7 +510,7 @@ func saveSession(c *gin.Context) {
 			return
 		}
 
-		if commitTurnID == "" && c.GetHeader("X-SiYuan-Agent-Checkpoint") != "2" {
+		if commitTurnID == "" && c.GetHeader("X-Scribli-Agent-Checkpoint") != "2" {
 			recoverableTurnID, runtimeErr := agent.RecoverableTurnID(meta.ID)
 			if runtimeErr != nil {
 				sessionsMu.Unlock()
@@ -588,7 +588,7 @@ func saveSession(c *gin.Context) {
 		return
 	}
 
-	broadcastAgentSessionChanged(c.GetHeader("X-SiYuan-App-ID"), meta.ID, "update")
+	broadcastAgentSessionChanged(c.GetHeader("X-Scribli-App-ID"), meta.ID, "update")
 	ret := gulu.Ret.NewResult()
 	data := map[string]any{"revision": revision}
 	if canonicalSession != nil {

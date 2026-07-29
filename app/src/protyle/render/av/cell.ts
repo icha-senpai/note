@@ -216,7 +216,7 @@ const transformCellValue = (colType: TAVCol, value: IAVCellValue): IAVCellValue 
     } else if (colType === "mAsset") {
         const content = getCellValueContent(value).toString();
         newValue.mAsset = [{
-            type: Constants.SIYUAN_ASSETS_IMAGE.includes(pathPosix().extname(content).toLowerCase()) ? "image" : "file",
+            type: Constants.SCRIBLI_ASSETS_IMAGE.includes(pathPosix().extname(content).toLowerCase()) ? "image" : "file",
             content,
             name: "",
         }];
@@ -324,7 +324,7 @@ export const genCellValue = (colType: TAVCol, value: string | any) => {
             cellValue = {
                 type: colType,
                 mAsset: [{
-                    type: Constants.SIYUAN_ASSETS_IMAGE.includes(type) ? "image" : "file",
+                    type: Constants.SCRIBLI_ASSETS_IMAGE.includes(type) ? "image" : "file",
                     content: value,
                     name: "",
                 }]
@@ -418,13 +418,13 @@ export const cellScrollIntoView = (blockElement: HTMLElement, cellElement: Eleme
     const contentElement = hasClosestByClassName(blockElement, "protyle-content", true);
     if (contentElement && cellElement.getAttribute("data-dtype") !== "checkbox") {
         let keyboardToolbarTop = window.innerHeight / 2 - 48;
-        if (window.siyuan.mobile.size.isLandscape) {
-            if (window.siyuan.mobile.size.landscape.height1 !== window.siyuan.mobile.size.landscape.height2) {
-                keyboardToolbarTop = window.siyuan.mobile.size.landscape.height2 - 48;
+        if (window.scribli.mobile.size.isLandscape) {
+            if (window.scribli.mobile.size.landscape.height1 !== window.scribli.mobile.size.landscape.height2) {
+                keyboardToolbarTop = window.scribli.mobile.size.landscape.height2 - 48;
             }
         } else {
-            if (window.siyuan.mobile.size.portrait.height1 !== window.siyuan.mobile.size.portrait.height2) {
-                keyboardToolbarTop = window.siyuan.mobile.size.portrait.height2 - 48;
+            if (window.scribli.mobile.size.portrait.height1 !== window.scribli.mobile.size.portrait.height2) {
+                keyboardToolbarTop = window.scribli.mobile.size.portrait.height2 - 48;
             }
         }
         if (cellRect.bottom > keyboardToolbarTop) {
@@ -556,8 +556,8 @@ export const popTextCell = (protyle: IProtyle, cellElements: HTMLElement[], type
         }
         return;
     }
-    window.siyuan.menus.menu.remove();
-    document.body.insertAdjacentHTML("beforeend", `<div class="av__mask" style="z-index: ${++window.siyuan.zIndex}">
+    window.scribli.menus.menu.remove();
+    document.body.insertAdjacentHTML("beforeend", `<div class="av__mask" style="z-index: ${++window.scribli.zIndex}">
     ${html}
 </div>`);
     const avMaskElement = document.querySelector(".av__mask");
@@ -970,9 +970,9 @@ export const renderCell = (cellValue: IAVCellValue, rowIndex = 0, showIcon = tru
         if (cellValue?.isDetached) {
             text = `<span class="av__celltext">${Lute.EscapeHTMLStr(cellValue.block.content || "")}</span>`;
         } else {
-            text = `<span class="b3-menu__avemoji${showIcon ? "" : " fn__none"}" data-unicode="${cellValue.block.icon || ""}">${unicode2Emoji(cellValue.block.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].file)}</span><span data-type="block-ref" data-id="${cellValue.block.id}" data-subtype="s" class="av__celltext av__celltext--ref">${Lute.EscapeHTMLStr(cellValue.block.content)}</span>`;
+            text = `<span class="b3-menu__avemoji${showIcon ? "" : " fn__none"}" data-unicode="${cellValue.block.icon || ""}">${unicode2Emoji(cellValue.block.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file)}</span><span data-type="block-ref" data-id="${cellValue.block.id}" data-subtype="s" class="av__celltext av__celltext--ref">${Lute.EscapeHTMLStr(cellValue.block.content)}</span>`;
         }
-        text += `<span class="av__row-actions"><button class="av__row-action ariaLabel" type="button" data-position="4north" aria-label="${window.siyuan.languages.openBy}" data-type="av-row-open"><svg><use xlink:href="#iconOpen"></use></svg></button><button class="av__row-action ariaLabel" type="button" data-position="4north" aria-label="${window.siyuan.languages.more}" data-type="av-row-more"><svg><use xlink:href="#iconMore"></use></svg></button></span>`;
+        text += `<span class="av__row-actions"><button class="av__row-action ariaLabel" type="button" data-position="4north" aria-label="${window.scribli.languages.openBy}" data-type="av-row-open"><svg><use xlink:href="#iconOpen"></use></svg></button><button class="av__row-action ariaLabel" type="button" data-position="4north" aria-label="${window.scribli.languages.more}" data-type="av-row-more"><svg><use xlink:href="#iconMore"></use></svg></button></span>`;
     } else if (cellValue.type === "number") {
         text = `<span class="av__celltext" data-content="${cellValue?.number.isNotEmpty ? cellValue?.number.content : ""}">${cellValue?.number.formattedContent || cellValue?.number.content || ""}</span>`;
     } else if (cellValue.type === "mSelect" || cellValue.type === "select") {
@@ -1037,10 +1037,10 @@ export const renderCell = (cellValue: IAVCellValue, rowIndex = 0, showIcon = tru
             if (item && item.block) {
                 const rowID = cellValue.relation.blockIDs[index];
                 if (item?.isDetached) {
-                    text += `<span data-row-id="${rowID}" class="av__cell--relation"><span${showIcon ? "" : ' class="fn__none"'}><svg><use xlink:href="#iconLine"></use></svg><span class="fn__space--5"></span></span><span class="av__celltext">${Lute.EscapeHTMLStr(item.block.content || window.siyuan.languages.untitled)}</span></span>`;
+                    text += `<span data-row-id="${rowID}" class="av__cell--relation"><span${showIcon ? "" : ' class="fn__none"'}><svg><use xlink:href="#iconLine"></use></svg><span class="fn__space--5"></span></span><span class="av__celltext">${Lute.EscapeHTMLStr(item.block.content || window.scribli.languages.untitled)}</span></span>`;
                 } else {
                     // data-block-id 用于更新 emoji
-                    text += `<span data-row-id="${rowID}" class="av__cell--relation" data-block-id="${item.block.id}"><span class="b3-menu__avemoji${showIcon ? "" : " fn__none"}" data-unicode="${item.block.icon || ""}">${unicode2Emoji(item.block.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].file)}</span><span data-type="block-ref" data-id="${item.block.id}" data-subtype="s" class="av__celltext av__celltext--ref">${Lute.EscapeHTMLStr(item.block.content || window.siyuan.languages.untitled)}</span></span>`;
+                    text += `<span data-row-id="${rowID}" class="av__cell--relation" data-block-id="${item.block.id}"><span class="b3-menu__avemoji${showIcon ? "" : " fn__none"}" data-unicode="${item.block.icon || ""}">${unicode2Emoji(item.block.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file)}</span><span data-type="block-ref" data-id="${item.block.id}" data-subtype="s" class="av__celltext av__celltext--ref">${Lute.EscapeHTMLStr(item.block.content || window.scribli.languages.untitled)}</span></span>`;
                 }
             }
         });
@@ -1074,9 +1074,9 @@ const renderRollup = (cellValue: IAVCellValue, showIcon: boolean) => {
         }
     } else if (cellValue.type === "block") {
         if (cellValue?.isDetached) {
-            text = `<span class="av__celltext">${Lute.EscapeHTMLStr(cellValue.block?.content || window.siyuan.languages.untitled)}</span>`;
+            text = `<span class="av__celltext">${Lute.EscapeHTMLStr(cellValue.block?.content || window.scribli.languages.untitled)}</span>`;
         } else {
-            text = `<span class="b3-menu__avemoji${showIcon ? "" : " fn__none"}" data-unicode="${cellValue.block.icon || ""}">${unicode2Emoji(cellValue.block.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].file)}</span><span data-type="block-ref" data-id="${cellValue.block?.id}" data-subtype="s" class="av__celltext av__celltext--ref">${Lute.EscapeHTMLStr(cellValue.block?.content || window.siyuan.languages.untitled)}</span>`;
+            text = `<span class="b3-menu__avemoji${showIcon ? "" : " fn__none"}" data-unicode="${cellValue.block.icon || ""}">${unicode2Emoji(cellValue.block.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file)}</span><span data-type="block-ref" data-id="${cellValue.block?.id}" data-subtype="s" class="av__celltext av__celltext--ref">${Lute.EscapeHTMLStr(cellValue.block?.content || window.scribli.languages.untitled)}</span>`;
         }
     } else if (cellValue.type === "number") {
         text = cellValue?.number.formattedContent || cellValue?.number.content.toString() || "";
@@ -1235,7 +1235,7 @@ export const addDragFill = (cellElement: Element) => {
         if (["template", "rollup", "lineNumber", "created", "updated"].includes(cellType)) {
             return;
         }
-        cellElement.insertAdjacentHTML("beforeend", `<div aria-label="${window.siyuan.languages.dragFill}" class="av__drag-fill ariaLabel"></div>`);
+        cellElement.insertAdjacentHTML("beforeend", `<div aria-label="${window.scribli.languages.dragFill}" class="av__drag-fill ariaLabel"></div>`);
     }
 };
 

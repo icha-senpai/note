@@ -778,7 +778,7 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
             currentWindow.show();
             setTimeout(() => { // Wait for UI JavaScript to finish executing.
                 writeLog(appOpenURL);
-                currentWindow.webContents.send("siyuan-open-url", appOpenURL);
+                currentWindow.webContents.send("scribli-open-url", appOpenURL);
             }, 2000);
         }
     });
@@ -811,7 +811,7 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
     windowNavigate(currentWindow, "app");
     currentWindow.on("close", (event) => {
         if (currentWindow && !currentWindow.isDestroyed()) {
-            currentWindow.webContents.send("siyuan-save-close", false);
+            currentWindow.webContents.send("scribli-save-close", false);
         }
         event.preventDefault();
     });
@@ -821,17 +821,17 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
         port: currentKernelPort,
     });
     // Add a timeout fallback after loadURL. If the frontend app bundle fails to load or initialize,
-    // siyuan-ready-to-show may never arrive; destroy the boot window and show the main window instead of hanging.
+    // scribli-ready-to-show may never arrive; destroy the boot window and show the main window instead of hanging.
     const readyToShowTimeout = setTimeout(() => {
         if (bootWindow && !bootWindow.isDestroyed()) {
             if (!currentWindow.isDestroyed()) {
-                writeLog("siyuan-ready-to-show timeout, force showing main window");
+                writeLog("scribli-ready-to-show timeout, force showing main window");
                 currentWindow.show();
             }
             bootWindow.destroy();
         }
     }, 60000);
-    ipcMain.once("siyuan-ready-to-show", () => {
+    ipcMain.once("scribli-ready-to-show", () => {
         clearTimeout(readyToShowTimeout); // Clear the timeout after the normal signal arrives.
         if (isOpenAsHidden()) {
             currentWindow.minimize();
@@ -1122,11 +1122,11 @@ app.whenReady().then(() => {
         }, {
             label: lang.resetWindow, type: "checkbox", click: v => {
                 resetWindowStateOnRestart = v.checked;
-                mainWindow.webContents.send("siyuan-save-close", true);
+                mainWindow.webContents.send("scribli-save-close", true);
             },
         }, {
             label: lang.quit, click: () => {
-                mainWindow.webContents.send("siyuan-save-close", true);
+                mainWindow.webContents.send("scribli-save-close", true);
             },
         },];
 
@@ -1176,7 +1176,7 @@ app.whenReady().then(() => {
     const getWindowByContentId = (id) => {
         return BrowserWindow.getAllWindows().find((win) => win.webContents.id === id);
     };
-    ipcMain.on("siyuan-context-menu", (event, langs) => {
+    ipcMain.on("scribli-context-menu", (event, langs) => {
         const template = [new MenuItem({
             role: "undo", label: langs.undo
         }), new MenuItem({
@@ -1197,17 +1197,17 @@ app.whenReady().then(() => {
         const menu = Menu.buildFromTemplate(template);
         menu.popup({window: BrowserWindow.fromWebContents(event.sender)});
     });
-    ipcMain.on("siyuan-confirm-dialog", (event, options) => {
+    ipcMain.on("scribli-confirm-dialog", (event, options) => {
         event.returnValue = dialog.showMessageBoxSync(BrowserWindow.fromWebContents(event.sender) || BrowserWindow.getFocusedWindow(), options);
     });
-    ipcMain.on("siyuan-alert-dialog", (event, options) => {
+    ipcMain.on("scribli-alert-dialog", (event, options) => {
         dialog.showMessageBoxSync(BrowserWindow.fromWebContents(event.sender) || BrowserWindow.getFocusedWindow(), options);
         event.returnValue = undefined;
     });
-    ipcMain.on("siyuan-first-quit", () => {
+    ipcMain.on("scribli-first-quit", () => {
         app.exit();
     });
-    ipcMain.handle("siyuan-get", (event, data) => {
+    ipcMain.handle("scribli-get", (event, data) => {
         if (data.cmd === "clipboardRead") {
             return clipboard.read(data.format);
         }
@@ -1274,7 +1274,7 @@ app.whenReady().then(() => {
                 throw e;
             }
         }
-        if (data.cmd === "siyuan-open-file") {
+        if (data.cmd === "scribli-open-file") {
             let hasMatch = false;
             BrowserWindow.getAllWindows().find(item => {
                 const url = new URL(item.webContents.getURL());
@@ -1285,7 +1285,7 @@ app.whenReady().then(() => {
                 const options = JSON.parse(data.options);
                 if (ids.includes(options.rootID) || ids.includes(options.assetPath)) {
                     item.focus();
-                    item.webContents.send("siyuan-open-file", options);
+                    item.webContents.send("scribli-open-file", options);
                     hasMatch = true;
                     return true;
                 }
@@ -1295,7 +1295,7 @@ app.whenReady().then(() => {
     });
 
     const initEventId = [];
-    ipcMain.on("siyuan-event", (event) => {
+    ipcMain.on("scribli-event", (event) => {
         if (initEventId.includes(event.sender.id)) {
             return;
         }
@@ -1306,25 +1306,25 @@ app.whenReady().then(() => {
         }
         latestActiveWindow = currentWindow;
         currentWindow.on("focus", () => {
-            event.sender.send("siyuan-event", "focus");
+            event.sender.send("scribli-event", "focus");
             latestActiveWindow = currentWindow;
         });
         currentWindow.on("blur", () => {
-            event.sender.send("siyuan-event", "blur");
+            event.sender.send("scribli-event", "blur");
         });
         if ("darwin" !== process.platform) {
             currentWindow.on("maximize", () => {
-                event.sender.send("siyuan-event", "maximize");
+                event.sender.send("scribli-event", "maximize");
             });
             currentWindow.on("unmaximize", () => {
-                event.sender.send("siyuan-event", "unmaximize");
+                event.sender.send("scribli-event", "unmaximize");
             });
         }
         currentWindow.on("enter-full-screen", () => {
-            event.sender.send("siyuan-event", "enter-full-screen");
+            event.sender.send("scribli-event", "enter-full-screen");
         });
         currentWindow.on("leave-full-screen", () => {
-            event.sender.send("siyuan-event", "leave-full-screen");
+            event.sender.send("scribli-event", "leave-full-screen");
         });
     });
     ipcMain.on("scribli-cmd", (event, data) => {
@@ -1375,7 +1375,7 @@ app.whenReady().then(() => {
                     globalShortcut.unregister(hotKey2Electron(data.accelerator));
                     globalShortcut.register(hotKey2Electron(data.accelerator), () => {
                         BrowserWindow.getAllWindows().forEach(itemB => {
-                            itemB.webContents.send("siyuan-hotkey", {
+                            itemB.webContents.send("scribli-hotkey", {
                                 hotkey: data.accelerator
                             });
                         });
@@ -1476,7 +1476,7 @@ app.whenReady().then(() => {
                 break;
         }
     });
-    ipcMain.on("siyuan-config-tray", (event, data) => {
+    ipcMain.on("scribli-config-tray", (event, data) => {
         workspaces.find(item => {
             if (item.browserWindow.webContents.id === event.sender.id) {
                 hideWindow(item.browserWindow);
@@ -1487,7 +1487,7 @@ app.whenReady().then(() => {
             }
         });
     });
-    ipcMain.on("siyuan-export-pdf", (event, data) => {
+    ipcMain.on("scribli-export-pdf", (event, data) => {
         dialog.showOpenDialog({
             title: data.title, properties: ["createDirectory", "openDirectory"],
         }).then((result) => {
@@ -1497,10 +1497,10 @@ app.whenReady().then(() => {
             }
             data.filePaths = result.filePaths;
             data.webContentsId = event.sender.id;
-            getWindowByContentId(data.parentWindowId).send("siyuan-export-pdf", data);
+            getWindowByContentId(data.parentWindowId).send("scribli-export-pdf", data);
         });
     });
-    ipcMain.on("siyuan-export-newwindow", (event, data) => {
+    ipcMain.on("scribli-export-newwindow", (event, data) => {
         // The PDF/Word export preview window automatically adjusts according to the size of the main window https://github.com/siyuan-note/siyuan/issues/10554
         const wndBounds = getWindowByContentId(event.sender.id).getBounds();
         const wndScreen = screen.getDisplayNearestPoint({x: wndBounds.x, y: wndBounds.y});
@@ -1526,14 +1526,14 @@ app.whenReady().then(() => {
         printWin.loadURL(data);
         windowNavigate(printWin, "export");
     });
-    ipcMain.on("siyuan-quit", (event, port) => {
+    ipcMain.on("scribli-quit", (event, port) => {
         exitApp(port);
     });
-    ipcMain.handle("siyuan-install-update", () => {
+    ipcMain.handle("scribli-install-update", () => {
         writeLog("rejected update install request because runtime updates are disabled");
         return false;
     });
-    ipcMain.on("siyuan-show-window", (event) => {
+    ipcMain.on("scribli-show-window", (event) => {
         const mainWindow = getWindowByContentId(event.sender.id);
         if (!mainWindow) {
             return;
@@ -1544,7 +1544,7 @@ app.whenReady().then(() => {
         }
         mainWindow.show();
     });
-    ipcMain.on("siyuan-open-window", (event, data) => {
+    ipcMain.on("scribli-open-window", (event, data) => {
         const mainWindow = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
         const mainBounds = mainWindow.getBounds();
         const mainScreen = screen.getDisplayNearestPoint({x: mainBounds.x, y: mainBounds.y});
@@ -1582,7 +1582,7 @@ app.whenReady().then(() => {
         windowNavigate(win, "window");
         win.on("close", (event) => {
             if (win && !win.isDestroyed()) {
-                win.webContents.send("siyuan-save-close");
+                win.webContents.send("scribli-save-close");
             }
             event.preventDefault();
         });
@@ -1591,7 +1591,7 @@ app.whenReady().then(() => {
             win.setBounds(targetScreen.workArea);
         }
     });
-    ipcMain.on("siyuan-open-workspace", (event, data) => {
+    ipcMain.on("scribli-open-workspace", (event, data) => {
         const foundWorkspace = workspaces.find((item) => {
             if (item.workspaceDir === data.workspace) {
                 showWindow(item.browserWindow);
@@ -1606,7 +1606,7 @@ app.whenReady().then(() => {
             });
         }
     });
-    ipcMain.handle("siyuan-init", async (event, data) => {
+    ipcMain.handle("scribli-init", async (event, data) => {
         const exitWS = workspaces.find(item => {
             if (event.sender.id === item.webContentsId && item.workspaceDir) {
                 if (item.tray && ("win32" === process.platform || "linux" === process.platform)) {
@@ -1643,7 +1643,7 @@ app.whenReady().then(() => {
         }
         await net.fetch(getServer(data.port) + "/api/system/uiproc?pid=" + process.pid, {method: "POST"});
     });
-    ipcMain.on("siyuan-hotkey", (event, data) => {
+    ipcMain.on("scribli-hotkey", (event, data) => {
         if (!data.hotkeys || data.hotkeys.length === 0) {
             return;
         }
@@ -1704,7 +1704,7 @@ app.whenReady().then(() => {
             } else {
                 globalShortcut.register(shortcut, () => {
                     BrowserWindow.getAllWindows().forEach(itemB => {
-                        itemB.webContents.send("siyuan-hotkey", {
+                        itemB.webContents.send("scribli-hotkey", {
                             hotkey: item
                         });
                     });
@@ -1712,12 +1712,12 @@ app.whenReady().then(() => {
             }
         });
     });
-    ipcMain.on("siyuan-send-windows", (event, data) => {
+    ipcMain.on("scribli-send-windows", (event, data) => {
         BrowserWindow.getAllWindows().forEach(item => {
-            item.webContents.send("siyuan-send-windows", data);
+            item.webContents.send("scribli-send-windows", data);
         });
     });
-    ipcMain.on("siyuan-auto-launch", (event, data) => {
+    ipcMain.on("scribli-auto-launch", (event, data) => {
         app.setLoginItemSettings({
             openAtLogin: data.openAtLogin,
             args: data.openAsHidden ? ["--openAsHidden"] : ""
@@ -1756,7 +1756,7 @@ app.whenReady().then(() => {
         });
         firstOpenWindow.show();
         // Initial startup.
-        ipcMain.on("siyuan-first-init", (event, data) => {
+        ipcMain.on("scribli-first-init", (event, data) => {
             initKernel(data.workspace, "", data.lang).then((startedKernelPort) => {
                 if (startedKernelPort) {
                     initMainWindow(startedKernelPort);
@@ -1807,7 +1807,7 @@ app.whenReady().then(() => {
         });
         safeModeWindow.show();
         // Start the kernel after the user chooses a startup mode, and clear crash info only after successful boot.
-        ipcMain.on("siyuan-select-workspace", (event, data) => {
+        ipcMain.on("scribli-select-workspace", (event, data) => {
             initKernel(data.workspace, "", data.lang, data.safeMode).then((startedKernelPort) => {
                 if (startedKernelPort) {
                     clearAppCrashInfo();
@@ -1852,7 +1852,7 @@ app.whenReady().then(() => {
         });
         missingWorkspaceWindow.show();
         // Start the kernel after workspace selection.
-        ipcMain.on("siyuan-select-workspace", (event, data) => {
+        ipcMain.on("scribli-select-workspace", (event, data) => {
             initKernel(data.workspace, "", data.lang).then((startedKernelPort) => {
                 if (startedKernelPort) {
                     initMainWindow(startedKernelPort);
@@ -1928,7 +1928,7 @@ app.whenReady().then(() => {
     powerMonitor.on("lock-screen", () => {
         writeLog("system lock-screen");
         BrowserWindow.getAllWindows().forEach(item => {
-            item.webContents.send("siyuan-send-windows", {cmd: "lockscreenByMode"});
+            item.webContents.send("scribli-send-windows", {cmd: "lockscreenByMode"});
         });
     });
 });
@@ -1954,7 +1954,7 @@ app.on("open-url", async (event, url) => { // for macOS
         }
         workspaces.forEach(item => {
             if (item.browserWindow && !item.browserWindow.isDestroyed()) {
-                item.browserWindow.webContents.send("siyuan-open-url", appOpenURL);
+                item.browserWindow.webContents.send("scribli-open-url", appOpenURL);
             }
         });
     }
@@ -2008,7 +2008,7 @@ app.on("second-instance", (event, argv) => {
     });
     workspaces.forEach(item => {
         if (item.browserWindow && !item.browserWindow.isDestroyed() && appOpenURL) {
-            item.browserWindow.webContents.send("siyuan-open-url", appOpenURL);
+            item.browserWindow.webContents.send("scribli-open-url", appOpenURL);
         }
     });
 
@@ -2045,7 +2045,7 @@ app.on("before-quit", (event) => {
     workspaces.forEach(item => {
         if (item.browserWindow && !item.browserWindow.isDestroyed()) {
             event.preventDefault();
-            item.browserWindow.webContents.send("siyuan-save-close", true);
+            item.browserWindow.webContents.send("scribli-save-close", true);
         }
     });
 });

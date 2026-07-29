@@ -152,9 +152,9 @@ export const globalCommand = (command: string, app: App) => {
             openRecentDocs();
             return true;
         case "recentClosed":
-            if (window.siyuan.storage[Constants.LOCAL_CLOSED_TABS].length > 0) {
-                const closeData = window.siyuan.storage[Constants.LOCAL_CLOSED_TABS].pop();
-                setStorageVal(Constants.LOCAL_CLOSED_TABS, window.siyuan.storage[Constants.LOCAL_CLOSED_TABS]);
+            if (window.scribli.storage[Constants.LOCAL_CLOSED_TABS].length > 0) {
+                const closeData = window.scribli.storage[Constants.LOCAL_CLOSED_TABS].pop();
+                setStorageVal(Constants.LOCAL_CLOSED_TABS, window.scribli.storage[Constants.LOCAL_CLOSED_TABS]);
                 const childData = closeData.children as ILayoutJSON;
                 if (childData.instance === "Search") {
                     openFile({
@@ -176,7 +176,7 @@ export const globalCommand = (command: string, app: App) => {
                     return true;
                 }
                 if (childData.instance === "Custom") {
-                    let exit = childData.customModelType === "siyuan-card";
+                    let exit = childData.customModelType === "scribli-card";
                     if (!exit) {
                         app.plugins.find(p => {
                             if (p.models[childData.customModelType]) {
@@ -240,18 +240,18 @@ export const globalCommand = (command: string, app: App) => {
             toggleDockBar(document.querySelector("#barDock use"));
             return true;
         case "switchLeftDock":
-            window.siyuan.layout.leftDock.togglePin();
+            window.scribli.layout.leftDock.togglePin();
             return true;
         case "switchRightDock":
-            window.siyuan.layout.rightDock.togglePin();
+            window.scribli.layout.rightDock.togglePin();
             return true;
         case "switchBottomDock":
-            window.siyuan.layout.bottomDock.togglePin();
+            window.scribli.layout.bottomDock.togglePin();
             return true;
         case "toggleWin":
             /// #if !BROWSER
-            ipcRenderer.send(Constants.SIYUAN_CMD, "hide");
-            ipcRenderer.send(Constants.SIYUAN_CMD, "minimize");
+            ipcRenderer.send(Constants.SCRIBLI_CMD, "hide");
+            ipcRenderer.send(Constants.SCRIBLI_CMD, "minimize");
             /// #endif
             return true;
     }
@@ -307,7 +307,7 @@ export const globalCommand = (command: string, app: App) => {
         return true;
     }
     if (command === "unsplitAll") {
-        unsplitWnd(window.siyuan.layout.centerLayout, window.siyuan.layout.centerLayout, false);
+        unsplitWnd(window.scribli.layout.centerLayout, window.scribli.layout.centerLayout, false);
         return true;
     }
     if (command === "unsplit") {
@@ -315,7 +315,7 @@ export const globalCommand = (command: string, app: App) => {
         if (tab) {
             let wndsTemp: Wnd[] = [];
             let layout = tab.parent.parent;
-            while (layout.id !== window.siyuan.layout.centerLayout.id) {
+            while (layout.id !== window.scribli.layout.centerLayout.id) {
                 wndsTemp = [];
                 getAllWnds(layout, wndsTemp);
                 if (wndsTemp.length > 1) {
@@ -351,8 +351,8 @@ export const globalCommand = (command: string, app: App) => {
             return true;
         }
         // https://github.com/siyuan-note/siyuan/issues/14729
-        if (window.siyuan.blockPanels.length > 0) {
-            window.siyuan.blockPanels[window.siyuan.blockPanels.length - 1]?.destroy();
+        if (window.scribli.blockPanels.length > 0) {
+            window.scribli.blockPanels[window.scribli.blockPanels.length - 1]?.destroy();
             return true;
         }
         const noFocusTab = getActiveTab(false);
@@ -438,7 +438,7 @@ export const globalCommand = (command: string, app: App) => {
             openHistory(app);
             return true;
         case "editReadonly":
-            editorConfigApi.patch("editor.readOnly", !window.siyuan.config.editor.readOnly);
+            editorConfigApi.patch("editor.readOnly", !window.scribli.config.editor.readOnly);
             return true;
         case "lockScreen":
             lockScreen(app);

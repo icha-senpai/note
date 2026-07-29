@@ -35,7 +35,7 @@ export const openBacklink = async (options: {
         wnd = getInstanceById(element.getAttribute("data-id")) as Wnd;
     }
     if (!wnd) {
-        wnd = getWndByLayout(window.siyuan.layout.centerLayout);
+        wnd = getWndByLayout(window.scribli.layout.centerLayout);
     }
     if (!options.rootId) {
         const response = await fetchSyncPost("/api/block/getDocInfo", {id: options.blockId});
@@ -91,7 +91,7 @@ export const openGraph = async (options: {
         wnd = getInstanceById(element.getAttribute("data-id")) as Wnd;
     }
     if (!wnd) {
-        wnd = getWndByLayout(window.siyuan.layout.centerLayout);
+        wnd = getWndByLayout(window.scribli.layout.centerLayout);
     }
     if (!options.rootId) {
         const response = await fetchSyncPost("/api/block/getDocInfo", {id: options.blockId});
@@ -145,7 +145,7 @@ export const openOutline = async (options: {
         wnd = getInstanceById(element.getAttribute("data-id")) as Wnd;
     }
     if (!wnd) {
-        wnd = getWndByLayout(window.siyuan.layout.centerLayout);
+        wnd = getWndByLayout(window.scribli.layout.centerLayout);
     }
     const newWnd = wnd.split("lr", false);
 
@@ -172,14 +172,14 @@ export const openOutline = async (options: {
 };
 
 export const resetFloatDockSize = () => {
-    if (!window.siyuan.layout.leftDock.pin && window.siyuan.layout.leftDock.layout.element.style.opacity === "1") {
-        window.siyuan.layout.leftDock.showDock(true);
+    if (!window.scribli.layout.leftDock.pin && window.scribli.layout.leftDock.layout.element.style.opacity === "1") {
+        window.scribli.layout.leftDock.showDock(true);
     }
-    if (!window.siyuan.layout.rightDock.pin && window.siyuan.layout.rightDock.layout.element.style.opacity === "1") {
-        window.siyuan.layout.rightDock.showDock(true);
+    if (!window.scribli.layout.rightDock.pin && window.scribli.layout.rightDock.layout.element.style.opacity === "1") {
+        window.scribli.layout.rightDock.showDock(true);
     }
-    if (!window.siyuan.layout.bottomDock.pin && window.siyuan.layout.bottomDock.layout.element.style.opacity === "1") {
-        window.siyuan.layout.bottomDock.showDock(true);
+    if (!window.scribli.layout.bottomDock.pin && window.scribli.layout.bottomDock.layout.element.style.opacity === "1") {
+        window.scribli.layout.bottomDock.showDock(true);
     }
 };
 
@@ -190,7 +190,7 @@ export const toggleDockBar = (useElement: Element) => {
     } else {
         useElement.setAttribute("xlink:href", "#iconHideDock");
     }
-    window.siyuan.config.uiLayout.hideDock = dockIsShow;
+    window.scribli.config.uiLayout.hideDock = dockIsShow;
     document.querySelectorAll(".dock").forEach(item => {
         if (dockIsShow) {
             item.classList.add("fn__none");
@@ -263,18 +263,18 @@ export const selectOpenTab = async () => {
 };
 
 export const adjustDockPadding = () => {
-    const layoutElement = window.siyuan.layout.layout.children[0].element;
-    if (window.siyuan.layout.leftDock.elements[0].parentElement.classList.contains("fn__none")) {
+    const layoutElement = window.scribli.layout.layout.children[0].element;
+    if (window.scribli.layout.leftDock.elements[0].parentElement.classList.contains("fn__none")) {
         layoutElement.style.marginLeft = "var(--b3-layout-space)";
     } else {
         layoutElement.style.marginLeft = "";
     }
-    if (window.siyuan.layout.rightDock.elements[0].parentElement.classList.contains("fn__none")) {
+    if (window.scribli.layout.rightDock.elements[0].parentElement.classList.contains("fn__none")) {
         layoutElement.style.marginRight = "var(--b3-layout-space)";
     } else {
         layoutElement.style.marginRight = "";
     }
-    if (window.siyuan.config.appearance.hideStatusBar) {
+    if (window.scribli.config.appearance.hideStatusBar) {
         layoutElement.style.marginBottom = "var(--b3-layout-space)";
     } else {
         layoutElement.style.marginBottom = "";

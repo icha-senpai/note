@@ -164,14 +164,14 @@ const getFieldsHTML = (fields: IAVColumn[], itemTemplate: IAVNewItemTemplate) =>
     return `<div class="block__icons av__row" data-field-id="${column.id}">
     <div class="block__logo block__logo--icon" title="${escapeAttr(column.name)}">${icon}<span>${escapeHtml(column.name)}</span></div>
     <div class="fn__flex-1 fn__flex custom-attr__avvalue" data-type="${column.type}"${selectAttrs} style="align-items:center">
-        ${column.type === "date" ? `<select class="b3-select" data-role="field-mode"><option value="static"${fieldValue?.mode !== "currentTime" ? " selected" : ""}>${window.siyuan.languages.specificTime}</option><option value="currentTime"${fieldValue?.mode === "currentTime" ? " selected" : ""}>${window.siyuan.languages.current}</option></select><span class="fn__space"></span>` : ""}
+        ${column.type === "date" ? `<select class="b3-select" data-role="field-mode"><option value="static"${fieldValue?.mode !== "currentTime" ? " selected" : ""}>${window.scribli.languages.specificTime}</option><option value="currentTime"${fieldValue?.mode === "currentTime" ? " selected" : ""}>${window.scribli.languages.current}</option></select><span class="fn__space"></span>` : ""}
         ${getValueInputHTML(column, fieldValue)}
     </div>
 </div>`;
 }).join("");
 
 const getPrimaryKeyHTML = (primaryKey: IAVColumn | undefined, itemTemplate: IAVNewItemTemplate) => {
-    const name = primaryKey?.name || window.siyuan.languages.copyKeyContent;
+    const name = primaryKey?.name || window.scribli.languages.copyKeyContent;
     const icon = primaryKey?.icon ? unicode2Emoji(primaryKey.icon, "block__logoicon", true) :
         '<svg class="block__logoicon"><use xlink:href="#iconKey"></use></svg>';
     return `<div class="block__icons av__row">
@@ -223,7 +223,7 @@ const openFieldSelectMenu = (target: HTMLElement, column: IAVColumn) => {
                 const inputElement = panelElement.querySelector("input") as HTMLInputElement;
                 inputElement.focus();
                 inputElement.setSelectionRange(keyword.length, keyword.length);
-                window.siyuan.menus.menu.resetPosition();
+                window.scribli.menus.menu.resetPosition();
             };
             const updateSelected = (selected: string[]) => {
                 target.dataset.selected = JSON.stringify(selected);
@@ -309,7 +309,7 @@ const getRelationOptions = (column: IAVColumn, callback: (options: IRelationOpti
         callback(values.map(value => ({
             id: value.blockID || "",
             blockID: value.block?.id || "",
-            content: value.block?.content || window.siyuan.languages.untitled,
+            content: value.block?.content || window.scribli.languages.untitled,
             icon: value.block?.icon || "",
             isDetached: !!value.isDetached,
         })).filter(option => option.id));
@@ -322,7 +322,7 @@ const renderRelationFieldValue = (target: HTMLElement, options: IRelationOption[
         if (option.isDetached) {
             return `<span class="av__cell--relation" data-row-id="${escapeAttr(option.id)}"><span><svg><use xlink:href="#iconLine"></use></svg><span class="fn__space--5"></span></span><span class="av__celltext">${escapeHtml(option.content)}</span></span>`;
         }
-        const icon = unicode2Emoji(option.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].file);
+        const icon = unicode2Emoji(option.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file);
         return `<span class="av__cell--relation" data-row-id="${escapeAttr(option.id)}" data-block-id="${escapeAttr(option.blockID)}"><span class="b3-menu__avemoji" data-unicode="${escapeAttr(option.icon)}">${icon}</span><span data-type="block-ref" data-id="${escapeAttr(option.blockID)}" data-subtype="s" class="av__celltext av__celltext--ref">${escapeHtml(option.content)}</span></span>`;
     }).join("");
     target.innerHTML = html;
@@ -358,7 +358,7 @@ const openFieldRelationMenu = (target: HTMLElement, column: IAVColumn) => {
             },
         }));
         if (!options.length) {
-            menu.addItem({type: "readonly", label: window.siyuan.languages.emptyContent});
+            menu.addItem({type: "readonly", label: window.scribli.languages.emptyContent});
         }
         const rect = target.getBoundingClientRect();
         menu.open({x: rect.left, y: rect.bottom, h: rect.height, w: rect.width});
@@ -383,7 +383,7 @@ const setContentTemplateValue = (target: HTMLElement, path: string) => {
     target.dataset.value = path;
     const labelElement = target.querySelector("span");
     if (labelElement) {
-        labelElement.textContent = path || window.siyuan.languages.empty;
+        labelElement.textContent = path || window.scribli.languages.empty;
         labelElement.classList.toggle("ft__on-surface", !path);
     }
 };
@@ -397,7 +397,7 @@ const openContentTemplateMenu = (target: HTMLElement) => {
     menu.addItem({
         type: "empty",
         label: `<div data-menu="true" style="padding:4px;width:360px">
-    <input class="b3-text-field fn__block" placeholder="${window.siyuan.languages.search}">
+    <input class="b3-text-field fn__block" placeholder="${window.scribli.languages.search}">
     <div class="b3-list b3-list--background" style="margin-top:4px;max-height:240px;overflow:auto"></div>
 </div>`,
         bind: menuElement => {
@@ -414,7 +414,7 @@ const openContentTemplateMenu = (target: HTMLElement) => {
                         return;
                     }
                     const templates = response.data?.templates as IContentTemplateSearchResult[] || [];
-                    let html = `<div class="b3-list-item b3-list-item--narrow" data-path=""><span class="b3-list-item__text ft__on-surface">${window.siyuan.languages.empty}</span></div>`;
+                    let html = `<div class="b3-list-item b3-list-item--narrow" data-path=""><span class="b3-list-item__text ft__on-surface">${window.scribli.languages.empty}</span></div>`;
                     templates.forEach(item => {
                         const relativePath = getContentTemplateRelativePath(item);
                         if (relativePath) {
@@ -494,10 +494,10 @@ const collectTemplate = (root: HTMLElement, itemTemplate: IAVNewItemTemplate, fi
 };
 
 const getEditorHTML = (itemTemplate: IAVNewItemTemplate, primaryKey: IAVColumn | undefined, fields: IAVColumn[], currentNotebookID: string) => {
-    const currentNotebook = window.siyuan.notebooks?.find(item => item.id === currentNotebookID);
+    const currentNotebook = window.scribli.notebooks?.find(item => item.id === currentNotebookID);
     const forceCurrentNotebook = !!currentNotebook?.encrypted;
     const isDocument = itemTemplate.targetType === "document";
-    const savedNotebook = window.siyuan.notebooks?.find(item => item.id === itemTemplate.saveLocation?.boxID);
+    const savedNotebook = window.scribli.notebooks?.find(item => item.id === itemTemplate.saveLocation?.boxID);
     const unavailableNotebookID = !forceCurrentNotebook && itemTemplate.saveLocation?.boxID &&
         (!savedNotebook || savedNotebook.closed) ? itemTemplate.saveLocation.boxID : "";
     const unavailableNotebookOption = unavailableNotebookID ?
@@ -505,36 +505,36 @@ const getEditorHTML = (itemTemplate: IAVNewItemTemplate, primaryKey: IAVColumn |
     const currentNotebookSelected = forceCurrentNotebook || !!itemTemplate.saveLocation &&
         (!itemTemplate.saveLocation.boxID || itemTemplate.saveLocation.boxID === currentNotebookID);
     const notebookOptions = (forceCurrentNotebook ? "" :
-        `<option value="__default__"${itemTemplate.saveLocation ? "" : " selected"}>${window.siyuan.languages.default}</option>`) +
-        `<option value=""${currentNotebookSelected ? " selected" : ""}>${window.siyuan.languages.currentNotebook}</option>` +
+        `<option value="__default__"${itemTemplate.saveLocation ? "" : " selected"}>${window.scribli.languages.default}</option>`) +
+        `<option value=""${currentNotebookSelected ? " selected" : ""}>${window.scribli.languages.currentNotebook}</option>` +
         unavailableNotebookOption +
-        (forceCurrentNotebook ? "" : (window.siyuan.notebooks || []).filter(item => !item.closed && item.id !== currentNotebookID)
+        (forceCurrentNotebook ? "" : (window.scribli.notebooks || []).filter(item => !item.closed && item.id !== currentNotebookID)
             .map(item => `<option value="${item.id}"${item.id === itemTemplate.saveLocation?.boxID ? " selected" : ""}>${escapeHtml(item.name)}</option>`).join(""));
     return `<div class="av__template-editor" data-role="template-editor" style="padding:16px;overflow:auto;flex:1">
     <div class="custom-attr">
         <div class="block__icons av__row">
-            <div class="block__logo block__logo--icon"><svg class="block__logoicon"><use xlink:href="#iconEdit"></use></svg><span>${window.siyuan.languages.title}</span></div>
+            <div class="block__logo block__logo--icon"><svg class="block__logoicon"><use xlink:href="#iconEdit"></use></svg><span>${window.scribli.languages.title}</span></div>
             <div class="fn__flex-1 fn__flex custom-attr__avvalue" style="align-items:center"><input class="b3-text-field b3-text-field--text fn__flex-1" data-role="template-name" value="${escapeAttr(itemTemplate.name)}"></div>
         </div>
         <div class="block__icons av__row">
-            <div class="block__logo block__logo--icon"><svg class="block__logoicon"><use xlink:href="#iconAdd"></use></svg><span>${window.siyuan.languages.type}</span></div>
-            <div class="fn__flex-1 fn__flex custom-attr__avvalue" style="align-items:center"><select class="b3-select fn__flex-1" data-role="target-type"><option value="detached"${isDocument ? "" : " selected"}>${window.siyuan.languages.createDetachedBlock}</option><option value="document"${isDocument ? " selected" : ""}>${window.siyuan.languages.createBoundBlock}</option></select></div>
+            <div class="block__logo block__logo--icon"><svg class="block__logoicon"><use xlink:href="#iconAdd"></use></svg><span>${window.scribli.languages.type}</span></div>
+            <div class="fn__flex-1 fn__flex custom-attr__avvalue" style="align-items:center"><select class="b3-select fn__flex-1" data-role="target-type"><option value="detached"${isDocument ? "" : " selected"}>${window.scribli.languages.createDetachedBlock}</option><option value="document"${isDocument ? " selected" : ""}>${window.scribli.languages.createBoundBlock}</option></select></div>
         </div>
     </div>
     <div data-role="document-options" class="${isDocument ? "" : "fn__none"}">
         <div class="fn__hr"></div>
         <div class="custom-attr">
             <div class="block__icons av__row">
-                <div class="block__logo block__logo--icon"><svg class="block__logoicon"><use xlink:href="#iconEmoji"></use></svg><span>${window.siyuan.languages.icon}</span></div>
-                <div class="fn__flex-1 fn__flex custom-attr__avvalue" style="align-items:center"><button class="b3-text-field b3-text-field--text fn__flex-1 fn__flex" data-role="template-icon" data-value="${escapeAttr(itemTemplate.icon || "")}" type="button" style="align-items:center;text-align:left"><span class="b3-menu__avemoji">${unicode2Emoji(itemTemplate.icon || window.siyuan.storage[Constants.LOCAL_IMAGES].file)}</span></button></div>
+                <div class="block__logo block__logo--icon"><svg class="block__logoicon"><use xlink:href="#iconEmoji"></use></svg><span>${window.scribli.languages.icon}</span></div>
+                <div class="fn__flex-1 fn__flex custom-attr__avvalue" style="align-items:center"><button class="b3-text-field b3-text-field--text fn__flex-1 fn__flex" data-role="template-icon" data-value="${escapeAttr(itemTemplate.icon || "")}" type="button" style="align-items:center;text-align:left"><span class="b3-menu__avemoji">${unicode2Emoji(itemTemplate.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file)}</span></button></div>
             </div>
             <div class="block__icons av__row">
-                <div class="block__logo block__logo--icon ariaLabel" data-position="parentE" aria-label="${escapeAttr(`${window.siyuan.languages.fileTree14}<br>${window.siyuan.languages.fileTree13}`)}"><svg class="block__logoicon"><use xlink:href="#iconFolder"></use></svg><span>${window.siyuan.languages.savePath}</span></div>
+                <div class="block__logo block__logo--icon ariaLabel" data-position="parentE" aria-label="${escapeAttr(`${window.scribli.languages.fileTree14}<br>${window.scribli.languages.fileTree13}`)}"><svg class="block__logoicon"><use xlink:href="#iconFolder"></use></svg><span>${window.scribli.languages.savePath}</span></div>
                 <div class="fn__flex-1 fn__flex custom-attr__avvalue" style="align-items:center"><select class="b3-select" data-role="box-id" style="width:160px">${notebookOptions}</select><span class="fn__space${itemTemplate.saveLocation || forceCurrentNotebook ? "" : " fn__none"}" data-role="path-space"></span><input class="b3-text-field fn__flex-1${itemTemplate.saveLocation || forceCurrentNotebook ? "" : " fn__none"}" data-role="path-template" value="${escapeAttr(itemTemplate.saveLocation?.pathTemplate || "")}"${itemTemplate.saveLocation || forceCurrentNotebook ? "" : " disabled"}></div>
             </div>
             <div class="block__icons av__row">
-                <div class="block__logo block__logo--icon"><svg class="block__logoicon"><use xlink:href="#iconFile"></use></svg><span>${window.siyuan.languages.contentTemplate}</span></div>
-                <div class="fn__flex-1 fn__flex custom-attr__avvalue" style="align-items:center"><button class="b3-text-field b3-text-field--text fn__flex-1 fn__flex" data-role="content-template" data-value="${escapeAttr(itemTemplate.contentTemplatePath || "")}" type="button" style="align-items:center;text-align:left"><span class="fn__flex-1 fn__ellipsis${itemTemplate.contentTemplatePath ? "" : " ft__on-surface"}">${escapeHtml(itemTemplate.contentTemplatePath || window.siyuan.languages.empty)}</span><svg style="height:14px;width:14px"><use xlink:href="#iconDown"></use></svg></button></div>
+                <div class="block__logo block__logo--icon"><svg class="block__logoicon"><use xlink:href="#iconFile"></use></svg><span>${window.scribli.languages.contentTemplate}</span></div>
+                <div class="fn__flex-1 fn__flex custom-attr__avvalue" style="align-items:center"><button class="b3-text-field b3-text-field--text fn__flex-1 fn__flex" data-role="content-template" data-value="${escapeAttr(itemTemplate.contentTemplatePath || "")}" type="button" style="align-items:center;text-align:left"><span class="fn__flex-1 fn__ellipsis${itemTemplate.contentTemplatePath ? "" : " ft__on-surface"}">${escapeHtml(itemTemplate.contentTemplatePath || window.scribli.languages.empty)}</span><svg style="height:14px;width:14px"><use xlink:href="#iconDown"></use></svg></button></div>
             </div>
         </div>
     </div>
@@ -566,7 +566,7 @@ export const openNewItemTemplateDialog = (options: {
         });
     });
     if (options.createNew) {
-        templates.push({id: Lute.NewNodeID(), name: window.siyuan.languages.template, targetType: "detached"});
+        templates.push({id: Lute.NewNodeID(), name: window.scribli.languages.template, targetType: "detached"});
     }
     let selectedIndex = options.selectedTemplateID ? templates.findIndex(item => item.id === options.selectedTemplateID) :
         (templates.length ? templates.length - 1 : -1);
@@ -575,7 +575,7 @@ export const openNewItemTemplateDialog = (options: {
     }
     let defaultTemplateID = options.data.defaultTemplateID || "";
     const dialog = new Dialog({
-        title: window.siyuan.languages.itemTemplate,
+        title: window.scribli.languages.itemTemplate,
         width: "820px",
         height: "70vh",
         containerClassName: "b3-dialog__container--theme",
@@ -584,7 +584,7 @@ export const openNewItemTemplateDialog = (options: {
         <ul class="av__template-list b3-list b3-list--background" data-role="template-list"></ul>
         <div data-role="editor-host" class="fn__flex-1 fn__flex"></div>
     </div>
-    <div class="b3-dialog__action"><button class="b3-button b3-button--cancel" data-role="cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div><button class="b3-button b3-button--text" data-role="confirm">${window.siyuan.languages.confirm}</button></div>
+    <div class="b3-dialog__action"><button class="b3-button b3-button--cancel" data-role="cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div><button class="b3-button b3-button--text" data-role="confirm">${window.scribli.languages.confirm}</button></div>
 </div>`,
     });
     const root = dialog.element;
@@ -601,8 +601,8 @@ export const openNewItemTemplateDialog = (options: {
     };
 
     const render = () => {
-        listElement.innerHTML = `<li class="b3-list-item" data-role="add-template"><svg class="b3-list-item__graphic"><use xlink:href="#iconAdd"></use></svg><span class="b3-list-item__text">${window.siyuan.languages.newTemplate}</span></li><li class="b3-menu__separator"></li>` +
-            templates.map((item, index) => `<li class="b3-list-item b3-list-item--hide-action${index === selectedIndex ? " b3-list-item--focus" : ""}" data-index="${index}" draggable="true"><svg class="b3-list-item__graphic fn__grab"><use xlink:href="#iconDrag"></use></svg><span class="b3-list-item__text">${escapeHtml(item.name)}</span>${item.id === defaultTemplateID ? `<span class="b3-list-item__meta">${window.siyuan.languages.default}</span>` : ""}<span class="b3-list-item__action ariaLabel" data-menu="true" data-position="4west" data-role="template-action" aria-label="${window.siyuan.languages.more}"><svg><use xlink:href="#iconMore"></use></svg></span></li>`).join("");
+        listElement.innerHTML = `<li class="b3-list-item" data-role="add-template"><svg class="b3-list-item__graphic"><use xlink:href="#iconAdd"></use></svg><span class="b3-list-item__text">${window.scribli.languages.newTemplate}</span></li><li class="b3-menu__separator"></li>` +
+            templates.map((item, index) => `<li class="b3-list-item b3-list-item--hide-action${index === selectedIndex ? " b3-list-item--focus" : ""}" data-index="${index}" draggable="true"><svg class="b3-list-item__graphic fn__grab"><use xlink:href="#iconDrag"></use></svg><span class="b3-list-item__text">${escapeHtml(item.name)}</span>${item.id === defaultTemplateID ? `<span class="b3-list-item__meta">${window.scribli.languages.default}</span>` : ""}<span class="b3-list-item__action ariaLabel" data-menu="true" data-position="4west" data-role="template-action" aria-label="${window.scribli.languages.more}"><svg><use xlink:href="#iconMore"></use></svg></span></li>`).join("");
         hostElement.innerHTML = selectedIndex < 0 ? "" : getEditorHTML(templates[selectedIndex], primaryKey, fields, options.protyle.notebookId);
         const target = hostElement.querySelector('[data-role="target-type"]') as HTMLSelectElement;
         target?.addEventListener("change", () => hostElement.querySelector('[data-role="document-options"]')?.classList.toggle("fn__none", target.value !== "document"));
@@ -610,7 +610,7 @@ export const openNewItemTemplateDialog = (options: {
         const unavailableOption = boxIDElement?.selectedOptions[0]?.dataset.unavailable === "true";
         if (target?.value === "document" && unavailableOption && !warnedUnavailableNotebooks.has(templates[selectedIndex].id)) {
             warnedUnavailableNotebooks.add(templates[selectedIndex].id);
-            showMessage(window.siyuan.languages.newItemTemplateUnavailableNotebookTip, 6000, "error");
+            showMessage(window.scribli.languages.newItemTemplateUnavailableNotebookTip, 6000, "error");
         }
         boxIDElement?.addEventListener("change", () => {
             const pathElement = hostElement.querySelector('[data-role="path-template"]') as HTMLInputElement;
@@ -635,7 +635,7 @@ export const openNewItemTemplateDialog = (options: {
                 w: rect.width,
             }, unicode => {
                 iconElement.dataset.value = unicode;
-                emojiElement.innerHTML = unicode2Emoji(unicode || window.siyuan.storage[Constants.LOCAL_IMAGES].file);
+                emojiElement.innerHTML = unicode2Emoji(unicode || window.scribli.storage[Constants.LOCAL_IMAGES].file);
             }, emojiElement.querySelector("img"));
             event.preventDefault();
             event.stopPropagation();
@@ -685,7 +685,7 @@ export const openNewItemTemplateDialog = (options: {
         const menu = new Menu(`av-new-item-template-dialog-${itemTemplate.id}`);
         menu.addItem({
             icon: "iconEdit",
-            label: window.siyuan.languages.edit,
+            label: window.scribli.languages.edit,
             click: () => {
                 collectCurrent();
                 selectedIndex = templates.findIndex(item => item.id === itemTemplate.id);
@@ -694,7 +694,7 @@ export const openNewItemTemplateDialog = (options: {
         });
         menu.addItem({
             icon: "iconSelect",
-            label: window.siyuan.languages.setAsDefault,
+            label: window.scribli.languages.setAsDefault,
             disabled: itemTemplate.id === defaultTemplateID,
             click: () => {
                 collectCurrent();
@@ -705,7 +705,7 @@ export const openNewItemTemplateDialog = (options: {
         menu.addItem({type: "separator"});
         menu.addItem({
             icon: "iconTrashcan",
-            label: window.siyuan.languages.delete,
+            label: window.scribli.languages.delete,
             warning: true,
             click: () => {
                 collectCurrent();
@@ -803,7 +803,7 @@ export const openNewItemTemplateDialog = (options: {
         }
         if (roleElement?.dataset.role === "add-template") {
             collectCurrent();
-            templates.push({id: Lute.NewNodeID(), name: window.siyuan.languages.template, targetType: "detached"});
+            templates.push({id: Lute.NewNodeID(), name: window.scribli.languages.template, targetType: "detached"});
             selectedIndex = templates.length - 1;
             render();
         } else if (roleElement?.dataset.role === "template-action" && itemElement) {
@@ -822,12 +822,12 @@ export const openNewItemTemplateDialog = (options: {
         const boxIDElement = hostElement.querySelector('[data-role="box-id"]') as HTMLSelectElement;
         const target = hostElement.querySelector('[data-role="target-type"]') as HTMLSelectElement;
         if (target?.value === "document" && boxIDElement?.selectedOptions[0]?.dataset.unavailable === "true") {
-            showMessage(window.siyuan.languages.newItemTemplateUnavailableNotebookTip, 6000, "error");
+            showMessage(window.scribli.languages.newItemTemplateUnavailableNotebookTip, 6000, "error");
             return;
         }
         collectCurrent();
         if (templates.some(item => !item.name)) {
-            showMessage(window.siyuan.languages.nameEmpty, 6000, "error");
+            showMessage(window.scribli.languages.nameEmpty, 6000, "error");
             return;
         }
         const undoData = options.undoData || options.data;
@@ -869,7 +869,7 @@ export const createAttributeViewItem = (options: {
         session: options.protyle.id,
     }, response => {
         if (response.code === 1 && response.data?.unavailableNotebook) {
-            showMessage(window.siyuan.languages.newItemTemplateUnavailableNotebookTip, 6000, "error");
+            showMessage(window.scribli.languages.newItemTemplateUnavailableNotebookTip, 6000, "error");
             return;
         }
         const warnings = (response.data?.warnings || []) as string[];
@@ -933,7 +933,7 @@ const openNewItemTemplateActionMenu = (options: {
         subMenuElement.append(itemsElement);
         const items: IMenu[] = [{
             icon: "iconEdit",
-            label: window.siyuan.languages.edit,
+            label: window.scribli.languages.edit,
             click: () => openNewItemTemplateDialog({
                 protyle: options.protyle,
                 blockElement: options.blockElement,
@@ -943,7 +943,7 @@ const openNewItemTemplateActionMenu = (options: {
             }),
         }, {
             icon: "iconSelect",
-            label: window.siyuan.languages.setAsDefault,
+            label: window.scribli.languages.setAsDefault,
             disabled: options.itemTemplate.id === options.data.defaultTemplateID,
             click: () => saveNewItemTemplateConfig({
                 protyle: options.protyle,
@@ -956,7 +956,7 @@ const openNewItemTemplateActionMenu = (options: {
             type: "separator",
         }, {
             icon: "iconTrashcan",
-            label: window.siyuan.languages.delete,
+            label: window.scribli.languages.delete,
             warning: true,
             click: () => saveNewItemTemplateConfig({
                 protyle: options.protyle,
@@ -996,7 +996,7 @@ const openBlankTemplateActionMenu = (options: {
         subMenuElement.append(itemsElement);
         itemsElement.append(new MenuItem({
             icon: "iconSelect",
-            label: window.siyuan.languages.setAsDefault,
+            label: window.scribli.languages.setAsDefault,
             disabled: !options.data.defaultTemplateID,
             click: () => saveNewItemTemplateConfig({
                 protyle: options.protyle,
@@ -1023,13 +1023,13 @@ export const openNewItemTemplateMenu = (options: {protyle: IProtyle, blockElemen
         const menu = new Menu("av-new-item-template");
         menu.addItem({
             iconHTML: "",
-            label: window.siyuan.languages.newItemWithTemplate,
+            label: window.scribli.languages.newItemWithTemplate,
             type: "readonly",
         });
         menu.addItem({
             iconHTML: '<svg class="b3-menu__icon fn__hidden"><use xlink:href="#iconDrag"></use></svg>',
-            label: window.siyuan.languages.empty,
-            accelerator: menuData.defaultTemplateID ? "" : window.siyuan.languages.default,
+            label: window.scribli.languages.empty,
+            accelerator: menuData.defaultTemplateID ? "" : window.scribli.languages.default,
             action: "iconMore",
             click: () => createAttributeViewItem({
                 protyle: options.protyle,
@@ -1039,7 +1039,7 @@ export const openNewItemTemplateMenu = (options: {protyle: IProtyle, blockElemen
                 const actionElement = element.querySelector(".b3-menu__action") as HTMLElement;
                 actionElement.classList.add("ariaLabel");
                 actionElement.setAttribute("data-position", "4west");
-                actionElement.setAttribute("aria-label", window.siyuan.languages.more);
+                actionElement.setAttribute("aria-label", window.scribli.languages.more);
                 actionElement.addEventListener("click", event => {
                     event.preventDefault();
                     event.stopImmediatePropagation();
@@ -1066,7 +1066,7 @@ export const openNewItemTemplateMenu = (options: {protyle: IProtyle, blockElemen
         (menuData.newItemTemplates || []).forEach(item => menu.addItem({
             iconHTML: "",
             label: escapeHtml(item.name),
-            accelerator: item.id === menuData.defaultTemplateID ? window.siyuan.languages.default : "",
+            accelerator: item.id === menuData.defaultTemplateID ? window.scribli.languages.default : "",
             action: "iconMore",
             click: () => {
                 if (draggedTemplateMoved) {
@@ -1086,7 +1086,7 @@ export const openNewItemTemplateMenu = (options: {protyle: IProtyle, blockElemen
                 const actionElement = element.querySelector(".b3-menu__action") as HTMLElement;
                 actionElement.classList.add("ariaLabel");
                 actionElement.setAttribute("data-position", "4west");
-                actionElement.setAttribute("aria-label", window.siyuan.languages.more);
+                actionElement.setAttribute("aria-label", window.scribli.languages.more);
                 actionElement.addEventListener("click", event => {
                     event.preventDefault();
                     event.stopImmediatePropagation();
@@ -1186,7 +1186,7 @@ export const openNewItemTemplateMenu = (options: {protyle: IProtyle, blockElemen
         menu.addItem({type: "separator"});
         menu.addItem({
             iconHTML: "",
-            label: window.siyuan.languages.newTemplate,
+            label: window.scribli.languages.newTemplate,
             click: () => openNewItemTemplateDialog({
                 protyle: options.protyle,
                 blockElement: options.blockElement,

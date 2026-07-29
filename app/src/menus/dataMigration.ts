@@ -6,7 +6,7 @@ import {confirmDialog} from "../dialog/confirmDialog";
 import {showMessage} from "../dialog/message";
 import {importObsidianVault} from "./importObsidian";
 import {saveExportFile, writeText} from "../protyle/util/compatibility";
-import {exitSiYuan} from "../dialog/processSystem";
+import {exitScribli} from "../dialog/processSystem";
 /// #if !MOBILE
 import {exportLayout} from "../layout/util";
 /// #endif
@@ -23,22 +23,22 @@ interface IDataMigrationOptions {
 }
 
 const getExportButton = (action: string, mode: IDataMigrationOptions["mode"]) => mode === "manage" ?
-    `<span class="fn__space"></span><button class="b3-button b3-button--outline" data-action="${action}"><svg><use xlink:href="#iconUpload"></use></svg>${window.siyuan.languages.export}</button>` : "";
+    `<span class="fn__space"></span><button class="b3-button b3-button--outline" data-action="${action}"><svg><use xlink:href="#iconUpload"></use></svg>${window.scribli.languages.export}</button>` : "";
 
 const getImportButton = (type: string, accept: string) => `<button class="b3-button b3-button--outline" style="position:relative">
     <input class="b3-form__upload" data-type="${type}" type="file" accept="${accept}">
-    <svg><use xlink:href="#iconDownload"></use></svg>${window.siyuan.languages.import}
+    <svg><use xlink:href="#iconDownload"></use></svg>${window.scribli.languages.import}
 </button>`;
 
 const openRepoKeyImport = (onComplete?: () => void) => {
     const dialog = new Dialog({
-        title: `🔑 ${window.siyuan.languages.key}`,
+        title: `🔑 ${window.scribli.languages.key}`,
         content: `<div class="b3-dialog__content" style="display:flex">
-    <textarea spellcheck="false" style="resize:none;flex:1" class="b3-text-field fn__block" placeholder="${window.siyuan.languages.keyPlaceholder}"></textarea>
+    <textarea spellcheck="false" style="resize:none;flex:1" class="b3-text-field fn__block" placeholder="${window.scribli.languages.keyPlaceholder}"></textarea>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
         width: "520px",
         height: "260px",
@@ -50,9 +50,9 @@ const openRepoKeyImport = (onComplete?: () => void) => {
     buttons[0].addEventListener("click", () => dialog.destroy());
     buttons[1].addEventListener("click", () => {
         fetchPost("/api/repo/importRepoKey", {key: textAreaElement.value}, (response) => {
-            window.siyuan.config.repo.key = response.data.key;
+            window.scribli.config.repo.key = response.data.key;
             dialog.destroy();
-            showMessage(window.siyuan.languages.imported);
+            showMessage(window.scribli.languages.imported);
             onComplete?.();
         });
     });
@@ -68,15 +68,15 @@ const exportData = async () => {
         void saveExportFile(response.data.zip);
     });
     /// #else
-    const result = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+    const result = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
         cmd: "showOpenDialog",
-        title: `${window.siyuan.languages.export} Data`,
+        title: `${window.scribli.languages.export} Data`,
         properties: ["createDirectory", "openDirectory"],
     });
     if (result.canceled || result.filePaths.length === 0) {
         return;
     }
-    const msgId = showMessage(window.siyuan.languages.exporting, -1);
+    const msgId = showMessage(window.scribli.languages.exporting, -1);
     fetchPost("/api/export/exportDataInFolder", {folder: result.filePaths[0]}, (response) => {
         afterExport(path.join(result.filePaths[0], response.data.name), msgId);
     });
@@ -85,9 +85,9 @@ const exportData = async () => {
 
 export const openDataMigration = (options: IDataMigrationOptions = {}) => {
     const mode = options.mode || "manage";
-    const hasRepoKey = Boolean(window.siyuan.config.repo.key);
+    const hasRepoKey = Boolean(window.scribli.config.repo.key);
     const helpNotebookIDs = Object.values(Constants.HELP_PATH);
-    const notebooks = window.siyuan.notebooks.filter((item) => !item.closed && !helpNotebookIDs.includes(item.id));
+    const notebooks = window.scribli.notebooks.filter((item) => !item.closed && !helpNotebookIDs.includes(item.id));
     const selectedNotebookID = notebooks.some((item) => item.id === options.notebookID) ? options.notebookID : notebooks[0]?.id;
     const notebookOptions = notebooks.map((item) =>
         `<option value="${item.id}"${item.id === selectedNotebookID ? " selected" : ""}>${escapeHtml(item.name)}</option>`).join("");
@@ -95,11 +95,11 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
     /// #if !BROWSER
     nativeImportHTML = `<button class="b3-list-item fn__block" data-type="markdown-file"${notebooks.length === 0 ? " disabled" : ""}>
     <svg class="b3-list-item__graphic"><use xlink:href="#iconMarkdown"></use></svg>
-    <span class="b3-list-item__text">Markdown ${window.siyuan.languages.doc}</span>
+    <span class="b3-list-item__text">Markdown ${window.scribli.languages.doc}</span>
 </button>
 <button class="b3-list-item fn__block" data-type="markdown-folder"${notebooks.length === 0 ? " disabled" : ""}>
     <svg class="b3-list-item__graphic"><use xlink:href="#iconFolder"></use></svg>
-    <span class="b3-list-item__text">Markdown ${window.siyuan.languages.folder}</span>
+    <span class="b3-list-item__text">Markdown ${window.scribli.languages.folder}</span>
 </button>
 <button class="b3-list-item fn__block" data-type="obsidian">
     <svg class="b3-list-item__graphic"><use xlink:href="#iconObsidian"></use></svg>
@@ -107,7 +107,7 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
 </button>`;
     /// #endif
     const dialog = new Dialog({
-        title: window.siyuan.languages.dataMigration,
+        title: window.scribli.languages.dataMigration,
         content: `<div class="b3-dialog__content">
     <div class="b3-label__text">Scribli</div>
     <div class="fn__hr"></div>
@@ -127,7 +127,7 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
         </div>
     </div>
     <div class="fn__hr"></div>
-    <div class="b3-label__text">${window.siyuan.languages.importFromMoreApps}</div>
+    <div class="b3-label__text">${window.scribli.languages.importFromMoreApps}</div>
     <div class="fn__hr"></div>
     <div class="b3-list b3-list--background">
         <label class="b3-list-item${notebooks.length === 0 ? " data-migration__disabled" : ""}">
@@ -138,12 +138,12 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
         ${nativeImportHTML}
     </div>
     <div class="fn__hr"></div>
-    <div class="b3-label__text">${window.siyuan.languages.settingsAndSync}</div>
+    <div class="b3-label__text">${window.scribli.languages.settingsAndSync}</div>
     <div class="fn__hr"></div>
     <div class="b3-list b3-list--background">
         <div class="b3-list-item fn__flex-wrap data-migration__item">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconSettings"></use></svg>
-            <span class="b3-list-item__text">${window.siyuan.languages.config}</span>
+            <span class="b3-list-item__text">${window.scribli.languages.config}</span>
             <span class="data-migration__actions">
                 ${getImportButton("conf", "application/zip,application/json")}
                 ${getExportButton("export-conf", mode)}
@@ -167,9 +167,9 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
         </div>
         ${mode === "onboarding" && hasRepoKey ? "" : `<div class="b3-list-item fn__flex-wrap data-migration__item" data-type="repo-key">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconKey"></use></svg>
-            <span class="b3-list-item__text">${window.siyuan.languages.dataRepoKey}</span>
+            <span class="b3-list-item__text">${window.scribli.languages.dataRepoKey}</span>
             <span class="data-migration__actions">
-                ${hasRepoKey ? `<button class="b3-button b3-button--outline" data-action="copy-key"><svg><use xlink:href="#iconCopy"></use></svg>${window.siyuan.languages.copy}</button>` : `<button class="b3-button b3-button--outline" data-action="import-key"><svg><use xlink:href="#iconDownload"></use></svg>${window.siyuan.languages.import}</button>`}
+                ${hasRepoKey ? `<button class="b3-button b3-button--outline" data-action="copy-key"><svg><use xlink:href="#iconCopy"></use></svg>${window.scribli.languages.copy}</button>` : `<button class="b3-button b3-button--outline" data-action="import-key"><svg><use xlink:href="#iconDownload"></use></svg>${window.scribli.languages.import}</button>`}
             </span>
         </div>`}
     </div>
@@ -185,17 +185,17 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
     const selectTargetNotebook = (callback: (notebookID: string) => void, onCancel?: () => void) => {
         if (notebooks.length === 0) {
             onCancel?.();
-            showMessage(window.siyuan.languages.newFileTip);
+            showMessage(window.scribli.languages.newFileTip);
             return;
         }
         const targetDialog = new Dialog({
-            title: window.siyuan.languages.targetNotebook,
+            title: window.scribli.languages.targetNotebook,
             content: `<div class="b3-dialog__content">
     <select class="b3-select fn__block">${notebookOptions}</select>
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
             width: "420px",
             destroyCallback: () => {
@@ -254,7 +254,7 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
         });
     });
     bindFileInput("data", (file, input) => {
-        confirmDialog(`${window.siyuan.languages.import} Data`, window.siyuan.languages.importDataTip, () => {
+        confirmDialog(`${window.scribli.languages.import} Data`, window.scribli.languages.importDataTip, () => {
             postFile("/api/import/importData", file);
         });
         input.value = "";
@@ -266,11 +266,11 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
                 showMessage(response.msg);
                 return;
             }
-            showMessage(window.siyuan.languages.imported);
+            showMessage(window.scribli.languages.imported);
             /// #if MOBILE
-            void exitSiYuan();
+            void exitScribli();
             /// #else
-            void exportLayout({errorExit: true, cb: exitSiYuan});
+            void exportLayout({errorExit: true, cb: exitScribli});
             /// #endif
         });
     });
@@ -280,11 +280,11 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
             const isS3 = provider === "s3";
             postFile(isS3 ? "/api/sync/importSyncProviderS3" : "/api/sync/importSyncProviderWebDAV", file, {}, (response) => {
                 if (isS3) {
-                    window.siyuan.config.sync.s3 = response.data.s3;
+                    window.scribli.config.sync.s3 = response.data.s3;
                 } else {
-                    window.siyuan.config.sync.webdav = response.data.webdav;
+                    window.scribli.config.sync.webdav = response.data.webdav;
                 }
-                showMessage(window.siyuan.languages.imported);
+                showMessage(window.scribli.languages.imported);
             });
         });
     });
@@ -309,24 +309,24 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
                 }
                 const actionsElement = repoKeyElement?.querySelector(".data-migration__actions");
                 if (actionsElement) {
-                    actionsElement.innerHTML = `<button class="b3-button b3-button--outline" data-action="copy-key"><svg><use xlink:href="#iconCopy"></use></svg>${window.siyuan.languages.copy}</button>`;
+                    actionsElement.innerHTML = `<button class="b3-button b3-button--outline" data-action="copy-key"><svg><use xlink:href="#iconCopy"></use></svg>${window.scribli.languages.copy}</button>`;
                 }
             });
         } else if (action === "copy-key") {
-            writeText(window.siyuan.config.repo.key);
-            showMessage(window.siyuan.languages.copied);
+            writeText(window.scribli.config.repo.key);
+            showMessage(window.scribli.languages.copied);
         }
     });
 
     /// #if !BROWSER
     const importMarkdown = async (isFile: boolean) => {
         if (notebooks.length === 0) {
-            showMessage(window.siyuan.languages.newFileTip);
+            showMessage(window.scribli.languages.newFileTip);
             return;
         }
-        const localPath = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+        const localPath = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
             cmd: "showOpenDialog",
-            defaultPath: window.siyuan.config.system.homeDir,
+            defaultPath: window.scribli.config.system.homeDir,
             filters: isFile ? [{name: "Markdown", extensions: ["md", "markdown"]}] : [],
             properties: [isFile ? "openFile" : "openDirectory"],
         });
@@ -344,10 +344,10 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
     dialog.element.querySelector('[data-type="markdown-file"]')?.addEventListener("click", () => void importMarkdown(true));
     dialog.element.querySelector('[data-type="markdown-folder"]')?.addEventListener("click", () => void importMarkdown(false));
     dialog.element.querySelector('[data-type="obsidian"]')?.addEventListener("click", async () => {
-        const localPath = await ipcRenderer.invoke(Constants.SIYUAN_GET, {
+        const localPath = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
             cmd: "showOpenDialog",
             singleton: "obsidianVault",
-            defaultPath: window.siyuan.config.system.homeDir,
+            defaultPath: window.scribli.config.system.homeDir,
             properties: ["openDirectory"],
         });
         if (localPath.filePaths.length === 0) {

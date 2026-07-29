@@ -46,7 +46,7 @@ export const scrollEvent = (protyle: IProtyle, element: HTMLElement) => {
             protyle.contentElement.setAttribute("data-scrolltop", element.scrollTop.toString());
         }
 
-        if (!window.siyuan.dragElement) { // https://ld246.com/article/1649638389841
+        if (!window.scribli.dragElement) { // https://ld246.com/article/1649638389841
             hideElements(["gutterOnly"], protyle);
         }
 
@@ -95,7 +95,7 @@ export const scrollEvent = (protyle: IProtyle, element: HTMLElement) => {
                 const getDocParam: IObject = {
                     id: protyle.wysiwyg.element.firstElementChild.getAttribute("data-node-id"),
                     mode: 1,
-                    size: window.siyuan.config.editor.dynamicLoadBlocks,
+                    size: window.scribli.config.editor.dynamicLoadBlocks,
                 };
                 if (isEncryptedBox(protyle.notebookId)) {
                     getDocParam.notebook = protyle.notebookId;
@@ -122,7 +122,7 @@ export const scrollEvent = (protyle: IProtyle, element: HTMLElement) => {
             const getDocParam: IObject = {
                 id: protyle.wysiwyg.element.lastElementChild.getAttribute("data-node-id"),
                 mode: 2,
-                size: window.siyuan.config.editor.dynamicLoadBlocks,
+                size: window.scribli.config.editor.dynamicLoadBlocks,
             };
             if (isEncryptedBox(protyle.notebookId)) {
                 getDocParam.notebook = protyle.notebookId;

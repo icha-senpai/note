@@ -40,12 +40,12 @@ const genCardCount = (cardsData: ICardData, allIndex = 0) => {
             oldIndex++;
         }
     });
-    return `<span class="ariaLabel" aria-label="${window.siyuan.languages.flashcardNewCard}">
+    return `<span class="ariaLabel" aria-label="${window.scribli.languages.flashcardNewCard}">
     <span class="ft__error">${newIndex}</span> /
-    <span class="ariaLabel ft__primary" aria-label="${window.siyuan.languages.flashcardNewCard}">${cardsData.unreviewedNewCardCount}</span>
+    <span class="ariaLabel ft__primary" aria-label="${window.scribli.languages.flashcardNewCard}">${cardsData.unreviewedNewCardCount}</span>
 </span>
 <span class="fn__space"></span>+<span class="fn__space"></span>
-<span class="ariaLabel" aria-label="${window.siyuan.languages.flashcardReviewCard}">
+<span class="ariaLabel" aria-label="${window.scribli.languages.flashcardReviewCard}">
     <span class="ft__error">${oldIndex}</span> /
     <span class="ft__success">${cardsData.unreviewedOldCardCount}</span>
 </span>`;
@@ -61,7 +61,7 @@ export const genCardHTML = (options: {
     /// #if MOBILE
     iconsHTML = `<div class="toolbar toolbar--border">
     <svg class="toolbar__icon"><use xlink:href="#iconRiffCard"></use></svg>
-    <span class="fn__flex-1 fn__flex-center toolbar__text">${window.siyuan.languages.riffCard}</span>
+    <span class="fn__flex-1 fn__flex-center toolbar__text">${window.scribli.languages.riffCard}</span>
     <div data-type="count" class="${options.cardsData.cards.length === 0 ? "fn__none" : "fn__flex"}">${genCardCount(options.cardsData)}</span></div>
     <svg class="toolbar__icon" data-id="${options.id || ""}" data-cardtype="${options.cardType}" data-type="filter"><use xlink:href="#iconFilter"></use></svg>
     <svg class="toolbar__icon" data-type="more"><use xlink:href="#iconMore"></use></svg>
@@ -70,7 +70,7 @@ export const genCardHTML = (options: {
     /// #else
     iconsHTML = `<div class="block__icons">
         ${options.isTab ? '<div class="fn__flex-1"></div>' : `<div class="block__logo block__logo--icon">
-            <svg class="block__logoicon"><use xlink:href="#iconRiffCard"></use></svg>${window.siyuan.languages.riffCard}
+            <svg class="block__logoicon"><use xlink:href="#iconRiffCard"></use></svg>${window.scribli.languages.riffCard}
         </div>`}
         <span class="fn__flex-1 resize__move" style="min-height: 100%"></span>
         <div data-type="count" class="ft__on-surface ft__smaller fn__flex-center${options.cardsData.cards.length === 0 ? " fn__none" : " fn__flex"}">${genCardCount(options.cardsData)}</span></div>
@@ -79,15 +79,15 @@ export const genCardHTML = (options: {
             <svg><use xlink:href="#iconFilter"></use></svg>
         </button>
         <div class="fn__space"></div>
-        <div data-type="fullscreen" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show" aria-label="${window.siyuan.languages.fullscreen}">
+        <div data-type="fullscreen" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show" aria-label="${window.scribli.languages.fullscreen}">
             <svg><use xlink:href="#iconFullscreen"></use></svg>
         </div>
         <div class="fn__space${options.cardsData.cards.length === 0 ? " fn__none" : ""}"></div>
-        <div data-type="more" class="${options.cardsData.cards.length === 0 ? "fn__none " : ""}b3-tooltips b3-tooltips__sw block__icon block__icon--show" aria-label="${window.siyuan.languages.more}">
+        <div data-type="more" class="${options.cardsData.cards.length === 0 ? "fn__none " : ""}b3-tooltips b3-tooltips__sw block__icon block__icon--show" aria-label="${window.scribli.languages.more}">
             <svg><use xlink:href="#iconMore"></use></svg>
         </div>
         <div class="fn__space${options.isTab ? " fn__none" : ""}"></div>
-        <div data-type="sticktab" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show${options.isTab ? " fn__none" : ""}" aria-label="${window.siyuan.languages.openBy}">
+        <div data-type="sticktab" class="b3-tooltips b3-tooltips__sw block__icon block__icon--show${options.isTab ? " fn__none" : ""}" aria-label="${window.scribli.languages.openBy}">
             <svg><use xlink:href="#iconOpen"></use></svg>
         </div>
     </div>`;
@@ -97,7 +97,7 @@ export const genCardHTML = (options: {
     <div class="card__block fn__flex-1 ${options.cardsData.cards.length === 0 ? "fn__none" : ""}" data-type="render"></div>
     <div class="card__empty card__empty--space${options.cardsData.cards.length === 0 ? "" : " fn__none"}" data-type="empty">
         <div>🔮</div>
-        ${window.siyuan.languages.noDueCard}
+        ${window.scribli.languages.noDueCard}
     </div>
     <div class="fn__flex card__action fn__none">
         <button class="b3-button b3-button--cancel" disabled="disabled" data-type="-2" style="width: 25%;">
@@ -105,14 +105,14 @@ export const genCardHTML = (options: {
             ${!isMobile() ? "(p / q)" : ""}
         </button>
         <span class="fn__space"></span>
-        <button data-type="-1" aria-label="${window.siyuan.languages.space}/${window.siyuan.languages.enterKey}" class="b3-button b3-tooltips__n b3-tooltips">
+        <button data-type="-1" aria-label="${window.scribli.languages.space}/${window.scribli.languages.enterKey}" class="b3-button b3-tooltips__n b3-tooltips">
             <div class="card__icon">👀</div>
-            ${window.siyuan.languages.cardShowAnswer}
+            ${window.scribli.languages.cardShowAnswer}
         </button>
         <span class="fn__space"></span>
         <button data-type="-3" aria-label="0 / x" style="width: 25%" class="b3-button b3-button--cancel b3-tooltips__n b3-tooltips">
             <div class="card__icon">💤</div>
-            ${window.siyuan.languages.skip}${!isMobile() ? " (0)" : ""}
+            ${window.scribli.languages.skip}${!isMobile() ? " (0)" : ""}
         </button>
     </div>
     <div class="fn__flex card__action fn__none">
@@ -120,35 +120,35 @@ export const genCardHTML = (options: {
             <button class="b3-button b3-button--cancel" disabled="disabled" style="display: flex;margin-bottom: 8px;height: 28px;padding: 0;" data-type="-2"><svg><use xlink:href="#iconLeft"></use></svg>${!isMobile() ? "(p / q)" : ""}</button>
             <button data-type="-3" aria-label="0 / x" class="b3-button b3-button--white b3-tooltips__n b3-tooltips">
                 <div class="card__icon">💤</div>
-                ${window.siyuan.languages.skip}${!isMobile() ? " (0)" : ""}
+                ${window.scribli.languages.skip}${!isMobile() ? " (0)" : ""}
             </button>
         </div>
         <div>
             <span></span>
             <button data-type="1" aria-label="1 / j / a" class="b3-button b3-button--error b3-tooltips__n b3-tooltips">
                 <div class="card__icon">🙈</div>
-                ${window.siyuan.languages.cardRatingAgain}${!isMobile() ? " (1)" : ""}
+                ${window.scribli.languages.cardRatingAgain}${!isMobile() ? " (1)" : ""}
             </button>
         </div>
         <div>
             <span></span>
             <button data-type="2" aria-label="2 / k / s" class="b3-button b3-button--warning b3-tooltips__n b3-tooltips">
                 <div class="card__icon">😬</div>
-                ${window.siyuan.languages.cardRatingHard}${!isMobile() ? " (2)" : ""}
+                ${window.scribli.languages.cardRatingHard}${!isMobile() ? " (2)" : ""}
             </button>
         </div>
         <div>
             <span></span>
-            <button data-type="3" aria-label="3 / l / d / ${window.siyuan.languages.space} / ${window.siyuan.languages.enterKey}" class="b3-button b3-button--info b3-tooltips__n b3-tooltips">
+            <button data-type="3" aria-label="3 / l / d / ${window.scribli.languages.space} / ${window.scribli.languages.enterKey}" class="b3-button b3-button--info b3-tooltips__n b3-tooltips">
                 <div class="card__icon">😊</div>
-                ${window.siyuan.languages.cardRatingGood}${!isMobile() ? " (3)" : ""}
+                ${window.scribli.languages.cardRatingGood}${!isMobile() ? " (3)" : ""}
             </button>
         </div>
         <div>
             <span></span>
             <button data-type="4" aria-label="4 / ; / f" class="b3-button b3-button--success b3-tooltips__n b3-tooltips">
                 <div class="card__icon">🌈</div>
-                ${window.siyuan.languages.cardRatingEasy}${!isMobile() ? " (4)" : ""}
+                ${window.scribli.languages.cardRatingEasy}${!isMobile() ? " (4)" : ""}
             </button>
         </div>
     </div>
@@ -175,28 +175,28 @@ const getEditor = (id: string, protyle: IProtyle, element: Element, currentCard:
                         return;
                     }
                     let hasHide = false;
-                    if (!window.siyuan.config.flashcard.superBlock &&
-                        !window.siyuan.config.flashcard.heading &&
-                        !window.siyuan.config.flashcard.list &&
-                        !window.siyuan.config.flashcard.mark) {
+                    if (!window.scribli.config.flashcard.superBlock &&
+                        !window.scribli.config.flashcard.heading &&
+                        !window.scribli.config.flashcard.list &&
+                        !window.scribli.config.flashcard.mark) {
                         hasHide = false;
                     } else {
-                        if (window.siyuan.config.flashcard.superBlock) {
+                        if (window.scribli.config.flashcard.superBlock) {
                             if (protyle.wysiwyg.element.querySelector(":scope > .sb")) {
                                 hasHide = true;
                             }
                         }
-                        if (window.siyuan.config.flashcard.heading) {
+                        if (window.scribli.config.flashcard.heading) {
                             if (protyle.wysiwyg.element.querySelector(':scope > [data-type="NodeHeading"]')) {
                                 hasHide = true;
                             }
                         }
-                        if (window.siyuan.config.flashcard.list) {
+                        if (window.scribli.config.flashcard.list) {
                             if (protyle.wysiwyg.element.querySelector(".list, .li")) {
                                 hasHide = true;
                             }
                         }
-                        if (window.siyuan.config.flashcard.mark) {
+                        if (window.scribli.config.flashcard.mark) {
                             if (protyle.wysiwyg.element.querySelector('span[data-type~="mark"]')) {
                                 hasHide = true;
                             }
@@ -214,16 +214,16 @@ const getEditor = (id: string, protyle: IProtyle, element: Element, currentCard:
                         });
                         actionElements[1].classList.remove("fn__none");
                     } else {
-                        if (window.siyuan.config.flashcard.superBlock) {
+                        if (window.scribli.config.flashcard.superBlock) {
                             protyle.element.classList.add("card__block--hidesb");
                         }
-                        if (window.siyuan.config.flashcard.heading) {
+                        if (window.scribli.config.flashcard.heading) {
                             protyle.element.classList.add("card__block--hideh");
                         }
-                        if (window.siyuan.config.flashcard.list) {
+                        if (window.scribli.config.flashcard.list) {
                             protyle.element.classList.add("card__block--hideli");
                         }
-                        if (window.siyuan.config.flashcard.mark) {
+                        if (window.scribli.config.flashcard.mark) {
                             protyle.element.classList.add("card__block--hidemark");
                         }
                         actionElements[0].classList.remove("fn__none");
@@ -246,7 +246,7 @@ export const bindCardEvent = async (options: {
     dialog?: Dialog,
     index?: number,
 }) => {
-    if (window.siyuan.storage[Constants.LOCAL_FLASHCARD].fullscreen) {
+    if (window.scribli.storage[Constants.LOCAL_FLASHCARD].fullscreen) {
         fullscreen(options.element.querySelector(".card__main"),
             options.element.querySelector('[data-type="fullscreen"]'));
     }
@@ -266,8 +266,8 @@ export const bindCardEvent = async (options: {
         },
         typewriterMode: false
     });
-    if (window.siyuan.mobile) {
-        window.siyuan.mobile.popEditor = editor;
+    if (window.scribli.mobile) {
+        window.scribli.mobile.popEditor = editor;
     }
     if (options.cardsData.cards.length > 0) {
         getEditor(options.cardsData.cards[index].blockID, editor.protyle, options.element, options.cardsData.cards[index]);
@@ -339,8 +339,8 @@ export const bindCardEvent = async (options: {
                 fullscreen(options.element.querySelector(".card__main"),
                     options.element.querySelector('[data-type="fullscreen"]'));
                 resize(editor.protyle);
-                window.siyuan.storage[Constants.LOCAL_FLASHCARD].fullscreen = !window.siyuan.storage[Constants.LOCAL_FLASHCARD].fullscreen;
-                setStorageVal(Constants.LOCAL_FLASHCARD, window.siyuan.storage[Constants.LOCAL_FLASHCARD]);
+                window.scribli.storage[Constants.LOCAL_FLASHCARD].fullscreen = !window.scribli.storage[Constants.LOCAL_FLASHCARD].fullscreen;
+                setStorageVal(Constants.LOCAL_FLASHCARD, window.scribli.storage[Constants.LOCAL_FLASHCARD]);
                 event.stopPropagation();
                 event.preventDefault();
                 return;
@@ -350,25 +350,25 @@ export const bindCardEvent = async (options: {
                 event.stopPropagation();
                 event.preventDefault();
                 if (filterElement.getAttribute("data-cardtype") === "all" && filterElement.getAttribute("data-id")) {
-                    showMessage(window.siyuan.languages.noSupportTip);
+                    showMessage(window.scribli.languages.noSupportTip);
                     return;
                 }
                 const menu = new Menu();
                 menu.addItem({
                     id: "setDueTime",
                     icon: "iconClock",
-                    label: window.siyuan.languages.setDueTime,
+                    label: window.scribli.languages.setDueTime,
                     click() {
                         const timedialog = new Dialog({
-                            title: window.siyuan.languages.setDueTime,
+                            title: window.scribli.languages.setDueTime,
                             content: `<div class="b3-dialog__content">
-    <div class="b3-label__text">${window.siyuan.languages.showCardDay}</div>
+    <div class="b3-label__text">${window.scribli.languages.showCardDay}</div>
     <div class="fn__hr"></div>
     <input class="b3-text-field fn__block" value="1" type="number" step="1" min="1">
 </div>
 <div class="b3-dialog__action">
-    <button class="b3-button b3-button--cancel">${window.siyuan.languages.cancel}</button><div class="fn__space"></div>
-    <button class="b3-button b3-button--text">${window.siyuan.languages.confirm}</button>
+    <button class="b3-button b3-button--cancel">${window.scribli.languages.cancel}</button><div class="fn__space"></div>
+    <button class="b3-button b3-button--text">${window.scribli.languages.confirm}</button>
 </div>`,
                             width: isMobile() ? "92vw" : "520px",
                         });
@@ -408,7 +408,7 @@ export const bindCardEvent = async (options: {
                     menu.addItem({
                         id: "reset",
                         icon: "iconRefresh",
-                        label: window.siyuan.languages.reset,
+                        label: window.scribli.languages.reset,
                         click() {
                             fetchPost("/api/riff/resetRiffCards", {
                                 type: filterElement.getAttribute("data-cardtype"),
@@ -416,7 +416,7 @@ export const bindCardEvent = async (options: {
                                 deckID: Constants.QUICK_DECK_ID,
                                 blockIDs: [currentCard.blockID],
                             }, () => {
-                                const minLang = window.siyuan.languages._time["1m"].replace("%s", "");
+                                const minLang = window.scribli.languages._time["1m"].replace("%s", "");
                                 currentCard.lapses = 0;
                                 currentCard.lastReview = -62135596800000;
                                 currentCard.reps = 0;
@@ -425,7 +425,7 @@ export const bindCardEvent = async (options: {
                                     1: minLang,
                                     2: minLang.replace("1", "5"),
                                     3: minLang.replace("1", "10"),
-                                    4: window.siyuan.languages._time["1d"].replace("%s", "").replace("1", "6")
+                                    4: window.scribli.languages._time["1d"].replace("%s", "").replace("1", "6")
                                 };
                                 actionElements[1].querySelectorAll("button.b3-button").forEach((element, btnIndex) => {
                                     if (btnIndex < 2) {
@@ -443,7 +443,7 @@ export const bindCardEvent = async (options: {
                 menu.addItem({
                     id: "removeRiffCard",
                     icon: "iconTrashcan",
-                    label: `${window.siyuan.languages.remove} <b>${window.siyuan.languages.riffCard}</b>`,
+                    label: `${window.scribli.languages.remove} <b>${window.scribli.languages.riffCard}</b>`,
                     click() {
                         actionElements[0].classList.add("fn__none");
                         actionElements[1].classList.remove("fn__none");
@@ -468,19 +468,19 @@ export const bindCardEvent = async (options: {
                     iconHTML: "",
                     type: "readonly",
                     label: `<div class="fn__flex">
-    <div class="fn__flex-1 ft__breakword">${window.siyuan.languages.forgetCount}</div>
+    <div class="fn__flex-1 ft__breakword">${window.scribli.languages.forgetCount}</div>
     <div class="fn__space"></div>
     <div>${currentCard.lapses}</div>
 </div><div class="fn__flex">
-    <div class="fn__flex-1 ft__breakword">${window.siyuan.languages.revisionCount}</div>
+    <div class="fn__flex-1 ft__breakword">${window.scribli.languages.revisionCount}</div>
     <div class="fn__space"></div>
     <div>${currentCard.reps}</div>
 </div><div class="fn__flex">
-    <div class="fn__flex-1 ft__breakword">${window.siyuan.languages.cardStatus}</div>
+    <div class="fn__flex-1 ft__breakword">${window.scribli.languages.cardStatus}</div>
     <div class="fn__space"></div>
-    <div class="${currentCard.state === 0 ? "ft__primary" : "ft__success"}">${currentCard.state === 0 ? window.siyuan.languages.flashcardNewCard : window.siyuan.languages.flashcardReviewCard}</div>
+    <div class="${currentCard.state === 0 ? "ft__primary" : "ft__success"}">${currentCard.state === 0 ? window.scribli.languages.flashcardNewCard : window.scribli.languages.flashcardReviewCard}</div>
 </div><div class="fn__flex${currentCard.lastReview > 0 ? "" : " fn__none"}">
-    <div class="fn__flex-1 ft__breakword" style="width: 170px;">${window.siyuan.languages.lastReviewTime}</div>
+    <div class="fn__flex-1 ft__breakword" style="width: 170px;">${window.scribli.languages.lastReviewTime}</div>
     <div class="fn__space"></div>
     <div>${dayjs(currentCard.lastReview).format("YYYY-MM-DD")}</div>
 </div>`,
@@ -503,13 +503,13 @@ export const bindCardEvent = async (options: {
                 stickMenu.addItem({
                     id: "openInNewTab",
                     icon: "iconOpen",
-                    label: window.siyuan.languages.openInNewTab,
+                    label: window.scribli.languages.openInNewTab,
                     click() {
                         openFile({
                             app: options.app,
                             custom: {
                                 icon: "iconRiffCard",
-                                title: window.siyuan.languages.spaceRepetition,
+                                title: window.scribli.languages.spaceRepetition,
                                 data: {
                                     cardsData: options.cardsData,
                                     index,
@@ -517,7 +517,7 @@ export const bindCardEvent = async (options: {
                                     id: docId,
                                     title: options.title
                                 },
-                                id: "siyuan-card"
+                                id: "scribli-card"
                             },
                         });
                         options.dialog.destroy();
@@ -526,14 +526,14 @@ export const bindCardEvent = async (options: {
                 stickMenu.addItem({
                     id: "insertRight",
                     icon: "iconLayoutRight",
-                    label: window.siyuan.languages.insertRight,
+                    label: window.scribli.languages.insertRight,
                     click() {
                         openFile({
                             app: options.app,
                             position: "right",
                             custom: {
                                 icon: "iconRiffCard",
-                                title: window.siyuan.languages.spaceRepetition,
+                                title: window.scribli.languages.spaceRepetition,
                                 data: {
                                     cardsData: options.cardsData,
                                     index,
@@ -541,7 +541,7 @@ export const bindCardEvent = async (options: {
                                     id: docId,
                                     title: options.title
                                 },
-                                id: "siyuan-card"
+                                id: "scribli-card"
                             },
                         });
                         options.dialog.destroy();
@@ -551,15 +551,15 @@ export const bindCardEvent = async (options: {
                 stickMenu.addItem({
                     id: "openByNewWindow",
                     icon: "iconOpenWindow",
-                    label: window.siyuan.languages.openByNewWindow,
+                    label: window.scribli.languages.openByNewWindow,
                     click() {
                         const json = [{
-                            "title": window.siyuan.languages.spaceRepetition,
+                            "title": window.scribli.languages.spaceRepetition,
                             "icon": "iconRiffCard",
                             "instance": "Tab",
                             "children": {
                                 "instance": "Custom",
-                                "customModelType": "siyuan-card",
+                                "customModelType": "scribli-card",
                                 "customModelData": {
                                     "cardsData": options.cardsData,
                                     "index": index,
@@ -569,9 +569,9 @@ export const bindCardEvent = async (options: {
                                 }
                             }
                         }];
-                        ipcRenderer.send(Constants.SIYUAN_OPEN_WINDOW, {
+                        ipcRenderer.send(Constants.SCRIBLI_OPEN_WINDOW, {
                             // 需要 encode， 否则 https://github.com/siyuan-note/siyuan/issues/9343
-                            url: `${window.location.protocol}//${window.location.host}/stage/build/app/window.html?v=${Constants.SIYUAN_VERSION}&json=${encodeURIComponent(JSON.stringify(json))}`
+                            url: `${window.location.protocol}//${window.location.host}/stage/build/app/window.html?v=${Constants.SCRIBLI_VERSION}&json=${encodeURIComponent(JSON.stringify(json))}`
                         });
                         options.dialog.destroy();
                     }
@@ -599,21 +599,21 @@ export const bindCardEvent = async (options: {
             const filterTempElement = hasClosestByAttribute(target, "data-type", "filter");
             if (filterTempElement) {
                 fetchPost("/api/riff/getRiffDecks", {}, (response) => {
-                    window.siyuan.menus.menu.remove();
-                    window.siyuan.menus.menu.append(new MenuItem({
+                    window.scribli.menus.menu.remove();
+                    window.scribli.menus.menu.append(new MenuItem({
                         id: "all",
                         iconHTML: "",
-                        label: window.siyuan.languages.all,
+                        label: window.scribli.languages.all,
                         click() {
                             filterElement.setAttribute("data-id", "");
                             filterElement.setAttribute("data-cardtype", "all");
                             fetchNewRound();
                         },
                     }).element);
-                    window.siyuan.menus.menu.append(new MenuItem({
+                    window.scribli.menus.menu.append(new MenuItem({
                         id: "fileTree",
                         iconHTML: "",
-                        label: window.siyuan.languages.fileTree,
+                        label: window.scribli.languages.fileTree,
                         click() {
                             movePathTo({
                                 cb: (toPath, toNotebook) => {
@@ -621,16 +621,16 @@ export const bindCardEvent = async (options: {
                                     filterElement.setAttribute("data-cardtype", toPath[0] === "/" ? "notebook" : "doc");
                                     fetchNewRound();
                                 },
-                                title: window.siyuan.languages.specifyPath,
+                                title: window.scribli.languages.specifyPath,
                                 flashcard: true
                             });
                         }
                     }).element);
                     if (options.title || response.data.length > 0) {
-                        window.siyuan.menus.menu.append(new MenuItem({type: "separator"}).element);
+                        window.scribli.menus.menu.append(new MenuItem({type: "separator"}).element);
                     }
                     if (options.title) {
-                        window.siyuan.menus.menu.append(new MenuItem({
+                        window.scribli.menus.menu.append(new MenuItem({
                             iconHTML: "",
                             label: escapeHtml(options.title),
                             click() {
@@ -640,11 +640,11 @@ export const bindCardEvent = async (options: {
                             },
                         }).element);
                         if (response.data.length > 0) {
-                            window.siyuan.menus.menu.append(new MenuItem({type: "separator"}).element);
+                            window.scribli.menus.menu.append(new MenuItem({type: "separator"}).element);
                         }
                     }
                     response.data.forEach((deck: { id: string, name: string }) => {
-                        window.siyuan.menus.menu.append(new MenuItem({
+                        window.scribli.menus.menu.append(new MenuItem({
                             iconHTML: "",
                             label: escapeHtml(deck.name),
                             click() {
@@ -655,7 +655,7 @@ export const bindCardEvent = async (options: {
                         }).element);
                     });
                     const filterRect = filterTempElement.getBoundingClientRect();
-                    window.siyuan.menus.menu.popup({x: filterRect.left, y: filterRect.bottom});
+                    window.scribli.menus.menu.popup({x: filterRect.left, y: filterRect.bottom});
                 });
                 event.stopPropagation();
                 event.preventDefault();
@@ -721,9 +721,9 @@ export const bindCardEvent = async (options: {
             }, () => {
                 /// #if MOBILE
                 if (type !== "-3" &&
-                    ((0 !== window.siyuan.config.sync.provider && hasFeatureAccess()) ||
-                        (0 === window.siyuan.config.sync.provider && hasFeatureAccess())) &&
-                    window.siyuan.config.repo.key && window.siyuan.config.sync.enabled) {
+                    ((0 !== window.scribli.config.sync.provider && hasFeatureAccess()) ||
+                        (0 === window.scribli.config.sync.provider && hasFeatureAccess())) &&
+                    window.scribli.config.repo.key && window.scribli.config.sync.enabled) {
                     document.getElementById("toolbarSync").classList.remove("fn__none");
                 }
                 /// #endif
@@ -785,7 +785,7 @@ const emitEvent = (app: App, card: ICard, type: string) => {
 };
 
 export const openCard = (app: App) => {
-    if (window.siyuan.config.readonly) {
+    if (window.scribli.config.readonly) {
         return;
     }
     fetchPost("/api/riff/getRiffDueCards", {deckID: ""}, (cardsResponse) => {
@@ -794,7 +794,7 @@ export const openCard = (app: App) => {
 };
 
 export const openCardByData = async (app: App, cardsData: ICardData, cardType: TCardType, id?: string, title?: string) => {
-    const exit = window.siyuan.dialogs.find(item => {
+    const exit = window.scribli.dialogs.find(item => {
         if (item.element.getAttribute("data-key") === Constants.DIALOG_OPENCARD) {
             item.destroy();
             return true;
@@ -819,8 +819,8 @@ export const openCardByData = async (app: App, cardsData: ICardData, cardType: T
         destroyCallback() {
             if (editor) {
                 editor.destroy();
-                if (window.siyuan.mobile) {
-                    window.siyuan.mobile.popEditor = null;
+                if (window.scribli.mobile) {
+                    window.scribli.mobile.popEditor = null;
                 }
             }
             if (lastRange) {
@@ -886,7 +886,7 @@ const allDone = (countElement: Element, editor: Protyle, actionElements: NodeLis
     countElement.classList.add("fn__none");
     editor.protyle.element.classList.add("fn__none");
     const emptyElement = editor.protyle.element.nextElementSibling;
-    emptyElement.innerHTML = `<div>🔮</div>${window.siyuan.languages.noDueCard}`;
+    emptyElement.innerHTML = `<div>🔮</div>${window.scribli.languages.noDueCard}`;
     emptyElement.classList.remove("fn__none");
     actionElements[0].classList.add("fn__none");
     actionElements[1].classList.add("fn__none");
@@ -900,9 +900,9 @@ const newRound = (countElement: Element, editor: Protyle, actionElements: NodeLi
     editor.protyle.element.classList.add("fn__none");
     const emptyElement = editor.protyle.element.nextElementSibling;
     emptyElement.innerHTML = `<div>♻️ </div>
-<span>${window.siyuan.languages.continueReview2.replace("${count}", unreviewedCount)}</span>
+<span>${window.scribli.languages.continueReview2.replace("${count}", unreviewedCount)}</span>
 <div class="fn__hr"></div>
-<button data-type="newround" class="b3-button fn__size200">${window.siyuan.languages.continueReview1}</button>`;
+<button data-type="newround" class="b3-button fn__size200">${window.scribli.languages.continueReview1}</button>`;
     emptyElement.classList.remove("fn__none");
     actionElements[0].classList.add("fn__none");
     actionElements[1].classList.add("fn__none");

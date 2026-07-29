@@ -48,7 +48,7 @@ const openDockMenu = (app: App) => {
                             }
                         }
                         custom = plugin.docks[dockId].mobileModel(document.querySelector('#sidebar [data-type="sidebar-plugin"]'));
-                        window.siyuan.mobile.docks[dockId] = custom;
+                        window.scribli.mobile.docks[dockId] = custom;
                     }
                 }
             });
@@ -56,7 +56,7 @@ const openDockMenu = (app: App) => {
     });
     menu.fullscreen();
     if (menu.element.lastElementChild.innerHTML === "") {
-        showMessage(window.siyuan.languages._kernel[122]);
+        showMessage(window.scribli.languages._kernel[122]);
     }
 };
 
@@ -97,38 +97,38 @@ export const initFramework = (app: App, isStart: boolean) => {
             const tabPanelElement = sidebarElement.lastElementChild.querySelector(`[data-type="${itemType.replace("-tab", "")}"]`);
             if (itemType === type) {
                 if (type === "sidebar-outline-tab") {
-                    if (!window.siyuan.mobile.docks.outline) {
-                        window.siyuan.mobile.docks.outline = new MobileOutline({
+                    if (!window.scribli.mobile.docks.outline) {
+                        window.scribli.mobile.docks.outline = new MobileOutline({
                             app,
-                            blockId: window.siyuan.mobile.editor?.protyle.block.rootID,
-                            isPreview: window.siyuan.mobile.editor ? !window.siyuan.mobile.editor.protyle.preview.element.classList.contains("fn__none") : false
+                            blockId: window.scribli.mobile.editor?.protyle.block.rootID,
+                            isPreview: window.scribli.mobile.editor ? !window.scribli.mobile.editor.protyle.preview.element.classList.contains("fn__none") : false
                         });
                     } else {
-                        window.siyuan.mobile.docks.outline.reload();
+                        window.scribli.mobile.docks.outline.reload();
                     }
                 } else if (type === "sidebar-backlink-tab") {
-                    if (!window.siyuan.mobile.docks.backlink) {
-                        window.siyuan.mobile.docks.backlink = new MobileBacklinks(app);
+                    if (!window.scribli.mobile.docks.backlink) {
+                        window.scribli.mobile.docks.backlink = new MobileBacklinks(app);
                     } else {
-                        window.siyuan.mobile.docks.backlink.update();
+                        window.scribli.mobile.docks.backlink.update();
                     }
                 } else if (type === "sidebar-bookmark-tab") {
-                    if (!window.siyuan.mobile.docks.bookmark) {
-                        window.siyuan.mobile.docks.bookmark = new MobileBookmarks(app);
+                    if (!window.scribli.mobile.docks.bookmark) {
+                        window.scribli.mobile.docks.bookmark = new MobileBookmarks(app);
                     } else {
-                        window.siyuan.mobile.docks.bookmark.update();
+                        window.scribli.mobile.docks.bookmark.update();
                     }
                 } else if (type === "sidebar-tag-tab") {
-                    if (!window.siyuan.mobile.docks.tag) {
-                        window.siyuan.mobile.docks.tag = new MobileTags(app);
+                    if (!window.scribli.mobile.docks.tag) {
+                        window.scribli.mobile.docks.tag = new MobileTags(app);
                     } else {
-                        window.siyuan.mobile.docks.tag.update();
+                        window.scribli.mobile.docks.tag.update();
                     }
-                } else if (type === "sidebar-inbox-tab" && !window.siyuan.mobile.docks.inbox) {
-                    window.siyuan.mobile.docks.inbox = new Inbox(app, document.querySelector('#sidebar [data-type="sidebar-inbox"]'));
+                } else if (type === "sidebar-inbox-tab" && !window.scribli.mobile.docks.inbox) {
+                    window.scribli.mobile.docks.inbox = new Inbox(app, document.querySelector('#sidebar [data-type="sidebar-inbox"]'));
                 } else if (type === "sidebar-plugin-tab") {
                     if (!custom) {
-                        tabPanelElement.innerHTML = `<div class="b3-list--empty">${window.siyuan.languages.emptyContent}</div>`;
+                        tabPanelElement.innerHTML = `<div class="b3-list--empty">${window.scribli.languages.emptyContent}</div>`;
                         openDockMenu(app);
                     } else if (custom.update) {
                         custom.update();
@@ -142,7 +142,7 @@ export const initFramework = (app: App, isStart: boolean) => {
             }
         });
     });
-    window.siyuan.mobile.docks.file = new MobileFiles(app);
+    window.scribli.mobile.docks.file = new MobileFiles(app);
     document.getElementById("toolbarFile").addEventListener("click", () => {
         if (getCurrentEditor()?.protyle.toolbar.isMultiSelectMode()) {
             return;
@@ -151,13 +151,13 @@ export const initFramework = (app: App, isStart: boolean) => {
         sidebarElement.style.transform = "translateX(0px)";
         const type = sidebarElement.querySelector(".toolbar--border .toolbar__icon--active").getAttribute("data-type");
         if (type === "sidebar-outline-tab") {
-            window.siyuan.mobile.docks.outline.reload();
+            window.scribli.mobile.docks.outline.reload();
         } else if (type === "sidebar-backlink-tab") {
-            window.siyuan.mobile.docks.backlink.update();
+            window.scribli.mobile.docks.backlink.update();
         } else if (type === "sidebar-bookmark-tab") {
-            window.siyuan.mobile.docks.bookmark.update();
+            window.scribli.mobile.docks.bookmark.update();
         } else if (type === "sidebar-tag-tab") {
-            window.siyuan.mobile.docks.tag.update();
+            window.scribli.mobile.docks.tag.update();
         }
     });
     // 用 touchstart 会导致键盘不收起
@@ -192,11 +192,11 @@ export const initFramework = (app: App, isStart: boolean) => {
         if (openMobileOnboarding(app)) {
             return;
         }
-        if (window.siyuan.config.fileTree.closeTabsOnStart && isStart) {
+        if (window.scribli.config.fileTree.closeTabsOnStart && isStart) {
             setEmpty(app);
             return;
         }
-        const localDoc = window.siyuan.storage[Constants.LOCAL_DOCINFO];
+        const localDoc = window.scribli.storage[Constants.LOCAL_DOCINFO];
         fetchPost("/api/block/checkBlockExist", {id: localDoc.id}, existResponse => {
             if (existResponse.data) {
                 openMobileFileById(app, localDoc.id, [Constants.CB_GET_SCROLL]);
@@ -219,7 +219,7 @@ export const initFramework = (app: App, isStart: boolean) => {
 
 const initEditorName = () => {
     const inputElement = document.getElementById("toolbarName") as HTMLInputElement;
-    inputElement.setAttribute("placeholder", window.siyuan.languages._kernel[16]);
+    inputElement.setAttribute("placeholder", window.scribli.languages._kernel[16]);
     inputElement.addEventListener("blur", () => {
         if (inputElement.getAttribute("readonly") === "readonly") {
             return;
@@ -230,8 +230,8 @@ const initEditorName = () => {
         }
 
         fetchPost("/api/filetree/renameDoc", {
-            notebook: window.siyuan.mobile.editor.protyle.notebookId,
-            path: window.siyuan.mobile.editor.protyle.path,
+            notebook: window.scribli.mobile.editor.protyle.notebookId,
+            path: window.scribli.mobile.editor.protyle.path,
             title: inputElement.value,
         });
         setTitle(inputElement.value);

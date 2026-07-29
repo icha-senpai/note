@@ -75,7 +75,7 @@ export class AgentSessionPanel {
             this.popup = document.createElement("div");
             this.popup.className = "agent-session-popup b3-menu";
 
-            const L = window.siyuan.languages;
+            const L = window.scribli.languages;
 
             let html = '<input class="b3-text-field agent-session-popup__search" placeholder="' + L.agentSessionSearch + '">';
             html += '<div class="b3-list b3-list--background fn__flex-1"></div>';
@@ -114,7 +114,7 @@ export class AgentSessionPanel {
             });
 
             this.host.appendChild(this.popup);
-            this.popup.style.zIndex = (++window.siyuan.zIndex).toString();
+            this.popup.style.zIndex = (++window.scribli.zIndex).toString();
 
             const btnRect = this.triggerBtn.getBoundingClientRect();
             setPosition(this.popup, btnRect.right - 280, btnRect.bottom, btnRect.height, btnRect.width);
@@ -143,7 +143,7 @@ export class AgentSessionPanel {
     private renderItems(container: HTMLElement, listItems: SessionIndexItem[], append: boolean) {
         let html = "";
         if (listItems.length === 0 && !append) {
-            html += '<div class="b3-list--empty"><span class="b3-list-item__text">' + (window.siyuan.languages.emptyContent) + "</span></div>";
+            html += '<div class="b3-list--empty"><span class="b3-list-item__text">' + (window.scribli.languages.emptyContent) + "</span></div>";
         } else {
             const currentId = this.getCurrentSessionId();
             const defaultTitle = this.getDefaultTitle();
@@ -151,13 +151,13 @@ export class AgentSessionPanel {
             /// #if !BROWSER
             isDesktop = true;
             /// #endif
-            const L = window.siyuan.languages;
+            const L = window.scribli.languages;
             for (let i = 0; i < listItems.length; i++) {
                 const s = listItems[i];
                 const isActive = s.id === currentId;
                 html += '<div class="b3-list-item  b3-list-item--hide-action' + (isActive ? " b3-list-item--focus" : "") + '" data-id="' + s.id + '">' +
                     '<span class="b3-list-item__text ariaLabel" data-position="parentW" aria-label="' + escapeHtml(s.title || defaultTitle) + '">' + escapeHtml(s.title || defaultTitle) + "</span>" +
-                    '<span class="b3-list-item__action b3-tooltips b3-tooltips__nw" data-id="' + s.id + '" aria-label="' + window.siyuan.languages.rename + '"><svg><use xlink:href="#iconEdit"></use></svg></span>' +
+                    '<span class="b3-list-item__action b3-tooltips b3-tooltips__nw" data-id="' + s.id + '" aria-label="' + window.scribli.languages.rename + '"><svg><use xlink:href="#iconEdit"></use></svg></span>' +
                     '<span class="b3-list-item__action b3-tooltips b3-tooltips__nw agent-session-more" data-id="' + s.id + '" aria-label="' + (L.more || "More") + '">' +
                         '<svg><use xlink:href="#iconMore"></use></svg>' +
                         '<div class="b3-menu__submenu">' +
@@ -354,7 +354,7 @@ export class AgentSessionPanel {
             }
             submenu.style.top = top + "px";
             submenu.style.left = left + "px";
-            submenu.style.zIndex = (++window.siyuan.zIndex).toString();
+            submenu.style.zIndex = (++window.scribli.zIndex).toString();
 
             // 子菜单项 hover 高亮（限定 b3-menu__items 内的项）。
             const itemsContainer = submenu.querySelector(".b3-menu__items");
@@ -398,7 +398,7 @@ export class AgentSessionPanel {
                     }
                     if (action === "folder") {
                         /// #if !BROWSER
-                        useShell("openPath", path.join(window.siyuan.config.system.dataDir, "storage", "ai", "agent", "sessions", id));
+                        useShell("openPath", path.join(window.scribli.config.system.dataDir, "storage", "ai", "agent", "sessions", id));
                         /// #endif
                     }
                     onClose();

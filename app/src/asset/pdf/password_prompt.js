@@ -83,7 +83,7 @@ class PasswordPrompt {
       this.input.focus();
     }
     // NOTE
-    this.label.textContent = window.siyuan.languages[`password_${passwordIncorrect ? 'invalid' : 'label'}`]
+    this.label.textContent = window.scribli.languages[`password_${passwordIncorrect ? 'invalid' : 'label'}`]
     // this.label.setAttribute(
     //   "data-l10n-id",
     //   passwordIncorrect ? "pdfjs-password-invalid" : "pdfjs-password-label"

@@ -111,7 +111,7 @@ export const initAnno = (element: HTMLElement, pdf: any) => {
             rectAnnoElement.classList.remove("toggled");
             pdfConfig.mainContainer.classList.remove("rect-to-annotation");
 
-            const coords = getHightlightCoordsByRect(pdf, window.siyuan.storage[Constants.LOCAL_PDFTHEME].annoColor || "var(--b3-pdf-background1)", rectResizeElement,
+            const coords = getHightlightCoordsByRect(pdf, window.scribli.storage[Constants.LOCAL_PDFTHEME].annoColor || "var(--b3-pdf-background1)", rectResizeElement,
                 rectResizeElement.style.backgroundColor ? "text" : "border");
             rectResizeElement.classList.add("fn__none");
             if (coords) {
@@ -132,11 +132,11 @@ export const initAnno = (element: HTMLElement, pdf: any) => {
         let processed = false;
         let target = event.target as HTMLElement;
         if (typeof event.detail === "string") {
-            window.siyuan.storage[Constants.LOCAL_PDFTHEME].annoColor = event.detail === "0" ?
-                (window.siyuan.storage[Constants.LOCAL_PDFTHEME].annoColor || "var(--b3-pdf-background1)")
+            window.scribli.storage[Constants.LOCAL_PDFTHEME].annoColor = event.detail === "0" ?
+                (window.scribli.storage[Constants.LOCAL_PDFTHEME].annoColor || "var(--b3-pdf-background1)")
                 : `var(--b3-pdf-background${event.detail})`;
-            setStorageVal(Constants.LOCAL_PDFTHEME, window.siyuan.storage[Constants.LOCAL_PDFTHEME]);
-            const coords = getHightlightCoordsByRange(pdf, window.siyuan.storage[Constants.LOCAL_PDFTHEME].annoColor);
+            setStorageVal(Constants.LOCAL_PDFTHEME, window.scribli.storage[Constants.LOCAL_PDFTHEME]);
+            const coords = getHightlightCoordsByRange(pdf, window.scribli.storage[Constants.LOCAL_PDFTHEME].annoColor);
             if (coords) {
                 coords.forEach((item, index) => {
                     const newElement = showHighlight(item, pdf);
@@ -154,8 +154,8 @@ export const initAnno = (element: HTMLElement, pdf: any) => {
             const type = target.getAttribute("data-type");
             if (target.classList.contains("color__square")) {
                 const color = target.style.backgroundColor;
-                window.siyuan.storage[Constants.LOCAL_PDFTHEME].annoColor = color;
-                setStorageVal(Constants.LOCAL_PDFTHEME, window.siyuan.storage[Constants.LOCAL_PDFTHEME]);
+                window.scribli.storage[Constants.LOCAL_PDFTHEME].annoColor = color;
+                setStorageVal(Constants.LOCAL_PDFTHEME, window.scribli.storage[Constants.LOCAL_PDFTHEME]);
                 if (rectElement) {
                     const config = getConfig(pdf);
                     const annoItem = config[rectElement.getAttribute("data-node-id")];
@@ -285,13 +285,13 @@ export const initAnno = (element: HTMLElement, pdf: any) => {
 
 const getRelationHTML = (ids: string[]) => {
     if (!ids) {
-        return `<li class="b3-list--empty">${window.siyuan.languages.emptyContent}</li>`;
+        return `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
     }
     let html = "";
     ids.forEach((id: string) => {
         html += `<li data-id="${id}" class="popover__block b3-list-item b3-list-item--narrow b3-list-item--hide-action">
     <span class="b3-list-item__text">${id}</span>
-    <span data-type="clear" class="b3-tooltips b3-tooltips__w b3-list-item__action" aria-label="${window.siyuan.languages.delete}">
+    <span data-type="clear" class="b3-tooltips b3-tooltips__w b3-list-item__action" aria-label="${window.scribli.languages.delete}">
         <svg><use xlink:href="#iconTrashcan"></use></svg>
     </span>
 </li>`;
@@ -306,12 +306,12 @@ const setRelation = (pdf: any) => {
         configItem.ids = [];
     }
     const dialog = new Dialog({
-        title: window.siyuan.languages.relation,
+        title: window.scribli.languages.relation,
         content: `<div class="b3-dialog__content">
     <div class="fn__flex">
-        <input class="b3-text-field fn__flex-1" placeholder="${window.siyuan.languages.fileAnnoRefPlaceholder}">
+        <input class="b3-text-field fn__flex-1" placeholder="${window.scribli.languages.fileAnnoRefPlaceholder}">
         <div class="fn__space"></div>
-        <button class="b3-button b3-button--text" data-type="add">${window.siyuan.languages.addAttr}</button>
+        <button class="b3-button b3-button--text" data-type="add">${window.scribli.languages.addAttr}</button>
     </div>
     <div class="fn__hr"></div>
     <ul class="b3-list b3-list--background">${getRelationHTML(configItem.ids)}</ul>
@@ -329,7 +329,7 @@ const setRelation = (pdf: any) => {
             }
             inputElement.value = "";
         } else {
-            showMessage("ID " + window.siyuan.languages.invalid);
+            showMessage("ID " + window.scribli.languages.invalid);
         }
     };
 
@@ -741,9 +741,9 @@ const copyAnno = (idPath: string, fileName: string, pdf: any) => {
                 }).then((blob) => {
                     let msg = "";
                     if (Constants.SIZE_UPLOAD_TIP_SIZE <= blob.size) {
-                        msg = window.siyuan.languages.uploadFileTooLarge.replace("${x}", content + ".png").replace("${y}", filesize(blob.size, {standard: "iec"}));
+                        msg = window.scribli.languages.uploadFileTooLarge.replace("${x}", content + ".png").replace("${y}", filesize(blob.size, {standard: "iec"}));
                     }
-                    confirmDialog(msg ? window.siyuan.languages.upload : "", msg, () => {
+                    confirmDialog(msg ? window.scribli.languages.upload : "", msg, () => {
                         const formData = new FormData();
                         const imageName = content.substring(0, content.length - 22) + (imageData.rotation ? `${imageData.rotation}-` : "") + content.substring(content.length - 22) + ".png";
                         formData.append("file[]", blob, imageName);
