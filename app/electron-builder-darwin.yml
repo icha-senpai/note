@@ -28,7 +28,6 @@ mac:
     - name: "Scribli"
       schemes:
         - "scribli"
-        - "siyuan"
   extraResources:
     - from: "kernel-darwin"
       to: "kernel"

@@ -29,7 +29,7 @@ export const useShell = (cmd: "showItemInFolder" | "openPath", filePath: string)
 };
 
 /**
- * Check if the given URI is a valid Scribli URI protocol or deprecated compatibility alias.
+ * Check if the given URI is a valid Scribli URI protocol.
  * @param uri - the URI to check
  */
 export const isSiYuanUriProtocol = (uri: URL | string | null | undefined): boolean => {
@@ -37,8 +37,7 @@ export const isSiYuanUriProtocol = (uri: URL | string | null | undefined): boole
         if (uri == null) return false;
 
         const uriObj = uri instanceof URL ? uri : new URL(uri);
-        if (uriObj.protocol === "scribli:" || uriObj.protocol === "web+scribli:" ||
-                uriObj.protocol === "siyuan:" || uriObj.protocol === "web+siyuan:") {
+        if (uriObj.protocol === "scribli:" || uriObj.protocol === "web+scribli:") {
             return true;
         }
         return false;

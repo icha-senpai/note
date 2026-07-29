@@ -84,7 +84,7 @@ Daha fazla bilgi için [SiYuan İngilizce Tartışma Forumu](https://liuyun.io)�
   - Blok düzeyinde referans ve çift yönlü bağlantılar
   - Özel nitelikler
   - Gömülü SQL sorgusu
-  - `siyuan://` protokolü
+  - `scribli://` protokolü
 - Editör
   - Blok tabanlı yapı
   - Markdown WYSIWYG düzenleme

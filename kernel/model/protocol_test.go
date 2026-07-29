@@ -25,21 +25,21 @@ func TestBlockProtocolURL(t *testing.T) {
 		t.Fatalf("unexpected primary block URL %q", got)
 	}
 
-	for _, url := range []string{
-		"scribli://blocks/" + id,
-		"siyuan://blocks/" + id,
-	} {
-		got, ok := cutBlockProtocolURL(url)
-		if !ok {
-			t.Fatalf("expected %q to be recognized", url)
-		}
-		if got != id {
-			t.Fatalf("expected %q, got %q", id, got)
-		}
+	got, ok := cutBlockProtocolURL("scribli://blocks/" + id)
+	if !ok {
+		t.Fatal("expected scribli block URL to be recognized")
+	}
+	if got != id {
+		t.Fatalf("expected %q, got %q", id, got)
 	}
 
-	externalURL := "https://example.com/" + id
-	if got, ok := cutBlockProtocolURL(externalURL); ok || got != externalURL {
-		t.Fatalf("unexpected external URL match [got=%q, ok=%v]", got, ok)
+	for _, externalURL := range []string{
+		"other://blocks/" + id,
+		"https://example.com/" + id,
+	} {
+		got, ok = cutBlockProtocolURL(externalURL)
+		if ok || got != externalURL {
+			t.Fatalf("unexpected external URL match [got=%q, ok=%v]", got, ok)
+		}
 	}
 }

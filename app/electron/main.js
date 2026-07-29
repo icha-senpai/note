@@ -43,8 +43,6 @@ const childProcess = require("child_process");
 const remote = require("@electron/remote/main");
 const {
     PRIMARY_PROTOCOL,
-    LEGACY_PROTOCOL,
-    LEGACY_PROTOCOL_REMOVAL_TARGET,
     hasAppProtocol,
     normalizeAppProtocolURL,
 } = require("./protocol");
@@ -61,7 +59,6 @@ const systemShutdownNone = 0;
 const systemShutdownEnding = 1;
 const systemShutdownForced = 2;
 const systemShutdownExitTimeout = 30000;
-const updateKernelExitTimeout = 30000;
 const safeModeReasons = new Set(["abnormal-exit", "killed", "crashed", "oom", "memory-eviction"]);
 const noSafeModeReasons = new Set(["clean-exit", "launch-failed", "integrity-failure"]);
 const expectedRendererExitIds = new Set();
@@ -78,8 +75,6 @@ let openAsHidden = false;
 let systemShutdownState = systemShutdownNone;
 let gracefulSystemShutdownPromise;
 let keepAppOpenDuringSystemShutdown = false;
-let updateInstallPromise;
-let keepAppOpenDuringUpdate = false;
 const openDialogSingletons = new Set();
 const isOpenAsHidden = function () {
     return 1 === workspaces.length && openAsHidden;
@@ -121,16 +116,11 @@ const registerDefaultProtocolClient = (protocol) => {
 };
 
 const normalizeIncomingProtocolURL = (url) => {
-    return normalizeAppProtocolURL(url, (legacyURL, normalizedURL) => {
-        writeLog("deprecated protocol URL [" + legacyURL + "] converted to [" + normalizedURL + "]; [" +
-            LEGACY_PROTOCOL + "://] compatibility is planned for removal in " + LEGACY_PROTOCOL_REMOVAL_TARGET);
-    });
+    return normalizeAppProtocolURL(url);
 };
 
 registerDefaultProtocolClient(PRIMARY_PROTOCOL);
-registerDefaultProtocolClient(LEGACY_PROTOCOL);
-writeLog("registered primary protocol [" + PRIMARY_PROTOCOL + "://] with deprecated alias [" + LEGACY_PROTOCOL +
-    "://], planned removal in " + LEGACY_PROTOCOL_REMOVAL_TARGET);
+writeLog("registered primary protocol [" + PRIMARY_PROTOCOL + "://]");
 
 app.commandLine.appendSwitch("disable-web-security");
 app.commandLine.appendSwitch("auto-detect", "false");
@@ -391,7 +381,7 @@ const exitApp = (port, errorWindowId) => {
             });
         } else {
             markExpectedRendererExit(mainWindow);
-            if (keepAppOpenDuringSystemShutdown || keepAppOpenDuringUpdate) {
+            if (keepAppOpenDuringSystemShutdown) {
                 mainWindow.destroy();
             } else {
                 app.exit();
@@ -428,239 +418,6 @@ const requestKernelExit = (port, options = {}, signal) => {
     }).catch((error) => {
         writeLog("shutdown kernel failed [port=" + port + "]: " + error);
     });
-};
-
-const waitForKernelProcessExit = (port, timeout) => {
-    const portKey = port.toString();
-    const kernelProcess = kernelProcesses.get(portKey);
-    if (!kernelProcess) {
-        return Promise.resolve(true);
-    }
-
-    return new Promise((resolve) => {
-        let timer;
-        const onClose = () => {
-            clearTimeout(timer);
-            resolve(true);
-        };
-        kernelProcess.once("close", onClose);
-        timer = setTimeout(() => {
-            kernelProcess.removeListener("close", onClose);
-            resolve(false);
-        }, timeout);
-    });
-};
-
-const requestUpdateKernelExit = async (port, options) => {
-    const abortController = new AbortController();
-    const timeout = setTimeout(() => abortController.abort(), updateKernelExitTimeout);
-    try {
-        const response = await requestKernelExit(port, options, abortController.signal);
-        if (!response) {
-            return false;
-        }
-        const apiData = await response.json();
-        if (apiData.code === 0) {
-            writeLog("update kernel exit request succeeded [port=" + port + "]");
-            return apiData;
-        }
-        writeLog("update kernel exit request failed [port=" + port + ", code=" + apiData.code + "]");
-    } catch (error) {
-        writeLog("parse update kernel exit response failed [port=" + port + "]: " + error);
-    } finally {
-        clearTimeout(timeout);
-    }
-    return false;
-};
-
-const closeKernelForUpdate = async (port, initiatingPort, setCurrentWorkspace) => {
-    const isInitiatingKernel = port.toString() === initiatingPort.toString();
-    const exitResponse = await requestUpdateKernelExit(port, {
-        force: isInitiatingKernel,
-        setCurrentWorkspace: isInitiatingKernel && setCurrentWorkspace,
-        execInstallPkg: isInitiatingKernel ? 2 : 1,
-    });
-    if (exitResponse) {
-        return exitResponse;
-    }
-
-    writeLog("forcing kernel to exit for update [port=" + port + "]");
-    return requestUpdateKernelExit(port, {
-        force: true,
-        setCurrentWorkspace: isInitiatingKernel && setCurrentWorkspace,
-        execInstallPkg: isInitiatingKernel ? 2 : 1,
-    });
-};
-
-const validateUpdateInstallRequest = (event, data) => {
-    const workspace = workspaces.find((item) => item.webContentsId === event.sender.id);
-    if (!workspace || !workspace.workspaceDir || !data || !data.port ||
-        workspace.port.toString() !== data.port.toString()) {
-        writeLog("rejected update install request from an unknown workspace");
-        return;
-    }
-    if (process.platform !== "win32" && process.platform !== "darwin") {
-        writeLog("rejected update install request on unsupported platform [platform=" + process.platform + "]");
-        return;
-    }
-
-    return {
-        initiatingPort: workspace.port.toString(),
-        setCurrentWorkspace: data.setCurrentWorkspace !== false,
-        workspaceDir: workspace.workspaceDir,
-    };
-};
-
-const validateUpdateInstallPackage = (request, requestedInstallPkgPath) => {
-    if (!requestedInstallPkgPath) {
-        writeLog("the initiating kernel did not return an update install package");
-        return;
-    }
-
-    try {
-        const installDir = fs.realpathSync(path.join(request.workspaceDir, "temp", "install"));
-        const installPkgPath = fs.realpathSync(requestedInstallPkgPath);
-        const relativePkgPath = path.relative(installDir, installPkgPath);
-        if (!relativePkgPath || path.isAbsolute(relativePkgPath) || path.dirname(relativePkgPath) !== ".") {
-            writeLog("rejected update install package outside the workspace install directory [path=" + installPkgPath + "]");
-            return;
-        }
-
-        const packageName = path.basename(installPkgPath);
-        const validPackageName = process.platform === "win32"
-            ? /^scribli-.+-win(?:-arm64)?\.exe$/i.test(packageName)
-            : /^scribli-.+-mac(?:-arm64)?\.dmg$/i.test(packageName);
-        if (!validPackageName || !fs.statSync(installPkgPath).isFile()) {
-            writeLog("rejected invalid update install package [path=" + installPkgPath + "]");
-            return;
-        }
-        writeLog("validated update install package [path=" + installPkgPath + "]");
-        return installPkgPath;
-    } catch (error) {
-        writeLog("validate update install package failed: " + error);
-    }
-};
-
-const launchUpdateInstallPackage = (installPkgPath) => {
-    return new Promise((resolve, reject) => {
-        const command = process.platform === "darwin" ? "/usr/bin/open" : installPkgPath;
-        const args = process.platform === "darwin" ? [installPkgPath] : [];
-        const installProcess = childProcess.spawn(command, args, {
-            cwd: path.dirname(installPkgPath),
-            detached: true,
-            stdio: "ignore",
-        });
-        installProcess.once("error", reject);
-        installProcess.once("spawn", () => {
-            writeLog("launched update install package [pid=" + installProcess.pid + ", path=" + installPkgPath + "]");
-            installProcess.unref();
-            resolve();
-        });
-    });
-};
-
-const waitForUpdateKernelExits = async (ports) => {
-    if (ports.length === 0) {
-        return;
-    }
-
-    const exitResults = await Promise.all(ports.map(async (port) => {
-        return {
-            port,
-            exited: await waitForKernelProcessExit(port, updateKernelExitTimeout),
-        };
-    }));
-    const timedOutPorts = exitResults.filter((item) => !item.exited).map((item) => item.port);
-    if (timedOutPorts.length === 0) {
-        return;
-    }
-
-    writeLog("kernel exit timed out before update [ports=" + timedOutPorts.join(",") + "]");
-    timedOutPorts.forEach((port) => {
-        const kernelProcess = kernelProcesses.get(port);
-        if (kernelProcess) {
-            writeLog("terminating residual kernel before update [pid=" + kernelProcess.pid + ", port=" + port + "]");
-            kernelProcess.kill("SIGKILL");
-        }
-    });
-    await Promise.all(timedOutPorts.map((port) => waitForKernelProcessExit(port, 5000)));
-    const residualPorts = timedOutPorts.filter((port) => kernelProcesses.has(port));
-    if (residualPorts.length > 0) {
-        if (process.platform === "win32") {
-            writeLog("residual kernel processes will be terminated by the installer [ports=" + residualPorts.join(",") + "]");
-        } else {
-            throw new Error("failed to terminate residual kernel processes [ports=" + residualPorts.join(",") + "]");
-        }
-    }
-};
-
-const closeUpdateKernelStage = async (ports, request) => {
-    if (ports.length === 0) {
-        return [];
-    }
-
-    const exitResponses = await Promise.all(ports.map((port) => closeKernelForUpdate(port, request.initiatingPort,
-        request.setCurrentWorkspace)));
-    ports.forEach((port) => exitApp(port));
-    await waitForUpdateKernelExits(ports);
-    return exitResponses;
-};
-
-// During updates, close other workspaces first, then the initiating workspace, so every kernel has stopped before
-// the installer starts.
-// https://github.com/siyuan-note/siyuan/issues/18258
-const coordinateUpdateInstall = async (request) => {
-    const ports = Array.from(new Set(getSystemShutdownPorts().map((port) => port.toString())
-        .concat(Array.from(kernelProcesses.keys()), request.initiatingPort)));
-    ports.forEach((port) => expectedKernelExitPorts.add(port));
-    writeLog("coordinating update install [initiatingPort=" + request.initiatingPort + ", ports=" + ports.join(",") +
-        "]");
-
-    workspaces.forEach((workspace) => {
-        if (workspace.browserWindow && !workspace.browserWindow.isDestroyed()) {
-            workspace.browserWindow.hide();
-        }
-    });
-
-    const otherPorts = ports.filter((port) => port !== request.initiatingPort);
-    writeLog("closing other workspaces for update [ports=" + otherPorts.join(",") + "]");
-    await closeUpdateKernelStage(otherPorts, request);
-    writeLog("closing initiating workspace for update [port=" + request.initiatingPort + "]");
-    const [initiatingExitResponse] = await closeUpdateKernelStage([request.initiatingPort], request);
-    const installPkgPath = validateUpdateInstallPackage(request, initiatingExitResponse?.data?.installPkgPath);
-    if (!installPkgPath) {
-        throw new Error("the update install package returned by the kernel is invalid");
-    }
-
-    await launchUpdateInstallPackage(installPkgPath);
-    keepAppOpenDuringUpdate = false;
-    app.exit();
-};
-
-const beginUpdateInstall = (event, data) => {
-    if (updateInstallPromise) {
-        writeLog("ignored duplicate update install request");
-        return true;
-    }
-    if (systemShutdownState !== systemShutdownNone) {
-        writeLog("rejected update install request during system shutdown");
-        return false;
-    }
-
-    const request = validateUpdateInstallRequest(event, data);
-    if (!request) {
-        return false;
-    }
-
-    keepAppOpenDuringUpdate = true;
-    updateInstallPromise = coordinateUpdateInstall(request).catch((error) => {
-        writeLog("coordinate update install failed: " + error);
-        keepAppOpenDuringUpdate = false;
-        updateInstallPromise = undefined;
-        app.relaunch();
-        app.exit();
-    });
-    return true;
 };
 
 const getSystemShutdownPorts = () => {
@@ -1318,10 +1075,6 @@ app.whenReady().then(() => {
     // Renderer crash listener; only unexpected crashes in the workspace main window trigger safe mode.
     app.on("render-process-gone", (event, webContents, details) => {
         writeLog("Render process gone [reason=" + details.reason + ", exitCode=" + details.exitCode + "]");
-        if (updateInstallPromise) {
-            writeLog("ignore renderer exit during update [webContentsId=" + webContents.id + "]");
-            return;
-        }
         if (systemShutdownState !== systemShutdownNone) {
             writeLog("ignore renderer exit during system shutdown [webContentsId=" + webContents.id + "]");
             return;
@@ -1776,8 +1529,9 @@ app.whenReady().then(() => {
     ipcMain.on("siyuan-quit", (event, port) => {
         exitApp(port);
     });
-    ipcMain.handle("siyuan-install-update", (event, data) => {
-        return beginUpdateInstall(event, data);
+    ipcMain.handle("siyuan-install-update", () => {
+        writeLog("rejected update install request because runtime updates are disabled");
+        return false;
     });
     ipcMain.on("siyuan-show-window", (event) => {
         const mainWindow = getWindowByContentId(event.sender.id);
@@ -1838,10 +1592,6 @@ app.whenReady().then(() => {
         }
     });
     ipcMain.on("siyuan-open-workspace", (event, data) => {
-        if (updateInstallPromise) {
-            writeLog("ignored opening workspace while installing update");
-            return;
-        }
         const foundWorkspace = workspaces.find((item) => {
             if (item.workspaceDir === data.workspace) {
                 showWindow(item.browserWindow);
@@ -2184,10 +1934,6 @@ app.whenReady().then(() => {
 });
 
 app.on("open-url", async (event, url) => { // for macOS
-    if (updateInstallPromise) {
-        writeLog("ignored URL while installing update");
-        return;
-    }
     const appOpenURL = normalizeIncomingProtocolURL(url);
     if (appOpenURL) {
         event.preventDefault();
@@ -2216,10 +1962,6 @@ app.on("open-url", async (event, url) => { // for macOS
 
 app.on("second-instance", (event, argv) => {
     writeLog("second-instance [" + argv + "]");
-    if (updateInstallPromise) {
-        writeLog("ignored second instance while installing update");
-        return;
-    }
     let workspace = argv.find((arg) => arg.startsWith("--workspace="));
     if (workspace) {
         workspace = workspace.split("=")[1];
@@ -2276,9 +2018,6 @@ app.on("second-instance", (event, argv) => {
 });
 
 app.on("activate", () => {
-    if (updateInstallPromise) {
-        return;
-    }
     if (workspaces.length > 0) {
         const mainWindow = (latestActiveWindow && !latestActiveWindow.isDestroyed()) ? latestActiveWindow : workspaces[0].browserWindow;
         if (mainWindow && !mainWindow.isDestroyed()) {
@@ -2303,10 +2042,6 @@ app.on("web-contents-created", (webContentsCreatedEvent, contents) => {
 });
 
 app.on("before-quit", (event) => {
-    if (keepAppOpenDuringUpdate) {
-        event.preventDefault();
-        return;
-    }
     workspaces.forEach(item => {
         if (item.browserWindow && !item.browserWindow.isDestroyed()) {
             event.preventDefault();

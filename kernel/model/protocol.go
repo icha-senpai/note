@@ -19,8 +19,7 @@ package model
 import "strings"
 
 const (
-	blockProtocolPrefix       = "scribli://blocks/"
-	legacyBlockProtocolPrefix = "siyuan://blocks/"
+	blockProtocolPrefix = "scribli://blocks/"
 )
 
 func makeBlockProtocolURL(id string) string {
@@ -28,10 +27,7 @@ func makeBlockProtocolURL(id string) string {
 }
 
 func cutBlockProtocolURL(url string) (string, bool) {
-	if after, ok := strings.CutPrefix(url, blockProtocolPrefix); ok {
-		return after, true
-	}
-	return strings.CutPrefix(url, legacyBlockProtocolPrefix)
+	return strings.CutPrefix(url, blockProtocolPrefix)
 }
 
 func trimBlockProtocolURL(url string) string {

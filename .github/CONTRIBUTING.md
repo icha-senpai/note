@@ -9,22 +9,6 @@
 
 Install pnpm: `npm install -g pnpm@11.12.0`
 
-<details>
-<summary>For China mainland</summary>
-
-Set the Electron mirror environment variable and install Electron:
-
-* macOS/Linux: `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ pnpm install electron@42.6.1 -D`
-* Windows:
-  * `SET ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/`
-  * `pnpm install electron@42.6.1 -D`
-
-NPM mirror:
-
-* Use npmmirror China mirror repository `pnpm --registry https://registry.npmmirror.com/ i`
-* Revert to using official repository `pnpm --registry https://registry.npmjs.org i`
-</details>
-
 Enter the app folder and execute:
 
 * `pnpm install electron@42.6.1 -D`
@@ -32,7 +16,7 @@ Enter the app folder and execute:
 * `pnpm run dev`
 * `pnpm run start`
 
-Note: Electron 42 no longer downloads its binary automatically during `pnpm install`. Run `pnpm run install:electron` (or set `ELECTRON_MIRROR` first on China mainland) to fetch the binary before `pnpm run start`.
+Note: Electron 42 no longer downloads its binary automatically during `pnpm install`. Run `pnpm run install:electron` to fetch the binary before `pnpm run start`.
 
 Note: In the development environment, the kernel process will not be automatically started, and you need to manually start the kernel process first.
 
@@ -58,14 +42,14 @@ Note: In the development environment, the kernel process will not be automatical
 
 * `cd kernel`
 * `gomobile bind -tags "fts5 sqlcipher" -ldflags '-s -w' -v -o ./ios/iosk.xcframework -target=ios ./mobile/`
-* https://github.com/siyuan-note/siyuan-ios
+* Native iOS packaging is not part of the Scribli release pipeline yet.
 
 ### Android
 
 * `cd kernel`
 * `set JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8`
 * `gomobile bind -tags "fts5 sqlcipher" -ldflags "-s -w"  -v -o kernel.aar -target android/arm64 -androidapi 26 ./mobile/`
-* https://github.com/siyuan-note/siyuan-android
+* Native Android packaging is not part of the Scribli release pipeline yet.
 
 ### Harmony
 
@@ -73,7 +57,7 @@ Only support compilation under Linux, need to install Harmony SDK, and need to m
 
 * `cd kernel/harmony`
 * `./build.sh` (`./build-win.sh` for Windows Emulator)
-* https://github.com/siyuan-note/siyuan-harmony
+* Native Harmony packaging is not part of the Scribli release pipeline yet.
 
 Modify Go source code:
 
@@ -94,7 +78,7 @@ Modify Go source code:
 3. go/src/net/cgo_resold.go
    `C.size_t(len(b))` to `C.socklen_t(len(b))`
 
-For other details, please refer to https://github.com/siyuan-note/siyuan/issues/13184
+Native Harmony packaging needs a Scribli-owned guide before it is supported.
 
 ## Issue workflow
 

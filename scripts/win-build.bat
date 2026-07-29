@@ -97,7 +97,7 @@ if errorlevel 1 (
 )
 go version
 set GO111MODULE=on
-set GOPROXY=https://mirrors.aliyun.com/goproxy/,https://goproxy.cn,direct
+set GOPROXY=https://proxy.golang.org,direct
 set CGO_ENABLED=1
 set GOOS=windows
 
