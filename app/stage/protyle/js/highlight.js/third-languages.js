@@ -225,7 +225,7 @@ hljs.registerLanguage('template', function (hljs) {
             begin: /\b\d+(\.\d+)?\b/,
             relevance: 0
         },
-        // 思源笔记特定的字段
+        // Scribli 特定的字段
         {
             className: 'attr',
             begin: /\b(id|parent_id|root_id|hash|box|path|hpath|name|alias|memo|tag|content|fcontent|markdown|length|type|subtype|ial|sort|created|updated)\b/,
@@ -354,7 +354,7 @@ hljs.registerLanguage('template', function (hljs) {
         relevance: 10
     };
 
-    // 思源块属性规则
+    // Scribli 块属性规则
     const BLOCK_ATTR_RULE = {
         className: 'comment',
         begin: /\{:/,

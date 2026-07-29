@@ -626,7 +626,7 @@ const registerAppearancePersonalizationGroup = (tab: SettingTabBuilder) => {
 
 const mountAppearanceCodeSnippet = (root: HTMLElement) => {
     root.querySelector("#codeSnippetCommunityShare")?.addEventListener("click", () => {
-        openByMobile("https://ld246.com/tag/code-snippet");
+        openByMobile("#");
     });
     root.querySelector("#codeSnippet")?.addEventListener("click", () => {
         openSnippets();

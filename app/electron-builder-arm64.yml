@@ -1,10 +1,10 @@
-productName: "SiYuan"
-appId: "org.b3log.siyuan"
+productName: "Scribli"
+appId: "app.scribli.desktop"
 publish: null
 asar: false
 compression: "normal"
 copyright: "© 2020-present Yunnan Liandi Technology Co., Ltd."
-artifactName: "siyuan-${version}-${os}-arm64.${ext}"
+artifactName: "scribli-${version}-${os}-arm64.${ext}"
 extraMetadata:
   main: "electron/main.js"
 directories:
@@ -36,7 +36,7 @@ nsis:
   deleteAppDataOnUninstall: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: "SiYuan"
+  shortcutName: "Scribli"
   license: "../LICENSE"
   include: "nsis/installer.nsh"
   warningsAsErrors: false

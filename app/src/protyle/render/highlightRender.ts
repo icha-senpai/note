@@ -12,7 +12,7 @@ export const highlightRender = (element: Element, cdn = Constants.PROTYLE_CDN, z
         codeElements = element.querySelectorAll(".hljs");
     } else {
         if (element.classList.contains("item__readme")) {
-            // bazaar reademe
+            // extension README
             codeElements = element.querySelectorAll("pre code");
             codeElements.forEach(item => {
                 item.parentElement.setAttribute("linenumber", "false");
@@ -64,7 +64,7 @@ export const highlightRender = (element: Element, cdn = Constants.PROTYLE_CDN, z
                 } else if (block.previousElementSibling) {
                     language = block.previousElementSibling.firstElementChild.textContent;
                 } else {
-                    // bazaar readme
+                    // extension README
                     language = block.className.replace("language-", "");
                 }
                 if (!window.hljs.getLanguage(language)) {

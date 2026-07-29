@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -298,7 +298,7 @@ func (h *mcpOAuthHandler) Authorize(ctx context.Context, req *http.Request, resp
 			TokenEndpointAuthMethod: tokenAuthMethod,
 			GrantTypes:              grantTypes,
 			ResponseTypes:           []string{"code"},
-			ClientName:              "SiYuan",
+			ClientName:              "Scribli",
 			Scope:                   strings.Join(scopes, " "),
 			ApplicationType:         "native",
 		}, h.client)

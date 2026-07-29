@@ -34,7 +34,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "We can collect external data through the cloud inbox, and then obtain these data from the cloud through the inbox panel in SiYuan and send them to the notebook for further sorting."
+					"Data": "We can collect external data through the cloud inbox, and then obtain these data from the cloud through the inbox panel in Scribli and send them to the notebook for further sorting."
 				}
 			]
 		},
@@ -118,7 +118,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "https://liuyun.io/apis/siyuan/inbox/addCloudShorthand"
+									"TextMarkTextContent": "https://liuyun.io/apis/scribli/inbox/addCloudShorthand"
 								},
 								{
 									"Type": "NodeText",

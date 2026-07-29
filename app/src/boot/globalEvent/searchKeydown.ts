@@ -130,12 +130,12 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
             return true;
         }
         if (matchHotKey(window.siyuan.config.keymap.editor.general.copyProtocol.custom, event)) {
-            writeText(`siyuan://blocks/${id}`);
+            writeText(`scribli://blocks/${id}`);
             return true;
         }
         if (matchHotKey(window.siyuan.config.keymap.editor.general.copyProtocolInMd.custom, event)) {
             fetchPost("/api/block/getRefText", {id}, (response) => {
-                writeText(`[${response.data}](siyuan://blocks/${id})`);
+                writeText(`[${response.data}](scribli://blocks/${id})`);
             });
             return true;
         }

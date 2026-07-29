@@ -270,7 +270,7 @@
 				},
 				{
 					"Type": "NodeText",
-					"Data": "​）。設置後，思源會自動在屬性名前加上前綴 "
+					"Data": "​）。設置後，Scribli會自動在屬性名前加上前綴 "
 				},
 				{
 					"Type": "NodeTextMark",

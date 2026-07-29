@@ -89,8 +89,8 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://github.com/siyuan-note/siyuan/releases",
-									"TextMarkTextContent": "https://github.com/siyuan-note/siyuan/releases"
+									"TextMarkAHref": "https://github.com/scribli-note/scribli/releases",
+									"TextMarkTextContent": "https://github.com/scribli-note/scribli/releases"
 								}
 							]
 						}

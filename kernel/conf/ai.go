@@ -191,7 +191,7 @@ func NewAI() *AI {
 	apiModel := os.Getenv("SIYUAN_OPENAI_API_MODEL")
 	apiBaseURL := os.Getenv("SIYUAN_OPENAI_API_BASE_URL")
 
-	if apiModel != "" && apiBaseURL != "" {
+	if !util.OfflineMode && apiModel != "" && apiBaseURL != "" {
 		provider := &Provider{
 			BaseURL:        apiBaseURL,
 			RequestTimeout: 120,
@@ -267,7 +267,7 @@ func NewAI() *AI {
 	embeddingKey := os.Getenv("SIYUAN_OPENAI_EMBEDDING_API_KEY")
 	embeddingBaseURL := os.Getenv("SIYUAN_OPENAI_EMBEDDING_BASE_URL")
 	embeddingModel := os.Getenv("SIYUAN_OPENAI_EMBEDDING_MODEL")
-	if "" != embeddingKey && "" != embeddingBaseURL && "" != embeddingModel {
+	if !util.OfflineMode && "" != embeddingKey && "" != embeddingBaseURL && "" != embeddingModel {
 		ai.Embedding = &Embedding{
 			APIKey:  embeddingKey,
 			BaseURL: embeddingBaseURL,

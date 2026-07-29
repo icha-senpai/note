@@ -38,7 +38,7 @@ import (
 )
 
 func SetCloudReminder(id, content, timed string) (err error) {
-	if !IsSubscriber() {
+	if !HasFullAccess() {
 		if "ios" == util.Container {
 			return errors.New(Conf.Language(122))
 		}
@@ -71,7 +71,7 @@ func SetCloudReminder(id, content, timed string) (err error) {
 }
 
 func SetBlockReminder(id, timed string) (err error) {
-	if !IsSubscriber() {
+	if !HasFullAccess() {
 		if "ios" == util.Container {
 			return errors.New(Conf.Language(122))
 		}

@@ -9,7 +9,6 @@ import {openFile, openFileById} from "../editor/util";
 import {fetchPost} from "./fetch";
 import {checkFold} from "./noRelyPCFunction";
 import {openMobileFileById} from "../mobile/editor";
-import {isValidBazaarPackageName} from "./bazaarPackage";
 
 import type {App} from "../index";
 import {activateQueuedAVLocate, queueAVLocateRequest} from "../protyle/render/av/locate";
@@ -86,13 +85,13 @@ const processSiYuanUriPlugins = (app: App, uriObj: URL): boolean => {
 
     const plugin = app.plugins.find(plugin => pluginNameOrTabType === plugin.name);
     if (plugin) {
-        // siyuan://plugins/plugin-name/foo?bar=baz
+        // scribli://plugins/plugin-name/foo?bar=baz
         plugin.eventBus.emit("open-siyuan-url-plugin", { url: uriObj.href });
     } else {
         if (!app.plugins.some(item => item.models[pluginNameOrTabType])) {
             return false;
         }
-        // siyuan://plugins/plugin-samplecustom_tab?title=自定义页签&icon=iconFace&data={"text": "This is the custom plugin tab I opened via protocol."}
+        // scribli://plugins/plugin-samplecustom_tab?title=自定义页签&icon=iconFace&data={"text": "This is the custom plugin tab I opened via protocol."}
         /// #if !MOBILE
         // https://github.com/siyuan-note/siyuan/pull/9256
         const data = (() => {
@@ -121,39 +120,6 @@ const processSiYuanUriPlugins = (app: App, uriObj: URL): boolean => {
     return true;
 };
 
-const processSiYuanUriBazaar = (app: App, uriObj: URL): boolean => {
-    /// #if !MOBILE
-    const [, _type, _name, target] = uriObj.pathname.split("/");
-    if (!_type || !_name) return false;
-    const resourceType = _type as TBazaarType;
-    let resourceName: string;
-    try {
-        resourceName = decodeURIComponent(_name);
-    } catch {
-        return false;
-    }
-    if (!isValidBazaarPackageName(resourceName)) {
-        return false;
-    }
-    switch (target) {
-        case "readme":
-        case "readme-installed": {
-            // siyuan://bazaar/plugins/plugin-sample/readme
-            // siyuan://bazaar/plugins/plugin-sample/readme-installed
-            const from = target === "readme-installed" ? "downloaded" : "bazaar";
-            (async () => {
-                const {openBazaarReadme} = await import("../config");
-                openBazaarReadme(app, resourceType, resourceName, from);
-            })();
-            return true;
-        }
-        default:
-            break;
-    }
-    /// #endif
-    return false;
-};
-
 export const processSiYuanUri = (app: App, uri: string) => {
     let uriObj: URL;
     try {
@@ -169,8 +135,6 @@ export const processSiYuanUri = (app: App, uri: string) => {
             return processSiYuanUriBlocks(app, uriObj);
         case "plugins":
             return processSiYuanUriPlugins(app, uriObj);
-        case "bazaar":
-            return processSiYuanUriBazaar(app, uriObj);
         default:
             break;
     }

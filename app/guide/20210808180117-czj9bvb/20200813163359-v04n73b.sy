@@ -21,8 +21,8 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/privacy.html",
-					"TextMarkTextContent": "思源笔记隐私政策"
+					"TextMarkAHref": "https://b3log.org/scribli/privacy.html",
+					"TextMarkTextContent": "Scribli隐私政策"
 				}
 			]
 		},
@@ -37,8 +37,8 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/eula.html",
-					"TextMarkTextContent": "思源笔记用户协议"
+					"TextMarkAHref": "https://b3log.org/scribli/eula.html",
+					"TextMarkTextContent": "Scribli用户协议"
 				}
 			]
 		},

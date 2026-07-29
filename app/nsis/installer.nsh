@@ -20,7 +20,7 @@ Function AppendInstallLog
 
     ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
     ClearErrors
-    FileOpen $7 "$TEMP\SiYuan-install.log" a
+    FileOpen $7 "$TEMP\Scribli-install.log" a
     IfErrors installLogDone
     FileSeek $7 0 END
     FileWrite $7 "$2-$1-$0 $4:$5:$6 $R9$\r$\n"
@@ -42,17 +42,17 @@ FunctionEnd
 !macro preInit
     ${IfNot} ${AtLeastWin10}
         !insertmacro WriteInstallLog "installer-rejected-unsupported-windows version=${VERSION}"
-        MessageBox MB_ICONEXCLAMATION "非常抱歉，思源笔记无法在低于 Windows 10 的系统上进行安装$\n$\n\
-            Sorry, SiYuan cannot be installed on systems below Windows 10$\n"
+        MessageBox MB_ICONEXCLAMATION "非常抱歉，Scribli无法在低于 Windows 10 的系统上进行安装$\n$\n\
+            Sorry, Scribli cannot be installed on systems below Windows 10$\n"
         Quit
     ${EndIf}
 
     !insertmacro WriteInstallLog "installer-start version=${VERSION} package=$EXEPATH"
     Push $R8
     Push $R7
-    nsExec::Exec 'TASKKILL /F /IM "SiYuan.exe"'
+    nsExec::Exec 'TASKKILL /F /IM "Scribli.exe"'
     Pop $R8
-    nsExec::Exec 'TASKKILL /F /IM "SiYuan-Kernel.exe"'
+    nsExec::Exec 'TASKKILL /F /IM "Scribli-Kernel.exe"'
     Pop $R7
     !insertmacro WriteInstallLog "process-cleanup-complete version=${VERSION} app-result=$R8 kernel-result=$R7"
     Pop $R7
@@ -81,8 +81,8 @@ FunctionEnd
 
 !macro customInstall
     !insertmacro WriteInstallLog "payload-extracted version=${VERSION} target=$INSTDIR"
-    RMDir /r "$PROFILE\AppData\Local\siyuan-updater"
-    nsExec::ExecToLog 'cmd /c mklink /H "$INSTDIR\resources\kernel\siyuan.exe" "$INSTDIR\resources\kernel\SiYuan-Kernel.exe" 2>nul || ver>nul'
+    RMDir /r "$PROFILE\AppData\Local\scribli-updater"
+    nsExec::ExecToLog 'cmd /c mklink /H "$INSTDIR\resources\kernel\scribli.exe" "$INSTDIR\resources\kernel\Scribli-Kernel.exe" 2>nul || ver>nul'
     ${If} $installMode == "all"
         nsExec::ExecToLog 'powershell -NoProfile -Command "$k=\"$INSTDIR\resources\kernel\";$p=[Environment]::GetEnvironmentVariable(\"Path\",\"Machine\");if((-not $p) -or -not ($p.Split(\";\") -contains $k)){$p=\"$k;$p\";[Environment]::SetEnvironmentVariable(\"Path\",$p,\"Machine\")}else{Write-Host \"already in PATH\"}"'
     ${Else}
@@ -93,28 +93,28 @@ FunctionEnd
 
 !macro customUnInstall
     ${IfNot} ${isUpdated}
-        IfFileExists "$PROFILE\.config\siyuan\*.*" 0 skipConfigDelete
-            MessageBox MB_YESNO "是否需要彻底删除全局配置（$PROFILE\.config\siyuan\）？$\n$\n\
-                Do you want to delete the global configuration ($PROFILE\.config\siyuan\)?$\n" \
+        IfFileExists "$PROFILE\.config\scribli\*.*" 0 skipConfigDelete
+            MessageBox MB_YESNO "是否需要彻底删除全局配置（$PROFILE\.config\scribli\）？$\n$\n\
+                Do you want to delete the global configuration ($PROFILE\.config\scribli\)?$\n" \
                 /SD IDYES IDYES AcceptedRMConf IDNO SkippedRMConf
                 AcceptedRMConf:
-                    RMDir /r "$PROFILE\.config\siyuan\"
+                    RMDir /r "$PROFILE\.config\scribli\"
                 SkippedRMConf:
         skipConfigDelete:
     ${EndIf}
 
     ${IfNot} ${isUpdated}
-        IfFileExists "$PROFILE\SiYuan\*.*" 0 skipWorkspaceDelete
-            MessageBox MB_YESNO "是否需要彻底删除默认工作空间（$PROFILE\SiYuan\）？$\n$\n\
-                Do you want to completely delete the default workspace ($PROFILE\SiYuan\)?$\n" \
+        IfFileExists "$PROFILE\Scribli\*.*" 0 skipWorkspaceDelete
+            MessageBox MB_YESNO "是否需要彻底删除默认工作空间（$PROFILE\Scribli\）？$\n$\n\
+                Do you want to completely delete the default workspace ($PROFILE\Scribli\)?$\n" \
                 /SD IDNO IDYES AcceptedRMWorkspace IDNO SkippedRMWrokspace
                 AcceptedRMWorkspace:
-                    RMDir /r "$PROFILE\SiYuan\"
+                    RMDir /r "$PROFILE\Scribli\"
                 SkippedRMWrokspace:
         skipWorkspaceDelete:
     ${EndIf}
 
-    RMDir /r "$PROFILE\AppData\Local\siyuan-updater"
+    RMDir /r "$PROFILE\AppData\Local\scribli-updater"
     ${If} $installMode == "all"
         nsExec::ExecToLog 'powershell -NoProfile -Command "$k=\"$INSTDIR\resources\kernel\";$p=[Environment]::GetEnvironmentVariable(\"Path\",\"Machine\");if($p){$a=$p.Split(\";\") | ?{$_ -and ($_ -ne $k)};$p=[string]::Join(\";\",$a);[Environment]::SetEnvironmentVariable(\"Path\",$p,\"Machine\")}"'
     ${Else}

@@ -448,7 +448,7 @@
     const exitSiYuan = () => {
         if (toPath.indexOf("/stage/build/app/window.html") > -1) {
             const {ipcRenderer} = require('electron');
-            ipcRenderer.send("siyuan-cmd", "destroy");
+            ipcRenderer.send("scribli-cmd", "destroy");
             return;
         }
 

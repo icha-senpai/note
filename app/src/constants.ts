@@ -18,7 +18,7 @@ export abstract class Constants {
     public static readonly SIYUAN_APPID: string = Math.random().toString(36).substring(8);
 
     // 服务器地址
-    public static readonly ASSETS_ADDRESS: string = "https://assets.b3logfile.com/siyuan/";
+    public static readonly ASSETS_ADDRESS: string = "";
     public static readonly PROTYLE_CDN: string = "/stage/protyle";
     public static readonly UPLOAD_ADDRESS: string = "/upload";
     public static readonly SERVICE_WORKER_PATH: string = "/service-worker.js";
@@ -31,7 +31,7 @@ export abstract class Constants {
     public static readonly SIYUAN_DROP_EDITOR: string = "application/siyuan-editor";
 
     // 渲染进程调主进程
-    public static readonly SIYUAN_CMD: string = "siyuan-cmd";
+    public static readonly SIYUAN_CMD: string = "scribli-cmd";
     public static readonly SIYUAN_GET: string = "siyuan-get";
     public static readonly SIYUAN_EVENT: string = "siyuan-event";
 
@@ -160,7 +160,6 @@ export abstract class Constants {
     public static readonly LOCAL_EXPORTPDF = "local-exportpdf";
     public static readonly LOCAL_EXPORTWORD = "local-exportword";
     public static readonly LOCAL_EXPORTIMG = "local-exportimg";
-    public static readonly LOCAL_BAZAAR = "local-bazaar";
     public static readonly LOCAL_PDFTHEME = "local-pdftheme";
     public static readonly LOCAL_LAYOUTS = "local-layouts";
     public static readonly LOCAL_AI = "local-ai";
@@ -794,13 +793,6 @@ export abstract class Constants {
     };
 
     // image
-    public static readonly SIYUAN_IMAGE_VIP: string = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-<path fill="#ffd00f" d="M2.288 12.643l23.487 12.853c0.286 0.153 0.477 0.45 0.477 0.791 0 0.082-0.011 0.161-0.032 0.237l0.001-0.006c-0.119 0.395-0.479 0.678-0.905 0.678-0.004 0-0.009-0-0.013-0h-19.439c-0.958 0-1.766-0.684-1.885-1.595l-1.691-12.956z"></path>
-<path fill="#ffd00f" d="M29.676 12.643l-1.691 12.957c-0.119 0.911-0.927 1.594-1.884 1.594h-19.442c-0.004 0-0.009 0-0.013 0-0.425 0-0.785-0.281-0.903-0.668l-0.002-0.007c-0.019-0.070-0.031-0.15-0.031-0.232 0-0.341 0.191-0.638 0.472-0.788l0.005-0.002 23.487-12.853z"></path>
-<path fill="#ffe668" d="M15.413 8.369l10.394 15.921c0.378 0.579 0.407 1.317 0.076 1.924-0.328 0.591-0.948 0.985-1.66 0.985-0 0-0.001 0-0.001 0h-17.617c-0.694 0-1.331-0.378-1.661-0.985-0.144-0.26-0.229-0.569-0.229-0.899 0-0.382 0.114-0.736 0.31-1.033l-0.004 0.007 10.394-15.921z"></path>
-<path fill="#ffdd4e" d="M15.396 8.403l11.659 15.921c0.401 0.579 0.432 1.317 0.081 1.924-0.361 0.594-1.005 0.985-1.741 0.985-0.008 0-0.017-0-0.025-0h-9.344l-0.63-18.83z"></path>
-<path fill="#ffd00f" d="M13.868 6.478c0 0.946 0.767 1.712 1.712 1.712s1.712-0.767 1.712-1.712v0c0-0.945-0.766-1.712-1.712-1.712s-1.712 0.766-1.712 1.712v0zM28.577 10.818c0 0.945 0.766 1.712 1.712 1.712s1.712-0.766 1.712-1.712v0c0-0.945-0.766-1.712-1.712-1.712s-1.712 0.766-1.712 1.712v0zM0 10.822c0 0.945 0.766 1.712 1.712 1.712s1.712-0.766 1.712-1.712v0c0-0.945-0.766-1.712-1.712-1.712s-1.712 0.766-1.712 1.712v0z"></path>
-</svg>`;
     public static readonly SIYUAN_IMAGE_SPONSOR: string = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
 <path fill="#ffe43c" d="M6.4 0h19.2c4.268 0 6.4 2.132 6.4 6.4v19.2c0 4.268-2.132 6.4-6.4 6.4h-19.2c-4.268 0-6.4-2.132-6.4-6.4v-19.2c0-4.268 2.135-6.4 6.4-6.4z"></path>
 <path fill="#00f5d4" d="M25.6 0h-8.903c-7.762 1.894-14.043 7.579-16.697 15.113v10.487c0 3.533 2.867 6.4 6.4 6.4h19.2c3.533 0 6.4-2.867 6.4-6.4v-19.2c0-3.537-2.863-6.4-6.4-6.4z"></path>

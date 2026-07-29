@@ -18,7 +18,6 @@ package mobile
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -29,7 +28,6 @@ import (
 	"github.com/88250/gulu"
 	"github.com/88250/lute/ast"
 	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/httpclient"
 	"github.com/siyuan-note/logging"
 	"github.com/siyuan-note/siyuan/kernel/cache"
 	"github.com/siyuan-note/siyuan/kernel/job"
@@ -119,82 +117,9 @@ func VerifyAppStoreTransaction(accountToken, transactionID string) (retCode int)
 		return
 	}
 
-	verifyURL := util.GetCloudServer() + "/apis/siyuan/verifyAppStoreTransaction"
-	result := gulu.Ret.NewResult()
-	request := httpclient.NewCloudRequest30s()
-	resp, reqErr := request.SetSuccessResult(result).SetCookies(&http.Cookie{Name: "symphony", Value: user.UserToken}).
-		SetBody(map[string]string{"transactionId": transactionID, "accountToken": accountToken, "userId": userID}).Post(verifyURL)
-	if nil != reqErr {
-		retCode = -2
-		retMsg = fmt.Sprintf("verify app store transaction failed: %s", reqErr)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-	if http.StatusUnauthorized == resp.StatusCode || http.StatusForbidden == resp.StatusCode {
-		retCode = -4
-		retMsg = fmt.Sprintf("verify app store transaction failed [sc=%d]", resp.StatusCode)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-	if http.StatusOK != resp.StatusCode {
-		retCode = -2
-		retMsg = fmt.Sprintf("verify app store transaction failed [sc=%d]", resp.StatusCode)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-
-	if -1 == result.Code {
-		retCode = -5
-		retMsg = fmt.Sprintf("verify app store transaction failed [code=%d, msg=%s]", result.Code, result.Msg)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-	if -3 == result.Code {
-		retCode = -6
-		retMsg = fmt.Sprintf("verify app store transaction failed [code=%d, msg=%s]", result.Code, result.Msg)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-	if -2 == result.Code {
-		retCode = -8
-		retMsg = fmt.Sprintf("verify app store transaction failed [code=%d, msg=%s]", result.Code, result.Msg)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-	if -4 == result.Code {
-		retCode = -8
-		retMsg = fmt.Sprintf("verify app store transaction failed [code=%d, msg=%s]", result.Code, result.Msg)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-	if -5 == result.Code {
-		retCode = -7
-		retMsg = fmt.Sprintf("verify app store transaction failed [code=%d, msg=%s]", result.Code, result.Msg)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-	if -6 == result.Code {
-		retCode = -9
-		retMsg = fmt.Sprintf("verify app store transaction failed [code=%d, msg=%s]", result.Code, result.Msg)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-	if -64 == result.Code {
-		retCode = -2
-		retMsg = fmt.Sprintf("verify app store transaction failed [code=%d, msg=%s]", result.Code, result.Msg)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-	if 0 != result.Code {
-		retCode = -2
-		retMsg = fmt.Sprintf("verify app store transaction failed [code=%d, msg=%s]", result.Code, result.Msg)
-		logging.LogErrorf("%s", retMsg)
-		return
-	}
-
-	retCode = 0
-	retMsg = fmt.Sprintf("verify app store transaction [%s] success", transactionID)
-	logging.LogInfof("%s", retMsg)
+	retCode = -2
+	retMsg = util.ErrOfficialServicesDisabled.Error()
+	logging.LogErrorf("%s", retMsg)
 	return
 }
 

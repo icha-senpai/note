@@ -195,12 +195,12 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": "​を使用してください)を指定することを検討してください。たとえば、Windows で SiYuan のショートカットをいくつか作成して、各ショートカットのプロパティを開き、\"ショートカット\" タブの \"リンク先\" の後に "
+									"Data": "​を使用してください)を指定することを検討してください。たとえば、Windows で Scribli のショートカットをいくつか作成して、各ショートカットのプロパティを開き、\"ショートカット\" タブの \"リンク先\" の後に "
 								},
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "--workspace=\u0026quot;F:\\SiYuan\u0026quot;"
+									"TextMarkTextContent": "--workspace=\u0026quot;F:\\Scribli\u0026quot;"
 								},
 								{
 									"Type": "NodeText",

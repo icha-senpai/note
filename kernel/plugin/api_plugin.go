@@ -21,7 +21,7 @@ import (
 
 	"github.com/dop251/goja"
 	"github.com/samber/lo"
-	"github.com/siyuan-note/siyuan/kernel/bazaar"
+	"github.com/siyuan-note/siyuan/kernel/extensions"
 )
 
 // injectPlugin adds siyuan.plugin to the goja context.
@@ -42,7 +42,7 @@ func injectPlugin(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 	lo.Must0(plugin.Set("name", p.Name))
 	lo.Must0(plugin.Set("version", p.Version))
 	lo.Must0(plugin.Set("displayName", p.DisplayName))
-	lo.Must0(plugin.Set("platform", bazaar.GetCurrentBackend()))
+	lo.Must0(plugin.Set("platform", extensions.GetCurrentBackend()))
 	lo.Must0(plugin.Set("i18n", p.I18n))
 	lo.Must0(plugin.Set("lifecycle", lifecycle))
 	lo.Must0(ObjectFreeze(rt, plugin))

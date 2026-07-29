@@ -10,10 +10,9 @@ import {mountSyncTabExtras, patchSyncConfig} from "../tabs/syncRuntime";
 import {mountAccessTab} from "../tabs/accessRuntime";
 import {collectAssetsTabSearchStrings, mountAssetsTab} from "../assets";
 /// #if !MOBILE
-import {collectBazaarTabSearchStrings, mountBazaarTab} from "../bazaar";
 import {collectKeymapTabSearchStrings, mountKeymapTab} from "../tabs/keymapUi";
 /// #endif
-import {isHuawei, isInHarmony} from "../../protyle/util/compatibility";
+import {isHuawei} from "../../protyle/util/compatibility";
 /// #if MOBILE
 import {isDisabledFeature} from "../../protyle/util/compatibility";
 /// #endif
@@ -51,16 +50,6 @@ const settingTabs = {
         title: () => window.siyuan.languages.appearance,
         defaultSave: appearanceConfigApi.patch,
     }, registerAppearanceTab),
-    /// #if !MOBILE
-    bazaar: setting.panel({
-        id: "bazaar",
-        icon: "iconBazaar",
-        title: () => window.siyuan.languages.bazaar,
-        hidden: () => !!(isHuawei() || isInHarmony()),
-        searchStrings: collectBazaarTabSearchStrings,
-        mount: mountBazaarTab,
-    }),
-    /// #endif
     flashcard: setting.tab({
         id: "flashcard",
         icon: "iconRiffCard",

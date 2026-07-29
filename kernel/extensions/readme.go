@@ -14,11 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package bazaar
+package extensions
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -30,8 +29,6 @@ import (
 	"github.com/88250/lute/parse"
 	"github.com/siyuan-note/logging"
 	"github.com/siyuan-note/siyuan/kernel/util"
-	textUnicode "golang.org/x/text/encoding/unicode"
-	"golang.org/x/text/transform"
 )
 
 // getReadmeFileCandidates 根据包的 README 配置返回去重的按优先级排序的 README 候选文件名列表：当前语言首选、default、README.md。
@@ -44,51 +41,7 @@ func getReadmeFileCandidates(readme LocaleStrings) []string {
 	return gulu.Str.RemoveDuplicatedElem([]string{preferred, defaultName, "README.md"})
 }
 
-// GetBazaarPackageREADME 获取集市包的在线 README。
-func GetBazaarPackageREADME(ctx context.Context, repoURL, repoHash, pkgType string) (ret string) {
-	repoURLHash := repoURL + "@" + repoHash
-	url := strings.TrimPrefix(repoURLHash, "https://github.com/")
-	repo := getStageRepoByURL(ctx, pkgType, url)
-	if repo == nil || repo.Package == nil {
-		return
-	}
-
-	candidates := getReadmeFileCandidates(repo.Package.Readme)
-	var data []byte
-	var loadErr error
-	var errMsgs []string
-	for _, name := range candidates {
-		data, loadErr = downloadBazaarFile(repoURLHash+"/"+name, false)
-		if loadErr == nil {
-			break
-		}
-		errMsgs = append(errMsgs, fmt.Sprintf("Load bazaar package's README(%s) failed: %s", name, loadErr.Error()))
-	}
-	if loadErr != nil {
-		ret = strings.Join(errMsgs, "<br>")
-		return
-	}
-
-	// 解码 UTF-16 BOM
-	if len(data) > 2 {
-		var decoded []byte
-		var err error
-		if data[0] == 0xFF && data[1] == 0xFE {
-			decoded, _, err = transform.Bytes(textUnicode.UTF16(textUnicode.LittleEndian, textUnicode.ExpectBOM).NewDecoder(), data)
-		} else if data[0] == 0xFE && data[1] == 0xFF {
-			decoded, _, err = transform.Bytes(textUnicode.UTF16(textUnicode.BigEndian, textUnicode.ExpectBOM).NewDecoder(), data)
-		}
-		if decoded != nil && err == nil {
-			data = decoded
-		}
-	}
-
-	linkBase := "https://cdn.jsdelivr.net/gh/" + strings.TrimPrefix(repoURL, "https://github.com/")
-	ret = renderPackageREADME(linkBase, data)
-	return
-}
-
-// getInstalledPackageREADME 获取集市包的本地 README。
+// getInstalledPackageREADME 获取本地扩展包的 README。
 func getInstalledPackageREADME(installPath, linkBase string, readme LocaleStrings) (ret string) {
 	candidates := getReadmeFileCandidates(readme)
 	var errMsgs []string

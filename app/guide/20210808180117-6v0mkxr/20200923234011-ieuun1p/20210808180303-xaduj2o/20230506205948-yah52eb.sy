@@ -34,7 +34,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "Plugins are mainly used to expand the overall functions of SiYuan."
+					"Data": "Plugins are mainly used to expand the overall functions of Scribli."
 				}
 			]
 		},
@@ -167,7 +167,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/en/community.html",
+					"TextMarkAHref": "https://b3log.org/scribli/en/community.html",
 					"TextMarkTextContent": "Community marketplace repo"
 				},
 				{

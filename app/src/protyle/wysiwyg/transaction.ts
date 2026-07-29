@@ -27,7 +27,7 @@ import {cancelSB, genEmptyElement, genSBElement, refreshSbResize} from "../../bl
 import {hideElements} from "../ui/hideElements";
 import {reloadProtyle} from "../util/reload";
 import {countBlockWord} from "../../layout/status";
-import {isPaidUser, needSubscribe} from "../../util/needSubscribe";
+import {hasFeatureAccess} from "../../util/featureAccess";
 import {resize} from "../util/resize";
 import {processClonePHElement} from "../render/util";
 import {scrollCenter} from "../../util/highlightById";
@@ -99,8 +99,8 @@ const promiseTransaction = (options: {
     // 受影响的嵌入块需推迟到事务提交后再渲染，否则其查询请求会早于写入到达内核而拿到旧数据
     const pendingEmbedElements = new Set<Element>();
     /// #if MOBILE
-    if (((0 !== window.siyuan.config.sync.provider && isPaidUser()) ||
-            (0 === window.siyuan.config.sync.provider && !needSubscribe(""))) &&
+    if (((0 !== window.siyuan.config.sync.provider && hasFeatureAccess()) ||
+            (0 === window.siyuan.config.sync.provider && hasFeatureAccess())) &&
         window.siyuan.config.repo.key && window.siyuan.config.sync.enabled) {
         document.getElementById("toolbarSync").classList.remove("fn__none");
     }

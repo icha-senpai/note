@@ -745,9 +745,6 @@ func ClearTempFiles() {
 		util.PushUpdateMsg(msgId, msg, 7000)
 	}()
 
-	bazaarTmp := filepath.Join(util.TempDir, "bazaar")
-	clearTempDir(bazaarTmp, &count, &size)
-
 	exportTmp := filepath.Join(util.TempDir, "export")
 	clearTempDir(exportTmp, &count, &size)
 

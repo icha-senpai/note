@@ -19,13 +19,16 @@ package sql
 import (
 	"context"
 	"database/sql"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"strings"
 	"unicode"
-
-	"github.com/mattn/go-sqlite3"
 )
+
+type readonlyStmt interface {
+	Readonly() bool
+}
 
 // tailIsOnlyWhitespaceOrSQLComments 判断分号之后的片段是否仅由空白、行注释（-- 至换行或 EOF）、
 // 块注释（/* … */，含未闭合则吞至 EOF）构成。与 SQLite 解析对齐：分号后若只有这些内容，不会被视为另一条可执行的 SQL 语句。
@@ -201,17 +204,17 @@ func checkReadonlyStatement(stmt string, targetDB *sql.DB) error {
 	defer conn.Close()
 
 	return conn.Raw(func(dc any) error {
-		sqliteConn, ok := dc.(*sqlite3.SQLiteConn)
+		preparer, ok := dc.(driver.ConnPrepareContext)
 		if !ok {
-			return fmt.Errorf("SQL driver connection type is unexpected: %T", dc)
+			return fmt.Errorf("SQL driver connection does not support PrepareContext: %T", dc)
 		}
-		ds, err := sqliteConn.Prepare(stmt)
+		ds, err := preparer.PrepareContext(ctx, stmt)
 		if err != nil {
 			return err
 		}
 		defer ds.Close()
 
-		sst, ok := ds.(*sqlite3.SQLiteStmt)
+		sst, ok := ds.(readonlyStmt)
 		if !ok {
 			return fmt.Errorf("SQL driver statement type is unexpected: %T", ds)
 		}

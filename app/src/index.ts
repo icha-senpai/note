@@ -3,7 +3,6 @@ import {Menus} from "./menus";
 import {Model} from "./layout/Model";
 import {onGetConfig} from "./boot/onGetConfig";
 import {initBlockPopover} from "./block/popover";
-import {onSetaccount} from "./config/tabs/accountUi";
 import {addScript, addScriptSync} from "./protyle/util/addScript";
 import {genUUID} from "./util/genID";
 import {fetchGet, fetchPost} from "./util/fetch";
@@ -20,7 +19,6 @@ import {openFileById} from "./editor/util";
 import {activateOnboarding, ensureOnboarding} from "./onboarding";
 import {
     bootSync,
-    downloadProgress,
     processSync,
     progressBackgroundTask,
     progressLoading,
@@ -196,9 +194,6 @@ export class App {
                         case "statusbar":
                             progressStatus(data);
                             break;
-                        case "downloadProgress":
-                            downloadProgress(data.data);
-                            break;
                         case "txerr":
                             transactionError(data.msg);
                             break;
@@ -261,12 +256,9 @@ export class App {
                     window.siyuan.languages = lauguages;
                     window.siyuan.menus = new Menus(this);
                     bootSync();
-                    fetchPost("/api/setting/getCloudUser", {}, async userResponse => {
-                        window.siyuan.user = userResponse.data;
-                        await ensureOnboarding();
+                    ensureOnboarding().then(() => {
                         setNoteBook(() => {
                             onGetConfig(response.data.start, this);
-                            onSetaccount();
                             setTitle("", true);
                             initMessage();
                             /// #if BROWSER && !MOBILE

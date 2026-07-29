@@ -1,8 +1,8 @@
 import {showMessage} from "../../dialog/message";
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
 import {confirmDialog} from "../../dialog/confirmDialog";
-import {isInIOS, saveExportFile} from "../../protyle/util/compatibility";
-import {isPaidUser, needSubscribe} from "../../util/needSubscribe";
+import {saveExportFile} from "../../protyle/util/compatibility";
+import {hasFeatureAccess} from "../../util/featureAccess";
 import {getCloudURL} from "../util/about";
 
 /** 按当前配置刷新同步 Tab 可见性与动态面板（供 syncRuntime 调用） */
@@ -19,7 +19,7 @@ export const refreshSyncModeRelatedItems = (root: Element) => {
 };
 
 const setSyncConfigItemVisible = (root: Element) => {
-    const visible = window.siyuan.config.sync.provider === 0 ? !needSubscribe("") : isPaidUser();
+    const visible = window.siyuan.config.sync.provider !== 0 && hasFeatureAccess();
     [
         "cloudSpace",
         "sync.enabled",
@@ -41,9 +41,9 @@ const setSyncModeRelatedConfigItemVisible = (root: Element) => {
         return;
     }
     const syncMode: Config.ISync["mode"] = Number(syncModeElement.value);
-    const isProviderOfficialAutoSync = syncMode === 1 && !needSubscribe("");
-    root.querySelector(`#${CSS.escape("sync.interval")}`)?.closest(".config-item")?.classList.toggle("fn__none", !isProviderOfficialAutoSync);
-    root.querySelector(`#${CSS.escape("sync.perception")}`)?.closest(".config-item")?.classList.toggle("fn__none", !(isProviderOfficialAutoSync && window.siyuan.config.sync.provider === 0 && window.siyuan.config.system.container !== "docker"));
+    const isAutoSync = syncMode === 1 && window.siyuan.config.sync.provider !== 0;
+    root.querySelector(`#${CSS.escape("sync.interval")}`)?.closest(".config-item")?.classList.toggle("fn__none", !isAutoSync);
+    root.querySelector(`#${CSS.escape("sync.perception")}`)?.closest(".config-item")?.classList.add("fn__none");
 };
 
 /** 同步提供商配置区检索关键词（供 syncTab 注册 slot） */
@@ -58,7 +58,7 @@ type SyncProviderFieldDef =
 
 type SyncProviderIntroDef = {
     genIntro: () => string;
-    genUnpaidIntro: () => string;
+    genUnavailableIntro: () => string;
     isProviderConfigAllowed: () => boolean;
 };
 
@@ -75,60 +75,29 @@ const isThirdPartySyncProviderDef = (def: SyncProviderDef): def is SyncThirdPart
     return "configKey" in def;
 };
 
-const genThirdPartyUnpaidIntro = (): string => {
-    const accountServer = getCloudURL("");
+const genThirdPartyUnavailableIntro = (): string => {
     return `<div>
-    ${window.siyuan.languages._kernel[214].replaceAll("${accountServer}", accountServer)}
+    ${window.siyuan.languages.cloudConfigTip}
 </div>`;
 };
 
 const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
     0: {
-        isProviderConfigAllowed: () => !needSubscribe(""),
-        genIntro: () => `<div class="b3-label b3-label--inner">${window.siyuan.languages.syncOfficialProviderIntro}</div>`,
-        genUnpaidIntro: () => {
-            const accountServer = getCloudURL("");
-            return `<div class="b3-label b3-label--inner">
-    ${isInIOS() ? window.siyuan.languages._kernel[295] : window.siyuan.languages._kernel[29].replaceAll("${accountServer}", accountServer)}
-</div>
-<div class="b3-label b3-label--inner">
-    ${window.siyuan.languages.cloudIntro1}
-    <div class="b3-label__text">
-        <ul class="fn__list">
-            <li>${window.siyuan.languages.cloudIntro2}</li>
-            <li>${window.siyuan.languages.cloudIntro3}</li>
-            <li>${window.siyuan.languages.cloudIntro4}</li>
-            <li>${window.siyuan.languages.cloudIntro5}</li>
-            <li>${window.siyuan.languages.cloudIntro6}</li>
-            <li>${window.siyuan.languages.cloudIntro7}</li>
-            <li>${window.siyuan.languages.cloudIntro8}</li>
-        </ul>
-    </div>
-</div>
-<div class="b3-label b3-label--inner">
-    ${window.siyuan.languages.cloudIntro9}
-    <div class="b3-label__text">
-        <ul style="padding-left: 2em">
-            <li>${window.siyuan.languages.cloudIntro10}</li>
-            <li>${window.siyuan.languages.cloudIntro11}</li>
-        </ul>
-    </div>
-</div>`;
-        },
+        isProviderConfigAllowed: () => false,
+        genIntro: () => `<div class="b3-label b3-label--inner">${window.siyuan.languages.cloudConfigTip}</div>`,
+        genUnavailableIntro: () => `<div class="b3-label b3-label--inner">${window.siyuan.languages.cloudConfigTip}</div>`,
     },
     2: {
-        isProviderConfigAllowed: isPaidUser,
+        isProviderConfigAllowed: hasFeatureAccess,
         configKey: "s3",
         api: "/api/sync/setSyncProviderS3",
         getConfig: () => window.siyuan.config.sync.s3,
         genIntro: () => `<div class="b3-label b3-label--inner">
     ${window.siyuan.languages.syncThirdPartyProviderS3Intro}
     <div class="fn__hr"></div>
-    <em>${window.siyuan.languages.proFeature}</em>
-    <div class="fn__hr"></div>
     ${window.siyuan.languages.syncThirdPartyProviderTip}
 </div>`,
-        genUnpaidIntro: genThirdPartyUnpaidIntro,
+        genUnavailableIntro: genThirdPartyUnavailableIntro,
         fields: [
             {type: "input", label: "Endpoint", id: "endpoint"},
             {type: "input", label: "Access Key", id: "accessKey"},
@@ -148,18 +117,16 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
         ],
     },
     3: {
-        isProviderConfigAllowed: isPaidUser,
+        isProviderConfigAllowed: hasFeatureAccess,
         configKey: "webdav",
         api: "/api/sync/setSyncProviderWebDAV",
         getConfig: () => window.siyuan.config.sync.webdav,
         genIntro: () => `<div class="b3-label b3-label--inner">
     ${window.siyuan.languages.syncThirdPartyProviderWebDAVIntro}
     <div class="fn__hr"></div>
-    <em>${window.siyuan.languages.proFeature}</em>
-    <div class="fn__hr"></div>
     ${window.siyuan.languages.syncThirdPartyProviderTip}
 </div>`,
-        genUnpaidIntro: genThirdPartyUnpaidIntro,
+        genUnavailableIntro: genThirdPartyUnavailableIntro,
         fields: [
             {type: "input", label: "Endpoint", id: "endpoint"},
             {type: "input", label: "Username", id: "username"},
@@ -173,7 +140,7 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
         ],
     },
     4: {
-        isProviderConfigAllowed: isPaidUser,
+        isProviderConfigAllowed: hasFeatureAccess,
         configKey: "local",
         api: "/api/sync/setSyncProviderLocal",
         getConfig: () => window.siyuan.config.sync.local,
@@ -183,10 +150,8 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
     </div>
     <div class="fn__hr"></div>
     ${window.siyuan.languages.syncThirdPartyProviderLocalIntro}
-    <div class="fn__hr"></div>
-    <em>${window.siyuan.languages.proFeature}</em>
 </div>`,
-        genUnpaidIntro: () => `${genThirdPartyUnpaidIntro()}<div class="ft__error">
+        genUnavailableIntro: () => `${genThirdPartyUnavailableIntro()}<div class="ft__error">
     <div class="fn__hr--b"></div>
     ${window.siyuan.languages.mobileNotSupport}
 </div>`,
@@ -199,31 +164,14 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
 };
 
 const buildProviderConfigKeywords = (): string[] => {
-    const accountServer = getCloudURL("");
     return [
-        // 官方云（provider === 0）
-        window.siyuan.languages.syncOfficialProviderIntro,
-        window.siyuan.languages._kernel[29].replaceAll("${accountServer}", accountServer),
-        window.siyuan.languages._kernel[295],
-        window.siyuan.languages.cloudIntro1,
-        window.siyuan.languages.cloudIntro2,
-        window.siyuan.languages.cloudIntro3,
-        window.siyuan.languages.cloudIntro4,
-        window.siyuan.languages.cloudIntro5,
-        window.siyuan.languages.cloudIntro6,
-        window.siyuan.languages.cloudIntro7,
-        window.siyuan.languages.cloudIntro8,
-        window.siyuan.languages.cloudIntro9,
-        window.siyuan.languages.cloudIntro10,
-        window.siyuan.languages.cloudIntro11,
-        // 未订阅 / 本地等提示
-        window.siyuan.languages._kernel[214].replaceAll("${accountServer}", accountServer),
+        // 服务不可用 / 本地等提示
+        window.siyuan.languages.cloudConfigTip,
         window.siyuan.languages.mobileNotSupport,
         // S3 / WebDAV / 本地第三方
         window.siyuan.languages.syncThirdPartyProviderS3Intro,
         window.siyuan.languages.syncThirdPartyProviderWebDAVIntro,
         window.siyuan.languages.syncThirdPartyProviderLocalIntro,
-        window.siyuan.languages.proFeature,
         window.siyuan.languages.syncThirdPartyProviderTip,
         // 操作按钮
         window.siyuan.languages.cloudStoragePurge,
@@ -258,7 +206,7 @@ const renderProviderConfig = (root: Element) => {
     let html = "";
     if (def) {
         if (!def.isProviderConfigAllowed()) {
-            html = def.genUnpaidIntro();
+            html = def.genUnavailableIntro();
         } else if (isThirdPartySyncProviderDef(def)) {
             html = `${def.genIntro()}${def.fields.map(genProviderField).join("")}${genProviderActionButtons(def.configKey)}`;
         } else {
@@ -444,8 +392,8 @@ const renderCloudSpace = (root: Element) => {
     }
 
     const isProviderOfficial = window.siyuan.config.sync.provider === 0;
-    const subscribed = !needSubscribe("");
-    const hidden = cloudSpaceElement.classList.toggle("fn__none", !isProviderOfficial || !subscribed);
+    const hasAccess = hasFeatureAccess();
+    const hidden = cloudSpaceElement.classList.toggle("fn__none", !isProviderOfficial || !hasAccess);
     if (!hidden) {
         cloudSpaceElement.innerHTML = buildCloudSpaceHtml(
             Object.fromEntries(CLOUD_SPACE_DISPLAY_KEYS.map((key) => [key, "0B"])) as CloudSpaceDisplayData,

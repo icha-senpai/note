@@ -194,12 +194,9 @@ class App {
                 fetchGet(`/appearance/langs/${window.siyuan.config.appearance.lang}.json?v=${Constants.SIYUAN_VERSION}`, (lauguages: IObject) => {
                     window.siyuan.languages = lauguages;
                     window.siyuan.menus = new Menus(this);
-                    fetchPost("/api/setting/getCloudUser", {}, userResponse => {
-                        window.siyuan.user = userResponse.data;
-                        init(this);
-                        setTitle("", true);
-                        initMessage();
-                    });
+                    init(this);
+                    setTitle("", true);
+                    initMessage();
                 });
             });
         });

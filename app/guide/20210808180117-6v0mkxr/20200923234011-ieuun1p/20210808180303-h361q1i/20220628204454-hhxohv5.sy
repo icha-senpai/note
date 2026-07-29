@@ -422,7 +422,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "Before the actual execution of optimized typesetting, SiYuan will automatically back up the original document once, so that if the optimization result is not satisfied, it can be rolled back through "
+					"Data": "Before the actual execution of optimized typesetting, Scribli will automatically back up the original document once, so that if the optimization result is not satisfied, it can be rolled back through "
 				},
 				{
 					"Type": "NodeTextMark",

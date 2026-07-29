@@ -109,12 +109,12 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
     const dialog = new Dialog({
         title: window.siyuan.languages.dataMigration,
         content: `<div class="b3-dialog__content">
-    <div class="b3-label__text">SiYuan</div>
+    <div class="b3-label__text">Scribli</div>
     <div class="fn__hr"></div>
     <div class="b3-list b3-list--background">
         <label class="b3-list-item">
-            <svg class="b3-list-item__graphic"><use xlink:href="#iconSiYuan"></use></svg>
-            <span class="b3-list-item__text">SiYuan .sy.zip</span>
+            <svg class="b3-list-item__graphic"><use xlink:href="#iconScribli"></use></svg>
+            <span class="b3-list-item__text">Scribli .sy.zip</span>
             <input class="b3-form__upload" data-type="siyuan" type="file" accept="application/zip">
         </label>
         <div class="b3-list-item b3-list-item--warning fn__flex-wrap data-migration__item">

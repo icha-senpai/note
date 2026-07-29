@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -98,7 +98,7 @@ var serveCmd = &cobra.Command{
 func init() {
 	// --wd 默认值取内核可执行文件所在目录的上一级（打包后的 resources/，appearance/、stage/ 所在目录），
 	// 与 rootCmd.PersistentPreRunE 走同一个 resolveWorkingDir()，确保两条启动路径行为一致。
-	serveCmd.Flags().StringVar(&serveWdPath, "wd", resolveWorkingDir(), "working directory of SiYuan")
+	serveCmd.Flags().StringVar(&serveWdPath, "wd", resolveWorkingDir(), "working directory of Scribli")
 	serveCmd.Flags().StringVar(&servePort, "port", "0", "port of the HTTP server")
 	serveCmd.Flags().StringVar(&serveReadOnly, "readonly", "false", "read-only mode")
 	serveCmd.Flags().StringVar(&serveAccessAuthCode, "accessAuthCode", "", "access auth code")

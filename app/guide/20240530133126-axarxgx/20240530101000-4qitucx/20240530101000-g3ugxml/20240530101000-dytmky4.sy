@@ -22,7 +22,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://github.com/siyuan-note/siyuan/blob/master/API.md",
+					"TextMarkAHref": "https://github.com/scribli-note/scribli/blob/master/API.md",
 					"TextMarkTextContent": "API ドキュメント"
 				},
 				{

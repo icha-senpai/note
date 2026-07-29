@@ -188,7 +188,7 @@ export class AgentChat extends Model {
         // AI 配置保存走本地 patch（aiRuntime.ts 写 window.siyuan.config.ai）不广播 ws，
         // 故用两种方式兜底：window focus（跨窗口）+ MutationObserver 监听设置对话框关闭（同窗口即时）。
         window.addEventListener("focus", this.checkConfigChangedHandler);
-        // 设置对话框是 SiYuan 内部模态，关闭时 window 不失焦，focus 事件不触发。
+        // 设置对话框是 Scribli 内部模态，关闭时 window 不失焦，focus 事件不触发。
         // 监听 body 子节点变化，当含 .config__panel 的设置 dialog 被移除时即时刷新。
         this.settingDialogObserver = new MutationObserver(() => {
             if (!document.querySelector(".config__panel")) {

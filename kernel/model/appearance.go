@@ -26,8 +26,8 @@ import (
 	"github.com/88250/gulu"
 	"github.com/siyuan-note/filelock"
 	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/bazaar"
 	"github.com/siyuan-note/siyuan/kernel/conf"
+	"github.com/siyuan-note/siyuan/kernel/extensions"
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
@@ -135,6 +135,14 @@ func containIcon(name string, icons []*conf.AppearanceIcon) bool {
 	return false
 }
 
+func isBuiltInTheme(name string) bool {
+	return "daylight" == name || "midnight" == name
+}
+
+func isBuiltInIcon(name string) bool {
+	return "litheness" == name
+}
+
 func LoadThemes() {
 	themeDirs, err := os.ReadDir(util.ThemesPath)
 	if err != nil {
@@ -155,7 +163,7 @@ func LoadThemes() {
 			continue
 		}
 		name := themeDir.Name()
-		themeConf, parseErr := bazaar.ParsePackageJSON(filepath.Join(util.ThemesPath, name, "theme.json"))
+		themeConf, parseErr := extensions.ParsePackageJSON(filepath.Join(util.ThemesPath, name, "theme.json"))
 		if nil != parseErr || nil == themeConf {
 			continue
 		}
@@ -236,7 +244,7 @@ func LoadIcons() {
 			continue
 		}
 		name := iconDir.Name()
-		iconConf, err := bazaar.ParsePackageJSON(filepath.Join(util.IconsPath, name, "icon.json"))
+		iconConf, err := extensions.ParsePackageJSON(filepath.Join(util.IconsPath, name, "icon.json"))
 		if err != nil || nil == iconConf {
 			continue
 		}

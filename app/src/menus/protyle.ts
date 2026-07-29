@@ -562,7 +562,7 @@ export const refMenu = (protyle: IProtyle, element: HTMLElement) => {
             label: window.siyuan.languages.hyperlink,
             iconHTML: "",
             click() {
-                element.outerHTML = `<span data-type="a" data-href="siyuan://blocks/${element.getAttribute("data-id")}">${element.innerHTML}</span><wbr>`;
+                element.outerHTML = `<span data-type="a" data-href="scribli://blocks/${element.getAttribute("data-id")}">${element.innerHTML}</span><wbr>`;
                 nodeElement.setAttribute("updated", dayjs().format("YYYYMMDDHHmmss"));
                 updateTransaction(protyle, nodeElement, oldHTML);
                 focusByWbr(nodeElement, protyle.toolbar.range);
@@ -1651,7 +1651,7 @@ style="margin:4px 0;width: ${isMobile() ? "100%" : "360px"}" class="b3-text-fiel
                 }
             }).element);
         }
-        if (linkAddress?.startsWith("siyuan://blocks/")) {
+        if (linkAddress?.startsWith("scribli://blocks/")) {
             window.siyuan.menus.menu.append(new MenuItem({
                 id: "turnIntoRef",
                 label: `${window.siyuan.languages.turnInto} <b>${window.siyuan.languages.ref}</b>`,
@@ -1662,7 +1662,7 @@ style="margin:4px 0;width: ${isMobile() ? "100%" : "360px"}" class="b3-text-fiel
                     types.push("block-ref");
                     types.splice(types.indexOf("a"), 1);
                     linkElement.setAttribute("data-type", types.join(" "));
-                    linkElement.setAttribute("data-id", inputElements[0].value.replace("siyuan://blocks/", ""));
+                    linkElement.setAttribute("data-id", inputElements[0].value.replace("scribli://blocks/", ""));
                     inputElements[0].value = "";
                     inputElements[2].value = "";
                     linkElement.removeAttribute("data-href");

@@ -44,7 +44,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "~/SiYuan/"
+					"TextMarkTextContent": "~/Scribli/"
 				},
 				{
 					"Type": "NodeText",
@@ -241,7 +241,7 @@
 				},
 				{
 					"Type": "NodeText",
-					"Data": "​ will use Simplified Chinese to initialize the appearance language. If omitted, SiYuan uses the saved language; on first initialization it matches the system language and falls back to "
+					"Data": "​ will use Simplified Chinese to initialize the appearance language. If omitted, Scribli uses the saved language; on first initialization it matches the system language and falls back to "
 				},
 				{
 					"Type": "NodeTextMark",

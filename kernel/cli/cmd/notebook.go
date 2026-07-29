@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -381,7 +381,7 @@ func init() {
 	notebookOpenCmd.Flags().String("id", "", "notebook ID")
 	notebookCloseCmd.Flags().String("id", "", "notebook ID")
 	notebookSetIconCmd.Flags().String("id", "", "notebook ID")
-	notebookSetIconCmd.Flags().String("icon", "", "notebook icon: emoji hex codepoint like \"1f4ca\", emoji character like \"📊\", custom image path like \"1/b3log.png\", or dynamic icon URL like \"api/icon/getDynamicIcon?type=8&color=%23d23f31&content=SiYuan&id=xxx\"")
+	notebookSetIconCmd.Flags().String("icon", "", "notebook icon: emoji hex codepoint like \"1f4ca\", emoji character like \"📊\", custom image path like \"1/b3log.png\", or dynamic icon URL like \"api/icon/getDynamicIcon?type=8&color=%23d23f31&content=Scribli&id=xxx\"")
 	notebookRandomIconCmd.Flags().String("id", "", "notebook ID (optional; omit to update all notebooks)")
 
 	rootCmd.AddCommand(notebookCmd)

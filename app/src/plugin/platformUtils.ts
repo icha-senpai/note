@@ -46,7 +46,7 @@ export const sendNotification = (options: {
         }
 
         /// #if BROWSER
-        const channel = options.channel || "SiYuan Notifications";
+        const channel = options.channel || "Scribli Notifications";
         if (window.JSAndroid && window.JSAndroid.sendNotification) {
             const id = window.JSAndroid.sendNotification(channel, title, body, delayInSeconds);
             resolve(id);

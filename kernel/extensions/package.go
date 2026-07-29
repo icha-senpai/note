@@ -14,14 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-package bazaar
+package extensions
 
 import (
-	"html"
 	"os"
 	"path"
 	"strings"
-	"sync"
 
 	"github.com/88250/gulu"
 	"github.com/siyuan-note/filelock"
@@ -39,8 +37,7 @@ type Funding struct {
 	Custom         []string `json:"custom"`
 }
 
-// Package 描述了集市包元数据和传递给前端的其他信息。
-//   - 集市包新增元数据字段需要同步修改 bazaar 的工作流，参考 https://github.com/siyuan-note/bazaar/commit/aa36d0003139c52d8e767c6e18a635be006323e2
+// Package 描述了本地扩展包元数据和传递给前端的其他信息。
 type Package struct {
 	Author            string        `json:"author"`
 	URL               string        `json:"url"`
@@ -86,31 +83,11 @@ type Package struct {
 
 	// 专用字段，nil 时不序列化
 	InstalledIncompatible *bool     `json:"installedIncompatible,omitempty"` // Plugin：本地已安装版本是否不兼容
-	BazaarIncompatible    *bool     `json:"bazaarIncompatible,omitempty"`    // Plugin：在线集市版本是否不兼容
 	Enabled               *bool     `json:"enabled,omitempty"`               // Plugin：是否启用
 	Modes                 *[]string `json:"modes,omitempty"`                 // Theme：支持的模式列表
 }
 
-type StageRepo struct {
-	URL         string `json:"url"` // owner/repo@hash 形式
-	Updated     string `json:"updated"`
-	Stars       int    `json:"stars"`
-	OpenIssues  int    `json:"openIssues"`
-	Size        int64  `json:"size"`
-	InstallSize int64  `json:"installSize"`
-
-	// Package 与 stage/*.json 内嵌的完整 package 一致，可直接用于构建列表
-	Package *Package `json:"package"`
-}
-
-type StageIndex struct {
-	Repos []*StageRepo `json:"repos"`
-
-	reposByURL map[string]*StageRepo // 不序列化，首次按 URL 查找时懒构建，随整份索引一起过期
-	reposOnce  sync.Once
-}
-
-// ParsePackageJSON 解析集市包 JSON 文件
+// ParsePackageJSON 解析本地扩展包 JSON 文件
 func ParsePackageJSON(filePath string) (ret *Package, err error) {
 	if !filelock.IsExist(filePath) {
 		err = os.ErrNotExist
@@ -130,33 +107,6 @@ func ParsePackageJSON(filePath string) (ret *Package, err error) {
 	return
 }
 
-// unescapePackageDisplayStrings 将在线 stage 中已 HTML 转义的展示字段还原为原文，与本地 JSON 一致。
-func unescapePackageDisplayStrings(pkg *Package) {
-	if pkg == nil {
-		return
-	}
-	pkg.Name = html.UnescapeString(pkg.Name)
-	pkg.Author = html.UnescapeString(pkg.Author)
-	pkg.Version = html.UnescapeString(pkg.Version)
-	for k, v := range pkg.DisplayName {
-		pkg.DisplayName[k] = html.UnescapeString(v)
-	}
-	for k, v := range pkg.Description {
-		pkg.Description[k] = html.UnescapeString(v)
-	}
-	if pkg.Funding != nil {
-		pkg.Funding.OpenCollective = html.UnescapeString(pkg.Funding.OpenCollective)
-		pkg.Funding.Patreon = html.UnescapeString(pkg.Funding.Patreon)
-		pkg.Funding.GitHub = html.UnescapeString(pkg.Funding.GitHub)
-		for i, v := range pkg.Funding.Custom {
-			pkg.Funding.Custom[i] = html.UnescapeString(v)
-		}
-	}
-	for i, kw := range pkg.Keywords {
-		pkg.Keywords[i] = html.UnescapeString(kw)
-	}
-}
-
 // GetPreferredLocaleString 从 LocaleStrings 中按当前语种取值，无则回退 default、en、en_US（历史命名兼容），再回退 fallback。
 func GetPreferredLocaleString(m LocaleStrings, fallback string) string {
 	if len(m) == 0 {
@@ -165,7 +115,7 @@ func GetPreferredLocaleString(m LocaleStrings, fallback string) string {
 	if v := strings.TrimSpace(m[util.Lang]); "" != v {
 		return v
 	}
-	// 兼容集市 JSON 数据中历史下划线 key（zh_CN、en_US 等）
+	// 兼容本地扩展包 JSON 数据中历史下划线 key（zh_CN、en_US 等）
 	if v := strings.TrimSpace(m[util.LangToLegacy(util.Lang)]); "" != v {
 		return v
 	}
@@ -215,7 +165,7 @@ func normalizeFundingURL(s, base string) string {
 	return base + s
 }
 
-// FilterPackages 按关键词过滤集市包列表
+// FilterPackages 按关键词过滤本地扩展包列表
 func FilterPackages(packages []*Package, keyword string) []*Package {
 	keywords := getSearchKeywords(keyword)
 	if 0 == len(keywords) {

@@ -16,14 +16,14 @@
 
 package conf
 
-type Bazaar struct {
+type Extensions struct {
 	Trust         bool `json:"trust"`
 	PetalDisabled bool `json:"petalDisabled"`
 }
 
-func NewBazaar() *Bazaar {
-	return &Bazaar{
+func NewExtensions() *Extensions {
+	return &Extensions{
 		Trust:         false,
-		PetalDisabled: false,
+		PetalDisabled: true,
 	}
 }

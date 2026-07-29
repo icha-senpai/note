@@ -46,6 +46,10 @@ import (
 func SyncDataDownload() {
 	defer logging.Recover()
 
+	if util.OfflineMode {
+		return
+	}
+
 	if !checkSync(false, false, true) {
 		return
 	}
@@ -75,6 +79,10 @@ func SyncDataDownload() {
 
 func SyncDataUpload() {
 	defer logging.Recover()
+
+	if util.OfflineMode {
+		return
+	}
 
 	if !checkSync(false, false, true) {
 		return
@@ -114,6 +122,10 @@ var (
 )
 
 func SyncDataJob() {
+	if util.OfflineMode {
+		return
+	}
+
 	syncPlanTimeLock.Lock()
 	if time.Now().Before(syncPlanTime) {
 		syncPlanTimeLock.Unlock()
@@ -126,6 +138,10 @@ func SyncDataJob() {
 
 func BootSyncData() {
 	defer logging.Recover()
+
+	if util.OfflineMode {
+		return
+	}
 
 	if Conf.Sync.Perception {
 		connectSyncWebSocket()
@@ -260,13 +276,21 @@ func checkSync(boot, exit, byHand bool) bool {
 
 	switch Conf.Sync.Provider {
 	case conf.ProviderSiYuan:
-		if !IsSubscriber() {
+		if util.OfficialServicesUnavailable() {
+			if byHand {
+				util.PushMsg(util.OfficialServicesError().Error(), 5000)
+			}
+			Conf.Sync.Enabled = false
+			Conf.Save()
+			return false
+		}
+		if !HasFullAccess() {
 			Conf.Sync.Enabled = false
 			Conf.Save()
 			return false
 		}
 	case conf.ProviderWebDAV, conf.ProviderS3, conf.ProviderLocal:
-		if !IsPaidUser() {
+		if !HasFullAccess() {
 			Conf.Sync.Enabled = false
 			Conf.Save()
 			return false
@@ -794,6 +818,9 @@ func isProviderOnline(byHand bool) (ret bool) {
 	skipTlsVerify := false
 	switch Conf.Sync.Provider {
 	case conf.ProviderSiYuan:
+		if util.OfficialServicesUnavailable() {
+			return false
+		}
 		checkURL = util.GetCloudSyncServer()
 	case conf.ProviderS3:
 		checkURL = Conf.Sync.S3.Endpoint
@@ -872,7 +899,11 @@ func closeSyncWebSocket() {
 func connectSyncWebSocket() {
 	defer logging.Recover()
 
-	if !Conf.Sync.Enabled || !IsSubscriber() || conf.ProviderSiYuan != Conf.Sync.Provider {
+	if util.OfficialServicesUnavailable() {
+		return
+	}
+
+	if !Conf.Sync.Enabled || !HasFullAccess() || conf.ProviderSiYuan != Conf.Sync.Provider {
 		return
 	}
 

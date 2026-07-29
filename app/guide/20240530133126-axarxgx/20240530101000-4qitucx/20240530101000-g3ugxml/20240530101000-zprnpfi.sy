@@ -37,12 +37,12 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "ブラウザやハイパーリンクに対応している他のソフトウェアなど、別の場所から SiYuan デスクトップアプリケーションを起動したい場合は、"
+					"Data": "ブラウザやハイパーリンクに対応している他のソフトウェアなど、別の場所から Scribli デスクトップアプリケーションを起動したい場合は、"
 				},
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan://"
+					"TextMarkTextContent": "scribli://"
 				},
 				{
 					"Type": "NodeText",
@@ -82,7 +82,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan://blocks/{id}"
+					"TextMarkTextContent": "scribli://blocks/{id}"
 				},
 				{
 					"Type": "NodeText",
@@ -115,7 +115,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan://blocks/{id}?focus=1"
+					"TextMarkTextContent": "scribli://blocks/{id}?focus=1"
 				},
 				{
 					"Type": "NodeText",
@@ -178,7 +178,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "siyuan://"
+									"TextMarkTextContent": "scribli://"
 								},
 								{
 									"Type": "NodeText",
@@ -296,7 +296,7 @@
 																{
 																	"Type": "NodeTextMark",
 																	"TextMarkType": "code",
-																	"TextMarkTextContent": "MimeType=MimeType=x-scheme-handler/siyuan;"
+																	"TextMarkTextContent": "MimeType=MimeType=x-scheme-handler/scribli;"
 																}
 															]
 														}
@@ -410,7 +410,7 @@
 												},
 												{
 													"Type": "NodeCodeBlockCode",
-													"Data": "sudo update-desktop-database\nxdg-mime default siyuan.desktop x-scheme-handler/siyuan\nxdg-settings set default-url-scheme-handler siyuan siyuan.desktop\n"
+													"Data": "sudo update-desktop-database\nxdg-mime default siyuan.desktop x-scheme-handler/scribli\nxdg-settings set default-url-scheme-handler siyuan siyuan.desktop\n"
 												},
 												{
 													"Type": "NodeCodeBlockFenceCloseMarker",

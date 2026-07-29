@@ -38,12 +38,12 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "如果你需要在其他地方（比如浏览器或者支持超链接跳转的软件）拉起思源桌面端应用程序，可以使用 "
+					"Data": "如果你需要在其他地方（比如浏览器或者支持超链接跳转的软件）拉起Scribli桌面端应用程序，可以使用 "
 				},
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan://"
+					"TextMarkTextContent": "scribli://"
 				},
 				{
 					"Type": "NodeText",
@@ -81,7 +81,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan://blocks/{id}"
+					"TextMarkTextContent": "scribli://blocks/{id}"
 				},
 				{
 					"Type": "NodeText",
@@ -113,7 +113,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan://blocks/{id}?focus=1"
+					"TextMarkTextContent": "scribli://blocks/{id}?focus=1"
 				},
 				{
 					"Type": "NodeText",
@@ -175,7 +175,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "siyuan://"
+									"TextMarkTextContent": "scribli://"
 								},
 								{
 									"Type": "NodeText",
@@ -284,7 +284,7 @@
 																{
 																	"Type": "NodeTextMark",
 																	"TextMarkType": "code",
-																	"TextMarkTextContent": "MimeType=MimeType=x-scheme-handler/siyuan;"
+																	"TextMarkTextContent": "MimeType=MimeType=x-scheme-handler/scribli;"
 																}
 															]
 														}
@@ -385,7 +385,7 @@
 												},
 												{
 													"Type": "NodeCodeBlockCode",
-													"Data": "sudo update-desktop-database\nxdg-mime default siyuan.desktop x-scheme-handler/siyuan\nxdg-settings set default-url-scheme-handler siyuan siyuan.desktop\n"
+													"Data": "sudo update-desktop-database\nxdg-mime default siyuan.desktop x-scheme-handler/scribli\nxdg-settings set default-url-scheme-handler siyuan siyuan.desktop\n"
 												},
 												{
 													"Type": "NodeCodeBlockFenceCloseMarker",

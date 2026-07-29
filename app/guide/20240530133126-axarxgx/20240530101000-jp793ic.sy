@@ -23,7 +23,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "SiYuan はどこにデータを保存しているの？"
+					"Data": "Scribli はどこにデータを保存しているの？"
 				}
 			]
 		},
@@ -704,7 +704,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "macOS では、SiYuan はデスクトップ、ドキュメント、iCloud ドライブ フォルダーにアクセスして、ワークスペースが iCloud 同期パスの下に配置されているかどうかを検出します。 SiYuan がお客様の個人情報を盗み見ることは決してありませんのでご安心ください。"
+					"Data": "macOS では、Scribli はデスクトップ、ドキュメント、iCloud ドライブ フォルダーにアクセスして、ワークスペースが iCloud 同期パスの下に配置されているかどうかを検出します。 Scribli がお客様の個人情報を盗み見ることは決してありませんのでご安心ください。"
 				}
 			]
 		},
@@ -727,7 +727,7 @@
 				},
 				{
 					"Type": "NodeText",
-					"Data": "SiYuan はオープンソースなの？",
+					"Data": "Scribli はオープンソースなの？",
 					"Properties": {
 						"id": ""
 					}
@@ -745,12 +745,12 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "SiYuan は完全にオープンソースであり、ソースコードは "
+					"Data": "Scribli は完全にオープンソースであり、ソースコードは "
 				},
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://github.com/siyuan-note",
+					"TextMarkAHref": "https://github.com/scribli-note",
 					"TextMarkTextContent": "GitHub"
 				},
 				{
@@ -930,7 +930,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/",
+					"TextMarkAHref": "https://b3log.org/scribli/",
 					"TextMarkTextContent": "公式サイト"
 				},
 				{
@@ -1452,7 +1452,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/en/pricing.html",
+					"TextMarkAHref": "https://b3log.org/scribli/en/pricing.html",
 					"TextMarkTextContent": "料金ページ"
 				},
 				{
@@ -1480,7 +1480,7 @@
 				},
 				{
 					"Type": "NodeText",
-					"Data": "SiYuan という名前の由来は？",
+					"Data": "Scribli という名前の由来は？",
 					"Properties": {
 						"id": ""
 					}
@@ -1498,7 +1498,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "SiYuan (思源) という名前は、中国の故事成語である「飲水思源」に由来しています。これは、「水を飲むとき、その源を思い起こす」という意味で、自分のルーツを忘れず、感謝の心を持つことの大切さを表しています。",
+					"Data": "Scribli (Scribli) という名前は、中国の故事成語である「飲水Scribli」に由来しています。これは、「水を飲むとき、その源を思い起こす」という意味で、自分のルーツを忘れず、感謝の心を持つことの大切さを表しています。",
 					"Properties": {
 						"id": ""
 					}
@@ -1516,7 +1516,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "SiYuan は、この「飲水思源」の精神を体現するツールとして、知識管理を行う人々が知識の源泉や繋がりを忘れず、さらに重要なこととして、学んだことを社会や人類全体に貢献することを忘れてほしくないという願いが込められています。",
+					"Data": "Scribli は、この「飲水Scribli」の精神を体現するツールとして、知識管理を行う人々が知識の源泉や繋がりを忘れず、さらに重要なこととして、学んだことを社会や人類全体に貢献することを忘れてほしくないという願いが込められています。",
 					"Properties": {
 						"id": ""
 					}

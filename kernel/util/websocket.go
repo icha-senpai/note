@@ -390,15 +390,6 @@ func PushKernelPluginState(name string, state int) {
 	BroadcastByType("main", "updateKernelPluginState", 0, "", map[string]any{"name": name, "state": state})
 }
 
-func PushDownloadProgress(id string, percent float32) {
-	evt := NewCmdResult("downloadProgress", 0, PushModeBroadcast)
-	evt.Data = map[string]any{
-		"id":      id,
-		"percent": percent,
-	}
-	PushEvent(evt)
-}
-
 func PushEvent(event *Result) {
 	msg := event.Bytes()
 	mode := event.PushMode
@@ -550,7 +541,7 @@ func ClosePublishServiceSessions() {
 		event := NewResult()
 		event.Cmd = "closepublishpage"
 		event.Code = 0
-		event.Msg = "SiYuan publish service closed"
+		event.Msg = "Scribli publish service closed"
 		event.Data = map[string]any{
 			"reason": "publish service closed",
 		}

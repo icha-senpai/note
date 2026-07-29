@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -27,11 +27,11 @@ import (
 	"github.com/88250/lute/ast"
 )
 
-// InboxTool 把收集箱（云端剪藏、消息、语音/视频/文件等）暴露给智能体，使其能够列出、阅读并把内容批量转为本地文档。
-// 收集箱数据存放在思源云端，需要订阅会员；底层复用 model 层的云端 shorthand 读写函数。
+// InboxTool 把收集箱（剪藏、消息、语音/视频/文件等）暴露给智能体，使其能够列出、阅读并把内容批量转为本地文档。
+// 底层复用 model 层的 shorthand 读写函数。
 var InboxTool = &Tool{
 	Name:        "inbox",
-	Description: "Inbox management (cloud-clipped web pages, messages, and audio/video/file attachments; requires subscription). Actions: list(page=1), get(id), convert(ids, notebook, path=/, remove_after=true) — converts one or more shorthands into local documents under the target notebook, deleting the cloud originals on success.",
+	Description: "Inbox management (clipped web pages, messages, and audio/video/file attachments). Actions: list(page=1), get(id), convert(ids, notebook, path=/, remove_after=true) — converts one or more shorthands into local documents under the target notebook, deleting the originals on success.",
 	InputSchema: ToolSchema{
 		Type: "object",
 		Properties: map[string]Property{

@@ -27,7 +27,7 @@ import (
 	"github.com/88250/gulu"
 	"github.com/siyuan-note/filelock"
 	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/bazaar"
+	"github.com/siyuan-note/siyuan/kernel/extensions"
 	"github.com/siyuan-note/siyuan/kernel/util"
 	"golang.org/x/sync/singleflight"
 )
@@ -64,7 +64,7 @@ var (
 func SetPetalEnabled(name string, enabled bool) (ret *Petal, err error) {
 	petals := getPetals()
 
-	found, version, displayName, incompatible, disabledInPublish, disallowInstall, kernelIncompatible := bazaar.ParseInstalledPlugin(name, "")
+	found, version, displayName, incompatible, disabledInPublish, disallowInstall, kernelIncompatible := extensions.ParseInstalledPlugin(name, "")
 	if !found {
 		err = fmt.Errorf("plugin [%s] not found", name)
 		logging.LogErrorf("%s", err)
@@ -89,7 +89,7 @@ func SetPetalEnabled(name string, enabled bool) (ret *Petal, err error) {
 	}
 
 	if enabled && disallowInstall {
-		err = fmt.Errorf("require upgrade SiYuan to use this plugin [%s]", name)
+		err = fmt.Errorf("require upgrade Scribli to use this plugin [%s]", name)
 		logging.LogInfof("%s", err)
 		return
 	}
@@ -130,12 +130,12 @@ var loadPetalsFlight singleflight.Group
 
 // IsPetalsEnabled returns whether petals are enabled and trusted to be loaded
 func IsPetalsEnabled() bool {
-	if Conf.Bazaar.PetalDisabled {
+	if nil == Conf.Extensions || Conf.Extensions.PetalDisabled {
 		return false
 	}
 
-	if !Conf.Bazaar.Trust {
-		// 移动端没有集市模块，所以要默认开启，桌面端和 Docker 容器需要用户手动确认过信任后才能开启
+	if !Conf.Extensions.Trust {
+		// 移动端默认开启插件，桌面端和 Docker 容器需要用户明确允许后才能开启
 		if util.Container == util.ContainerStd || util.Container == util.ContainerDocker {
 			return false
 		}
@@ -175,7 +175,7 @@ func loadPetals(frontend string, isPublish, isKernel bool) (ret []*Petal) {
 	var petalNames []string
 	petals := getPetals()
 	for _, petal := range petals {
-		_, petal.Version, petal.DisplayName, petal.Incompatible, petal.DisabledInPublish, petal.DisallowInstall, petal.Kernel.Incompatible = bazaar.ParseInstalledPlugin(petal.Name, frontend)
+		_, petal.Version, petal.DisplayName, petal.Incompatible, petal.DisabledInPublish, petal.DisallowInstall, petal.Kernel.Incompatible = extensions.ParseInstalledPlugin(petal.Name, frontend)
 		if !petal.Enabled {
 			// disabled plugin
 			continue
@@ -201,7 +201,7 @@ func loadPetals(frontend string, isPublish, isKernel bool) (ret []*Petal) {
 		}
 
 		if petal.DisallowInstall {
-			// disallow install plugin (require upgrade SiYuan), auto disable it to avoid potential issues, and skip loading
+			// disallow install plugin (require upgrade Scribli), auto disable it to avoid potential issues, and skip loading
 			SetPetalEnabled(petal.Name, false)
 			logging.LogInfof("plugin [%s] disallowed install, auto disabled", petal.Name)
 			continue
@@ -387,7 +387,7 @@ func getPetals() (ret []*Petal) {
 			tmp = append(tmp, petal)
 		} else {
 			// 插件不存在时，删除对应的持久化信息
-			bazaar.RemovePackageInfo("plugins", petal.Name)
+			extensions.RemovePackageInfo("plugins", petal.Name)
 		}
 	}
 	if len(tmp) != len(ret) {

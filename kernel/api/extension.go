@@ -71,28 +71,7 @@ func extensionCopy(c *gin.Context) {
 	hasHref := nil != form.Value["href"]
 	isPartClip := nil != form.Value["clipType"] && form.Value["clipType"][0] == "part"
 	if hasHref && !isPartClip {
-		// 剪藏链滴帖子时直接使用 Markdown 接口的返回
-		// https://ld246.com/article/raw/1724850322251
 		symArticleHref = form.Value["href"][0]
-
-		var baseURL, originalPrefix string
-		if strings.HasPrefix(symArticleHref, "https://ld246.com/article/") {
-			baseURL = "https://ld246.com/article/raw/"
-			originalPrefix = "https://ld246.com/article/"
-		} else if strings.HasPrefix(symArticleHref, "https://liuyun.io/article/") {
-			baseURL = "https://liuyun.io/article/raw/"
-			originalPrefix = "https://liuyun.io/article/"
-		}
-
-		if "" != baseURL {
-			articleID := strings.TrimPrefix(symArticleHref, originalPrefix)
-			if idx := strings.IndexAny(articleID, "/?#"); -1 != idx {
-				articleID = articleID[:idx]
-			}
-
-			symArticleHref = baseURL + articleID
-			clippingSym = true
-		}
 	}
 
 	uploaded := map[string]string{}

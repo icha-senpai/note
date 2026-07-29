@@ -344,6 +344,10 @@ func ExportAv2CSV(avID, blockID string) (zipPath string, err error) {
 }
 
 func Export2Liandi(id string) (err error) {
+	if util.OfficialServicesUnavailable() {
+		return util.OfficialServicesError()
+	}
+
 	err = withExportReadLockByBlockID(id, func() error {
 		tree, loadErr := LoadTreeByBlockID(id)
 		if loadErr != nil {
@@ -472,7 +476,7 @@ func ExportSystemLog() (zipPath string) {
 		return
 	}
 
-	appLog := filepath.Join(util.HomeDir, ".config", "siyuan", "app.log")
+	appLog := filepath.Join(util.UserHomeConfDir(), "app.log")
 	if gulu.File.IsExist(appLog) {
 		to := filepath.Join(exportFolder, "app.log")
 		if err := filelock.Copy(appLog, to); err != nil {
@@ -480,7 +484,7 @@ func ExportSystemLog() (zipPath string) {
 		}
 	}
 
-	kernelLog := filepath.Join(util.HomeDir, ".config", "siyuan", "kernel.log")
+	kernelLog := filepath.Join(util.UserHomeConfDir(), "kernel.log")
 	if gulu.File.IsExist(kernelLog) {
 		to := filepath.Join(exportFolder, "kernel.log")
 		if err := filelock.Copy(kernelLog, to); err != nil {
@@ -1509,7 +1513,7 @@ func ProcessPDF(id, p string, merge, removeAssets, watermark bool) (err error) {
 		})
 
 		api.DisableConfigDir()
-		font.UserFontDir = filepath.Join(util.HomeDir, ".config", "siyuan", "fonts")
+		font.UserFontDir = filepath.Join(util.UserHomeConfDir(), "fonts")
 		if mkdirErr := os.MkdirAll(font.UserFontDir, 0755); nil != mkdirErr {
 			logging.LogErrorf("mkdir [%s] failed: %s", font.UserFontDir, mkdirErr)
 			return nil
@@ -1529,7 +1533,7 @@ func ProcessPDF(id, p string, merge, removeAssets, watermark bool) (err error) {
 		processPDFWatermark(pdfCtx, watermark)
 
 		pdfcpuVer := model.VersionStr
-		model.VersionStr = "SiYuan v" + util.Ver + " (pdfcpu " + pdfcpuVer + ")"
+		model.VersionStr = "Scribli v" + util.Ver + " (pdfcpu " + pdfcpuVer + ")"
 		if writeErr := api.WriteContextFile(pdfCtx, p); nil != writeErr {
 			logging.LogErrorf("write pdf context failed: %s", writeErr)
 			return nil
@@ -1825,7 +1829,7 @@ func processPDFLinkEmbedAssets(pdfCtx *model.Context, assetDests []string, boxID
 		}
 
 		fn := filepath.Base(AssetPathWithoutQuery(sourceURI))
-		fileSpecDict, newErr := pdfCtx.XRefTable.NewFileSpecDict(fn, fn, "attached by SiYuan", *ir)
+		fileSpecDict, newErr := pdfCtx.XRefTable.NewFileSpecDict(fn, fn, "attached by Scribli", *ir)
 		if nil != newErr {
 			logging.LogWarnf("new file spec dict failed: %s", newErr)
 			continue
@@ -1953,7 +1957,7 @@ func ExportStdMarkdown(id string, assetsDestSpace2Underscore, fillCSSVar, adjust
 
 		tree := prepareExportTree(bt)
 		cloudAssetsBase := ""
-		if IsSubscriber() {
+		if HasFullAccess() {
 			cloudAssetsBase = util.GetCloudAssetsServer() + Conf.GetUser().UserId + "/"
 		}
 
@@ -1967,7 +1971,7 @@ func ExportStdMarkdown(id string, assetsDestSpace2Underscore, fillCSSVar, adjust
 
 				var defID string
 				if treenode.IsBlockLink(n) {
-					defID = strings.TrimPrefix(n.TextMarkAHref, "siyuan://blocks/")
+					defID = strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
 				} else if treenode.IsBlockRef(n) {
 					defID, _, _ = treenode.GetBlockRef(n)
 				}
@@ -3077,7 +3081,7 @@ func exportTree(tree *parse.Tree, wysiwyg, keepFold, avHiddenCol bool,
 
 		switch blockRefMode {
 		case 2: // 锚文本块链
-			blockRefLink := &ast.Node{Type: ast.NodeTextMark, TextMarkTextContent: linkText, TextMarkAHref: "siyuan://blocks/" + defID}
+			blockRefLink := &ast.Node{Type: ast.NodeTextMark, TextMarkTextContent: linkText, TextMarkAHref: "scribli://blocks/" + defID}
 			blockRefLink.KramdownIAL = n.KramdownIAL
 			blockRefLink.TextMarkType = "a " + n.TextMarkType
 			blockRefLink.TextMarkInlineMemoContent = n.TextMarkInlineMemoContent
@@ -3780,7 +3784,7 @@ func blockLink2Ref(currentTree *parse.Tree) {
 
 		if treenode.IsBlockLink(n) {
 			n.TextMarkType = strings.TrimSpace(strings.TrimPrefix(n.TextMarkType, "a") + " block-ref")
-			n.TextMarkBlockRefID = strings.TrimPrefix(n.TextMarkAHref, "siyuan://blocks/")
+			n.TextMarkBlockRefID = strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
 			n.TextMarkBlockRefSubtype = "s"
 		}
 		return ast.WalkContinue
@@ -3845,7 +3849,7 @@ func collectFootnotesDefs0(currentTree *parse.Tree, node *ast.Node, refFootnoteO
 			addRefFootnoteAndRecurse(currentTree, defID, refText, refFootnoteOrder, refFootnotesByID, depth)
 			return ast.WalkSkipChildren
 		} else if treenode.IsBlockLink(n) {
-			defID := strings.TrimPrefix(n.TextMarkAHref, "siyuan://blocks/")
+			defID := strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
 			anchorText := n.TextMarkTextContent
 			if "" == anchorText {
 				anchorText = sql.GetRefText(defID)
@@ -4259,7 +4263,7 @@ func exportRefTrees(tree *parse.Tree, defBlockIDs *[]string, retTrees map[string
 			}
 			exportRefTrees(defTree, defBlockIDs, retTrees)
 		} else if treenode.IsBlockLink(n) {
-			defID := strings.TrimPrefix(n.TextMarkAHref, "siyuan://blocks/")
+			defID := strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
 			if "" == defID {
 				return ast.WalkContinue
 			}

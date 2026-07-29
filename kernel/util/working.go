@@ -59,6 +59,8 @@ var (
 	RunInContainer             = false // 是否运行在容器中
 	SiYuanAccessAuthCodeBypass = false // 是否跳过空锁屏密码检查
 	AttachUI                   = false // 是否绑定桌面 UI 进程生命周期（Electron 拉起时为 true，手动 serve 为 false）
+	OfflineMode                = false // 是否禁用启动后的外部服务请求
+	OfficialServicesDisabled   = true  // 是否禁用官方云端服务请求
 )
 
 func initEnvVars() {
@@ -66,6 +68,9 @@ func initEnvVars() {
 	var err error
 	if SiYuanAccessAuthCodeBypass, err = strconv.ParseBool(os.Getenv("SIYUAN_ACCESS_AUTH_CODE_BYPASS")); err != nil {
 		SiYuanAccessAuthCodeBypass = false
+	}
+	if OfflineMode, err = strconv.ParseBool(os.Getenv("SIYUAN_OFFLINE_MODE")); err != nil {
+		OfflineMode = false
 	}
 }
 
@@ -124,8 +129,8 @@ func Boot() {
 	IncBootProgress(3, BootL10n(299, "Booting kernel..."))
 
 	// 由标准库 flag 解析 os.Args，再走统一的 BootWithFlags。
-	workspacePath := flag.String("workspace", "", "dir path of the workspace, default to ~/SiYuan/")
-	wdPath := flag.String("wd", WorkingDir, "working directory of SiYuan")
+	workspacePath := flag.String("workspace", "", "dir path of the workspace, default to ~/Scribli/")
+	wdPath := flag.String("wd", WorkingDir, "working directory of Scribli")
 	port := flag.String("port", "0", "port of the HTTP server")
 	readOnly := flag.String("readonly", "false", "read-only mode")
 	accessAuthCode := flag.String("accessAuthCode", "", "access auth code")
@@ -198,7 +203,7 @@ func BootWithFlags(workspacePath, wdPath, port, readOnly, accessAuthCode, lang, 
 	// 工作空间仅允许被一个内核进程伺服
 	tryLockWorkspace()
 
-	bootBanner := figure.NewColorFigure("SiYuan", "isometric3", "green", true)
+	bootBanner := figure.NewColorFigure("Scribli", "isometric3", "green", true)
 	logging.LogInfo("\n" + bootBanner.String())
 	logBootInfo()
 }
@@ -288,13 +293,13 @@ var (
 	ThemesPath         string        // 配置目录下的外观目录下的 themes/ 路径
 	IconsPath          string        // 配置目录下的外观目录下的 icons/ 路径
 	SnippetsPath       string        // 数据目录下的 snippets/ 路径
-	ShortcutsPath      string        // 用户家目录下的快捷方式目录路径 home/.config/siyuan/shortcuts/
+	ShortcutsPath      string        // 用户家目录下的快捷方式目录路径 home/.config/scribli/shortcuts/
 
 	UIProcessIDs = sync.Map{} // UI 进程 ID
 )
 
 func initWorkspaceDir(workspaceArg string) {
-	userHomeConfDir := filepath.Join(HomeDir, ".config", "siyuan")
+	userHomeConfDir := UserHomeConfDir()
 	workspaceConf := filepath.Join(userHomeConfDir, "workspace.json")
 	logging.SetLogPath(filepath.Join(userHomeConfDir, "kernel.log"))
 
@@ -305,15 +310,15 @@ func initWorkspaceDir(workspaceArg string) {
 		}
 	}
 
-	defaultWorkspaceDir := filepath.Join(HomeDir, "SiYuan")
+	defaultWorkspaceDir := filepath.Join(HomeDir, "Scribli")
 	if gulu.OS.IsWindows() {
 		// 改进 Windows 端默认工作空间路径 https://github.com/siyuan-note/siyuan/issues/5622
 		if userProfile := os.Getenv("USERPROFILE"); "" != userProfile {
-			defaultWorkspaceDir = filepath.Join(userProfile, "SiYuan")
+			defaultWorkspaceDir = filepath.Join(userProfile, "Scribli")
 		}
 	} else if gulu.OS.IsDarwin() {
 		// Change the initial workspace path to ~/Library/Application Support/SiYuan on macOS https://github.com/siyuan-note/siyuan/issues/17095
-		defaultWorkspaceDir = filepath.Join(HomeDir, "Library", "Application Support", "SiYuan")
+		defaultWorkspaceDir = filepath.Join(HomeDir, "Library", "Application Support", "Scribli")
 	}
 
 	var workspacePaths []string
@@ -412,7 +417,7 @@ func RemoveWorkspacePath(paths []string, target string) []string {
 
 func ReadWorkspacePaths() (ret []string, err error) {
 	ret = []string{}
-	workspaceConf := filepath.Join(HomeDir, ".config", "siyuan", "workspace.json")
+	workspaceConf := filepath.Join(UserHomeConfDir(), "workspace.json")
 	data, err := os.ReadFile(workspaceConf)
 	if err != nil {
 		msg := fmt.Sprintf("read workspace conf [%s] failed: %s", workspaceConf, err)
@@ -452,7 +457,7 @@ func ReadWorkspacePaths() (ret []string, err error) {
 
 func WriteWorkspacePaths(workspacePaths []string) (err error) {
 	workspacePaths = DeduplicateWorkspacePaths(workspacePaths)
-	workspaceConf := filepath.Join(HomeDir, ".config", "siyuan", "workspace.json")
+	workspaceConf := filepath.Join(UserHomeConfDir(), "workspace.json")
 	data, err := gulu.JSON.MarshalJSON(workspacePaths)
 	if err != nil {
 		msg := fmt.Sprintf("marshal workspace conf [%s] failed: %s", workspaceConf, err)
@@ -468,6 +473,10 @@ func WriteWorkspacePaths(workspacePaths []string) (err error) {
 		return
 	}
 	return
+}
+
+func UserHomeConfDir() string {
+	return filepath.Join(HomeDir, ".config", "scribli")
 }
 
 var (

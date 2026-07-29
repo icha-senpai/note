@@ -81,6 +81,12 @@ type OpenAIImageAdapter struct {
 }
 
 func ChatGPT(msg string, contextMsgs []string, c *openai.Client, model string, maxTokens int, temperature float64, timeout int) (ret string, stop bool, err error) {
+	if OfflineMode {
+		err = ErrOfflineMode
+		stop = true
+		return
+	}
+
 	var reqMsgs []openai.ChatCompletionMessage
 
 	for _, ctxMsg := range contextMsgs {
@@ -232,6 +238,11 @@ func NewOpenAIClientWithModel(apiKey, apiBaseURL, model string) *openai.Client {
 // 返回值：available 为可用模型清单（仅 ListModels 成功时填充），matched 表示 model 是否可用，
 // err 为请求错误（鉴权失败、网络异常、模型不存在等，原样返回便于调用方展示原因）。
 func TestModel(apiKey, apiBaseURL, model string, timeout int) (available []string, matched bool, err error) {
+	if OfflineMode {
+		err = ErrOfflineMode
+		return
+	}
+
 	if 1 > timeout {
 		timeout = 30
 	}
@@ -274,6 +285,11 @@ func TestModel(apiKey, apiBaseURL, model string, timeout int) (available []strin
 // 返回值：matched 表示是否连通成功，dimensions 为返回的向量维度（便于核对配置），
 // err 为请求错误（鉴权失败、网络异常、模型不存在等，原样返回便于调用方展示原因）。
 func TestEmbeddingModel(apiKey, apiBaseURL, model string, dimensions, timeout int) (matched bool, dims int, err error) {
+	if OfflineMode {
+		err = ErrOfflineMode
+		return
+	}
+
 	if 1 > timeout {
 		timeout = 30
 	}
@@ -301,6 +317,11 @@ func TestEmbeddingModel(apiKey, apiBaseURL, model string, dimensions, timeout in
 // ListAvailableModels 拉取 Provider 的可用模型清单（GET /v1/models），仅返回模型 ID 列表。
 // 用于填充前端模型名称下拉框。不支持该端点的服务会返回错误，由调用方回退为手动输入。
 func ListAvailableModels(apiKey, apiBaseURL string, timeout int) (models []string, err error) {
+	if OfflineMode {
+		err = ErrOfflineMode
+		return
+	}
+
 	if 1 > timeout {
 		timeout = 30
 	}
@@ -361,6 +382,11 @@ func getEmbeddingHTTPClient() *http.Client {
 }
 
 func BatchGetEmbeddings(texts []string, apiKey, baseURL, model string, dimensions, timeout int) (ret [][]float32, err error) {
+	if OfflineMode {
+		err = ErrOfflineMode
+		return
+	}
+
 	if 1 > len(texts) {
 		return
 	}
@@ -436,6 +462,11 @@ type rerankResponse struct {
 // topN 语义：topN <= 0 时不传 top_n（服务端默认返回全部文档评分，搜索场景用此避免被服务端 top_n 上限截断）；
 // topN > 0 时透传给服务端，仅用于测试连通性等只需少量结果的场景。
 func Rerank(query string, documents []string, apiKey, endpoint, model string, topN, timeout int) (indices []int, scores []float64, err error) {
+	if OfflineMode {
+		err = ErrOfflineMode
+		return
+	}
+
 	if 1 > timeout {
 		timeout = 30
 	}
@@ -651,6 +682,10 @@ func NewOpenAIImageAdapter(apiKey, apiBaseURL, model string, timeout int) *OpenA
 }
 
 func (adapter *OpenAIImageAdapter) Analyze(ctx context.Context, image PreparedImage, question, detail string) (string, error) {
+	if OfflineMode {
+		return "", ErrOfflineMode
+	}
+
 	if question == "" {
 		question = "Describe the image accurately and extract any visible text relevant to the user's task."
 	}
@@ -696,6 +731,10 @@ func (adapter *OpenAIImageAdapter) Analyze(ctx context.Context, image PreparedIm
 }
 
 func (adapter *OpenAIImageAdapter) Generate(ctx context.Context, request GenerateImageRequest) (GeneratedImage, error) {
+	if OfflineMode {
+		return GeneratedImage{}, ErrOfflineMode
+	}
+
 	if strings.TrimSpace(request.Prompt) == "" {
 		return GeneratedImage{}, errors.New("image prompt is required")
 	}

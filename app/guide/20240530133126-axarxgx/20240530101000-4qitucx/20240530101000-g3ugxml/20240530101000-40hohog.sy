@@ -73,7 +73,7 @@
 				},
 				{
 					"Type": "NodeText",
-					"Data": "​ からブラウザで SiYuan を直接使用できます。LAN で使用する場合は、"
+					"Data": "​ からブラウザで Scribli を直接使用できます。LAN で使用する場合は、"
 				},
 				{
 					"Type": "NodeTextMark",
@@ -179,7 +179,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "独自の SiYuan Server を構築する (推奨)"
+									"Data": "独自の Scribli Server を構築する (推奨)"
 								}
 							]
 						}
@@ -198,12 +198,12 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "これらの 2 つの解決策に着手する前に、まず SiYuan の"
+					"Data": "これらの 2 つの解決策に着手する前に、まず Scribli の"
 				},
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://github.com/siyuan-note/siyuan",
+					"TextMarkAHref": "https://github.com/scribli-note/scribli",
 					"TextMarkTextContent": "技術アーキテクチャ"
 				},
 				{

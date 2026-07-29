@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import (
 
 var (
 	SSL       = false
-	UserAgent = "SiYuan/" + Ver
+	UserAgent = "Scribli/" + Ver
 
 	// invisibleCharsReplacer 用于 NormalizeEndpoint：去除复制粘贴易带入的零宽字符。
 	invisibleCharsReplacer = strings.NewReplacer(
@@ -154,7 +154,7 @@ func GetChildDocDepth(treeAbsPath string) (ret int) {
 
 func NormalizeConcurrentReqs(concurrentReqs int, provider int) int {
 	switch provider {
-	case 0: // SiYuan
+	case 0: // Scribli
 		switch {
 		case concurrentReqs < 1:
 			concurrentReqs = 8

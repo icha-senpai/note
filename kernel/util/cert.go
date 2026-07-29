@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -145,8 +145,8 @@ func generateCACert(certPath, keyPath string) error {
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			Organization: []string{"SiYuan"},
-			CommonName:   "SiYuan Local CA",
+			Organization: []string{"Scribli"},
+			CommonName:   "Scribli Local CA",
 		},
 		NotBefore:             notBefore,
 		NotAfter:              notAfter,
@@ -194,8 +194,8 @@ func generateServerCert(certPath, keyPath string, caCert *x509.Certificate, caKe
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			Organization: []string{"SiYuan"},
-			CommonName:   "SiYuan Local Server",
+			Organization: []string{"Scribli"},
+			CommonName:   "Scribli Local Server",
 		},
 		NotBefore:             notBefore,
 		NotAfter:              notAfter,

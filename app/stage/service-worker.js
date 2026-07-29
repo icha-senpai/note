@@ -37,9 +37,7 @@ self.addEventListener("fetch", event => {
     const url = new URL(event.request.url);
 
     // Don't care about other-origin URLs.
-    if (url.origin !== location.origin &&
-        url.origin !== "https://assets.b3logfile.com"
-    ) {
+    if (url.origin !== location.origin) {
         return;
     }
 
@@ -55,7 +53,6 @@ self.addEventListener("fetch", event => {
         !url.pathname.startsWith("/appearance/boot/") &&
         !url.pathname.startsWith("/appearance/emojis/") &&
         !url.pathname.startsWith("/appearance/langs/") &&
-        !url.href.startsWith("https://assets.b3logfile.com/") &&
         url.pathname !== "/favicon.ico"
     ) {
         return;

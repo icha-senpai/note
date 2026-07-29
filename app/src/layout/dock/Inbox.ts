@@ -4,15 +4,13 @@ import {setPanelFocus} from "../util";
 import {getDockByType} from "../tabUtil";
 /// #endif
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
-import {isInIOS, updateHotkeyAfterTip} from "../../protyle/util/compatibility";
+import {updateHotkeyAfterTip} from "../../protyle/util/compatibility";
 import {Model} from "../Model";
-import {needSubscribe} from "../../util/needSubscribe";
 import {MenuItem} from "../../menus/Menu";
 import {confirmDialog} from "../../dialog/confirmDialog";
 import {replaceFileName} from "../../editor/rename";
 import {getDisplayName, movePathTo, pathPosix} from "../../util/pathName";
 import {App} from "../../index";
-import {getCloudURL} from "../../config/util/about";
 import {hasClosestByClassName} from "../../protyle/util/hasClosest";
 import {escapeHtml} from "../../util/escape";
 import {emitOpenMenu} from "../../plugin/EventBus";
@@ -354,18 +352,6 @@ ${data.shorthandContent}
 
     private update() {
         const loadingElement = this.element.querySelector(".fn__loading");
-        if (needSubscribe("")) {
-            this.element.lastElementChild.innerHTML = `<ul class="b3-list b3-list--background">
-    <li class="b3-list--empty">
-        ${window.siyuan.languages.inboxTip}
-    </li>
-    <li class="b3-list--empty">
-        ${isInIOS() ? window.siyuan.languages._kernel[295] : window.siyuan.languages._kernel[29].replaceAll("${accountServer}", getCloudURL(""))}
-    </li>
-</ul>`;
-            loadingElement.classList.add("fn__none");
-            return;
-        }
         if (!loadingElement.classList.contains("fn__none")) {
             return;
         }

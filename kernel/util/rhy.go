@@ -18,6 +18,7 @@ package util
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -28,18 +29,22 @@ import (
 )
 
 var (
+	ErrOfflineMode              = errors.New("offline mode enabled")
+	ErrOfficialServicesDisabled = errors.New("official cloud services disabled")
+
 	RhyCacheDuration = int64(3600 * 6)
 
 	cachedRhyResult    = map[string]any{}
 	rhyResultCacheTime int64
 	rhyResultLock      = sync.Mutex{}
 	rhyResultFlight    singleflight.Group
-
-	rhyBazaarHash     string
-	rhyBazaarHashLock sync.RWMutex
 )
 
 func RefreshRhyResultJob() {
+	if OfficialServicesUnavailable() {
+		return
+	}
+
 	_, err := GetRhyResult(context.TODO(), true)
 	if nil != err {
 		// 系统唤醒后可能还没有网络连接，这里等待后再重试
@@ -51,6 +56,10 @@ func RefreshRhyResultJob() {
 }
 
 func GetRhyResult(ctx context.Context, force bool) (map[string]any, error) {
+	if OfficialServicesUnavailable() {
+		return nil, OfficialServicesError()
+	}
+
 	if ContainerDocker == Container {
 		RhyCacheDuration = int64(3600 * 24)
 	}
@@ -67,7 +76,6 @@ func GetRhyResult(ctx context.Context, force bool) (map[string]any, error) {
 		return nil, err
 	}
 	ret := v.(map[string]any)
-	syncRhyBazaarHashFromResult(ret)
 	return ret, nil
 }
 
@@ -87,37 +95,4 @@ func getRhyResult0(ctx context.Context) (map[string]any, error) {
 	}
 	rhyResultCacheTime = time.Now().Unix()
 	return cachedRhyResult, nil
-}
-
-func syncRhyBazaarHashFromResult(m map[string]any) {
-	rhyBazaarHashLock.Lock()
-	defer rhyBazaarHashLock.Unlock()
-	if nil == m {
-		rhyBazaarHash = ""
-		return
-	}
-	v, ok := m["bazaar"]
-	if !ok || nil == v {
-		rhyBazaarHash = ""
-		return
-	}
-	s, ok := v.(string)
-	if !ok || "" == s {
-		rhyBazaarHash = ""
-		return
-	}
-	rhyBazaarHash = s
-}
-
-func GetRhyBazaarHash(ctx context.Context) string {
-	rhyBazaarHashLock.RLock()
-	h := rhyBazaarHash
-	rhyBazaarHashLock.RUnlock()
-	if "" != h {
-		return h
-	}
-	_, _ = GetRhyResult(ctx, false)
-	rhyBazaarHashLock.RLock()
-	defer rhyBazaarHashLock.RUnlock()
-	return rhyBazaarHash
 }

@@ -350,7 +350,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "在思源中"
+					"TextMarkTextContent": "在Scribli中"
 				},
 				{
 					"Type": "NodeText",
@@ -384,7 +384,7 @@
 				},
 				{
 					"Type": "NodeBlockQueryEmbedScript",
-					"Data": "SELECT * FROM blocks WHERE content LIKE '%在思源中%' AND content LIKE '%核心概念%' AND type = 'p' AND hpath NOT LIKE '%嵌入內容塊%'"
+					"Data": "SELECT * FROM blocks WHERE content LIKE '%在Scribli中%' AND content LIKE '%核心概念%' AND type = 'p' AND hpath NOT LIKE '%嵌入內容塊%'"
 				},
 				{
 					"Type": "NodeCloseBrace"

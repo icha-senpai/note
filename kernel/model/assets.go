@@ -552,6 +552,10 @@ func DocAssets(rootID string, retainQueryStr bool) (ret []string, err error) {
 }
 
 func NetAssets2LocalAssets(rootID string, onlyImg bool, originalURL string) (err error) {
+	if util.OfflineMode {
+		return util.ErrOfflineMode
+	}
+
 	syncingFiles.Store(rootID, true)
 	defer syncingFiles.Delete(rootID)
 
@@ -577,6 +581,10 @@ func NetAssets2LocalAssets(rootID string, onlyImg bool, originalURL string) (err
 }
 
 func netAssets2LocalAssets0(tree *parse.Tree, onlyImg bool, originalURL string, assetsDirPath string, needWriteTree bool) (err error) {
+	if util.OfflineMode {
+		return util.ErrOfflineMode
+	}
+
 	var files int
 	var size int64
 	msgId := gulu.Rand.String(7)
@@ -823,6 +831,10 @@ func netAssets2LocalAssets0(tree *parse.Tree, onlyImg bool, originalURL string, 
 // DownloadNetAssets2LocalAssets 将语法树中的网络资源下载到本地并改写链接，
 // 不持久化文档树，由调用方负责后续保存与渲染。
 func DownloadNetAssets2LocalAssets(tree *parse.Tree, onlyImg bool, originalURL string, assetsDirPath string) {
+	if util.OfflineMode {
+		return
+	}
+
 	netAssets2LocalAssets0(tree, onlyImg, originalURL, assetsDirPath, false)
 }
 
@@ -1084,7 +1096,12 @@ func getAssetAbsPath(relativePath string, includeEncrypted bool) (absPath string
 }
 
 func UploadAssets2Cloud(id string, ignorePushMsg bool) (count int, err error) {
-	if !IsSubscriber() {
+	if util.OfficialServicesUnavailable() {
+		err = util.OfficialServicesError()
+		return
+	}
+
+	if !HasFullAccess() {
 		return
 	}
 
@@ -1118,7 +1135,12 @@ func UploadAssets2Cloud(id string, ignorePushMsg bool) (count int, err error) {
 }
 
 func UploadAssets2CloudByAssetsPaths(assetPaths []string, ignorePushMsg bool) (count int, err error) {
-	if !IsSubscriber() {
+	if util.OfficialServicesUnavailable() {
+		err = util.OfficialServicesError()
+		return
+	}
+
+	if !HasFullAccess() {
 		return
 	}
 
@@ -1133,6 +1155,11 @@ const (
 
 // uploadAssets2Cloud 将资源文件上传到云端图床。
 func uploadAssets2Cloud(assetPaths []string, bizType string, ignorePushMsg bool) (count int, err error) {
+	if util.OfficialServicesUnavailable() {
+		err = util.OfficialServicesError()
+		return
+	}
+
 	var uploadAbsAssets []string
 	for _, assetPath := range assetPaths {
 		var absPath string
@@ -1166,7 +1193,7 @@ func uploadAssets2Cloud(assetPaths []string, bizType string, ignorePushMsg bool)
 	}
 
 	limitSize := uint64(3 * 1024 * 1024) // 3MB
-	if IsSubscriber() {
+	if HasFullAccess() {
 		limitSize = 10 * 1024 * 1024 // 10MB
 	}
 

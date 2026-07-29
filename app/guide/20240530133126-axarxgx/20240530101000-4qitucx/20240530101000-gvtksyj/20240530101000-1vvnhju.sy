@@ -383,7 +383,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "SiYuan"
+					"TextMarkTextContent": "Scribli"
 				},
 				{
 					"Type": "NodeText",
@@ -417,7 +417,7 @@
 				},
 				{
 					"Type": "NodeBlockQueryEmbedScript",
-					"Data": "SELECT * FROM blocks WHERE content LIKE '%SiYuan%' AND content LIKE '%秘訣%' AND type = 'p' AND hpath NOT LIKE '%埋め込みコンテンツブロック%'"
+					"Data": "SELECT * FROM blocks WHERE content LIKE '%Scribli%' AND content LIKE '%秘訣%' AND type = 'p' AND hpath NOT LIKE '%埋め込みコンテンツブロック%'"
 				},
 				{
 					"Type": "NodeCloseBrace"

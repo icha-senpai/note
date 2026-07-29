@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2023 SiYuan Community
+ * Copyright (C) 2023 Scribli Community
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,6 @@ declare namespace Config {
         ai: IAI;
         api: IAPI;
         appearance: IAppearance;
-        bazaar: IBazaar;
         /**
          * Cloud Service Provider Region
          * - `0`: Chinese mainland (LianDi)
@@ -122,10 +121,6 @@ declare namespace Config {
          * Display the title icon
          */
         displayTitle: boolean;
-        /**
-         * Display the VIP icon
-         */
-        displayVIP: boolean;
     }
 
     /**
@@ -254,7 +249,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan API related configuration
+     * Scribli API related configuration
      */
     export interface IAPI {
         /**
@@ -264,7 +259,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan appearance related configuration
+     * Scribli appearance related configuration
      */
     export interface IAppearance {
         /**
@@ -390,21 +385,7 @@ declare namespace Config {
         | "zh-TW";
 
     /**
-     * SiYuan bazaar related configuration
-     */
-    export interface IBazaar {
-        /**
-         * Whether to disable all plug-ins
-         */
-        petalDisabled: boolean;
-        /**
-         * Whether to trust (enable) the resources for the bazaar
-         */
-        trust: boolean;
-    }
-
-    /**
-     * SiYuan editor markdown related configuration
+     * Scribli editor markdown related configuration
      */
     interface IMarkdown {
         /**
@@ -442,7 +423,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan editor related configuration
+     * Scribli editor related configuration
      */
     export interface IEditor {
 
@@ -639,7 +620,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan export related configuration
+     * Scribli export related configuration
      */
     export interface IExport {
         /**
@@ -900,7 +881,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan graph related configuration
+     * Scribli graph related configuration
      */
     export interface IGraph {
         global: IGraphGlobal;
@@ -966,7 +947,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan node type filter
+     * Scribli node type filter
      */
     export interface IGraphType {
         /**
@@ -1028,7 +1009,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan keymap related configuration
+     * Scribli keymap related configuration
      */
     export interface IKeymap {
         editor: IKeymapEditor;
@@ -1037,7 +1018,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan editor shortcut keys
+     * Scribli editor shortcut keys
      */
     export interface IKeymapEditor {
         general: IKeymapEditorGeneral;
@@ -1048,7 +1029,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan editor general shortcut keys
+     * Scribli editor general shortcut keys
      */
     export interface IKeymapEditorGeneral extends IKeys {
         ai: IKey;
@@ -1107,14 +1088,14 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan shortcut keys
+     * Scribli shortcut keys
      */
     export interface IKeys {
         [key: string]: IKey;
     }
 
     /**
-     * SiYuan shortcut key
+     * Scribli shortcut key
      */
     export interface IKey {
         /**
@@ -1128,7 +1109,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan editor heading shortcut keys
+     * Scribli editor heading shortcut keys
      */
     export interface IKeymapEditorHeading extends IKeys {
         heading1: IKey;
@@ -1141,7 +1122,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan editor insert shortcut keys
+     * Scribli editor insert shortcut keys
      */
     export interface IKeymapEditorInsert extends IKeys {
         appearance: IKey;
@@ -1167,7 +1148,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan editor list shortcut keys
+     * Scribli editor list shortcut keys
      */
     export interface IKeymapEditorList extends IKeys {
         checkToggle: IKey;
@@ -1176,7 +1157,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan editor table shortcut keys
+     * Scribli editor table shortcut keys
      */
     export interface IKeymapEditorTable extends IKeys {
         "delete-column": IKey;
@@ -1192,7 +1173,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan general shortcut keys
+     * Scribli general shortcut keys
      */
     export interface IKeymapGeneral extends IKeys {
         mainMenu: IKey;
@@ -1260,7 +1241,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan plugin shortcut keys
+     * Scribli plugin shortcut keys
      */
     export interface IKeymapPlugin {
         [key: string]: IKeys;
@@ -1359,7 +1340,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan search related configuration
+     * Scribli search related configuration
      */
     export interface ISearch {
         /**
@@ -1505,7 +1486,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan code snippets related configuration
+     * Scribli code snippets related configuration
      */
     export interface ISnippet {
         /**
@@ -1568,7 +1549,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan workspace content statistics
+     * Scribli workspace content statistics
      */
     export interface IStat {
         /**
@@ -1606,7 +1587,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan synchronization related configuration
+     * Scribli synchronization related configuration
      */
     export interface ISync {
         /**
@@ -1639,7 +1620,7 @@ declare namespace Config {
         perception: boolean;
         /**
          * Cloud storage service provider
-         * - `0`: SiYuan official cloud storage service
+         * - `0`: Scribli official cloud storage service
          * - `2`: Object storage service compatible with S3 protocol
          * - `3`: Network storage service using WebDAV protocol
          * - `4`: Local file system
@@ -1757,7 +1738,7 @@ declare namespace Config {
      */
     export interface ISystem {
         /**
-         * The absolute path of the `resources` directory under the SiYuan installation directory
+         * The absolute path of the `resources` directory under the Scribli installation directory
          */
         appDir: string;
         /**
@@ -1866,7 +1847,7 @@ declare namespace Config {
     export type TSystemContainer = "docker" | "android" | "ios" | "harmony" | "std";
 
     /**
-     * SiYuan Network proxy configuration
+     * Scribli Network proxy configuration
      */
     export interface INetworkProxy {
         /**
@@ -1908,7 +1889,7 @@ declare namespace Config {
     export type TSystemOS = "android" | "darwin" | "ios" | "linux" | "windows";
 
     /**
-     * SiYuan tag dock related configuration
+     * Scribli tag dock related configuration
      */
     export interface ITag {
         /**
@@ -1924,7 +1905,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan UI layout related configuration
+     * Scribli UI layout related configuration
      */
     export interface IUiLayout {
         bottom: IUILayoutDock;
@@ -1938,7 +1919,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan dock related configuration
+     * Scribli dock related configuration
      */
     export interface IUILayoutDock {
         /**
@@ -1952,7 +1933,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan dock tab data
+     * Scribli dock tab data
      */
     export interface IUILayoutDockTab {
         /**
@@ -1983,7 +1964,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan dock tab size
+     * Scribli dock tab size
      */
     export interface IUILayoutDockPanelSize {
         /**
@@ -1997,7 +1978,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan layout item
+     * Scribli layout item
      */
     export type TUILayoutItem = IUILayoutLayout
         | IUILayoutWnd
@@ -2014,7 +1995,7 @@ declare namespace Config {
         | IUILayoutTabSearch;
 
     /**
-     * SiYuan panel layout
+     * Scribli panel layout
      */
     export interface IUILayoutLayout {
         /**
@@ -2054,7 +2035,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan window layout
+     * Scribli window layout
      */
     export interface IUILayoutWnd {
         /**
@@ -2124,7 +2105,7 @@ declare namespace Config {
     /**
      * Tab content
      *
-     * SiYuan asset file tab
+     * Scribli asset file tab
      */
     export interface IUILayoutTabAsset {
         /**
@@ -2143,7 +2124,7 @@ declare namespace Config {
 
 
     /**
-     * SiYuan back link tab
+     * Scribli back link tab
      */
     export interface IUILayoutTabBacklink {
         /**
@@ -2174,7 +2155,7 @@ declare namespace Config {
     export type TUILayoutTabBacklinkType = "pin" | "local";
 
     /**
-     * SiYuan bookmark tab
+     * Scribli bookmark tab
      */
     export interface IUILayoutTabBookmark {
         /**
@@ -2184,7 +2165,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan custom tab
+     * Scribli custom tab
      */
     export interface IUILayoutTabCustom {
         /**
@@ -2202,7 +2183,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan editor tab
+     * Scribli editor tab
      */
     export interface IUILayoutTabEditor {
         /**
@@ -2238,7 +2219,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan filetree tab
+     * Scribli filetree tab
      */
     export interface IUILayoutTabFiles {
         /**
@@ -2249,7 +2230,7 @@ declare namespace Config {
 
 
     /**
-     * SiYuan graph tab
+     * Scribli graph tab
      */
     export interface IUILayoutTabGraph {
         /**
@@ -2283,7 +2264,7 @@ declare namespace Config {
     export type TUILayoutTabGraphType = "pin" | "local" | "global";
 
     /**
-     * SiYuan outline tab
+     * Scribli outline tab
      */
     export interface IUILayoutTabOutline {
         /**
@@ -2315,7 +2296,7 @@ declare namespace Config {
     export type TUILayoutTabOutlineType = "pin" | "local";
 
     /**
-     * SiYuan tag tab
+     * Scribli tag tab
      */
     export interface IUILayoutTabTag {
         /**
@@ -2325,7 +2306,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan search tab
+     * Scribli search tab
      */
     export interface IUILayoutTabSearch {
         config: IUILayoutTabSearchConfig;
@@ -2336,7 +2317,7 @@ declare namespace Config {
     }
 
     /**
-     * SiYuan search tab configuration
+     * Scribli search tab configuration
      */
     export interface IUILayoutTabSearchConfig {
         /**

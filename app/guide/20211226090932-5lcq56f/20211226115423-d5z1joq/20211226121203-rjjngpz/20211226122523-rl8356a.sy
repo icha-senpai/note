@@ -154,7 +154,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "自行搭建思源服務端（推薦）"
+									"Data": "自行搭建Scribli服務端（推薦）"
 								}
 							]
 						}
@@ -178,7 +178,7 @@
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
 					"TextMarkAHref": "https://ld246.com/article/1619868273581#%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84",
-					"TextMarkTextContent": "思源筆記技術架構"
+					"TextMarkTextContent": "Scribli技術架構"
 				},
 				{
 					"Type": "NodeText",

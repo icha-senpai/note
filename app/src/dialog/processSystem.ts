@@ -14,7 +14,7 @@ import {Dialog} from "./index";
 import {isMobile} from "../util/functions";
 import {confirmDialog} from "./confirmDialog";
 import {escapeHtml} from "../util/escape";
-import {needSubscribe} from "../util/needSubscribe";
+import {hasFeatureAccess} from "../util/featureAccess";
 import {hideAllElements} from "../protyle/ui/hideElements";
 import {App} from "../index";
 import {saveScroll} from "../protyle/scroll/saveScroll";
@@ -407,35 +407,6 @@ export const bootSync = () => {
     });
 };
 
-export const downloadProgress = (data: { id: string, percent: number }) => {
-    const bazaarSideElement = document.querySelector("#configBazaarReadme .item__side");
-    if (!bazaarSideElement) {
-        return;
-    }
-    if (data.id !== bazaarSideElement.getAttribute("data-repourl")) {
-        return;
-    }
-    const installBtnElement = bazaarSideElement.querySelector('[data-type="install"]') as HTMLElement;
-    const updateBtnElement = bazaarSideElement.querySelector('[data-type="install-t"]') as HTMLElement;
-    if (!installBtnElement && !updateBtnElement) {
-        return;
-    }
-    const progressHTML = `<span style="width: ${data.percent * 100}%"></span>`;
-    if (data.percent >= 1) {
-        installBtnElement?.parentElement.classList.add("fn__none");
-        updateBtnElement?.parentElement.classList.add("fn__none");
-    } else {
-        if (installBtnElement) {
-            installBtnElement.classList.add("b3-button--progress");
-            installBtnElement.innerHTML = progressHTML;
-        }
-        if (updateBtnElement) {
-            updateBtnElement.classList.add("b3-button--progress");
-            updateBtnElement.innerHTML = progressHTML;
-        }
-    }
-};
-
 export const processSync = (data?: IWebSocketData, plugins?: Plugin[]) => {
     if (data?.code === 1) {
         window.dispatchEvent(new CustomEvent("siyuan-sync-success"));
@@ -444,7 +415,7 @@ export const processSync = (data?: IWebSocketData, plugins?: Plugin[]) => {
     const menuSyncUseElement = document.querySelector("#menuSyncNow use");
     const barSyncUseElement = document.querySelector("#toolbarSync use");
     if (!data) {
-        if (!window.siyuan.config.sync.enabled || (0 === window.siyuan.config.sync.provider && needSubscribe(""))) {
+        if (!window.siyuan.config.sync.enabled || (0 === window.siyuan.config.sync.provider && !hasFeatureAccess())) {
             menuSyncUseElement?.setAttribute("xlink:href", "#iconCloudOff");
             barSyncUseElement.setAttribute("xlink:href", "#iconCloudOff");
         } else {
@@ -475,7 +446,7 @@ export const processSync = (data?: IWebSocketData, plugins?: Plugin[]) => {
     const useElement = iconElement.querySelector("use");
     if (!data) {
         iconElement.classList.remove("toolbar__item--active");
-        if (!window.siyuan.config.sync.enabled || (0 === window.siyuan.config.sync.provider && needSubscribe(""))) {
+        if (!window.siyuan.config.sync.enabled || (0 === window.siyuan.config.sync.provider && !hasFeatureAccess())) {
             useElement.setAttribute("xlink:href", "#iconCloudOff");
         } else {
             useElement.setAttribute("xlink:href", "#iconCloudSucc");

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ import (
 
 var workspaceCmd = &cobra.Command{
 	Use:   "workspace",
-	Short: "Manage SiYuan workspaces",
+	Short: "Manage Scribli workspaces",
 }
 
 var workspaceListCmd = &cobra.Command{
@@ -106,7 +106,7 @@ func resolveDefaultWorkspace() string {
 	if len(paths) > 0 {
 		return paths[len(paths)-1]
 	}
-	return filepath.Join(util.HomeDir, "SiYuan")
+	return filepath.Join(util.HomeDir, "Scribli")
 }
 
 func init() {

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ package tools
 // convertMCPToolsToOpenAI() lists this tool for the LLM.
 var FrontendTool = &Tool{
 	Name:        "frontend",
-	Description: "Frontend/UI actions in the SiYuan editor (run in the browser; may change what the user sees). Actions: open_setting(query?), focus_block(id), open_document(id), open_search(query?). Plugins may register more — see <plugin_actions> and invoke by full name (e.g. plugin__myplugin__myaction).",
+	Description: "Frontend/UI actions in the Scribli editor (run in the browser; may change what the user sees). Actions: open_setting(query?), focus_block(id), open_document(id), open_search(query?). Plugins may register more — see <plugin_actions> and invoke by full name (e.g. plugin__myplugin__myaction).",
 	InputSchema: ToolSchema{
 		Type: "object",
 		Properties: map[string]Property{

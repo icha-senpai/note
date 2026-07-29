@@ -1,4 +1,4 @@
-// 把数值缩写为带 k/M 后缀的短格式，用于集市下载次数、星标、issues 等计数展示
+// 把数值缩写为带 k/M 后缀的短格式，用于计数展示
 export const formatCount = (n: number | string) => {
     const num = typeof n === "string" ? parseFloat(n) : n;
     if (!Number.isFinite(num)) {

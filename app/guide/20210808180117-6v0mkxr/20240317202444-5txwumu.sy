@@ -360,7 +360,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "When creating a daily note in SiYuan, a custom-dailynote-yyyymmdd attribute will be automatically added to the document to distinguish it from regular documents."
+									"Data": "When creating a daily note in Scribli, a custom-dailynote-yyyymmdd attribute will be automatically added to the document to distinguish it from regular documents."
 								}
 							]
 						},

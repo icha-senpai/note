@@ -351,7 +351,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "思源在创建日记的时候会自动为文档添加 custom-dailynote-yyyymmdd 属性，以方便将日记文档同普通文档区分。"
+									"Data": "Scribli在创建日记的时候会自动为文档添加 custom-dailynote-yyyymmdd 属性，以方便将日记文档同普通文档区分。"
 								}
 							]
 						},

@@ -34,7 +34,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "我們可以通過雲端收集箱對外部數據進行收集，然後在思源中通過收集箱面板從雲端獲取這些數據並發送到筆記本中進行進一步整理。"
+					"Data": "我們可以通過雲端收集箱對外部數據進行收集，然後在Scribli中通過收集箱面板從雲端獲取這些數據並發送到筆記本中進行進一步整理。"
 				}
 			]
 		},
@@ -303,7 +303,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "在思源中打開收集箱面板（Alt+6）"
+									"Data": "在Scribli中打開收集箱面板（Alt+6）"
 								}
 							]
 						}
@@ -326,7 +326,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "思源小助手"
+					"TextMarkTextContent": "Scribli小助手"
 				},
 				{
 					"Type": "NodeText",
@@ -508,7 +508,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "https://ld246.com/apis/siyuan/inbox/addCloudShorthand"
+									"TextMarkTextContent": "https://ld246.com/apis/scribli/inbox/addCloudShorthand"
 								},
 								{
 									"Type": "NodeText",

@@ -569,7 +569,7 @@
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
 									"TextMarkAHref": "https://www.yuque.com/u25584857/ryp75p/cd49lz",
-									"TextMarkTextContent": "思源笔记基本功能详解"
+									"TextMarkTextContent": "Scribli基本功能详解"
 								}
 							]
 						}
@@ -599,7 +599,7 @@
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
 									"TextMarkAHref": "https://www.yuque.com/u25584857/ryp75p/tcv57u",
-									"TextMarkTextContent": "思源笔记双链使用详解"
+									"TextMarkTextContent": "Scribli双链使用详解"
 								}
 							]
 						}
@@ -629,7 +629,7 @@
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
 									"TextMarkAHref": "https://www.yuque.com/u25584857/ryp75p/sgf58w",
-									"TextMarkTextContent": "思源笔记外观修改详解"
+									"TextMarkTextContent": "Scribli外观修改详解"
 								}
 							]
 						}
@@ -658,8 +658,8 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://www.yuque.com/siyuannote/docs",
-									"TextMarkTextContent": "思源笔记教程合辑"
+									"TextMarkAHref": "https://www.yuque.com/scriblinote/docs",
+									"TextMarkTextContent": "Scribli教程合辑"
 								}
 							]
 						}
@@ -715,7 +715,7 @@
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
 									"TextMarkAHref": "https://ld246.com/article/1668217980464",
-									"TextMarkTextContent": "思源笔记快乐手册"
+									"TextMarkTextContent": "Scribli快乐手册"
 								}
 							]
 						}

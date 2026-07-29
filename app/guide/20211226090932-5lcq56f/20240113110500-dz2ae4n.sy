@@ -35,12 +35,12 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源筆記提供了 Android 端、iOS 端和鴻蒙端 App，已經上架部分手機應用程式商店，請在應用程式商店中搜尋 "
+					"Data": "Scribli提供了 Android 端、iOS 端和鴻蒙端 App，已經上架部分手機應用程式商店，請在應用程式商店中搜尋 "
 				},
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "思源筆記"
+					"TextMarkTextContent": "Scribli"
 				},
 				{
 					"Type": "NodeText",
@@ -49,7 +49,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "SiYuan"
+					"TextMarkTextContent": "Scribli"
 				},
 				{
 					"Type": "NodeText",
@@ -336,8 +336,8 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/download.html",
-					"TextMarkTextContent": "https://b3log.org/siyuan/download.html"
+					"TextMarkAHref": "https://b3log.org/scribli/download.html",
+					"TextMarkTextContent": "https://b3log.org/scribli/download.html"
 				}
 			]
 		},
@@ -579,7 +579,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "如果你需要思源盡量保活後台運行，請依照下列步驟操作："
+					"Data": "如果你需要Scribli盡量保活後台運行，請依照下列步驟操作："
 				}
 			]
 		},
@@ -764,7 +764,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "完成以上步驟後思源每隔 45 秒會發送通知來盡量保活後台運作。"
+					"Data": "完成以上步驟後Scribli每隔 45 秒會發送通知來盡量保活後台運作。"
 				}
 			]
 		},
@@ -793,7 +793,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "速記是行動端的快速記錄功能。當靈感閃現或有臨時資訊需要記錄時，無需打開思源進入文件編輯，即可透過系統分享或快捷入口將文字快速保存。速記內容先暫存在本機，之後自動轉入文件面板進行整理。"
+					"Data": "速記是行動端的快速記錄功能。當靈感閃現或有臨時資訊需要記錄時，無需打開Scribli進入文件編輯，即可透過系統分享或快捷入口將文字快速保存。速記內容先暫存在本機，之後自動轉入文件面板進行整理。"
 				}
 			]
 		},
@@ -848,7 +848,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": "：在行動端透過系統分享選單將文字/連結發送到思源，或在桌面添加思源的快捷入口一鍵記錄"
+									"Data": "：在行動端透過系統分享選單將文字/連結發送到Scribli，或在桌面添加Scribli的快捷入口一鍵記錄"
 								}
 							]
 						}

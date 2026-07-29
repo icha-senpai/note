@@ -1,6 +1,6 @@
 # AGENTS.md
 
-SiYuan repository guide. Module path `github.com/siyuan-note/siyuan`, license AGPL-3.0.
+Scribli repository guide. Module path `github.com/siyuan-note/siyuan`, license AGPL-3.0.
 
 **Architecture:** Go kernel (`kernel/`) + TypeScript frontend (`app/`), plus a separate `export` bundle (global `Protyle`, entry `src/protyle/method.ts`) for rendering rich content in exported HTML / PDF preview. Read versions from `kernel/go.mod`, `app/package.json`, `kernel/util/working.go`.
 

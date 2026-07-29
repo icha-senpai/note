@@ -169,7 +169,7 @@
 										},
 										{
 											"Type": "NodeLinkDest",
-											"Data": "assets/siyuan-128-20210604092205-djd749a.png"
+											"Data": "assets/scribli-128-20210604092205-djd749a.png"
 										},
 										{
 											"Type": "NodeCloseParen"
@@ -1775,7 +1775,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "發布思源"
+									"Data": "發布Scribli"
 								}
 							]
 						}
@@ -2291,7 +2291,7 @@
 					"TextMarkType": "block-ref",
 					"TextMarkBlockRefID": "20211226123004-dplpw0o",
 					"TextMarkBlockRefSubtype": "s",
-					"TextMarkTextContent": "思源範本"
+					"TextMarkTextContent": "Scribli範本"
 				},
 				{
 					"Type": "NodeText",

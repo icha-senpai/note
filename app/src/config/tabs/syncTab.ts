@@ -1,5 +1,4 @@
 import type {SettingTabBuilder} from "../setting/builder";
-import {registerAccountGroup} from "./accountUi";
 import {Constants} from "../../constants";
 import {fetchPost} from "../../util/fetch";
 import {confirmDialog} from "../../dialog/confirmDialog";
@@ -20,7 +19,6 @@ const registerSyncGroup = (tab: SettingTabBuilder) => {
         title: window.siyuan.languages.syncProvider,
         desc: window.siyuan.languages.syncProviderTip,
         options: [
-            {value: 0, label: "SiYuan"},
             {value: 2, label: "S3"},
             {value: 3, label: "WebDAV"},
             ...(["std", "docker"].includes(window.siyuan.config.system.container) ? [{value: 4, label: window.siyuan.languages.localFileSystem}] : []),
@@ -264,7 +262,6 @@ const mountRepoKey = (root: HTMLElement) => {
 };
 
 export const registerSyncTab = (tab: SettingTabBuilder) => {
-    registerAccountGroup(tab);
     registerSyncGroup(tab);
     registerRepoGroup(tab);
 };

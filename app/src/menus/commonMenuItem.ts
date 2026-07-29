@@ -619,9 +619,9 @@ export const exportMd = (id: string) => {
                 });
             }
         }, {
-            id: "exportSiYuanZip",
-            label: "SiYuan .sy.zip",
-            icon: "iconSiYuan",
+            id: "exportScribliZip",
+            label: "Scribli .sy.zip",
+            icon: "iconScribli",
             click: () => {
                 const msgId = showMessage(window.siyuan.languages.exporting, -1);
                 fetchPost("/api/export/exportSY", {
@@ -654,8 +654,8 @@ export const exportMd = (id: string) => {
                     saveExport({type: "pdf", id});
                 }
             }, {
-                id: "exportHTML_SiYuan",
-                label: "HTML (SiYuan)",
+                id: "exportHTML_Scribli",
+                label: "HTML (Scribli)",
                 iconClass: "ft__error",
                 icon: "iconHTML5",
                 click: () => {
@@ -820,8 +820,8 @@ export const exportMd = (id: string) => {
                     });
                 }
             }, {
-                id: "exportHTML_SiYuan",
-                label: "HTML (SiYuan)",
+                id: "exportHTML_Scribli",
+                label: "HTML (Scribli)",
                 iconClass: "ft__error",
                 icon: "iconHTML5",
                 click: () => {

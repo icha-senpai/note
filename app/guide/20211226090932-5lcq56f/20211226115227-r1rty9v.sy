@@ -21,7 +21,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源是如何存儲資料的？"
+					"Data": "Scribli是如何存儲資料的？"
 				}
 			]
 		},
@@ -650,7 +650,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "在 macOS 上思源會存取桌面、文稿和 iCloud 雲端磁碟資料夾，目的是為了偵測工作空間是否放置在 iCloud 同步路徑下，思源絕不會窺探你的個人數據，請放心。"
+					"Data": "在 macOS 上Scribli會存取桌面、文稿和 iCloud 雲端磁碟資料夾，目的是為了偵測工作空間是否放置在 iCloud 同步路徑下，Scribli絕不會窺探你的個人數據，請放心。"
 				}
 			]
 		},
@@ -665,7 +665,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源是開源的嗎？"
+					"Data": "Scribli是開源的嗎？"
 				}
 			]
 		},
@@ -679,7 +679,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源筆記是完全開源的，在 GitHub 上可以找到完整的源代碼。"
+					"Data": "Scribli是完全開源的，在 GitHub 上可以找到完整的源代碼。"
 				}
 			]
 		},
@@ -784,7 +784,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": " 選項，這樣思源會自動下載最新版安裝包並提示安裝"
+									"Data": " 選項，這樣Scribli會自動下載最新版安裝包並提示安裝"
 								}
 							]
 						}
@@ -871,7 +871,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/",
+					"TextMarkAHref": "https://b3log.org/scribli/",
 					"TextMarkTextContent": "官方網站"
 				},
 				{
@@ -1296,7 +1296,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/pricing.html",
+					"TextMarkAHref": "https://b3log.org/scribli/pricing.html",
 					"TextMarkTextContent": "定價"
 				},
 				{
@@ -1316,7 +1316,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "“思源”命名的由來"
+					"Data": "“Scribli”命名的由來"
 				}
 			]
 		},
@@ -1330,7 +1330,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源這個名字取自中國古代成語“飲水思源”，其字面意思是“喝水的時候，要想到水是從哪裡來的”，比喻不忘本、知感恩。"
+					"Data": "Scribli這個名字取自中國古代成語“飲水Scribli”，其字面意思是“喝水的時候，要想到水是從哪裡來的”，比喻不忘本、知感恩。"
 				}
 			]
 		},
@@ -1344,7 +1344,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "我們希望用戶在使用思源筆記進行知識管理的時候不要忘記知識的出處和關聯，更重要的是不要忘記通過自己的所學回報社會，回報全人類。"
+					"Data": "我們希望用戶在使用Scribli進行知識管理的時候不要忘記知識的出處和關聯，更重要的是不要忘記通過自己的所學回報社會，回報全人類。"
 				}
 			]
 		}

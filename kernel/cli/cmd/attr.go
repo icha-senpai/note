@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -63,7 +63,7 @@ var attrSetCmd = &cobra.Command{
 
 Common attributes:
   icon       Emoji hex codepoint (e.g. "1f4ca"), emoji character (e.g. "📊"), custom image path (e.g. "1/b3log.png"), or dynamic icon URL (e.g.
-             "api/icon/getDynamicIcon?type=8&color=%23d23f31&content=SiYuan&id=xxx").
+             "api/icon/getDynamicIcon?type=8&color=%23d23f31&content=Scribli&id=xxx").
   title-img  CSS background-image format (e.g. 'background-image:url("assets/example.jpg")').
              DO NOT use a bare asset path.
   tags       Comma-separated tag names.

@@ -31,7 +31,7 @@
 					"Children": [
 						{
 							"Type": "NodeText",
-							"Data": "When you close SiYuan, the User Guide will be automatically deleted. You can click "
+							"Data": "When you close Scribli, the User Guide will be automatically deleted. You can click "
 						},
 						{
 							"Type": "NodeTextMark",
@@ -571,7 +571,7 @@
 												{
 													"Type": "NodeTextMark",
 													"TextMarkType": "a",
-													"TextMarkAHref": "https://b3log.org/siyuan/en/pricing.html",
+													"TextMarkAHref": "https://b3log.org/scribli/en/pricing.html",
 													"TextMarkTextContent": "Pay to support development"
 												}
 											]
@@ -600,7 +600,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "We hope that in the coming time, SiYuan can become an efficient tool for your life and study, helping you achieve more goals and plans🙏"
+					"Data": "We hope that in the coming time, Scribli can become an efficient tool for your life and study, helping you achieve more goals and plans🙏"
 				}
 			]
 		},
@@ -675,7 +675,7 @@
 									"TextMarkType": "block-ref",
 									"TextMarkBlockRefID": "20230415111951-vt4y4gg",
 									"TextMarkBlockRefSubtype": "s",
-									"TextMarkTextContent": "SiYuan"
+									"TextMarkTextContent": "Scribli"
 								},
 								{
 									"Type": "NodeText",

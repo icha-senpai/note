@@ -53,7 +53,7 @@ export const renderWelcomeHTML = (hasModel = true): string => {
     const L = window.siyuan.languages;
     if (!hasModel) {
         return '<div class="agent-welcome">' +
-            '<div class="agent-welcome__greeting">' + (L.agentWelcomeGreeting || "Hello, I am SiYuan Agent") + "</div>" +
+            '<div class="agent-welcome__greeting">' + (L.agentWelcomeGreeting || "Hello, I am Scribli Agent") + "</div>" +
             '<div class="agent-welcome__no-model">' +
                 '<div class="agent-welcome__no-model-title">' + (L.agentNoModel || "No model configured") + "</div>" +
                 '<div class="agent-welcome__no-model-tip">' + (L.agentNoModelTip || "Please configure a provider and model in Settings - AI first.") + "</div>" +
@@ -62,7 +62,7 @@ export const renderWelcomeHTML = (hasModel = true): string => {
         "</div>";
     }
     return '<div class="agent-welcome">' +
-        '<div class="agent-welcome__greeting">' + (L.agentWelcomeGreeting || "Hello, I am SiYuan Agent") + "</div>" +
+        '<div class="agent-welcome__greeting">' + (L.agentWelcomeGreeting || "Hello, I am Scribli Agent") + "</div>" +
         '<div class="agent-welcome__examples">' +
             '<div class="agent-welcome__example" data-text="' + escapeHtml(L.agentExample1 || "") + '">' + (L.agentExample1 || "") + "</div>" +
             '<div class="agent-welcome__example" data-text="' + escapeHtml(L.agentExample2 || "") + '">' + (L.agentExample2 || "") + "</div>" +
@@ -322,7 +322,7 @@ export const postRender = (container: HTMLElement, app?: App): void => {
     if (!app) {
         return;
     }
-    container.querySelectorAll<HTMLAnchorElement>('a[href^="siyuan://"]').forEach((link) => {
+    container.querySelectorAll<HTMLAnchorElement>('a[href^="scribli://"]').forEach((link) => {
         const href = link.getAttribute("href") || "";
         link.setAttribute("data-type", "a");
         link.setAttribute("data-href", href);
@@ -342,7 +342,7 @@ export const postRender = (container: HTMLElement, app?: App): void => {
         if (refID && container.contains(ref)) {
             event.preventDefault();
             event.stopPropagation();
-            void processSiYuanUri(app, "siyuan://blocks/" + refID);
+            void processSiYuanUri(app, "scribli://blocks/" + refID);
             return;
         }
         const fileRef = target.closest('[data-type~="file-annotation-ref"][data-id]') as HTMLElement;

@@ -234,7 +234,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "在思源中通过块标菜单设置提醒"
+									"Data": "在Scribli中通过块标菜单设置提醒"
 								}
 							]
 						}

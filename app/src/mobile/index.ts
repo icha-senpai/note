@@ -187,9 +187,7 @@ class App {
                     } else if (!isInIOS()) {
                         document.querySelector('meta[name="viewport"]').setAttribute("content", "width=device-width, height=device-height, interactive-widget=resizes-visual, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover");
                     }
-                    fetchPost("/api/setting/getCloudUser", {}, async userResponse => {
-                        window.siyuan.user = userResponse.data;
-                        await ensureOnboarding();
+                    ensureOnboarding().then(() => {
                         fetchPost("/api/system/getEmojiConf", {}, emojiResponse => {
                             window.siyuan.emojis = emojiResponse.data as IEmoji[];
                             setNoteBook(() => {

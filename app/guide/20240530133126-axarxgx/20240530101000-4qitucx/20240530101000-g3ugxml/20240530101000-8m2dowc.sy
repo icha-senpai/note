@@ -37,7 +37,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "プラグインは SiYuan の全体的な機能を拡張します。"
+					"Data": "プラグインは Scribli の全体的な機能を拡張します。"
 				}
 			]
 		},
@@ -166,7 +166,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/en/community.html",
+					"TextMarkAHref": "https://b3log.org/scribli/en/community.html",
 					"TextMarkTextContent": "コミュニティマーケットプレイスのリポジトリ"
 				},
 				{

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ process.noAsar = true;
 const appDir = path.dirname(app.getAppPath());
 const isDevEnv = process.env.NODE_ENV === "development";
 const appVer = app.getVersion();
-const confDir = path.join(app.getPath("home"), ".config", "siyuan");
+const confDir = path.join(app.getPath("home"), ".config", "scribli");
 const windowStatePath = path.join(confDir, "windowState.json");
 const appCrashLogPath = path.join(confDir, "app.crash.log");
 const appCrashMarkerPath = path.join(confDir, "app.crash.json");
@@ -79,13 +79,13 @@ const isOpenAsHidden = function () {
 
 remote.initialize();
 
-// Electron 相关文件夹名称改为 `SiYuan-Electron` https://github.com/siyuan-note/siyuan/issues/3349
-// getPath("userData") 会创建空的 SiYuan 目录，改为 app.getPath("appData")
+// Electron 相关文件夹名称改为 `Scribli-Electron` https://github.com/siyuan-note/siyuan/issues/3349
+// getPath("userData") 会创建空的 Scribli 目录，改为 app.getPath("appData")
 app.setPath("userData", path.join(app.getPath("appData"), app.getName() + "-Electron"));
 
 if (process.platform === "win32") {
     // Windows 需要设置 AppUserModelId 才能正确显示应用名称和应用图标 https://github.com/siyuan-note/siyuan/issues/17022
-    app.setAppUserModelId("org.b3log.siyuan");
+    app.setAppUserModelId("app.scribli.desktop");
 }
 
 if (!app.requestSingleInstanceLock()) {
@@ -93,7 +93,7 @@ if (!app.requestSingleInstanceLock()) {
     return;
 }
 
-// 开发环境下 Windows 需显式传入 Electron 可执行文件路径和 main.js 路径，否则 siyuan:// 会被当作相对路径
+// 开发环境下 Windows 需显式传入 Electron 可执行文件路径和 main.js 路径，否则 scribli:// 会被当作相对路径
 if (isDevEnv && process.defaultApp && process.argv.length >= 2) {
     const mainScript = path.resolve(process.argv[1]);
     if (process.platform === "win32") {
@@ -123,7 +123,7 @@ if (!app.isPackaged) {
 
 for (let i = argStart; i < process.argv.length; i++) {
     let arg = process.argv[i];
-    if (arg.startsWith("--workspace=") || arg.startsWith("--openAsHidden") || arg.startsWith("--port=") || arg.startsWith("--safe-mode=") || arg.startsWith("--lang=") || arg.startsWith("siyuan://")) {
+    if (arg.startsWith("--workspace=") || arg.startsWith("--openAsHidden") || arg.startsWith("--port=") || arg.startsWith("--safe-mode=") || arg.startsWith("--lang=") || arg.startsWith("scribli://")) {
         // 跳过内置参数
         if (arg.startsWith("--openAsHidden")) {
             openAsHidden = true;
@@ -143,7 +143,7 @@ try {
     }
 } catch (e) {
     console.error(e);
-    require("electron").dialog.showErrorBox("创建配置目录失败 Failed to create config directory", "思源需要在用户家目录下创建配置文件夹（~/.config/siyuan），请确保该路径具有写入权限。\n\nSiYuan needs to create a configuration folder (~/.config/siyuan) in the user's home directory. Please make sure that the path has write permissions.");
+    require("electron").dialog.showErrorBox("创建配置目录失败 Failed to create config directory", "Scribli需要在用户家目录下创建配置文件夹（~/.config/scribli），请确保该路径具有写入权限。\n\nScribli needs to create a configuration folder (~/.config/scribli) in the user's home directory. Please make sure that the path has write permissions.");
     app.exit();
 }
 
@@ -265,16 +265,7 @@ const resolveAppLanguage = (languageTags) => {
     const language = parts[0];
 
     if (language === "zh") {
-        if (tag.includes("hant")) {
-            return "zh-TW";
-        }
-        if (tag.includes("hans") || tag.includes("cn") || tag.includes("sg")) {
-            return "zh-CN";
-        }
-        if (tag.includes("tw") || tag.includes("hk") || tag.includes("mo")) {
-            return "zh-TW";
-        }
-        return "zh-CN";
+        return "en";
     }
 
     const languageMapping = {
@@ -690,7 +681,7 @@ const resetSystemShutdown = (ports) => {
     systemShutdownState = systemShutdownNone;
     gracefulSystemShutdownPromise = undefined;
     keepAppOpenDuringSystemShutdown = false;
-    writeLog("system shutdown canceled because SiYuan failed to exit gracefully [ports=" + ports.join(",") + "]");
+    writeLog("system shutdown canceled because Scribli failed to exit gracefully [ports=" + ports.join(",") + "]");
     ports.forEach((port) => {
         const workspace = workspaces.find((item) => port.toString() === item.port.toString());
         if (workspace && workspace.browserWindow && !workspace.browserWindow.isDestroyed()) {
@@ -758,7 +749,7 @@ const beginForcedSystemShutdown = () => {
 };
 
 if (process.platform === "win32") {
-    // Windows 关机、重启或注销时取消本次会话结束，等待内核安全退出后再关闭思源。
+    // Windows 关机、重启或注销时取消本次会话结束，等待内核安全退出后再关闭Scribli。
     app.on("browser-window-created", (event, window) => {
         window.on("query-session-end", (sessionEvent) => {
             writeLog("query-session-end");
@@ -886,7 +877,7 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
 
     // 创建主窗体
     const currentWindow = new BrowserWindow({
-        title: "SiYuan",
+        title: "Scribli",
         show: false,
         width: windowState.width,
         height: windowState.height,
@@ -914,7 +905,7 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
         writeLog("window position [x=" + x + ", y=" + y + "]");
         currentWindow.setPosition(x, y);
     }
-    currentWindow.webContents.userAgent = "SiYuan/" + appVer + " https://b3log.org/siyuan Electron " + currentWindow.webContents.userAgent;
+    currentWindow.webContents.userAgent = "Scribli/" + appVer + " Electron " + currentWindow.webContents.userAgent;
 
     // 加载主界面。setProxy 用超时兜底包装：Electron 在某些系统代理配置下 session.setProxy 可能永久
     // pending（既不 resolve 也不 reject），会导致 loadURL 永不执行，主窗口卡在启动页无法显示。
@@ -955,7 +946,7 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
 
         if (-1 < details.url.toLowerCase().indexOf("youtube")) {
             // YouTube 设置 Referer https://github.com/siyuan-note/siyuan/issues/16319
-            details.requestHeaders["Referer"] = "https://b3log.org/siyuan/";
+            delete details.requestHeaders["Referer"];
             cb({requestHeaders: details.requestHeaders});
             return;
         }
@@ -981,7 +972,7 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
     });
 
     currentWindow.webContents.on("did-finish-load", () => {
-        let siyuanOpenURL = process.argv.find((arg) => arg.startsWith("siyuan://"));
+        let siyuanOpenURL = process.argv.find((arg) => arg.startsWith("scribli://"));
         if (siyuanOpenURL) {
             if (currentWindow.isMinimized()) {
                 currentWindow.restore();
@@ -999,7 +990,7 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
     }
 
     // 菜单
-    const productName = "SiYuan";
+    const productName = "Scribli";
     const template = [{
         label: productName, submenu: [{
             label: `About ${productName}`, role: "about",
@@ -1096,10 +1087,10 @@ const initKernel = (workspace, port, lang, safeMode) => {
             bootWindow.show();
         }
 
-        const kernelName = "win32" === process.platform ? "SiYuan-Kernel.exe" : "SiYuan-Kernel";
+        const kernelName = "win32" === process.platform ? "Scribli-Kernel.exe" : "Scribli-Kernel";
         const kernelPath = path.join(appDir, "kernel", kernelName);
         if (!fs.existsSync(kernelPath)) {
-            showErrorWindow("内核程序丢失", "Kernel program is missing", `<div>内核程序丢失，请重新安装思源，并将思源内核程序加入杀毒软件信任列表。</div><div>The kernel program is not found, please reinstall SiYuan and add SiYuan Kernel prgram into the trust list of your antivirus software.</div><div><i>${kernelPath}</i></div>`);
+            showErrorWindow("内核程序丢失", "Kernel program is missing", `<div>内核程序丢失，请重新安装Scribli，并将Scribli 内核程序加入杀毒软件信任列表。</div><div>The kernel program is not found, please reinstall Scribli and add Scribli Kernel prgram into the trust list of your antivirus software.</div><div><i>${kernelPath}</i></div>`);
             bootWindow.destroy();
             resolve(false);
             return;
@@ -1178,18 +1169,18 @@ const initKernel = (workspace, port, lang, safeMode) => {
                                 showWindow(workspaces[0].browserWindow);
                             }
 
-                            errorWindowId = showErrorWindow("工作空间已被锁定", "The workspace is locked", "<div>该工作空间正在被使用，请尝试在任务管理器中结束 SiYuan-Kernel 进程或者重启操作系统后再启动思源。</div><div>The workspace is being used, please try to end the SiYuan-Kernel process in the task manager or restart the operating system and then start SiYuan.</div>");
+                            errorWindowId = showErrorWindow("工作空间已被锁定", "The workspace is locked", "<div>该工作空间正在被使用，请尝试在任务管理器中结束 Scribli-Kernel 进程或者重启操作系统后再启动Scribli。</div><div>The workspace is being used, please try to end the Scribli-Kernel process in the task manager or restart the operating system and then start Scribli.</div>");
                             break;
                         case 25:
                             errorWindowId = showErrorWindow("初始化工作空间失败", "Failed to create workspace directory", "<div>工作空间文件夹权限不足，请查看 工作空间/temp/siyuan.log 获取详细报错信息</div><div>Insufficient permissions for the workspace folder. Please check workspace/temp/siyuan.log for detailed error information.</div>");
                             break;
                         case 26:
-                            errorWindowId = showErrorWindow("已成功避免潜在的数据损坏", "Successfully avoid potential data corruption", "<div>工作空间下的文件正在被第三方软件（比如同步网盘、杀毒软件等）打开占用，继续使用会导致数据损坏，思源内核已经安全退出。</div><div>请将工作空间移动到其他路径后再打开，停止同步盘同步工作空间，并将工作空间加入杀毒软件信任列表。如果以上步骤无法解决问题，请参考<a href=\"https://ld246.com/article/1684586140917\" target=\"_blank\">这里</a>或者<a href=\"https://ld246.com/article/1649901726096\" target=\"_blank\">发帖</a>寻求帮助。</div><div>The files in the workspace are being opened and occupied by third-party software (such as synchronized network disk, antivirus software, etc.), continuing to use it will cause data corruption, and the SiYuan Kernel is already safe shutdown.</div><div>Move the workspace to another path and open it again, stop the network disk to sync the workspace, and add the workspace to the antivirus software trust list. If the above steps do not resolve the issue, please look for help or report bugs <a href=\"https://liuyun.io/article/1686530886208\" target=\"_blank\">here</a>.</div>", "🚒");
+                            errorWindowId = showErrorWindow("已成功避免潜在的数据损坏", "Successfully avoid potential data corruption", "<div>工作空间下的文件正在被第三方软件（比如同步网盘、杀毒软件等）打开占用，继续使用会导致数据损坏，Scribli 内核已经安全退出。</div><div>请将工作空间移动到其他路径后再打开，停止同步盘同步工作空间，并将工作空间加入杀毒软件信任列表。如果以上步骤无法解决问题，请参考<a href=\"#\" target=\"_blank\">这里</a>或者<a href=\"#\" target=\"_blank\">发帖</a>寻求帮助。</div><div>The files in the workspace are being opened and occupied by third-party software (such as synchronized network disk, antivirus software, etc.), continuing to use it will cause data corruption, and the Scribli Kernel is already safe shutdown.</div><div>Move the workspace to another path and open it again, stop the network disk to sync the workspace, and add the workspace to the antivirus software trust list. If the above steps do not resolve the issue, please look for help or report bugs <a href=\"#\" target=\"_blank\">here</a>.</div>", "🚒");
                             break;
                         case 0:
                             break;
                         default:
-                            errorWindowId = showErrorWindow("内核因未知原因退出", "The kernel exited for unknown reasons", `<div>思源内核因未知原因退出 [code=${code}]，请尝试重启操作系统后再启动思源。如果该问题依然发生，请检查杀毒软件是否阻止思源内核启动。</div><div>SiYuan Kernel exited for unknown reasons [code=${code}], please try to reboot your operating system and then start SiYuan again. If occurs this problem still, please check your anti-virus software whether kill the SiYuan Kernel.</div>`);
+                            errorWindowId = showErrorWindow("内核因未知原因退出", "The kernel exited for unknown reasons", `<div>Scribli 内核因未知原因退出 [code=${code}]，请尝试重启操作系统后再启动Scribli。如果该问题依然发生，请检查杀毒软件是否阻止Scribli 内核启动。</div><div>Scribli Kernel exited for unknown reasons [code=${code}], please try to reboot your operating system and then start Scribli again. If occurs this problem still, please check your anti-virus software whether kill the Scribli Kernel.</div>`);
                             break;
                     }
 
@@ -1212,7 +1203,7 @@ const initKernel = (workspace, port, lang, safeMode) => {
                 writeLog("get kernel version failed: " + e.message);
                 if (14 < ++count) {
                     writeLog("get kernel ver failed");
-                    showErrorWindow("获取内核服务端口失败", "Failed to Obtain Kernel Service Port", "<div>获取内核服务端口失败，请确保程序拥有网络权限并不受防火墙和杀毒软件阻止。</div><div>Failed to obtain kernel service port. Please ensure SiYuan has network permissions and is not blocked by firewalls or antivirus software.</div>");
+                    showErrorWindow("获取内核服务端口失败", "Failed to Obtain Kernel Service Port", "<div>获取内核服务端口失败，请确保程序拥有网络权限并不受防火墙和杀毒软件阻止。</div><div>Failed to obtain kernel service port. Please ensure Scribli has network permissions and is not blocked by firewalls or antivirus software.</div>");
                     bootWindow.destroy();
                     resolve(false);
                     return;
@@ -1238,8 +1229,8 @@ const initKernel = (workspace, port, lang, safeMode) => {
                     if (Date.now() - bootShowStart > bootTimeout) {
                         writeLog("boot progress timeout after " + bootTimeout + "ms, exiting boot");
                         showErrorWindow("启动超时", "Boot timeout",
-                            "<div>内核启动超时，请查看 工作空间/temp/siyuan.log 获取详细报错信息，或尝试重启思源。</div>" +
-                            "<div>Kernel boot timed out. Please check workspace/temp/siyuan.log for details, or try restarting SiYuan.</div>");
+                            "<div>内核启动超时，请查看 工作空间/temp/siyuan.log 获取详细报错信息，或尝试重启Scribli。</div>" +
+                            "<div>Kernel boot timed out. Please check workspace/temp/siyuan.log for details, or try restarting Scribli.</div>");
                         requestKernelExit(currentKernelPort);
                         bootWindow.destroy();
                         resolve(false);
@@ -1329,10 +1320,6 @@ app.whenReady().then(() => {
         const trayMenuTemplate = [{
             label: mainWindow.isVisible() ? lang.hideWindow : lang.showWindow, click: () => {
                 showHideWindow(tray, lang, mainWindow);
-            },
-        }, {
-            label: lang.officialWebsite, click: () => {
-                shell.openExternal("https://b3log.org/siyuan/");
             },
         }, {
             label: lang.openSource, click: () => {
@@ -1544,7 +1531,7 @@ app.whenReady().then(() => {
             event.sender.send("siyuan-event", "leave-full-screen");
         });
     });
-    ipcMain.on("siyuan-cmd", (event, data) => {
+    ipcMain.on("scribli-cmd", (event, data) => {
         let cmd = data;
         let webContentsId = event.sender.id;
         if (typeof data !== "string") {
@@ -1722,7 +1709,7 @@ app.whenReady().then(() => {
         const wndBounds = getWindowByContentId(event.sender.id).getBounds();
         const wndScreen = screen.getDisplayNearestPoint({x: wndBounds.x, y: wndBounds.y});
         const printWin = new BrowserWindow({
-            title: "SiYuan",
+            title: "Scribli",
             show: true,
             width: Math.floor(wndScreen.size.width * 0.8),
             height: Math.floor(wndScreen.size.height * 0.8),
@@ -1739,7 +1726,7 @@ app.whenReady().then(() => {
             },
         });
         printWin.center();
-        printWin.webContents.userAgent = "SiYuan/" + appVer + " https://b3log.org/siyuan Electron " + printWin.webContents.userAgent;
+        printWin.webContents.userAgent = "Scribli/" + appVer + " Electron " + printWin.webContents.userAgent;
         printWin.loadURL(data);
         windowNavigate(printWin, "export");
     });
@@ -1765,7 +1752,7 @@ app.whenReady().then(() => {
         const mainBounds = mainWindow.getBounds();
         const mainScreen = screen.getDisplayNearestPoint({x: mainBounds.x, y: mainBounds.y});
         const win = new BrowserWindow({
-            title: "SiYuan",
+            title: "Scribli",
             show: true,
             trafficLightPosition: {x: 8, y: 13},
             width: Math.floor(data.width || mainScreen.size.width * 0.7),
@@ -1792,7 +1779,7 @@ app.whenReady().then(() => {
             win.center();
         }
         win.setAlwaysOnTop(data.alwaysOnTop);
-        win.webContents.userAgent = "SiYuan/" + appVer + " https://b3log.org/siyuan Electron " + win.webContents.userAgent;
+        win.webContents.userAgent = "Scribli/" + appVer + " Electron " + win.webContents.userAgent;
         win.webContents.session.setSpellCheckerLanguages(["en-US"]);
         win.loadURL(data.url);
         windowNavigate(win, "window");
@@ -1847,7 +1834,7 @@ app.whenReady().then(() => {
             if ("win32" === process.platform || "linux" === process.platform) {
                 // 系统托盘
                 tray = new Tray(path.join(appDir, "stage", "icon-large.png"));
-                tray.setToolTip(`${path.basename(data.workspaceDir)} - SiYuan v${appVer}`);
+                tray.setToolTip(`${path.basename(data.workspaceDir)} - Scribli v${appVer}`);
                 const mainWindow = getWindowByContentId(event.sender.id);
                 if (!mainWindow || mainWindow.isDestroyed()) {
                     tray.destroy();
@@ -1964,7 +1951,7 @@ app.whenReady().then(() => {
 
         // 改进桌面端初始化时使用的外观语言 https://github.com/siyuan-note/siyuan/issues/6803
         const languages = app.getPreferredSystemLanguages();
-        const language = resolveAppLanguage(languages);
+        const language = getArg("--lang") || resolveAppLanguage(languages);
         firstOpenWindow.loadFile(initHTMLPath, {
             query: {
                 lang: language,
@@ -2004,7 +1991,7 @@ app.whenReady().then(() => {
 
         // 改进桌面端初始化时使用的外观语言 https://github.com/siyuan-note/siyuan/issues/6803
         const languages = app.getPreferredSystemLanguages();
-        const language = resolveAppLanguage(languages);
+        const language = getArg("--lang") || resolveAppLanguage(languages);
         let crashWorkspace = appCrashInfo.workspaceDir || lastWorkspacePath;
         if (!appCrashInfo.workspaceDir && !isDirectory(crashWorkspace)) {
             crashWorkspace = availableWorkspaces[availableWorkspaces.length - 1] || lastWorkspacePath;
@@ -2055,7 +2042,7 @@ app.whenReady().then(() => {
 
         // 改进桌面端初始化时使用的外观语言 https://github.com/siyuan-note/siyuan/issues/6803
         const languages = app.getPreferredSystemLanguages();
-        const language = resolveAppLanguage(languages);
+        const language = getArg("--lang") || resolveAppLanguage(languages);
         missingWorkspaceWindow.loadFile(missingWorkspaceHTMLPath, {
             query: {
                 lang: language,
@@ -2151,7 +2138,7 @@ app.on("open-url", async (event, url) => { // for macOS
         writeLog("ignored URL while installing update");
         return;
     }
-    if (url.startsWith("siyuan://")) {
+    if (url.startsWith("scribli://")) {
         let isBackground = true;
         if (workspaces.length === 0) {
             isBackground = false;
@@ -2220,7 +2207,7 @@ app.on("second-instance", (event, argv) => {
         return;
     }
 
-    const siyuanURL = argv.find((arg) => arg.startsWith("siyuan://"));
+    const siyuanURL = argv.find((arg) => arg.startsWith("scribli://"));
     workspaces.forEach(item => {
         if (item.browserWindow && !item.browserWindow.isDestroyed() && siyuanURL) {
             item.browserWindow.webContents.send("siyuan-open-url", siyuanURL);

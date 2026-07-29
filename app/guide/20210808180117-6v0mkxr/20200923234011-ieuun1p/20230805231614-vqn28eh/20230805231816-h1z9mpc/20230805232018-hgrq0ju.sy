@@ -34,7 +34,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In addition to SiYuan's official cloud sync, you can connect to third-party cloud storage services for data synchronization. This approach is suitable for:"
+					"Data": "In addition to Scribli's official cloud sync, you can connect to third-party cloud storage services for data synchronization. This approach is suitable for:"
 				}
 			]
 		},

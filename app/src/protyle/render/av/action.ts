@@ -518,7 +518,7 @@ export const avContextmenu = (protyle: IProtyle, rowElement: HTMLElement, positi
                 if (groupID) {
                     params.set("avGroupID", groupID);
                 }
-                return `siyuan://blocks/${databaseBlockID}?${params.toString()}`;
+                return `scribli://blocks/${databaseBlockID}?${params.toString()}`;
             });
             writeText(links.join("\n"));
         }
@@ -585,7 +585,7 @@ export const avContextmenu = (protyle: IProtyle, rowElement: HTMLElement, positi
                     if (cellElement.getAttribute("data-detached") === "true") {
                         text += cellElement.querySelector(".av__celltext").textContent;
                     } else {
-                        text += `siyuan://blocks/${id}`;
+                        text += `scribli://blocks/${id}`;
                     }
                     if (ids.length > 1 && index !== ids.length - 1) {
                         text += "\n";
@@ -606,7 +606,7 @@ export const avContextmenu = (protyle: IProtyle, rowElement: HTMLElement, positi
                     if (cellElement.getAttribute("data-detached") === "true") {
                         content = cellElement.querySelector(".av__celltext").textContent;
                     } else {
-                        content = `[${cellElement.querySelector(".av__celltext").textContent.replace(/[\n]+/g, " ")}](siyuan://blocks/${id})`;
+                        content = `[${cellElement.querySelector(".av__celltext").textContent.replace(/[\n]+/g, " ")}](scribli://blocks/${id})`;
                     }
                     if (ids.length > 1) {
                         text += "- ";

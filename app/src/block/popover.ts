@@ -307,7 +307,7 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
         popoverTargetElement = hasClosestByClassName(target, "popover__block") as HTMLElement;
     }
     const linkElement = hasClosestByAttribute(target, "data-type", "a", true);
-    if (!popoverTargetElement && linkElement && linkElement.getAttribute("data-href")?.startsWith("siyuan://blocks")) {
+    if (!popoverTargetElement && linkElement && linkElement.getAttribute("data-href")?.startsWith("scribli://blocks")) {
         popoverTargetElement = linkElement;
     }
     if (!popoverTargetElement || (popoverTargetElement && window.siyuan.menus.menu.data && window.siyuan.menus.menu.data === popoverTargetElement)) {
@@ -399,11 +399,11 @@ const getTarget = (event: MouseEvent & { target: HTMLElement }, aElement: false 
         popoverTargetElement = hasClosestByClassName(event.target, "popover__block") as HTMLElement;
     }
     if (!popoverTargetElement && aElement) {
-        if (aElement.getAttribute("data-href")?.startsWith("siyuan://blocks") && aElement.getAttribute("prevent-popover") !== "true") {
+        if (aElement.getAttribute("data-href")?.startsWith("scribli://blocks") && aElement.getAttribute("prevent-popover") !== "true") {
             popoverTargetElement = aElement;
         } else if (aElement.classList.contains("av__cell")) {
             const textElement = aElement.querySelector(".av__celltext--url") as HTMLElement;
-            if (textElement && textElement.dataset.type === "url" && textElement.dataset.href?.startsWith("siyuan://blocks")) {
+            if (textElement && textElement.dataset.type === "url" && textElement.dataset.href?.startsWith("scribli://blocks")) {
                 popoverTargetElement = textElement;
             }
         }
@@ -452,7 +452,7 @@ export const showPopover = async (app: App, showRef = false) => {
         });
         refDefs = postResponse.data.refDefs;
     } else if (popoverTargetElement.getAttribute("data-type")?.split(" ").includes("a")) {
-        // 以思源协议开头的链接
+        // 以Scribli协议开头的链接
         const blockInfo = parseSiYuanUriInfo(popoverTargetElement.getAttribute("data-href"));
         refDefs = [{
             refID: blockInfo?.id ?? "",
@@ -461,7 +461,7 @@ export const showPopover = async (app: App, showRef = false) => {
             avGroupID: blockInfo?.avGroupID,
         }];
     } else if (popoverTargetElement.dataset.type === "url") {
-        // 在 database 的 url 列中以思源协议开头的链接
+        // 在 database 的 url 列中以Scribli协议开头的链接
         const blockInfo = parseSiYuanUriInfo(popoverTargetElement.dataset.href || popoverTargetElement.textContent.trim());
         refDefs = [{
             refID: blockInfo?.id ?? "",

@@ -37,7 +37,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "\"Web Clipping\" refers to copying the content on the Web page to SiYuan, and keeping its original format as much as possible."
+					"Data": "\"Web Clipping\" refers to copying the content on the Web page to Scribli, and keeping its original format as much as possible."
 				}
 			]
 		},
@@ -89,7 +89,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "If you do not need to pull the pictures contained in the clipped content to the local, you can directly select copy in the browser, and then paste it in SiYuan"
+									"Data": "If you do not need to pull the pictures contained in the clipped content to the local, you can directly select copy in the browser, and then paste it in Scribli"
 								}
 							]
 						}
@@ -123,7 +123,7 @@
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
 									"TextMarkAHref": "https://liuyun.io/article/1692529862454",
-									"TextMarkTextContent": "SiYuan Chrome Extension"
+									"TextMarkTextContent": "Scribli Chrome Extension"
 								}
 							]
 						}
@@ -142,7 +142,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "SiYuan Chrome Extension"
+					"Data": "Scribli Chrome Extension"
 				}
 			]
 		},
@@ -181,7 +181,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "Install the extension, configure the API token in the extended options (token can be viewed in SiYuan [Settings - Authentication - API token])"
+									"Data": "Install the extension, configure the API token in the extended options (token can be viewed in Scribli [Settings - Authentication - API token])"
 								}
 							]
 						}
@@ -209,7 +209,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "Select the content to be clipped on the web page, and then select \"Copy to SiYuan\" from the right-click menu"
+									"Data": "Select the content to be clipped on the web page, and then select \"Copy to Scribli\" from the right-click menu"
 								}
 							]
 						}
@@ -239,7 +239,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "Paste in SiYuan"
+									"Data": "Paste in Scribli"
 								}
 							]
 						}
@@ -257,7 +257,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "If you need to clip the entire article, you can click \"Send to SiYuan\" directly on the extension."
+					"Data": "If you need to clip the entire article, you can click \"Send to Scribli\" directly on the extension."
 				}
 			]
 		}

@@ -127,7 +127,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "https://liuyun.io/apis/siyuan/inbox/addCloudShorthand"
+									"TextMarkTextContent": "https://liuyun.io/apis/scribli/inbox/addCloudShorthand"
 								},
 								{
 									"Type": "NodeText",

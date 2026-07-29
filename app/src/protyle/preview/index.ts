@@ -6,7 +6,7 @@ import {isLocalPath, pathPosix} from "../../util/pathName";
 import {processSiYuanUri} from "../../util/uri";
 import {previewDocImage} from "./image";
 import {getDiagramBlock, previewDiagram} from "./diagram";
-import {needSubscribe} from "../../util/needSubscribe";
+import {hasFeatureAccess} from "../../util/featureAccess";
 import {Constants} from "../../constants";
 import {getSearch, isMobile} from "../../util/functions";
 /// #if !BROWSER
@@ -216,7 +216,7 @@ export class Preview {
     }
 
     private link2online(copyElement: HTMLElement) {
-        if (needSubscribe("")) {
+        if (!hasFeatureAccess()) {
             return;
         }
         copyElement.querySelectorAll("[href],[src]").forEach(item => {

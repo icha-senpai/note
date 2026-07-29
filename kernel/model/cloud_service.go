@@ -33,13 +33,17 @@ import (
 	"github.com/siyuan-note/httpclient"
 	"github.com/siyuan-note/logging"
 	"github.com/siyuan-note/siyuan/kernel/conf"
-	"github.com/siyuan-note/siyuan/kernel/task"
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
 var ErrFailedToConnectCloudServer = errors.New("failed to connect cloud server")
 
 func CloudChatGPT(msg string, contextMsgs []string) (ret string, stop bool, err error) {
+	if util.OfficialServicesUnavailable() {
+		err = ErrFailedToConnectCloudServer
+		return
+	}
+
 	if nil == Conf.GetUser() {
 		return
 	}
@@ -99,59 +103,11 @@ func CloudChatGPT(msg string, contextMsgs []string) (ret string, stop bool, err 
 	return
 }
 
-func StartFreeTrial() (err error) {
-	if nil == Conf.GetUser() {
-		return errors.New(Conf.Language(31))
-	}
-
-	requestResult := gulu.Ret.NewResult()
-	request := httpclient.NewCloudRequest30s()
-	resp, err := request.
-		SetSuccessResult(requestResult).
-		SetCookies(&http.Cookie{Name: "symphony", Value: Conf.GetUser().UserToken}).
-		Post(util.GetCloudServer() + "/apis/siyuan/user/startFreeTrial")
-	if err != nil {
-		logging.LogErrorf("start free trial failed: %s", err)
-		return ErrFailedToConnectCloudServer
-	}
-	if http.StatusOK != resp.StatusCode {
-		logging.LogErrorf("start free trial failed: %d", resp.StatusCode)
-		return ErrFailedToConnectCloudServer
-	}
-	if -2 == requestResult.Code { // 已经试用订阅过
-		return errors.New(Conf.Language(298))
-	}
-	if 0 != requestResult.Code {
-		return errors.New(requestResult.Msg)
-	}
-	return
-}
-
-func DeactivateUser() (err error) {
-	requestResult := gulu.Ret.NewResult()
-	request := httpclient.NewCloudRequest30s()
-	resp, err := request.
-		SetSuccessResult(requestResult).
-		SetCookies(&http.Cookie{Name: "symphony", Value: Conf.GetUser().UserToken}).
-		Post(util.GetCloudServer() + "/apis/siyuan/user/deactivate")
-	if err != nil {
-		logging.LogErrorf("deactivate user failed: %s", err)
-		return ErrFailedToConnectCloudServer
-	}
-
-	if 401 == resp.StatusCode {
-		err = errors.New(Conf.Language(31))
-		return
-	}
-
-	if 0 != requestResult.Code {
-		logging.LogErrorf("deactivate user failed: %s", requestResult.Msg)
-		return errors.New(requestResult.Msg)
-	}
-	return
-}
-
 func SetCloudBlockReminder(id, data string, timed int64) (err error) {
+	if util.OfficialServicesUnavailable() {
+		return ErrFailedToConnectCloudServer
+	}
+
 	requestResult := gulu.Ret.NewResult()
 	payload := map[string]any{"dataId": id, "data": data, "timed": timed}
 	request := httpclient.NewCloudRequest30s()
@@ -181,6 +137,10 @@ var uploadToken = ""
 var uploadTokenTime int64
 
 func LoadUploadToken() (err error) {
+	if util.OfficialServicesUnavailable() {
+		return ErrFailedToConnectCloudServer
+	}
+
 	now := time.Now().Unix()
 	if 3600 >= now-uploadTokenTime {
 		return
@@ -213,52 +173,21 @@ func LoadUploadToken() (err error) {
 	return
 }
 
-var (
-	subscriptionExpirationReminded bool
-)
-
 func RefreshCheckJob2H() {
-	go refreshSubscriptionExpirationRemind()
+	if util.OfficialServicesUnavailable() {
+		return
+	}
+
 	go refreshUser()
 	go refreshAnnouncement()
 }
 
 func RefreshCheckJob6H() {
+	if util.OfficialServicesUnavailable() {
+		return
+	}
+
 	go refreshCheckDownloadInstallPkg()
-}
-
-func refreshSubscriptionExpirationRemind() {
-	if subscriptionExpirationReminded {
-		return
-	}
-	subscriptionExpirationReminded = true
-
-	if "ios" == util.Container {
-		return
-	}
-
-	defer logging.Recover()
-
-	if IsSubscriber() && -1 != Conf.GetUser().UserSiYuanProExpireTime {
-		expired := int64(Conf.GetUser().UserSiYuanProExpireTime)
-		now := time.Now().UnixMilli()
-		if now >= expired { // 已经过期
-			if now-expired <= 1000*60*60*24*2 { // 2 天内提醒 https://github.com/siyuan-note/siyuan/issues/7816
-				task.AppendAsyncTaskWithDelay(task.PushMsg, 30*time.Second, util.PushErrMsg, Conf.Language(128), 0)
-			}
-			return
-		}
-		remains := int((expired - now) / 1000 / 60 / 60 / 24)
-		expireDay := 15 // 付费订阅提前 15 天提醒
-		if 2 == Conf.GetUser().UserSiYuanSubscriptionPlan {
-			expireDay = 3 // 试用订阅提前 3 天提醒
-		}
-
-		if 0 < remains && expireDay > remains {
-			task.AppendAsyncTaskWithDelay(task.PushMsg, 7*time.Second, util.PushErrMsg, fmt.Sprintf(Conf.Language(127), remains), 0)
-			return
-		}
-	}
 }
 
 func refreshUser() {
@@ -269,7 +198,6 @@ func refreshUser() {
 		if nil != Conf.GetUser() {
 			RefreshUser(Conf.GetUser().UserToken)
 		}
-		subscriptionExpirationReminded = false
 	}
 }
 
@@ -284,7 +212,7 @@ func refreshAnnouncement() {
 	defer logging.Recover()
 
 	time.Sleep(1 * time.Minute)
-	announcementConf := filepath.Join(util.HomeDir, ".config", "siyuan", "announcement.json")
+	announcementConf := filepath.Join(util.UserHomeConfDir(), "announcement.json")
 	var existingAnnouncements, newAnnouncements []*Announcement
 	if gulu.File.IsExist(announcementConf) {
 		data, err := os.ReadFile(announcementConf)
@@ -331,6 +259,10 @@ func refreshAnnouncement() {
 }
 
 func RefreshUser(token string) {
+	if util.OfficialServicesUnavailable() {
+		return
+	}
+
 	threeDaysAfter := util.CurrentTimeMillis() + 1000*60*60*24*3
 	if "" == token {
 		user := Conf.GetUser()
@@ -413,6 +345,10 @@ func loadUserFromConf() *conf.User {
 }
 
 func RemoveCloudShorthands(ids []string) (err error) {
+	if util.OfficialServicesUnavailable() {
+		return ErrFailedToConnectCloudServer
+	}
+
 	result := map[string]any{}
 	request := httpclient.NewCloudRequest30s()
 	body := map[string]any{
@@ -444,6 +380,11 @@ func RemoveCloudShorthands(ids []string) (err error) {
 }
 
 func GetCloudShorthand(id string) (ret map[string]any, err error) {
+	if util.OfficialServicesUnavailable() {
+		err = ErrFailedToConnectCloudServer
+		return
+	}
+
 	result := map[string]any{}
 	request := httpclient.NewCloudRequest30s()
 	resp, err := request.
@@ -485,6 +426,11 @@ func GetCloudShorthand(id string) (ret map[string]any, err error) {
 }
 
 func GetCloudShorthands(page int) (result map[string]any, err error) {
+	if util.OfficialServicesUnavailable() {
+		err = ErrFailedToConnectCloudServer
+		return
+	}
+
 	result = map[string]any{}
 	request := httpclient.NewCloudRequest30s()
 	resp, err := request.
@@ -545,6 +491,10 @@ var (
 )
 
 func getUser(token string) (*conf.User, error) {
+	if util.OfficialServicesUnavailable() {
+		return nil, errRequestUserFailed
+	}
+
 	result := map[string]any{}
 	request := httpclient.NewCloudRequest30s()
 	resp, err := request.
@@ -577,122 +527,6 @@ func getUser(token string) (*conf.User, error) {
 		return nil, errRequestUserFailed
 	}
 	return user, nil
-}
-
-func UseActivationcode(code string) (err error) {
-	code = util.RemoveInvalid(code)
-	code = strings.TrimSpace(code)
-	if "" == code {
-		return errors.New(Conf.Language(294))
-	}
-	requestResult := gulu.Ret.NewResult()
-	request := httpclient.NewCloudRequest30s()
-	resp, err := request.
-		SetSuccessResult(requestResult).
-		SetBody(map[string]string{"data": code}).
-		SetCookies(&http.Cookie{Name: "symphony", Value: Conf.GetUser().UserToken}).
-		Post(util.GetCloudServer() + "/apis/siyuan/useActivationcode")
-	if err != nil {
-		logging.LogErrorf("check activation code failed: %s", err)
-		return ErrFailedToConnectCloudServer
-	}
-	if http.StatusOK != resp.StatusCode {
-		logging.LogErrorf("check activation code failed: %d", resp.StatusCode)
-		return ErrFailedToConnectCloudServer
-	}
-	if 0 != requestResult.Code {
-		return errors.New(requestResult.Msg)
-	}
-	return
-}
-
-func CheckActivationcode(code string) (retCode int, msg string) {
-	code = util.RemoveInvalid(code)
-	code = strings.TrimSpace(code)
-	if "" == code {
-		retCode = 1
-		msg = Conf.Language(294)
-		return
-	}
-	retCode = 1
-	requestResult := gulu.Ret.NewResult()
-	request := httpclient.NewCloudRequest30s()
-	resp, err := request.
-		SetSuccessResult(requestResult).
-		SetBody(map[string]string{"data": code}).
-		SetCookies(&http.Cookie{Name: "symphony", Value: Conf.GetUser().UserToken}).
-		Post(util.GetCloudServer() + "/apis/siyuan/checkActivationcode")
-	if err != nil {
-		logging.LogErrorf("check activation code failed: %s", err)
-		msg = ErrFailedToConnectCloudServer.Error()
-		return
-	}
-	if http.StatusOK != resp.StatusCode {
-		logging.LogErrorf("check activation code failed: %d", resp.StatusCode)
-		msg = ErrFailedToConnectCloudServer.Error()
-		return
-	}
-	if 0 == requestResult.Code {
-		retCode = 0
-	}
-	msg = requestResult.Msg
-	return
-}
-
-func Login(userName, password, captcha string, cloudRegion int) (ret *gulu.Result) {
-	Conf.CloudRegion = cloudRegion
-	Conf.Save()
-	util.CurrentCloudRegion = cloudRegion
-
-	result := map[string]any{}
-	request := httpclient.NewCloudRequest30s()
-	resp, err := request.
-		SetSuccessResult(&result).
-		SetBody(map[string]string{"userName": userName, "userPassword": password, "captcha": captcha}).
-		Post(util.GetCloudServer() + "/apis/siyuan/login")
-	if err != nil {
-		logging.LogErrorf("login failed: %s", err)
-		ret = gulu.Ret.NewResult()
-		ret.Code = -1
-		ret.Msg = Conf.Language(18) + ": " + err.Error()
-		return
-	}
-	if http.StatusOK != resp.StatusCode {
-		logging.LogErrorf("login failed: %d", resp.StatusCode)
-		ret = gulu.Ret.NewResult()
-		ret.Code = -1
-		ret.Msg = Conf.Language(18)
-		return
-	}
-
-	ret = &gulu.Result{
-		Code: int(result["code"].(float64)),
-		Msg:  result["msg"].(string),
-		Data: map[string]any{
-			"userName":    result["userName"],
-			"token":       result["token"],
-			"needCaptcha": result["needCaptcha"], // 值为 user id
-		},
-	}
-	if -1 == ret.Code {
-		ret.Code = 1
-	}
-	return
-}
-
-func Login2fa(token, code string) (map[string]any, error) {
-	result := map[string]any{}
-	request := httpclient.NewCloudRequest30s()
-	_, err := request.
-		SetSuccessResult(&result).
-		SetBody(map[string]string{"twofactorAuthCode": code}).
-		SetHeader("token", token).
-		Post(util.GetCloudServer() + "/apis/siyuan/login/2fa")
-	if err != nil {
-		logging.LogErrorf("login 2fa failed: %s", err)
-		return nil, errors.New(Conf.Language(18))
-	}
-	return result, nil
 }
 
 func LogoutUser() {

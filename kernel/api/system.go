@@ -550,7 +550,7 @@ func importConf(c *gin.Context) {
 	model.Conf.Search = importedConf.Search
 	model.Conf.Flashcard = importedConf.Flashcard
 	model.Conf.AI = importedConf.AI
-	model.Conf.Bazaar = importedConf.Bazaar
+	model.Conf.Extensions = importedConf.Extensions
 	model.Conf.Save()
 
 	logging.LogInfof("imported conf")
@@ -602,7 +602,7 @@ func getConf(c *gin.Context) {
 		return
 	}
 
-	if !maskedConf.Sync.Enabled || (0 == maskedConf.Sync.Provider && !model.IsSubscriber()) {
+	if !maskedConf.Sync.Enabled || (0 == maskedConf.Sync.Provider && !model.HasFullAccess()) {
 		maskedConf.Sync.Stat = model.Conf.Language(53)
 	}
 
@@ -625,7 +625,7 @@ func getConf(c *gin.Context) {
 	}
 
 	// 浏览器环境下不返回工作空间绝对路径，避免泄露用户名等敏感信息
-	// 原生客户端（桌面 Electron、移动端）UA 以 "SiYuan/" 开头，照常返回真实路径
+	// 原生客户端（桌面 Electron、移动端）UA 以 "Scribli/" 开头，照常返回真实路径
 	// REF: https://github.com/siyuan-note/siyuan/issues/17410
 	if util.IsBrowserRequest(c) {
 		maskedConf.System.WorkspaceDir = ""

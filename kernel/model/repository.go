@@ -1317,6 +1317,10 @@ func appendAgentRollbackEntries() {
 }
 
 func DownloadCloudSnapshot(tag, id string) (err error) {
+	if util.OfflineMode {
+		return util.ErrOfflineMode
+	}
+
 	if 1 > len(Conf.Repo.Key) {
 		err = errors.New(Conf.Language(26))
 		return
@@ -1329,12 +1333,12 @@ func DownloadCloudSnapshot(tag, id string) (err error) {
 
 	switch Conf.Sync.Provider {
 	case conf.ProviderSiYuan:
-		if !IsSubscriber() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(29), 5000)
 			return
 		}
 	case conf.ProviderWebDAV, conf.ProviderS3, conf.ProviderLocal:
-		if !IsPaidUser() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(214), 5000)
 			return
 		}
@@ -1359,6 +1363,10 @@ func DownloadCloudSnapshot(tag, id string) (err error) {
 }
 
 func UploadCloudSnapshot(tag, id string) (err error) {
+	if util.OfflineMode {
+		return util.ErrOfflineMode
+	}
+
 	if 1 > len(Conf.Repo.Key) {
 		err = errors.New(Conf.Language(26))
 		return
@@ -1371,12 +1379,12 @@ func UploadCloudSnapshot(tag, id string) (err error) {
 
 	switch Conf.Sync.Provider {
 	case conf.ProviderSiYuan:
-		if !IsSubscriber() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(29), 5000)
 			return
 		}
 	case conf.ProviderWebDAV, conf.ProviderS3, conf.ProviderLocal:
-		if !IsPaidUser() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(214), 5000)
 			return
 		}
@@ -1412,12 +1420,12 @@ func RemoveCloudRepoTag(tag string) (err error) {
 
 	switch Conf.Sync.Provider {
 	case conf.ProviderSiYuan:
-		if !IsSubscriber() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(29), 5000)
 			return
 		}
 	case conf.ProviderWebDAV, conf.ProviderS3, conf.ProviderLocal:
-		if !IsPaidUser() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(214), 5000)
 			return
 		}
@@ -1444,12 +1452,12 @@ func GetCloudRepoTagSnapshots() (ret []*dejavu.Log, err error) {
 
 	switch Conf.Sync.Provider {
 	case conf.ProviderSiYuan:
-		if !IsSubscriber() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(29), 5000)
 			return
 		}
 	case conf.ProviderWebDAV, conf.ProviderS3, conf.ProviderLocal:
-		if !IsPaidUser() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(214), 5000)
 			return
 		}
@@ -1480,12 +1488,12 @@ func GetCloudRepoSnapshots(page int) (ret []*dejavu.Log, pageCount, totalCount i
 
 	switch Conf.Sync.Provider {
 	case conf.ProviderSiYuan:
-		if !IsSubscriber() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(29), 5000)
 			return
 		}
 	case conf.ProviderWebDAV, conf.ProviderS3, conf.ProviderLocal:
-		if !IsPaidUser() {
+		if !HasFullAccess() {
 			util.PushErrMsg(Conf.Language(214), 5000)
 			return
 		}
@@ -1694,9 +1702,6 @@ func syncRepoDownload() (err error) {
 		if errors.Is(err, dejavu.ErrCloudStorageSizeExceeded) {
 			u := Conf.GetUser()
 			msg = fmt.Sprintf(Conf.Language(43), humanize.BytesCustomCeil(uint64(u.UserSiYuanRepoSize), 2))
-			if 2 == u.UserSiYuanSubscriptionPlan {
-				msg = fmt.Sprintf(Conf.Language(68), humanize.BytesCustomCeil(uint64(u.UserSiYuanRepoSize), 2))
-			}
 		}
 		Conf.Sync.Stat = msg
 		Conf.Save()
@@ -1766,9 +1771,6 @@ func syncRepoUpload() (err error) {
 		if errors.Is(err, dejavu.ErrCloudStorageSizeExceeded) {
 			u := Conf.GetUser()
 			msg = fmt.Sprintf(Conf.Language(43), humanize.BytesCustomCeil(uint64(u.UserSiYuanRepoSize), 2))
-			if 2 == u.UserSiYuanSubscriptionPlan {
-				msg = fmt.Sprintf(Conf.Language(68), humanize.BytesCustomCeil(uint64(u.UserSiYuanRepoSize), 2))
-			}
 		}
 		Conf.Sync.Stat = msg
 		Conf.Save()
@@ -1887,9 +1889,6 @@ func bootSyncRepo() (err error) {
 		if errors.Is(err, dejavu.ErrCloudStorageSizeExceeded) {
 			u := Conf.GetUser()
 			msg = fmt.Sprintf(Conf.Language(43), humanize.BytesCustomCeil(uint64(u.UserSiYuanRepoSize), 2))
-			if 2 == u.UserSiYuanSubscriptionPlan {
-				msg = fmt.Sprintf(Conf.Language(68), humanize.BytesCustomCeil(uint64(u.UserSiYuanRepoSize), 2))
-			}
 		}
 		Conf.Sync.Stat = msg
 		Conf.Save()
@@ -1988,9 +1987,6 @@ func syncRepo(exit, byHand bool) (dataChanged bool, err error) {
 		if errors.Is(err, dejavu.ErrCloudStorageSizeExceeded) {
 			u := Conf.GetUser()
 			msg = fmt.Sprintf(Conf.Language(43), humanize.BytesCustomCeil(uint64(u.UserSiYuanRepoSize), 2))
-			if 2 == u.UserSiYuanSubscriptionPlan {
-				msg = fmt.Sprintf(Conf.Language(68), humanize.BytesCustomCeil(uint64(u.UserSiYuanRepoSize), 2))
-			}
 		}
 		Conf.Sync.Stat = msg
 		Conf.Save()
@@ -2470,9 +2466,13 @@ func newRepository() (ret *dejavu.Repo, err error) {
 	var cloudRepo cloud.Cloud
 	switch Conf.Sync.Provider {
 	case conf.ProviderSiYuan:
+		if util.OfficialServicesUnavailable() {
+			err = util.OfficialServicesError()
+			return
+		}
 		cloudRepo = cloud.NewSiYuan(&cloud.BaseCloud{Conf: cloudConf})
 	case conf.ProviderS3:
-		// 显式注入 SiYuan UA，覆盖 aws SDK 默认 UA（含架构、Go 版本、SDK 版本等冗余信息），便于 S3 服务端按 SiYuan/ 前缀识别加白名单
+		// 显式注入 Scribli UA，覆盖 aws SDK 默认 UA（含架构、Go 版本、SDK 版本等冗余信息），便于 S3 服务端按 Scribli/ 前缀识别加白名单
 		s3HTTPClient := httpclient.NewUserAgentClient(httpclient.NewTransport(cloudConf.S3.SkipTlsVerify))
 		s3HTTPClient.Timeout = time.Duration(cloudConf.S3.Timeout) * time.Second
 		cloudRepo = cloud.NewS3(&cloud.BaseCloud{Conf: cloudConf}, s3HTTPClient)
@@ -2749,6 +2749,10 @@ func buildCloudConf() (ret *cloud.Conf, err error) {
 
 	switch Conf.Sync.Provider {
 	case conf.ProviderSiYuan:
+		if util.OfficialServicesUnavailable() {
+			err = util.OfficialServicesError()
+			return
+		}
 		ret.Endpoint = util.GetCloudSyncServer()
 	case conf.ProviderS3:
 		ret.S3 = &cloud.ConfS3{
@@ -2800,6 +2804,11 @@ type Sync struct {
 }
 
 func GetCloudSpace() (s *Sync, b *Backup, hSize, hAssetSize, hTotalSize, hExchangeSize, hTrafficUploadSize, hTrafficDownloadSize, hTrafficAPIGet, hTrafficAPIPut string, err error) {
+	if util.OfficialServicesUnavailable() {
+		err = util.OfficialServicesError()
+		return
+	}
+
 	stat, err := getCloudSpace()
 	if err != nil {
 		err = errors.New(Conf.Language(30) + " " + err.Error())

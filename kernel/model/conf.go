@@ -32,7 +32,6 @@ import (
 	"github.com/88250/gulu"
 	"github.com/88250/lute"
 	"github.com/88250/lute/ast"
-	"github.com/Xuanwo/go-locale"
 	"github.com/siyuan-note/eventbus"
 	"github.com/siyuan-note/filelock"
 	"github.com/siyuan-note/logging"
@@ -42,7 +41,6 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/treenode"
 	"github.com/siyuan-note/siyuan/kernel/util"
 	"golang.org/x/mod/semver"
-	"golang.org/x/text/language"
 )
 
 var Conf *AppConf
@@ -73,7 +71,7 @@ type AppConf struct {
 	AI             *conf.AI             `json:"ai"`             // 人工智能配置
 	Secrets        *conf.Secrets        `json:"secrets"`        // 全局密钥库
 	Variables      *conf.Variables      `json:"variables"`      // 全局变量库
-	Bazaar         *conf.Bazaar         `json:"bazaar"`         // 集市配置
+	Extensions     *conf.Extensions     `json:"extensions"`     // 本地扩展配置
 	Stat           *conf.Stat           `json:"stat"`           // 统计
 	Api            *conf.API            `json:"api"`            // API
 	Repo           *conf.Repo           `json:"repo"`           // 数据仓库
@@ -94,9 +92,10 @@ type AppConf struct {
 
 func NewAppConf() *AppConf {
 	return &AppConf{
-		LogLevel: "debug",
-		m:        &sync.RWMutex{},
-		userLock: &sync.RWMutex{},
+		LogLevel:    "debug",
+		CloudRegion: 1,
+		m:           &sync.RWMutex{},
+		userLock:    &sync.RWMutex{},
 	}
 }
 
@@ -206,39 +205,9 @@ func InitConf() {
 			logging.LogInfof("initialized the specified language [%s]", util.Lang)
 		}
 	} else if "" == Conf.Lang {
-		// 未指定外观语言时使用系统语言
-		// DetectAll 返回按优先级排序的系统语言 Tag 列表（如 en-US、en）
-		deviceLangTags, detectErr := locale.DetectAll()
-		if detectErr != nil {
-			logging.LogDebugf("check device locale failed [%s], using default language [en]", detectErr)
-			util.Lang = "en"
-		} else if len(deviceLangTags) == 0 {
-			logging.LogDebugf("device locale list is empty, using default language [en]")
-			util.Lang = "en"
-		} else {
-			// siYuanLangNames 与 bcp47Tags 按相同顺序排列，Match 返回的 matchIndex 即对应 siYuanLangNames 中的语言名
-			siYuanLangNames := make([]string, 0, len(util.Langs))
-			bcp47Tags := make([]language.Tag, 0, len(util.Langs))
-			for langName := range util.Langs {
-				bcp47Tag, err := language.Parse(langName)
-				if err != nil {
-					logging.LogErrorf("load language [%s] failed: %s", langName, err)
-					continue
-				}
-				siYuanLangNames = append(siYuanLangNames, langName)
-				bcp47Tags = append(bcp47Tags, bcp47Tag)
-			}
-			util.Lang = "en"
-			if len(bcp47Tags) > 0 {
-				matcher := language.NewMatcher(bcp47Tags)
-				_, matchIndex, confidence := matcher.Match(deviceLangTags...)
-				// 系统语言与 SiYuan 支持列表不存在有效匹配时 confidence 为 No，保持默认 en
-				if confidence != language.No {
-					util.Lang = siYuanLangNames[matchIndex]
-				}
-			}
-			logging.LogInfof("initialized language [%s] based on device locale", util.Lang)
-		}
+		// 新工作空间默认使用英文，避免桌面端根据系统区域自动切换到中文。
+		util.Lang = "en"
+		logging.LogInfof("initialized language [en] by default")
 		Conf.Lang = util.Lang
 	} else {
 		// conf.json 已保存外观语言
@@ -551,8 +520,8 @@ func InitConf() {
 		Conf.Api = conf.NewAPI()
 	}
 
-	if nil == Conf.Bazaar {
-		Conf.Bazaar = conf.NewBazaar()
+	if nil == Conf.Extensions {
+		Conf.Extensions = conf.NewExtensions()
 	}
 
 	if nil == Conf.Publish {
@@ -736,13 +705,13 @@ func InitConf() {
 	// safeMode 是纯运行时状态，不随 conf.json 持久化（Save 时会被排除），故每次启动都按 util.SafeMode 重新赋值。
 	Conf.System.SafeMode = util.SafeMode
 	if util.SafeMode {
-		// 直接覆盖外观、集市、代码片段相关配置并持久化，禁用代码片段、插件、自定义主题与图标，以排除扩展导致再次崩溃的可能。
+		// 直接覆盖外观、扩展、代码片段相关配置并持久化，禁用代码片段、插件、自定义主题与图标，以排除扩展导致再次崩溃的可能。
 		// 注意：这是破坏性操作，会覆盖用户原有配置，后续不会自动恢复。
 		Conf.Appearance.ThemeLight = "daylight"
 		Conf.Appearance.ThemeDark = "midnight"
 		Conf.Appearance.Icon = "litheness"
 		Conf.Appearance.ThemeJS = false
-		Conf.Bazaar.PetalDisabled = true
+		Conf.Extensions.PetalDisabled = true
 		Conf.Snippet.EnabledCSS = false
 		Conf.Snippet.EnabledJS = false
 		Conf.Save()
@@ -762,7 +731,7 @@ func InitConf() {
 }
 
 func readCookieKey() (cookieKey string) {
-	cookieKeyPath := filepath.Join(util.HomeDir, ".config", "siyuan", "cookie.key")
+	cookieKeyPath := filepath.Join(util.UserHomeConfDir(), "cookie.key")
 	if !gulu.File.IsExist(cookieKeyPath) {
 		return
 	}
@@ -778,7 +747,7 @@ func readCookieKey() (cookieKey string) {
 }
 
 func writeCookieKey(cookieKey string) {
-	cookieKeyPath := filepath.Join(util.HomeDir, ".config", "siyuan", "cookie.key")
+	cookieKeyPath := filepath.Join(util.UserHomeConfDir(), "cookie.key")
 	if gulu.File.IsExist(cookieKeyPath) {
 		return
 	}
@@ -891,7 +860,7 @@ func Close(force, setCurrentWorkspace bool, execInstallPkg int) (exitCode int, i
 		}
 
 		if Conf.Sync.Enabled && 3 != Conf.Sync.Mode &&
-			((IsSubscriber() && conf.ProviderSiYuan == Conf.Sync.Provider) || conf.ProviderSiYuan != Conf.Sync.Provider) {
+			((HasFullAccess() && conf.ProviderSiYuan == Conf.Sync.Provider) || conf.ProviderSiYuan != Conf.Sync.Provider) {
 			syncData(true, false)
 			if 0 != ExitSyncSucc {
 				exitCode = 1
@@ -1189,21 +1158,8 @@ func InitBoxes() {
 	logging.LogInfof("tree/block count [%d/%d]", treenode.CountTrees(), blockCount)
 }
 
-func IsSubscriber() bool {
-	u := Conf.GetUser()
-	return nil != u && (-1 == u.UserSiYuanProExpireTime || 0 < u.UserSiYuanProExpireTime) && 0 == u.UserSiYuanSubscriptionStatus
-}
-
-func IsPaidUser() bool {
-	if IsSubscriber() {
-		return true
-	}
-
-	u := Conf.GetUser()
-	if nil == u {
-		return false
-	}
-	return 1 == u.UserSiYuanOneTimePayStatus
+func HasFullAccess() bool {
+	return true
 }
 
 const (
@@ -1258,7 +1214,7 @@ func HideConfSecret(c *AppConf) {
 
 func clearPortJSON() {
 	pid := fmt.Sprintf("%d", os.Getpid())
-	portJSON := filepath.Join(util.HomeDir, ".config", "siyuan", "port.json")
+	portJSON := filepath.Join(util.UserHomeConfDir(), "port.json")
 	pidPorts := map[string]string{}
 	var data []byte
 	var err error
@@ -1315,7 +1271,6 @@ func clearCorruptedNotebooks() {
 }
 
 func clearWorkspaceTemp(preserveInstallPkgs bool) {
-	os.RemoveAll(filepath.Join(util.TempDir, "bazaar"))
 	os.RemoveAll(filepath.Join(util.TempDir, "export"))
 	os.RemoveAll(filepath.Join(util.TempDir, "import"))
 	os.RemoveAll(filepath.Join(util.TempDir, "convert"))

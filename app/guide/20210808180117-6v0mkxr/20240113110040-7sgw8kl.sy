@@ -35,12 +35,12 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "SiYuan provides Android, iOS and HarmonyOS apps, and has been listed on some mobile app stores. Please search for "
+					"Data": "Scribli provides Android, iOS and HarmonyOS apps, and has been listed on some mobile app stores. Please search for "
 				},
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "思源笔记"
+					"TextMarkTextContent": "Scribli"
 				},
 				{
 					"Type": "NodeText",
@@ -49,7 +49,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "SiYuan"
+					"TextMarkTextContent": "Scribli"
 				},
 				{
 					"Type": "NodeText",
@@ -336,8 +336,8 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/en/download.html",
-					"TextMarkTextContent": "https://b3log.org/siyuan/en/download.html"
+					"TextMarkAHref": "https://b3log.org/scribli/en/download.html",
+					"TextMarkTextContent": "https://b3log.org/scribli/en/download.html"
 				}
 			]
 		},
@@ -579,7 +579,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "If you wish to maximize SiYuan's ability to remain active in the background, please follow these steps:"
+					"Data": "If you wish to maximize Scribli's ability to remain active in the background, please follow these steps:"
 				}
 			]
 		},
@@ -760,7 +760,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "Once the above steps are completed, SiYuan will send a notification every 45 seconds to help ensure it remains active in the background."
+					"Data": "Once the above steps are completed, Scribli will send a notification every 45 seconds to help ensure it remains active in the background."
 				}
 			]
 		},
@@ -789,7 +789,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "Shorthand is a quick capture feature on mobile. When inspiration strikes or you need to jot down temporary information, you can quickly save text via system share or a shortcut entry without opening SiYuan and entering a document editor. Shorthand content is temporarily stored locally and then automatically moved into the doc tree for organization."
+					"Data": "Shorthand is a quick capture feature on mobile. When inspiration strikes or you need to jot down temporary information, you can quickly save text via system share or a shortcut entry without opening Scribli and entering a document editor. Shorthand content is temporarily stored locally and then automatically moved into the doc tree for organization."
 				}
 			]
 		},
@@ -844,7 +844,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": ": On mobile, share text/links to SiYuan via the system share menu, or add a SiYuan shortcut entry on your home screen for one-tap recording"
+									"Data": ": On mobile, share text/links to Scribli via the system share menu, or add a Scribli shortcut entry on your home screen for one-tap recording"
 								}
 							]
 						}

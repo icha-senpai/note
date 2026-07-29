@@ -99,7 +99,7 @@ type RequestContent struct {
 	ContentType   string `json:"contentType"`   // e.g. "application/json"
 	ContentLength int64  `json:"contentLength"` // e.g. 123
 	Referer       string `json:"referer"`       // e.g. "http://127.0.0.1:6806/stage/build/app/"
-	UserAgent     string `json:"userAgent"`     // e.g. "SiYuan/3.6.5 https://b3log.org/siyuan Electron Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) SiYuan/3.6.5 Chrome/144.0.7559.236 Electron/40.9.1 Safari/537.36"
+	UserAgent     string `json:"userAgent"`     // e.g. "Scribli/3.6.5 https://scribli.local Electron Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Scribli/3.6.5 Chrome/144.0.7559.236 Electron/40.9.1 Safari/537.36"
 
 	/* Request Body */
 	Body RequestBody `json:"body"`

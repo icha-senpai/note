@@ -61,6 +61,10 @@ var checkDownloadInstallPkgLock = sync.Mutex{}
 func checkDownloadInstallPkg() {
 	defer logging.Recover()
 
+	if util.OfficialServicesUnavailable() {
+		return
+	}
+
 	if skipNewVerInstallPkg() {
 		return
 	}
@@ -100,6 +104,11 @@ func checkDownloadInstallPkg() {
 
 func getUpdatePkg() (downloadPkgURLs []string, checksum string, err error) {
 	defer logging.Recover()
+	if util.OfficialServicesUnavailable() {
+		err = util.OfficialServicesError()
+		return
+	}
+
 	result, err := util.GetRhyResult(context.TODO(), false)
 	if err != nil {
 		return
@@ -127,21 +136,9 @@ func getUpdatePkg() (downloadPkgURLs []string, checksum string, err error) {
 	}
 	pkg := "siyuan-" + ver + "-" + suffix
 
-	b3logURL := "https://release.b3log.org/siyuan/" + pkg
-	liuyunURL := "https://release.liuyun.io/siyuan/" + pkg
-	githubURL := "https://github.com/siyuan-note/siyuan/releases/download/v" + ver + "/" + pkg
-	ghproxyURL := "https://ghfast.top/" + githubURL
-	if util.IsChinaCloud() {
-		downloadPkgURLs = append(downloadPkgURLs, b3logURL)
-		downloadPkgURLs = append(downloadPkgURLs, liuyunURL)
-		downloadPkgURLs = append(downloadPkgURLs, ghproxyURL)
-		downloadPkgURLs = append(downloadPkgURLs, githubURL)
-	} else {
-		downloadPkgURLs = append(downloadPkgURLs, b3logURL)
-		downloadPkgURLs = append(downloadPkgURLs, liuyunURL)
-		downloadPkgURLs = append(downloadPkgURLs, githubURL)
-		downloadPkgURLs = append(downloadPkgURLs, ghproxyURL)
-	}
+	_ = pkg
+	err = util.ErrOfficialServicesDisabled
+	return
 
 	checksums := result["checksums"].(map[string]any)
 	checksum = checksums[pkg].(string)
@@ -254,6 +251,11 @@ func CheckUpdate(showMsg bool) {
 		return
 	}
 
+	if util.OfficialServicesUnavailable() {
+		util.PushUpdateMsg("update-notify", Conf.Language(10), 3000)
+		return
+	}
+
 	if Conf.System.IsMicrosoftStore {
 		return
 	}
@@ -291,6 +293,10 @@ func isVersionUpToDate(releaseVer string) bool {
 var skipInstallPkgPlatformCached = -1
 
 func skipNewVerInstallPkg() bool {
+	if util.OfficialServicesUnavailable() {
+		return true
+	}
+
 	if skipInstallPkgPlatformCached == -1 {
 		skipInstallPkgPlatformCached = 0
 		if !gulu.OS.IsWindows() && !gulu.OS.IsDarwin() {

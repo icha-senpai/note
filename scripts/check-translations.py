@@ -42,8 +42,8 @@ def walk(obj, prefix=""):
 def norm_placeholders(s):
     """规范化占位符比较：统一引号、忽略 URL 路径差异、忽略帮助链接域名差异"""
     s2 = s.replace('"', "'")
-    s2 = re.sub(r"b3log\.org/siyuan(/[a-z]{2})?/", "b3log.org/siyuan/", s2)
-    s2 = re.sub(r"b3log\.org/siyuan(\?[^\s\"']*)?", "b3log.org/siyuan", s2)
+    s2 = re.sub(r"b3log\.org/siyuan(/[a-z]{2})?/", "scribli.local/", s2)
+    s2 = re.sub(r"b3log\.org/siyuan(\?[^\s\"']*)?", "scribli.local", s2)
     s2 = re.sub(r"https://(ld246\.com|liuyun\.io)/article/\d+", "HELPURL", s2)
     ps = re.findall(r"\$\{[^}]+\}|\{[a-zA-Z_][a-zA-Z0-9_]*\}|%[sdf]|\d+\$[sdf]|<[^>]+>", s2)
     return sorted(ps)

@@ -1,9 +1,9 @@
 {
-  "name": "SiYuan",
-  "desktopName": "org.b3log.siyuan",
+  "name": "Scribli",
+  "desktopName": "app.scribli.desktop",
   "version": "3.7.3",
   "description": "Refactor your thinking",
-  "homepage": "https://b3log.org/siyuan",
+  "homepage": "https://scribli.local",
   "main": "./electron/main.js",
   "packageManager": "pnpm@11.12.0",
   "scripts": {

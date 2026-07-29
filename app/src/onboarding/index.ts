@@ -4,7 +4,7 @@ import {openDataMigration} from "../menus/dataMigration";
 import {mountHelp} from "../util/mount";
 import {syncGuide} from "../sync/syncGuide";
 import {openSetting} from "../config";
-import {isPaidUser} from "../util/needSubscribe";
+import {hasFeatureAccess} from "../util/featureAccess";
 import {setNoteBook} from "../util/pathName";
 import type {App} from "../index";
 /// #if MOBILE
@@ -73,7 +73,7 @@ const syncAndDismissOnSuccess = (app: App) => {
 
 const loginAndSync = (app: App) => {
     if (window.siyuan.user) {
-        if (isPaidUser()) {
+        if (hasFeatureAccess()) {
             syncAndDismissOnSuccess(app);
         } else {
             syncGuide(app);
@@ -85,7 +85,7 @@ const loginAndSync = (app: App) => {
     }
     pendingLoginHandler = () => {
         pendingLoginHandler = undefined;
-        if (isPaidUser()) {
+        if (hasFeatureAccess()) {
             syncAndDismissOnSuccess(app);
         }
     };

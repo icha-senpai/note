@@ -524,12 +524,6 @@ export const getLocalStorage = (cb: () => void) => {
         defaultStorage[Constants.LOCAL_FLASHCARD] = {
             fullscreen: false
         };
-        defaultStorage[Constants.LOCAL_BAZAAR] = {
-            theme: "0",
-            template: "0",
-            icon: "0",
-            widget: "0",
-        };
         defaultStorage[Constants.LOCAL_EXPORTWORD] = {removeAssets: false, mergeSubdocs: false};
         defaultStorage[Constants.LOCAL_EXPORTPDF] = {
             landscape: false,
@@ -579,7 +573,7 @@ export const getLocalStorage = (cb: () => void) => {
         defaultStorage[Constants.LOCAL_MOVE_PATH] = {keys: [], k: ""};
         defaultStorage[Constants.LOCAL_RECENT_DOCS] = {type: "viewedAt"};   // TRecentDocsSort
 
-        [Constants.LOCAL_EXPORTIMG, Constants.LOCAL_SEARCHKEYS, Constants.LOCAL_PDFTHEME, Constants.LOCAL_BAZAAR,
+        [Constants.LOCAL_EXPORTIMG, Constants.LOCAL_SEARCHKEYS, Constants.LOCAL_PDFTHEME,
             Constants.LOCAL_EXPORTWORD, Constants.LOCAL_EXPORTPDF, Constants.LOCAL_DOCINFO, Constants.LOCAL_FONTSTYLES,
             Constants.LOCAL_SEARCHDATA, Constants.LOCAL_ZOOM, Constants.LOCAL_LAYOUTS, Constants.LOCAL_AI,
             Constants.LOCAL_PLUGINTOPUNPIN, Constants.LOCAL_SEARCHASSET, Constants.LOCAL_FLASHCARD,
@@ -644,7 +638,7 @@ export const initWindowOpenOverride = (app: App, openExternal?: (url: string) =>
             openExternal(urlStr);
             return null;
         }
-        // 浏览器可通过 window.open("siyuan://blocks/20221031001313-rk7sd0e", "_blank") 打开本地客户端
+        // 浏览器可通过 window.open("scribli://blocks/20221031001313-rk7sd0e", "_blank") 打开本地客户端
         return originalOpen.call(window, url, target, features);
     };
 };
@@ -671,7 +665,7 @@ export const initNativeDialogOverride = () => {
     window.confirm = function (message: string): boolean {
         try {
             const buttonIndex = ipcRenderer.sendSync(Constants.SIYUAN_CONFIRM_DIALOG, {
-                title: window.siyuan?.languages?.siyuanNote || "SiYuan",
+                title: window.siyuan?.languages?.siyuanNote || "Scribli",
                 message,
                 buttons: [window.siyuan?.languages?.cancel || "Cancel", window.siyuan?.languages?.confirm || "OK"],
                 cancelId: 0,

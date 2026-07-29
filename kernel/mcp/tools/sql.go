@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import (
 
 var SQLTool = &Tool{
 	Name:        "sql",
-	Description: "Read-only SQL on SiYuan's database. Action: query(stmt) — SELECT only.",
+	Description: "Read-only SQL on Scribli's database. Action: query(stmt) — SELECT only.",
 	InputSchema: ToolSchema{
 		Type: "object",
 		Properties: map[string]Property{

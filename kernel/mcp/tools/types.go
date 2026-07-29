@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ type Tool struct {
 	Description  string      `json:"description"`
 	InputSchema  ToolSchema  `json:"inputSchema"`
 	OutputSchema *ToolSchema `json:"outputSchema,omitempty"`
-	// Source 标记工具来源："native"（SiYuan 内置）、"plugin"（插件注册）、"mcp"（外部 MCP 服务）。
+	// Source 标记工具来源："native"（Scribli 内置）、"plugin"（插件注册）、"mcp"（外部 MCP 服务）。
 	// 用于 token 分类统计按来源拆分。空值按 "native" 处理（兼容旧调用方）。
 	Source string `json:"source,omitempty"`
 	// ReadOnlyHint 仅在外部工具明确声明只读时为 true；未声明时按可能写入处理并要求确认。

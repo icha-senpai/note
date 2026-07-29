@@ -165,9 +165,9 @@ const initMultiMenu = (selectItemElements: NodeListOf<Element>, app: App) => {
         type: "submenu",
         icon: "iconUpload",
         submenu: [{
-            id: "exportSiYuanZip",
-            label: "SiYuan .sy.zip",
-            icon: "iconSiYuan",
+            id: "exportScribliZip",
+            label: "Scribli .sy.zip",
+            icon: "iconScribli",
             click: () => {
                 confirmEncryptedExport(notebookId, () => {
                     const msgId = showMessage(window.siyuan.languages.exporting, -1);
@@ -430,9 +430,9 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
         type: "submenu",
         icon: "iconUpload",
         submenu: [{
-            id: "exportSiYuanZip",
-            label: "SiYuan .sy.zip",
-            icon: "iconSiYuan",
+            id: "exportScribliZip",
+            label: "Scribli .sy.zip",
+            icon: "iconScribli",
             click: () => {
                 confirmEncryptedExport(notebookId, () => {
                     const msgId = showMessage(window.siyuan.languages.exporting, -1);
@@ -814,9 +814,9 @@ export const genImportMenu = (notebookId: string, pathString: string) => {
         label: window.siyuan.languages.import,
         submenu: [
             {
-                id: "importSiYuanZip",
-                icon: "iconSiYuan",
-                label: 'SiYuan .sy.zip<input class="b3-form__upload" type="file" accept="application/zip">',
+                id: "importScribliZip",
+                icon: "iconScribli",
+                label: 'Scribli .sy.zip<input class="b3-form__upload" type="file" accept="application/zip">',
                 bind: (element) => {
                     element.querySelector(".b3-form__upload").addEventListener("change", (event: InputEvent & {
                         target: HTMLInputElement

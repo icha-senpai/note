@@ -32,30 +32,30 @@ func TestIsPetalsEnabled(t *testing.T) {
 	})
 
 	Conf = NewAppConf()
-	Conf.Bazaar = conf.NewBazaar()
-	Conf.Bazaar.PetalDisabled = false
-	Conf.Bazaar.Trust = false
+	Conf.Extensions = conf.NewExtensions()
+	Conf.Extensions.PetalDisabled = false
+	Conf.Extensions.Trust = false
 
 	for _, container := range []string{util.ContainerAndroid, util.ContainerIOS, util.ContainerHarmony} {
 		util.Container = container
 		if !IsPetalsEnabled() {
-			t.Fatalf("petals should be enabled on mobile container [%s] without bazaar trust", container)
+			t.Fatalf("petals should be enabled on mobile container [%s] without extension trust", container)
 		}
 	}
 
 	for _, container := range []string{util.ContainerStd, util.ContainerDocker} {
 		util.Container = container
 		if IsPetalsEnabled() {
-			t.Fatalf("petals should be disabled on container [%s] without bazaar trust", container)
+			t.Fatalf("petals should be disabled on container [%s] without extension trust", container)
 		}
 	}
 
-	Conf.Bazaar.Trust = true
+	Conf.Extensions.Trust = true
 	if !IsPetalsEnabled() {
-		t.Fatal("petals should be enabled after bazaar trust")
+		t.Fatal("petals should be enabled after extension trust")
 	}
 
-	Conf.Bazaar.PetalDisabled = true
+	Conf.Extensions.PetalDisabled = true
 	if IsPetalsEnabled() {
 		t.Fatal("petals should be disabled explicitly")
 	}

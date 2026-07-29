@@ -38,12 +38,12 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "If you need to pull up the SiYuan desktop application in other places (such as a browser or software that supports hyperlinks), you can use the "
+					"Data": "If you need to pull up the Scribli desktop application in other places (such as a browser or software that supports hyperlinks), you can use the "
 				},
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan://"
+					"TextMarkTextContent": "scribli://"
 				},
 				{
 					"Type": "NodeText",
@@ -80,7 +80,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan://blocks/{id}"
+					"TextMarkTextContent": "scribli://blocks/{id}"
 				},
 				{
 					"Type": "NodeText",
@@ -112,7 +112,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan://blocks/{id}?focus=1"
+					"TextMarkTextContent": "scribli://blocks/{id}?focus=1"
 				},
 				{
 					"Type": "NodeText",
@@ -174,7 +174,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "siyuan://"
+									"TextMarkTextContent": "scribli://"
 								},
 								{
 									"Type": "NodeText",
@@ -281,7 +281,7 @@
 																{
 																	"Type": "NodeTextMark",
 																	"TextMarkType": "code",
-																	"TextMarkTextContent": "MimeType=MimeType=x-scheme-handler/siyuan;"
+																	"TextMarkTextContent": "MimeType=MimeType=x-scheme-handler/scribli;"
 																}
 															]
 														}
@@ -384,7 +384,7 @@
 												},
 												{
 													"Type": "NodeCodeBlockCode",
-													"Data": "sudo update-desktop-database\nxdg-mime default siyuan.desktop x-scheme-handler/siyuan\nxdg-settings set default-url-scheme-handler siyuan siyuan.desktop\n"
+													"Data": "sudo update-desktop-database\nxdg-mime default siyuan.desktop x-scheme-handler/scribli\nxdg-settings set default-url-scheme-handler siyuan siyuan.desktop\n"
 												},
 												{
 													"Type": "NodeCodeBlockFenceCloseMarker",

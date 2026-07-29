@@ -6,12 +6,12 @@
         xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
     <!-- use single quotes to avoid double quotes escaping in the publisher value  -->
-    <Identity Name="89C2A984.SiYuan"
+    <Identity Name="Scribli.Desktop"
               ProcessorArchitecture="x64"
               Publisher="CN=087C656E-C1D9-42D8-8807-CED45A74FC0F"
               Version="3.7.3.0"/>
     <Properties>
-        <DisplayName>SiYuan</DisplayName>
+        <DisplayName>Scribli</DisplayName>
         <PublisherDisplayName>云南链滴科技有限公司</PublisherDisplayName>
         <Description>Refactor your thinking</Description>
         <Logo>assets\StoreLogo.png</Logo>
@@ -38,10 +38,10 @@
         <rescap:Capability Name="runFullTrust"/>
     </Capabilities>
     <Applications>
-        <Application Id="SiYuan" Executable="app\SiYuan.exe" EntryPoint="Windows.FullTrustApplication">
+        <Application Id="Scribli" Executable="app\Scribli.exe" EntryPoint="Windows.FullTrustApplication">
             <uap:VisualElements
                     BackgroundColor="transparent"
-                    DisplayName="SiYuan"
+                    DisplayName="Scribli"
                     Square150x150Logo="assets\Square150x150Logo.png"
                     Square44x44Logo="assets\Square44x44Logo.png"
                     Description="Refactor your thinking">
@@ -50,7 +50,7 @@
 
             <Extensions>
                 <uap:Extension Category="windows.protocol">
-                    <uap:Protocol Name="siyuan"/>
+                    <uap:Protocol Name="scribli"/>
                 </uap:Extension>
             </Extensions>
         </Application>

@@ -269,7 +269,7 @@
 				},
 				{
 					"Type": "NodeText",
-					"Data": "​）。设置后，思源会自动在属性名前加上前缀 "
+					"Data": "​）。设置后，Scribli会自动在属性名前加上前缀 "
 				},
 				{
 					"Type": "NodeTextMark",

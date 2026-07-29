@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ package mcp
 const (
 	ProtocolVersion   = "2025-06-18"
 	ProtocolV20260728 = "2026-07-28"
-	ServerName        = "SiYuan"
+	ServerName        = "Scribli"
 )
 
 type Meta struct {

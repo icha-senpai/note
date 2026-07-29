@@ -34,7 +34,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "在服務器上伺服思源最簡單的方案是通過 Docker 部署。"
+					"Data": "在服務器上伺服Scribli最簡單的方案是通過 Docker 部署。"
 				}
 			]
 		},
@@ -74,7 +74,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "b3log/siyuan"
+									"TextMarkTextContent": "b3log/scribli"
 								}
 							]
 						}
@@ -103,7 +103,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://hub.docker.com/r/b3log/siyuan",
+									"TextMarkAHref": "https://hub.docker.com/r/b3log/scribli",
 									"TextMarkTextContent": "鏡像地址"
 								}
 							]
@@ -142,7 +142,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "/opt/siyuan/"
+					"TextMarkTextContent": "/opt/scribli/"
 				},
 				{
 					"Type": "NodeText",
@@ -301,7 +301,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "ENTRYPOINT [ \"/opt/siyuan/kernel\" ]"
+					"TextMarkTextContent": "ENTRYPOINT [ \"/opt/scribli/kernel\" ]"
 				},
 				{
 					"Type": "NodeText",
@@ -310,7 +310,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "docker run b3log/siyuan"
+					"TextMarkTextContent": "docker run b3log/scribli"
 				},
 				{
 					"Type": "NodeText",
@@ -395,7 +395,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "docker run -d -v workspace_dir_host:workspace_dir_container -p 6806:6806 b3log/siyuan --workspace=workspace_dir_container"
+					"TextMarkTextContent": "docker run -d -v workspace_dir_host:workspace_dir_container -p 6806:6806 b3log/scribli --workspace=workspace_dir_container"
 				},
 				{
 					"Type": "NodeText",
@@ -518,7 +518,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "/siyuan/workspace"
+					"TextMarkTextContent": "/scribli/workspace"
 				},
 				{
 					"Type": "NodeText",
@@ -527,7 +527,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "docker run -d -v /siyuan/workspace:/siyuan/workspace -p 6806:6806 -u 1000:1000 b3log/siyuan --workspace=/siyuan/workspace/"
+					"TextMarkTextContent": "docker run -d -v /scribli/workspace:/scribli/workspace -p 6806:6806 -u 1000:1000 b3log/scribli --workspace=/scribli/workspace/"
 				},
 				{
 					"Type": "NodeText",
@@ -574,7 +574,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "chown -R 1000:1000 /siyuan/workspace"
+					"TextMarkTextContent": "chown -R 1000:1000 /scribli/workspace"
 				},
 				{
 					"Type": "NodeText",

@@ -1,26 +1,13 @@
 import {App} from "../index";
 import {Menu} from "./Menu";
-import {isHuawei, setStorageVal} from "../protyle/util/compatibility";
+import {setStorageVal} from "../protyle/util/compatibility";
 /// #if !MOBILE
-import {openSetting} from "../config";
 import {setTabPosition} from "../layout/tabUtil";
 /// #endif
 import {Constants} from "../constants";
 
 export const openTopBarMenu = (app: App, target?: Element) => {
     const menu = new Menu(Constants.MENU_BAR_PLUGIN);
-    /// #if !MOBILE
-    menu.addItem({
-        id: "manage",
-        icon: "iconSettings",
-        label: window.siyuan.languages.manage,
-        ignore: isHuawei() || window.siyuan.config.readonly,
-        click() {
-            openSetting(app, "bazaar");
-        }
-    });
-    menu.addSeparator({id: "separator_1", ignore: isHuawei() || window.siyuan.config.readonly});
-    /// #endif
     let hasPlugin = false;
     app.plugins.forEach((plugin) => {
         // @ts-ignore

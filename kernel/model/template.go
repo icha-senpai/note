@@ -35,7 +35,7 @@ import (
 	"github.com/siyuan-note/filelock"
 	"github.com/siyuan-note/logging"
 	"github.com/siyuan-note/siyuan/kernel/av"
-	"github.com/siyuan-note/siyuan/kernel/bazaar"
+	"github.com/siyuan-note/siyuan/kernel/extensions"
 	"github.com/siyuan-note/siyuan/kernel/filesys"
 	"github.com/siyuan-note/siyuan/kernel/search"
 	"github.com/siyuan-note/siyuan/kernel/sql"
@@ -88,7 +88,7 @@ func RemoveTemplate(p string) (err error) {
 // getTemplateReadmePaths 返回模板包 README 的相对包根路径集合：恒含 README.md，并合并 template.json 的 readme 字段（大小写敏感）。
 func getTemplateReadmePaths(templateDir string) map[string]struct{} {
 	paths := map[string]struct{}{"README.md": {}}
-	pkg, err := bazaar.ParsePackageJSON(filepath.Join(templateDir, "template.json"))
+	pkg, err := extensions.ParsePackageJSON(filepath.Join(templateDir, "template.json"))
 	if err != nil {
 		return paths
 	}
@@ -526,9 +526,9 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 			}
 		} else if treenode.IsBlockLink(n) {
 			// 块超链接指向模板内部块时成套改写
-			defID := strings.TrimPrefix(n.TextMarkAHref, "siyuan://blocks/")
+			defID := strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
 			if newDefID, internal := blockIDs[defID]; internal {
-				n.TextMarkAHref = "siyuan://blocks/" + newDefID
+				n.TextMarkAHref = "scribli://blocks/" + newDefID
 			}
 		} else if ast.NodeBlockQueryEmbedScript == n.Type {
 			// 嵌入块查询脚本中引用模板内部块时成套改写

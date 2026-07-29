@@ -148,7 +148,7 @@ func LinkTarget(htmlStr, linkBase string) (ret string) {
 				selection.SetAttr("href", linkBase+href)
 			}
 
-			// The hyperlink in the marketplace package README fails to jump to the browser to open https://github.com/siyuan-note/siyuan/issues/8452
+			// The hyperlink in the extension package README fails to jump to the browser to open https://github.com/siyuan-note/siyuan/issues/8452
 			selection.SetAttr("target", "_blank")
 		}
 	})

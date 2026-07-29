@@ -126,7 +126,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源对这两方面都进行了一定支持，下面是关于数据安全方面的说明。"
+					"Data": "Scribli对这两方面都进行了一定支持，下面是关于数据安全方面的说明。"
 				}
 			]
 		},
@@ -158,7 +158,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源使用明文方式将数据存储在本地文件系统上，这意味着："
+					"Data": "Scribli使用明文方式将数据存储在本地文件系统上，这意味着："
 				}
 			]
 		},
@@ -265,7 +265,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源云端同步使用"
+					"Data": "Scribli云端同步使用"
 				},
 				{
 					"Type": "NodeTextMark",
@@ -403,7 +403,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "主要针对本地数据安全和思源云端存储安全进行评估。"
+					"Data": "主要针对本地数据安全和Scribli云端存储安全进行评估。"
 				}
 			]
 		},

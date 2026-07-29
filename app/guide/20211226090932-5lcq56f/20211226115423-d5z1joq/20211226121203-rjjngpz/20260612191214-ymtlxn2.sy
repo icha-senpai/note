@@ -34,7 +34,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源筆記內建 CLI（Command Line Interface），可直接存取工作空間資料，無需啟動核心服務。適合腳本化處理、批次管理，以及搭配 AI 智能體對筆記資料進行讀寫操作。"
+					"Data": "Scribli內建 CLI（Command Line Interface），可直接存取工作空間資料，無需啟動核心服務。適合腳本化處理、批次管理，以及搭配 AI 智能體對筆記資料進行讀寫操作。"
 				}
 			]
 		},
@@ -91,7 +91,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "&lt;安裝目錄&gt;/resources/kernel/SiYuan-Kernel"
+					"TextMarkTextContent": "&lt;安裝目錄&gt;/resources/kernel/Scribli-Kernel"
 				},
 				{
 					"Type": "NodeText",
@@ -180,7 +180,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "siyuan.cmd"
+									"TextMarkTextContent": "scribli.cmd"
 								},
 								{
 									"Type": "NodeText",
@@ -207,7 +207,7 @@
 								},
 								{
 									"Type": "NodeCodeBlockCode",
-									"Data": "# 僅適用於 Microsoft Store 版 —— 在 PowerShell 中執行一次\n$shimDir = \"$env:LOCALAPPDATA\\Microsoft\\WindowsApps\"   # 該目錄預設已在 PATH 中\n@(\n    '@echo off'\n    'setlocal'\n    'set \"ROOT=\"'\n    'for /f \"delims=\" %%i in (''powershell -NoProfile -Command \"(Get-AppxPackage *SiYuan*).InstallLocation\"'') do set \"ROOT=%%i\"'\n    'if not defined ROOT goto :noshim'\n    '\"%ROOT%\\app\\resources\\kernel\\SiYuan-Kernel.exe\" %*'\n    'exit /b %ERRORLEVEL%'\n    ':noshim'\n    '1>&2 echo siyuan: 找不到 Microsoft Store 版本'\n    'exit /b 1'\n) | Set-Content \"$shimDir\\siyuan.cmd\"\n"
+									"Data": "# 僅適用於 Microsoft Store 版 —— 在 PowerShell 中執行一次\n$shimDir = \"$env:LOCALAPPDATA\\Microsoft\\WindowsApps\"   # 該目錄預設已在 PATH 中\n@(\n    '@echo off'\n    'setlocal'\n    'set \"ROOT=\"'\n    'for /f \"delims=\" %%i in (''powershell -NoProfile -Command \"(Get-AppxPackage *Scribli*).InstallLocation\"'') do set \"ROOT=%%i\"'\n    'if not defined ROOT goto :noshim'\n    '\"%ROOT%\\app\\resources\\kernel\\Scribli-Kernel.exe\" %*'\n    'exit /b %ERRORLEVEL%'\n    ':noshim'\n    '1>&2 echo siyuan: 找不到 Microsoft Store 版本'\n    'exit /b 1'\n) | Set-Content \"$shimDir\\scribli.cmd\"\n"
 								},
 								{
 									"Type": "NodeCodeBlockFenceCloseMarker",
@@ -230,7 +230,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "Remove-Item \"$env:LOCALAPPDATA\\Microsoft\\WindowsApps\\siyuan.cmd\""
+									"TextMarkTextContent": "Remove-Item \"$env:LOCALAPPDATA\\Microsoft\\WindowsApps\\scribli.cmd\""
 								}
 							]
 						}
@@ -286,7 +286,7 @@
 								},
 								{
 									"Type": "NodeCodeBlockCode",
-									"Data": "ln -s /Applications/SiYuan.app/Contents/Resources/kernel/SiYuan-Kernel /usr/local/bin/siyuan\n"
+									"Data": "ln -s /Applications/Scribli.app/Contents/Resources/kernel/Scribli-Kernel /usr/local/bin/scribli\n"
 								},
 								{
 									"Type": "NodeCodeBlockFenceCloseMarker",
@@ -346,7 +346,7 @@
 								},
 								{
 									"Type": "NodeCodeBlockCode",
-									"Data": "ln -s <安裝目錄>/resources/kernel/SiYuan-Kernel /usr/local/bin/siyuan\n"
+									"Data": "ln -s <安裝目錄>/resources/kernel/Scribli-Kernel /usr/local/bin/scribli\n"
 								},
 								{
 									"Type": "NodeCodeBlockFenceCloseMarker",
@@ -502,7 +502,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "~/SiYuan"
+									"TextMarkTextContent": "~/Scribli"
 								},
 								{
 									"Type": "NodeText",

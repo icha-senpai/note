@@ -80,7 +80,6 @@ type TOperation =
     | "setAttrViewFillColBackgroundColor"
     | "setAttrViewUpdatedIncludeTime"
     | "setAttrViewCreatedIncludeTime"
-type TBazaarType = "templates" | "icons" | "widgets" | "themes" | "plugins"
 type TCardType = "doc" | "notebook" | "all"
 type TEventBus = "ws-main" | "sync-start" | "sync-end" | "sync-fail" |
     "click-blockicon" | "click-editorcontent" | "click-pdf" | "click-editortitleicon" | "click-flashcard-action" |
@@ -257,7 +256,6 @@ interface Window {
             startKernelFast: { postMessage: (url: string) => void }
             changeStatusBar: { postMessage: (url: string) => void }
             setClipboard: { postMessage: (url: string) => void }
-            purchase: { postMessage: (url: string) => void }
             print: { postMessage: (html: string) => void }
             exit: { postMessage: (text: string) => void }
             sendNotification: {
@@ -574,31 +572,6 @@ interface ISiyuan {
         userHomeBImgURL: string
         userIntro: string
         userNickname: string
-        /**
-         * 功能特性付费状态
-         * 0 未付费，1 已付费
-         */
-        userSiYuanOneTimePayStatus: number
-        /**
-         * 会员过期时间
-         * -1 终身会员；0 未订阅或订阅已过期；>0 订阅到期时间（时间戳，毫秒）
-         */
-        userSiYuanProExpireTime: number
-        /**
-         * 订阅计划类型
-         * 0 年付订阅/终生；1 教育优惠；2 订阅试用
-         */
-        userSiYuanSubscriptionPlan: number
-        /**
-         * 订阅类型
-         * 0 年付；1 终生；2 月付
-         */
-        userSiYuanSubscriptionType: number
-        /**
-         * 订阅状态
-         * -1 未订阅，0 订阅可用，1 订阅封禁，2 订阅过期（包括付费订阅过期和试用订阅过期）
-         */
-        userSiYuanSubscriptionStatus: number
         userToken: string
         userTitles: {
             name: string,
@@ -941,40 +914,6 @@ interface IMenu {
     element?: HTMLElement
     ignore?: boolean
     warning?: boolean
-}
-
-interface IBazaarItem {
-    preferredName: string;
-    minAppVersion: string;
-    preferredDesc: string;
-    preferredReadme: string;
-    iconURL: string;
-    stars: string;
-    author: string;
-    updated: string;
-    downloads: string;
-    disallowInstall: boolean;
-    current: false;
-    installed: false;
-    outdated: false;
-    name: string;
-    previewURL: string;
-    repoHash: string;
-    repoURL: string;
-    url: string;
-    openIssues: number;
-    version: string;
-    hSize: string;
-    hInstallSize: string;
-    hInstallDate: string;
-    hUpdated: string;
-    preferredFunding: string;
-    disallowUpdate: boolean;
-    updateRequiredMinAppVer?: string;
-    installedIncompatible?: boolean; // 仅 plugin
-    bazaarIncompatible?: boolean; // 仅 plugin
-    enabled?: boolean; // 仅 plugin
-    modes?: string[]; // 仅 theme
 }
 
 interface IAV {
@@ -1372,7 +1311,7 @@ interface IKernelPluginRpc {
 }
 
 /**
- * SiYuan URI 块信息接口，用于描述通过 SiYuan URI 协议传递的块信息
+ * Scribli URI 块信息接口，用于描述通过 Scribli URI 协议传递的块信息
  */
 interface ISiYuanUriBlockInfo {
     /**

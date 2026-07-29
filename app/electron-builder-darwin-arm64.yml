@@ -1,10 +1,10 @@
-productName: "SiYuan"
-appId: "org.b3log.siyuan"
+productName: "Scribli"
+appId: "app.scribli.desktop"
 publish: null
 asar: false
 compression: "normal"
 copyright: "© 2020-present Yunnan Liandi Technology Co., Ltd."
-artifactName: "siyuan-${version}-${os}-arm64.${ext}"
+artifactName: "scribli-${version}-${os}-arm64.${ext}"
 extraMetadata:
   main: "electron/main.js"
 directories:
@@ -15,7 +15,7 @@ afterPack: "./scripts/afterPack.js"
 
 mac:
   identity: "Yunnan Liandi Technology Co., Ltd."
-  provisioningProfile: "../../SiYuan.provisionprofile"
+  provisioningProfile: "../../Scribli.provisionprofile"
   icon: "src/assets/icon.icns"
   gatekeeperAssess: false
   hardenedRuntime: true
@@ -25,9 +25,9 @@ mac:
   entitlementsInherit: "../../entitlements.mas.plist"
   minimumSystemVersion: "12.0.0"
   protocols:
-    - name: "SiYuan"
+    - name: "Scribli"
       schemes:
-        - "siyuan"
+        - "scribli"
   extraResources:
     - from: "kernel-darwin-arm64"
       to: "kernel"

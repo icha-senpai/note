@@ -34,7 +34,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "小工具是思源Kernel伺服的靜態網頁，它通過 API 存取資料，通過 "
+					"Data": "小工具是ScribliKernel伺服的靜態網頁，它通過 API 存取資料，通過 "
 				},
 				{
 					"Type": "NodeTextMark",
@@ -140,7 +140,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/community.html",
+					"TextMarkAHref": "https://b3log.org/scribli/community.html",
 					"TextMarkTextContent": "社區集市倉庫"
 				},
 				{

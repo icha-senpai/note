@@ -25,7 +25,7 @@
 				},
 				{
 					"Type": "NodeText",
-					"Data": "思源是如何存储数据的？"
+					"Data": "Scribli是如何存储数据的？"
 				}
 			]
 		},
@@ -648,7 +648,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "在 macOS 上思源会访问桌面、文稿和 iCloud 云盘文件夹，目的是为了检测工作空间是否放置在 iCloud 同步路径下，思源绝不会窥探你的个人数据，请放心。"
+					"Data": "在 macOS 上Scribli会访问桌面、文稿和 iCloud 云盘文件夹，目的是为了检测工作空间是否放置在 iCloud 同步路径下，Scribli绝不会窥探你的个人数据，请放心。"
 				}
 			]
 		},
@@ -663,7 +663,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源是开源的吗？"
+					"Data": "Scribli是开源的吗？"
 				}
 			]
 		},
@@ -677,7 +677,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源笔记是完全开源的，在 GitHub 上可以找到完整的源代码。"
+					"Data": "Scribli是完全开源的，在 GitHub 上可以找到完整的源代码。"
 				}
 			]
 		},
@@ -781,7 +781,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": " 选项，这样思源会自动下载最新版安装包并提示安装"
+									"Data": " 选项，这样Scribli会自动下载最新版安装包并提示安装"
 								}
 							]
 						}
@@ -867,7 +867,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/",
+					"TextMarkAHref": "https://b3log.org/scribli/",
 					"TextMarkTextContent": "官方网站"
 				},
 				{
@@ -1293,7 +1293,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/siyuan/pricing.html",
+					"TextMarkAHref": "https://b3log.org/scribli/pricing.html",
 					"TextMarkTextContent": "定价"
 				},
 				{
@@ -1333,7 +1333,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "“思源”命名的由来"
+					"Data": "“Scribli”命名的由来"
 				}
 			]
 		},
@@ -1347,7 +1347,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "思源这个名字取自中国古代成语“饮水思源”，其字面意思是“喝水的时候，要想到水是从哪里来的”，比喻不忘本、知感恩。"
+					"Data": "Scribli这个名字取自中国古代成语“饮水Scribli”，其字面意思是“喝水的时候，要想到水是从哪里来的”，比喻不忘本、知感恩。"
 				}
 			]
 		},
@@ -1361,7 +1361,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "我们希望用户在使用思源笔记进行知识管理的时候不要忘记知识的出处和关联，更重要的是不要忘记通过自己的所学回报社会，回报全人类。"
+					"Data": "我们希望用户在使用Scribli进行知识管理的时候不要忘记知识的出处和关联，更重要的是不要忘记通过自己的所学回报社会，回报全人类。"
 				}
 			]
 		}

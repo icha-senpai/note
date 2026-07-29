@@ -40,6 +40,7 @@ yarn.lock
 
 # musl toolchain
 muslbin/
+.tools/
 
 # Workflows
 **/__pycache__

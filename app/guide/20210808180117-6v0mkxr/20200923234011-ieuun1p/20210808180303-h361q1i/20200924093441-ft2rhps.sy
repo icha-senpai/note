@@ -169,7 +169,7 @@
 										},
 										{
 											"Type": "NodeLinkDest",
-											"Data": "assets/siyuan-128-20210604092437-7iqzf90.png"
+											"Data": "assets/scribli-128-20210604092437-7iqzf90.png"
 										},
 										{
 											"Type": "NodeCloseParen"
@@ -1775,7 +1775,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "Release SiYuan"
+									"Data": "Release Scribli"
 								}
 							]
 						}
@@ -2301,7 +2301,7 @@
 					"TextMarkType": "block-ref",
 					"TextMarkBlockRefID": "20201204184532-3qm9l8n",
 					"TextMarkBlockRefSubtype": "s",
-					"TextMarkTextContent": "SiYuan template"
+					"TextMarkTextContent": "Scribli template"
 				},
 				{
 					"Type": "NodeText",

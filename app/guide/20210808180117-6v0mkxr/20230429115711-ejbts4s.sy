@@ -35,7 +35,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, some relatively complicated terminology is involved, which can be confusing. In this chapter, we will explain these terms one by one, hoping to help you better understand and use SiYuan."
+					"Data": "In Scribli, some relatively complicated terminology is involved, which can be confusing. In this chapter, we will explain these terms one by one, hoping to help you better understand and use Scribli."
 				}
 			]
 		},
@@ -130,7 +130,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, breadcrumbs refer to the block paths connected by right arrows at the top of the editor, which are used to navigate in the block structure. Each layer starts with a block icon, and the preview floating window can be opened by hovering the mouse."
+					"Data": "In Scribli, breadcrumbs refer to the block paths connected by right arrows at the top of the editor, which are used to navigate in the block structure. Each layer starts with a block icon, and the preview floating window can be opened by hovering the mouse."
 				}
 			]
 		},
@@ -187,7 +187,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, we have extended anchor text in the usual sense from hyperlink elements to block quotes and PDF annotation reference elements. In particular, the anchor text of the block quote element is divided into static anchor text and dynamic anchor text. For details, please refer to the "
+					"Data": "In Scribli, we have extended anchor text in the usual sense from hyperlink elements to block quotes and PDF annotation reference elements. In particular, the anchor text of the block quote element is divided into static anchor text and dynamic anchor text. For details, please refer to the "
 				},
 				{
 					"Type": "NodeTextMark",
@@ -427,7 +427,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, a block reference is a link triggered by "
+					"Data": "In Scribli, a block reference is a link triggered by "
 				},
 				{
 					"Type": "NodeTextMark",
@@ -493,7 +493,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, the backlink panel displays all blocks that reference the current block. Backlinks are divided into two parts: links (directly connected via block references) and mentions (potential connections matched by text)."
+					"Data": "In Scribli, the backlink panel displays all blocks that reference the current block. Backlinks are divided into two parts: links (directly connected via block references) and mentions (potential connections matched by text)."
 				}
 			]
 		},
@@ -550,7 +550,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, mentions are similar to the links part of backlinks, but instead of being established through block references, they are automatically matched text content found by searching content block names, aliases, and reference anchor text. Mentions can be converted to block references with one click."
+					"Data": "In Scribli, mentions are similar to the links part of backlinks, but instead of being established through block references, they are automatically matched text content found by searching content block names, aliases, and reference anchor text. Mentions can be converted to block references with one click."
 				}
 			]
 		},
@@ -607,7 +607,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, virtual references automatically detect potential connections based on content block names, aliases, and anchor text, displayed with dashed underlines in the editor. Hovering shows a preview of the corresponding content block; clicking converts it to a formal block reference. Can be toggled in [Settings - Editor - Virtual Reference]."
+					"Data": "In Scribli, virtual references automatically detect potential connections based on content block names, aliases, and anchor text, displayed with dashed underlines in the editor. Hovering shows a preview of the corresponding content block; clicking converts it to a formal block reference. Can be toggled in [Settings - Editor - Virtual Reference]."
 				}
 			]
 		},
@@ -1186,7 +1186,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, the Bazaar is the entry point for browsing and installing community extensions, including five types: themes, icons, plugins, widgets, and templates. Users can search, install, and update directly within the app."
+					"Data": "In Scribli, the Bazaar is the entry point for browsing and installing community extensions, including five types: themes, icons, plugins, widgets, and templates. Users can search, install, and update directly within the app."
 				}
 			]
 		},
@@ -1243,7 +1243,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, the Inbox is a cloud-based quick capture feature. Text is temporarily stored in the cloud via WeChat or API calls, and can later be moved into documents from the Inbox panel. This feature requires a subscription."
+					"Data": "In Scribli, the Inbox is a cloud-based quick capture feature. Text is temporarily stored in the cloud via WeChat or API calls, and can later be moved into documents from the Inbox panel. This feature requires a subscription."
 				}
 			]
 		},
@@ -1300,7 +1300,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, flashcards are a spaced repetition review feature based on content blocks. Content blocks can be made into flashcards, and the system automatically schedules the next review based on performance."
+					"Data": "In Scribli, flashcards are a spaced repetition review feature based on content blocks. Content blocks can be made into flashcards, and the system automatically schedules the next review based on performance."
 				}
 			]
 		},
@@ -1357,7 +1357,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, the command palette is invoked with "
+					"Data": "In Scribli, the command palette is invoked with "
 				},
 				{
 					"Type": "NodeTextMark",
@@ -1410,7 +1410,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "Through the service capabilities provided by the SiYuan kernel "
+					"Data": "Through the service capabilities provided by the Scribli kernel "
 				},
 				{
 					"Type": "NodeTextMark",
@@ -1478,7 +1478,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, the kernel refers to the backend service process that runs after startup, responsible for core functions such as data read/write, index search, and sync backup. The frontend communicates with the kernel via HTTP/WebSocket. The desktop and mobile apps have built-in kernels; Docker deployments run the kernel separately."
+					"Data": "In Scribli, the kernel refers to the backend service process that runs after startup, responsible for core functions such as data read/write, index search, and sync backup. The frontend communicates with the kernel via HTTP/WebSocket. The desktop and mobile apps have built-in kernels; Docker deployments run the kernel separately."
 				}
 			]
 		},
@@ -1535,7 +1535,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "In SiYuan, a workspace is a folder that stores all data, including notebooks, documents, asset files, configurations, and history. Different workspaces are isolated through file system folders, and one workspace can only be served by one kernel process."
+					"Data": "In Scribli, a workspace is a folder that stores all data, including notebooks, documents, asset files, configurations, and history. Different workspaces are isolated through file system folders, and one workspace can only be served by one kernel process."
 				}
 			]
 		}

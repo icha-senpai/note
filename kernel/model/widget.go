@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/bazaar"
+	"github.com/siyuan-note/siyuan/kernel/extensions"
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
@@ -41,7 +41,7 @@ func SearchWidget(keyword string) (ret []*WidgetSearchResult) {
 		return
 	}
 
-	var widgets []*bazaar.Package
+	var widgets []*extensions.Package
 	for _, dir := range widgetsDir {
 		if !util.IsDirRegularOrSymlink(dir) {
 			continue
@@ -51,7 +51,7 @@ func SearchWidget(keyword string) (ret []*WidgetSearchResult) {
 			continue
 		}
 
-		widget, _ := bazaar.ParsePackageJSON(filepath.Join(widgetsDirPath, dirName, "widget.json"))
+		widget, _ := extensions.ParsePackageJSON(filepath.Join(widgetsDirPath, dirName, "widget.json"))
 		if nil == widget {
 			continue
 		}
@@ -59,10 +59,10 @@ func SearchWidget(keyword string) (ret []*WidgetSearchResult) {
 		widgets = append(widgets, widget)
 	}
 
-	widgets = bazaar.FilterPackages(widgets, keyword)
+	widgets = extensions.FilterPackages(widgets, keyword)
 	for _, widget := range widgets {
 		b := &WidgetSearchResult{
-			Name:    bazaar.GetPreferredLocaleString(widget.DisplayName, widget.Name),
+			Name:    extensions.GetPreferredLocaleString(widget.DisplayName, widget.Name),
 			Content: widget.Name,
 		}
 		ret = append(ret, b)
