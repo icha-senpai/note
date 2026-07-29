@@ -1650,7 +1650,7 @@
 	"theme": "Theme",
 	"language": "Language",
 	"about": "About",
-	"about1": "Copyright (c) 2020-present • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Privacy Policy</a> • <a target='_blank' href='https://scribli.local/eula.html'>User Agreement</a>",
+	"about1": "Copyright (c) 2020-present • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Privacy Policy</a> • <a target='_blank' href='https://scribli.local/eula.html'>User Agreement</a>",
 	"about2": "Use on browser",
 	"about3": "Please use the Chrome browser and stay on the same network as the computer, port <code class='fn__code'>${port}</code> (the first started workspace, in addition to the random port, will also automatically listen on <code class='fn__code'>6806</code> as a fixed port to facilitate the browser clipping extension or other external programs calling the kernel interface), possible reachable random port network addresses:",
 	"about4": "Open browser",

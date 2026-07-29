@@ -41,6 +41,13 @@ const fs = require("fs");
 const gNet = require("net");
 const childProcess = require("child_process");
 const remote = require("@electron/remote/main");
+const {
+    PRIMARY_PROTOCOL,
+    LEGACY_PROTOCOL,
+    LEGACY_PROTOCOL_REMOVAL_TARGET,
+    hasAppProtocol,
+    normalizeAppProtocolURL,
+} = require("./protocol");
 
 process.noAsar = true;
 const appDir = path.dirname(app.getAppPath());
@@ -96,19 +103,34 @@ if (!app.requestSingleInstanceLock()) {
     return;
 }
 
-// In development on Windows, pass the Electron executable and main.js explicitly so scribli:// is not
-// treated as a relative path.
-if (isDevEnv && process.defaultApp && process.argv.length >= 2) {
-    const mainScript = path.resolve(process.argv[1]);
-    if (process.platform === "win32") {
-        app.removeAsDefaultProtocolClient("siyuan", process.execPath, [mainScript]);
-        app.setAsDefaultProtocolClient("siyuan", process.execPath, [mainScript]);
-    } else {
-        app.setAsDefaultProtocolClient("siyuan");
+const registerDefaultProtocolClient = (protocol) => {
+    if (isDevEnv && process.defaultApp && process.argv.length >= 2) {
+        // In development on Windows, pass the Electron executable and main.js explicitly so protocol URLs are not
+        // treated as relative paths.
+        const mainScript = path.resolve(process.argv[1]);
+        if (process.platform === "win32") {
+            app.removeAsDefaultProtocolClient(protocol, process.execPath, [mainScript]);
+            app.setAsDefaultProtocolClient(protocol, process.execPath, [mainScript]);
+        } else {
+            app.setAsDefaultProtocolClient(protocol);
+        }
+        return;
     }
-} else {
-    app.setAsDefaultProtocolClient("siyuan");
-}
+
+    app.setAsDefaultProtocolClient(protocol);
+};
+
+const normalizeIncomingProtocolURL = (url) => {
+    return normalizeAppProtocolURL(url, (legacyURL, normalizedURL) => {
+        writeLog("deprecated protocol URL [" + legacyURL + "] converted to [" + normalizedURL + "]; [" +
+            LEGACY_PROTOCOL + "://] compatibility is planned for removal in " + LEGACY_PROTOCOL_REMOVAL_TARGET);
+    });
+};
+
+registerDefaultProtocolClient(PRIMARY_PROTOCOL);
+registerDefaultProtocolClient(LEGACY_PROTOCOL);
+writeLog("registered primary protocol [" + PRIMARY_PROTOCOL + "://] with deprecated alias [" + LEGACY_PROTOCOL +
+    "://], planned removal in " + LEGACY_PROTOCOL_REMOVAL_TARGET);
 
 app.commandLine.appendSwitch("disable-web-security");
 app.commandLine.appendSwitch("auto-detect", "false");
@@ -127,7 +149,7 @@ if (!app.isPackaged) {
 
 for (let i = argStart; i < process.argv.length; i++) {
     let arg = process.argv[i];
-    if (arg.startsWith("--workspace=") || arg.startsWith("--openAsHidden") || arg.startsWith("--port=") || arg.startsWith("--safe-mode=") || arg.startsWith("--lang=") || arg.startsWith("scribli://")) {
+    if (arg.startsWith("--workspace=") || arg.startsWith("--openAsHidden") || arg.startsWith("--port=") || arg.startsWith("--safe-mode=") || arg.startsWith("--lang=") || hasAppProtocol(arg)) {
         // Skip built-in arguments.
         if (arg.startsWith("--openAsHidden")) {
             openAsHidden = true;
@@ -506,8 +528,8 @@ const validateUpdateInstallPackage = (request, requestedInstallPkgPath) => {
 
         const packageName = path.basename(installPkgPath);
         const validPackageName = process.platform === "win32"
-            ? /^siyuan-.+-win(?:-arm64)?\.exe$/i.test(packageName)
-            : /^siyuan-.+-mac(?:-arm64)?\.dmg$/i.test(packageName);
+            ? /^scribli-.+-win(?:-arm64)?\.exe$/i.test(packageName)
+            : /^scribli-.+-mac(?:-arm64)?\.dmg$/i.test(packageName);
         if (!validPackageName || !fs.statSync(installPkgPath).isFile()) {
             writeLog("rejected invalid update install package [path=" + installPkgPath + "]");
             return;
@@ -987,15 +1009,19 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
     });
 
     currentWindow.webContents.on("did-finish-load", () => {
-        let siyuanOpenURL = process.argv.find((arg) => arg.startsWith("scribli://"));
-        if (siyuanOpenURL) {
+        let appOpenURL = "";
+        process.argv.find((arg) => {
+            appOpenURL = normalizeIncomingProtocolURL(arg);
+            return appOpenURL !== "";
+        });
+        if (appOpenURL) {
             if (currentWindow.isMinimized()) {
                 currentWindow.restore();
             }
             currentWindow.show();
             setTimeout(() => { // Wait for UI JavaScript to finish executing.
-                writeLog(siyuanOpenURL);
-                currentWindow.webContents.send("siyuan-open-url", siyuanOpenURL);
+                writeLog(appOpenURL);
+                currentWindow.webContents.send("siyuan-open-url", appOpenURL);
             }, 2000);
         }
     });
@@ -2162,7 +2188,9 @@ app.on("open-url", async (event, url) => { // for macOS
         writeLog("ignored URL while installing update");
         return;
     }
-    if (url.startsWith("scribli://")) {
+    const appOpenURL = normalizeIncomingProtocolURL(url);
+    if (appOpenURL) {
+        event.preventDefault();
         let isBackground = true;
         if (workspaces.length === 0) {
             isBackground = false;
@@ -2180,7 +2208,7 @@ app.on("open-url", async (event, url) => { // for macOS
         }
         workspaces.forEach(item => {
             if (item.browserWindow && !item.browserWindow.isDestroyed()) {
-                item.browserWindow.webContents.send("siyuan-open-url", url);
+                item.browserWindow.webContents.send("siyuan-open-url", appOpenURL);
             }
         });
     }
@@ -2231,14 +2259,18 @@ app.on("second-instance", (event, argv) => {
         return;
     }
 
-    const siyuanURL = argv.find((arg) => arg.startsWith("scribli://"));
+    let appOpenURL = "";
+    argv.find((arg) => {
+        appOpenURL = normalizeIncomingProtocolURL(arg);
+        return appOpenURL !== "";
+    });
     workspaces.forEach(item => {
-        if (item.browserWindow && !item.browserWindow.isDestroyed() && siyuanURL) {
-            item.browserWindow.webContents.send("siyuan-open-url", siyuanURL);
+        if (item.browserWindow && !item.browserWindow.isDestroyed() && appOpenURL) {
+            item.browserWindow.webContents.send("siyuan-open-url", appOpenURL);
         }
     });
 
-    if (!siyuanURL && 0 < workspaces.length) {
+    if (!appOpenURL && 0 < workspaces.length) {
         showWindow(workspaces[0].browserWindow);
     }
 });

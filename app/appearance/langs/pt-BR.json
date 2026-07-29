@@ -1650,7 +1650,7 @@
 	"theme": "Tema",
 	"language": "Idioma",
 	"about": "Sobre",
-	"about1": "Copyright (c) 2020-presente • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Política de Privacidade</a> • <a target='_blank' href='https://scribli.local/eula.html'>Contrato do Usuário</a>",
+	"about1": "Copyright (c) 2020-presente • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Política de Privacidade</a> • <a target='_blank' href='https://scribli.local/eula.html'>Contrato do Usuário</a>",
 	"about2": "Usar no navegador",
 	"about3": "Por favor, use o navegador Chrome e mantenha-se na mesma rede que o computador, porta <code class='fn__code'>${port}</code> (o primeiro espaço de trabalho iniciado, além da porta aleatória, também passará a escutar automaticamente a porta <code class='fn__code'>6806</code> como porta fixa, para facilitar que a extensão de recorte do navegador ou outros programas externos chamem a interface do kernel), endereços de rede de portas aleatórias possíveis:",
 	"about4": "Abrir navegador",

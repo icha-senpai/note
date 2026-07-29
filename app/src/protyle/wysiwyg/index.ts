@@ -2623,7 +2623,7 @@ export class WYSIWYG {
                 } else if (types.includes("a")) {
                     linkMenu(protyle, target);
                     if (window.siyuan.config.editor.floatWindowMode === 0 &&
-                        target.getAttribute("data-href")?.startsWith("scribli://blocks")) {
+                        parseSiYuanUriInfo(target.getAttribute("data-href"))) {
                         // 阻止 popover
                         target.setAttribute("prevent-popover", "true");
                         setTimeout(() => {
@@ -3134,7 +3134,7 @@ export class WYSIWYG {
             }
 
             const blockRefElement = hasClosestByAttribute(event.target, "data-type", "block-ref");
-            const siyuanURIInfo = aLink.startsWith("scribli://blocks/") ? parseSiYuanUriInfo(aLink) : undefined;
+            const siyuanURIInfo = parseSiYuanUriInfo(aLink);
             if (siyuanURIInfo?.avItemID && (range.toString() === "" || event.shiftKey)) {
                 event.stopPropagation();
                 event.preventDefault();
@@ -3142,7 +3142,7 @@ export class WYSIWYG {
                 processSiYuanUri(protyle.app, aLink);
                 return;
             }
-            if (blockRefElement || aLink.startsWith("scribli://blocks/")) {
+            if (blockRefElement || siyuanURIInfo) {
                 event.stopPropagation();
                 event.preventDefault();
                 hideElements(["dialog", "toolbar"], protyle);
@@ -3150,8 +3150,8 @@ export class WYSIWYG {
                     let refBlockId: string;
                     if (blockRefElement) {
                         refBlockId = blockRefElement.getAttribute("data-id");
-                    } else if (aElement) {
-                        refBlockId = aLink.substring(16, 38);
+                    } else if (siyuanURIInfo) {
+                        refBlockId = siyuanURIInfo.id;
                     }
                     checkFold(refBlockId, (zoomIn, action, isRoot) => {
                         // 块引用跳转后需要短暂高亮目标块 https://github.com/siyuan-note/siyuan/issues/11542

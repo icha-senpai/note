@@ -1650,7 +1650,7 @@
 	"theme": "Tema",
 	"language": "Lingua",
 	"about": "Informazioni",
-	"about1": "Copyright (c) 2020-present • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Privacy Policy</a> • <a target='_blank' href='https://scribli.local/eula.html'>User Agreement</a>",
+	"about1": "Copyright (c) 2020-present • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Privacy Policy</a> • <a target='_blank' href='https://scribli.local/eula.html'>User Agreement</a>",
 	"about2": "Usa su browser",
 	"about3": "Si prega di utilizzare il browser Chrome e mantenersi sulla stessa rete del computer, porta <code class='fn__code'>${port}</code> (il primo spazio di lavoro avviato, oltre alla porta casuale, ascolterà automaticamente anche la porta <code class='fn__code'>6806</code> come porta fissa, per facilitare l'estensione di clipping del browser o altri programmi esterni a chiamare l'interfaccia del kernel), possibili indirizzi di rete con porte casuali raggiungibili:",
 	"about4": "Apri browser",

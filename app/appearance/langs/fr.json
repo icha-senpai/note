@@ -1650,7 +1650,7 @@
 	"theme": "Thème",
 	"language": "Langue",
 	"about": "À propos de",
-	"about1": "Copyright (c) 2020-présent • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Politique de confidentialité</a> • <a target='_blank' href='https://scribli.local/eula.html'>Accord de l'utilisateur</a>",
+	"about1": "Copyright (c) 2020-présent • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Politique de confidentialité</a> • <a target='_blank' href='https://scribli.local/eula.html'>Accord de l'utilisateur</a>",
 	"about2": "Utiliser sur le navigateur",
 	"about3": "Veuillez utiliser le navigateur Chrome et rester sur le même réseau que l'ordinateur, port <code class='fn__code'>${port}</code> (le premier espace de travail démarré, en plus du port aléatoire, écoutera automatiquement également le port <code class='fn__code'>6806</code> en tant que port fixe, afin de permettre à l'extension de capture du navigateur ou à d'autres programmes externes d'appeler l'interface du noyau), adresses réseau de ports aléatoires pouvant être joignables :",
 	"about4": "Ouvrir le navigateur",

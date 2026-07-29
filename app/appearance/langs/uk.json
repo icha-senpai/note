@@ -1650,7 +1650,7 @@
 	"theme": "Тема",
 	"language": "Мова",
 	"about": "Про програму",
-	"about1": "Авторські права (c) 2020-дотепер • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Політика конфіденційності</a> • <a target='_blank' href='https://scribli.local/eula.html'>Користувацька угода</a>",
+	"about1": "Авторські права (c) 2020-дотепер • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Політика конфіденційності</a> • <a target='_blank' href='https://scribli.local/eula.html'>Користувацька угода</a>",
 	"about2": "Використовувати в браузері",
 	"about3": "Використовуйте браузер Chrome і залишайтеся в тій самій мережі, що й комп’ютер; порт <code class='fn__code'>${port}</code> (у першому запущеному робочому просторі, окрім випадкового порту, також автоматично прослуховується фіксований порт <code class='fn__code'>6806</code> для зручності розширення браузерного кліпера та інших зовнішніх програм, що звертаються до інтерфейсу ядра); можливі мережеві адреси випадкових портів:",
 	"about4": "Відкрити браузер",

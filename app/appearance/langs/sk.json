@@ -1650,7 +1650,7 @@
 	"theme": "Téma",
 	"language": "Jazyk",
 	"about": "O aplikácii",
-	"about1": "Copyright © 2020-súčasnosť • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Zásady ochrany súkromia</a> • <a target='_blank' href='https://scribli.local/eula.html'>Používateľská zmluva</a>",
+	"about1": "Copyright © 2020-súčasnosť • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Zásady ochrany súkromia</a> • <a target='_blank' href='https://scribli.local/eula.html'>Používateľská zmluva</a>",
 	"about2": "Použiť v prehliadači",
 	"about3": "Použite Chrome a buďte v rovnakej sieti ako počítač, port <code class='fn__code'>${port}</code> (prvý spustený workspace okrem náhodného portu automaticky načúva aj na <code class='fn__code'>6806</code> ako pevnom porte pre rozšírenia prehliadača alebo iné externé programy volajúce rozhranie jadra), možné dosiahnuteľné náhodné sieťové adresy:",
 	"about4": "Otvoriť prehliadač",

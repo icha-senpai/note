@@ -83,7 +83,7 @@ func ListInvalidBlockRefs(page, pageSize int) (ret []*Block, matchedBlockCount, 
 
 						if ast.NodeTextMark == n.Type {
 							if n.IsTextMarkType("a") {
-								if after, ok := strings.CutPrefix(n.TextMarkAHref, "scribli://blocks/"); ok {
+								if after, ok := cutBlockProtocolURL(n.TextMarkAHref); ok {
 									defID := after
 									if strings.Contains(defID, "?") {
 										defID = strings.Split(defID, "?")[0]

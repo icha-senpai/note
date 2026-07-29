@@ -1650,7 +1650,7 @@
 	"theme": "Thema",
 	"language": "Sprache",
 	"about": "Über",
-	"about1": "Urheberrecht (c) 2020-heute • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Datenschutzrichtlinie</a> • <a target='_blank' href='https://scribli.local/eula.html'>Nutzervereinbarung</a>",
+	"about1": "Urheberrecht (c) 2020-heute • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Datenschutzrichtlinie</a> • <a target='_blank' href='https://scribli.local/eula.html'>Nutzervereinbarung</a>",
 	"about2": "Verwendung im Browser",
 	"about3": "Bitte verwenden Sie den Chrome-Browser und bleiben Sie im selben Netzwerk wie der Computer, Port <code class='fn__code'>${port}</code> (der zuerst gestartete Arbeitsbereich wird neben dem zufälligen Port auch automatisch auf <code class='fn__code'>6806</code> als festen Port lauschen, um der Browser-Clipper-Erweiterung oder anderen externen Programmen das Aufrufen der Kernel-Schnittstelle zu erleichtern), mögliche erreichbare Netzwerkadressen zufälliger Ports:",
 	"about4": "Browser öffnen",

@@ -1650,7 +1650,7 @@
 	"theme": "السمات",
 	"language": "اللغة",
 	"about": "حول",
-	"about1": "‫حقوق الطبع والنشر (c) 2020 الحاضر • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>سياسة الخصوصية</a> • <a target='_blank' href='https://scribli.local/eula.html'>اتفاقية المستخدم</a>‬",
+	"about1": "‫حقوق الطبع والنشر (c) 2020 الحاضر • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>سياسة الخصوصية</a> • <a target='_blank' href='https://scribli.local/eula.html'>اتفاقية المستخدم</a>‬",
 	"about2": "الاستخدام على المتصفح",
 	"about3": "يرجى استخدام متصفح Chrome والبقاء على نفس الشبكة مع الحاسوب، المنفذ <code class='fn__code'>${port}</code> (مساحة العمل التي تم تشغيلها أولاً، بالإضافة إلى المنفذ العشوائي، ستستمع تلقائيًا أيضًا إلى <code class='fn__code'>6806</code> كمنفذ ثابت، لتسهيل امتداد القص في المتصفح أو برامج خارجية أخرى لاستدعاء واجهة النواة)، عناوين الشبكة المحتملة للمنفذ العشوائي:",
 	"about4": "فتح المتصفح",

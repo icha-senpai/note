@@ -1650,7 +1650,7 @@
 	"theme": "Thema",
 	"language": "Taal",
 	"about": "Over",
-	"about1": "Copyright (c) 2020-heden • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Privacybeleid</a> • <a target='_blank' href='https://scribli.local/eula.html'>Gebruikersovereenkomst</a>",
+	"about1": "Copyright (c) 2020-heden • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Privacybeleid</a> • <a target='_blank' href='https://scribli.local/eula.html'>Gebruikersovereenkomst</a>",
 	"about2": "In browser gebruiken",
 	"about3": "Gebruik Chrome-browser op hetzelfde netwerk als de computer, poort <code class='fn__code'>${port}</code> (de eerst gestarte werkruimte luistert naast willekeurige poort ook op <code class='fn__code'>6806</code> als vaste poort voor browser-extensies of externe API-aanroepen). Mogelijk bereikbare netwerkadressen:",
 	"about4": "Browser openen",

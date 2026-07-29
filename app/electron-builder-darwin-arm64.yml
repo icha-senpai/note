@@ -3,7 +3,7 @@ appId: "app.scribli.desktop"
 publish: null
 asar: false
 compression: "normal"
-copyright: "© 2020-present Scribli LLC"
+copyright: "© 2020-present Scribli contributors"
 artifactName: "scribli-${version}-${os}-arm64.${ext}"
 extraMetadata:
   main: "electron/main.js"
@@ -14,7 +14,7 @@ files:
 afterPack: "./scripts/afterPack.js"
 
 mac:
-  identity: "Yunnan Liandi Technology Co., Ltd."
+  identity: null
   provisioningProfile: "../../Scribli.provisionprofile"
   icon: "src/assets/icon.icns"
   gatekeeperAssess: false
@@ -28,6 +28,7 @@ mac:
     - name: "Scribli"
       schemes:
         - "scribli"
+        - "siyuan"
   extraResources:
     - from: "kernel-darwin-arm64"
       to: "kernel"

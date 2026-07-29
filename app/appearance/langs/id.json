@@ -1650,7 +1650,7 @@
 	"theme": "Tema",
 	"language": "Bahasa",
 	"about": "Tentang",
-	"about1": "Hak Cipta (c) 2020-sekarang • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Kebijakan Privasi</a> • <a target='_blank' href='https://scribli.local/eula.html'>Perjanjian Pengguna</a>",
+	"about1": "Hak Cipta (c) 2020-sekarang • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Kebijakan Privasi</a> • <a target='_blank' href='https://scribli.local/eula.html'>Perjanjian Pengguna</a>",
 	"about2": "Gunakan di browser",
 	"about3": "Silakan gunakan browser Chrome dan tetap di jaringan yang sama dengan komputer, port <code class='fn__code'>${port}</code> (ruang kerja pertama yang dimulai, selain port acak, juga akan secara otomatis mendengarkan pada <code class='fn__code'>6806</code> sebagai port tetap untuk memudahkan ekstensi kliping browser atau program eksternal lainnya memanggil antarmuka kernel), kemungkinan alamat jaringan port acak yang dapat dijangkau:",
 	"about4": "Buka browser",

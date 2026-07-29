@@ -1650,7 +1650,7 @@
 	"theme": "테마",
 	"language": "언어",
 	"about": "정보",
-	"about1": "Copyright (c) 2020-present • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>개인정보 보호정책</a> • <a target='_blank' href='https://scribli.local/eula.html'>사용자 계약</a>",
+	"about1": "Copyright (c) 2020-present • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>개인정보 보호정책</a> • <a target='_blank' href='https://scribli.local/eula.html'>사용자 계약</a>",
 	"about2": "브라우저에서 사용",
 	"about3": "Chrome 브라우저를 사용하고 컴퓨터와 동일한 네트워크에 연결되어 있어야 합니다, 포트 <code class='fn__code'>${port}</code> (첫 번째로 시작된 작업공간은 랜덤 포트 외에 브라우저 클리핑 확장이나 다른 외부 프로그램이 커널 인터페이스를 호출할 수 있도록 고정 포트로 <code class='fn__code'>6806</code>도 자동으로 리슨합니다), 연결 가능할 수 있는 랜덤 포트 네트워크 주소：",
 	"about4": "브라우저 열기",

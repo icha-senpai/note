@@ -1650,7 +1650,7 @@
 	"theme": "Motyw",
 	"language": "Język",
 	"about": "O programie",
-	"about1": "Copyright (c) 2020-tera • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Polityka prywatności</a> • <a target='_blank' href='https://scribli.local/eula.html'>Umowa użytkownika</a>",
+	"about1": "Copyright (c) 2020-tera • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Polityka prywatności</a> • <a target='_blank' href='https://scribli.local/eula.html'>Umowa użytkownika</a>",
 	"about2": "Użyj w przeglądarce",
 	"about3": "Użyj przeglądarki Chrome i pozostaw w tej samej sieci co komputer, port <code class='fn__code'>${port}</code> (pierwsze uruchomione środowisko robocze, oprócz losowego portu, będzie także automatycznie nasłuchiwać <code class='fn__code'>6806</code> jako portu stałego, aby rozszerzenie do zapisywania z przeglądarki lub inne zewnętrzne programy mogły wywoływać interfejs jądra), możliwe dostępne adresy sieciowe losowych portów:",
 	"about4": "Otwórz przeglądarkę",

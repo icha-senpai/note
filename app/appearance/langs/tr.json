@@ -1650,7 +1650,7 @@
 	"theme": "Tema",
 	"language": "Dil",
 	"about": "Hakkında",
-	"about1": "Telif hakkı (c) 2020-günümüz • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>Gizlilik Politikası</a> • <a target='_blank' href='https://scribli.local/eula.html'>Kullanıcı Sözleşmesi</a>",
+	"about1": "Telif hakkı (c) 2020-günümüz • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>Gizlilik Politikası</a> • <a target='_blank' href='https://scribli.local/eula.html'>Kullanıcı Sözleşmesi</a>",
 	"about2": "Tarayıcıda kullan",
 	"about3": "Lütfen Chrome tarayıcısını kullanın ve bilgisayarınızla aynı ağda olun, port <code class='fn__code'>${port}</code> (ilk başlatılan çalışma alanı, rastgele porta ek olarak tarayıcı kırpma uzantısının veya diğer dış uygulamaların çekirdek arayüzünü çağırabilmesi için sabit port olarak <code class='fn__code'>6806</code>'ı da otomatik olarak dinleyecektir), bağlantı kurulabilecek rastgele port ağ adresleri:",
 	"about4": "Tarayıcıyı aç",

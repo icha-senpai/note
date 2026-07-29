@@ -322,7 +322,7 @@ export const postRender = (container: HTMLElement, app?: App): void => {
     if (!app) {
         return;
     }
-    container.querySelectorAll<HTMLAnchorElement>('a[href^="scribli://"]').forEach((link) => {
+    container.querySelectorAll<HTMLAnchorElement>('a[href^="scribli://"], a[href^="siyuan://"]').forEach((link) => {
         const href = link.getAttribute("href") || "";
         link.setAttribute("data-type", "a");
         link.setAttribute("data-href", href);

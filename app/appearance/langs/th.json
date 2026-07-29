@@ -1650,7 +1650,7 @@
 	"theme": "ธีม",
 	"language": "ภาษา",
 	"about": "เกี่ยวกับ",
-	"about1": "ลิขสิทธิ์ (c) 2020-ปัจจุบัน • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>นโยบายความเป็นส่วนตัว</a> • <a target='_blank' href='https://scribli.local/eula.html'>ข้อตกลงผู้ใช้</a>",
+	"about1": "ลิขสิทธิ์ (c) 2020-ปัจจุบัน • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>นโยบายความเป็นส่วนตัว</a> • <a target='_blank' href='https://scribli.local/eula.html'>ข้อตกลงผู้ใช้</a>",
 	"about2": "ใช้เบราว์เซอร์",
 	"about3": "โปรดใช้เบราว์เซอร์ Chrome และอยู่ในเครือข่ายเดียวกันกับคอมพิวเตอร์ พอร์ต <code class='fn__code'>${port}</code> (พื้นที่ทำงานแรกที่เริ่มต้นจะรับฟังพอร์ตคงที่ <code class='fn__code'>6806</code> โดยอัตโนมัตินอกเหนือจากพอร์ตสุ่ม เพื่ออำนวยความสะดวกให้ส่วนขยายตัดเนื้อหาเบราว์เซอร์หรือโปรแกรมภายนอกเรียกใช้ API ของเคอร์เนล) ที่อยู่เครือข่ายที่อาจเข้าถึงได้:",
 	"about4": "เปิดเบราว์เซอร์",

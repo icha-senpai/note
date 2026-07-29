@@ -134,7 +134,7 @@ func getUpdatePkg() (downloadPkgURLs []string, checksum string, err error) {
 			suffix = "mac.dmg"
 		}
 	}
-	pkg := "siyuan-" + ver + "-" + suffix
+	pkg := "scribli-" + ver + "-" + suffix
 
 	_ = pkg
 	err = util.ErrOfficialServicesDisabled

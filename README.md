@@ -82,7 +82,7 @@ All local Scribli features are free to use, including S3, WebDAV, and local-fold
   - Block-level reference and two-way links
   - Custom attributes
   - SQL query embed
-  - Protocol `siyuan://`
+  - Protocol `scribli://` (`siyuan://` is a deprecated compatibility alias planned for removal in v4.0.0)
 - Editor
   - Block-style
   - Markdown WYSIWYG

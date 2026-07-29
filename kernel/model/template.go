@@ -520,9 +520,9 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 			}
 		} else if treenode.IsBlockLink(n) {
 
-			defID := strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
+			defID := trimBlockProtocolURL(n.TextMarkAHref)
 			if newDefID, internal := blockIDs[defID]; internal {
-				n.TextMarkAHref = "scribli://blocks/" + newDefID
+				n.TextMarkAHref = makeBlockProtocolURL(newDefID)
 			}
 		} else if ast.NodeBlockQueryEmbedScript == n.Type {
 

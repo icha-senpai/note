@@ -3,7 +3,7 @@ appId: "app.scribli.desktop"
 publish: null
 asar: false
 compression: "normal"
-copyright: "© 2020-present Scribli LLC"
+copyright: "© 2020-present Scribli contributors"
 artifactName: "scribli-${version}-${os}-arm64.${ext}"
 extraMetadata:
   main: "electron/main.js"

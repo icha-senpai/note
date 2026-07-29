@@ -81,7 +81,7 @@ func HookDesktopUIProcJob() {
 	Close(false, true, 1)
 }
 
-var uiProcNames = []string{"siyuan", "electron"}
+var uiProcNames = []string{"scribli", "siyuan", "electron"}
 
 func getAttachedUIProcCount() (ret int) {
 	util.UIProcessIDs.Range(func(uiProcIDArg, _ any) bool {

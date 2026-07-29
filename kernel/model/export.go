@@ -1811,7 +1811,7 @@ func ExportStdMarkdown(id string, assetsDestSpace2Underscore, fillCSSVar, adjust
 
 				var defID string
 				if treenode.IsBlockLink(n) {
-					defID = strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
+					defID = trimBlockProtocolURL(n.TextMarkAHref)
 				} else if treenode.IsBlockRef(n) {
 					defID, _, _ = treenode.GetBlockRef(n)
 				}
@@ -2888,7 +2888,7 @@ func exportTree(tree *parse.Tree, wysiwyg, keepFold, avHiddenCol bool,
 
 		switch blockRefMode {
 		case 2:
-			blockRefLink := &ast.Node{Type: ast.NodeTextMark, TextMarkTextContent: linkText, TextMarkAHref: "scribli://blocks/" + defID}
+			blockRefLink := &ast.Node{Type: ast.NodeTextMark, TextMarkTextContent: linkText, TextMarkAHref: makeBlockProtocolURL(defID)}
 			blockRefLink.KramdownIAL = n.KramdownIAL
 			blockRefLink.TextMarkType = "a " + n.TextMarkType
 			blockRefLink.TextMarkInlineMemoContent = n.TextMarkInlineMemoContent
@@ -3585,7 +3585,7 @@ func blockLink2Ref(currentTree *parse.Tree) {
 
 		if treenode.IsBlockLink(n) {
 			n.TextMarkType = strings.TrimSpace(strings.TrimPrefix(n.TextMarkType, "a") + " block-ref")
-			n.TextMarkBlockRefID = strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
+			n.TextMarkBlockRefID = trimBlockProtocolURL(n.TextMarkAHref)
 			n.TextMarkBlockRefSubtype = "s"
 		}
 		return ast.WalkContinue
@@ -3650,7 +3650,7 @@ func collectFootnotesDefs0(currentTree *parse.Tree, node *ast.Node, refFootnoteO
 			addRefFootnoteAndRecurse(currentTree, defID, refText, refFootnoteOrder, refFootnotesByID, depth)
 			return ast.WalkSkipChildren
 		} else if treenode.IsBlockLink(n) {
-			defID := strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
+			defID := trimBlockProtocolURL(n.TextMarkAHref)
 			anchorText := n.TextMarkTextContent
 			if "" == anchorText {
 				anchorText = sql.GetRefText(defID)
@@ -4056,7 +4056,7 @@ func exportRefTrees(tree *parse.Tree, defBlockIDs *[]string, retTrees map[string
 			}
 			exportRefTrees(defTree, defBlockIDs, retTrees)
 		} else if treenode.IsBlockLink(n) {
-			defID := strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
+			defID := trimBlockProtocolURL(n.TextMarkAHref)
 			if "" == defID {
 				return ast.WalkContinue
 			}

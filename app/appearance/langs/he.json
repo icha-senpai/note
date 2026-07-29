@@ -1650,7 +1650,7 @@
 	"theme": "נושא",
 	"language": "שפה",
 	"about": "אודות",
-	"about1": "זכויות יוצרים (c) 2020-נוכחי • Scribli LLC • <a target='_blank' href='https://scribli.local/privacy.html'>מדיניות פרטיות</a> • <a target='_blank' href='https://scribli.local/eula.html'>הסכם משתמש</a>",
+	"about1": "זכויות יוצרים (c) 2020-נוכחי • Scribli contributors • <a target='_blank' href='https://scribli.local/privacy.html'>מדיניות פרטיות</a> • <a target='_blank' href='https://scribli.local/eula.html'>הסכם משתמש</a>",
 	"about2": "שימוש בדפדפן",
 	"about3": "נא השתמשו בדפדפן Chrome והיו באותה הרשת עם המחשב, פורט <code class='fn__code'>${port}</code> (מרחב העבודה שהושק ראשון, בנוסף לפורט אקראי, גם יאזין אוטומטית ל־<code class='fn__code'>6806</code> כפורט קבוע, כדי לאפשר לתוסף החיתוך של הדפדפן או לתוכניות חיצוניות אחרות לקרוא לממשק הליבה), כתובות רשת של פורטים אקראיים שניתן להתחבר אליהן：",
 	"about4": "פתח דפדפן",

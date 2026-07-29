@@ -53,21 +53,7 @@
             ]
         }
     ],
-    "related_applications": [
-        {
-            "platform": "windows",
-            "url": "https://apps.microsoft.com/store/detail/siyuan/9P7HPMXP73K4"
-        },
-        {
-            "platform": "play",
-            "url": "https://play.google.com/store/apps/details?id=app.scribli.desktop",
-            "id": "app.scribli.desktop"
-        },
-        {
-            "platform": "itunes",
-            "url": "https://itunes.apple.com/app/siyuan/id1583226508"
-        }
-    ],
+    "related_applications": [],
     "protocol_handlers": [
         {
             "protocol": "web+scribli",
