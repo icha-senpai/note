@@ -1148,10 +1148,7 @@ func UploadAssets2CloudByAssetsPaths(assetPaths []string, ignorePushMsg bool) (c
 	return
 }
 
-const (
-	bizTypeUploadAssets  = "upload-assets"
-	bizTypeExport2Liandi = "export-liandi"
-)
+const bizTypeUploadAssets = "upload-assets"
 
 // uploadAssets2Cloud 将资源文件上传到云端图床。
 func uploadAssets2Cloud(assetPaths []string, bizType string, ignorePushMsg bool) (count int, err error) {
@@ -1197,16 +1194,8 @@ func uploadAssets2Cloud(assetPaths []string, bizType string, ignorePushMsg bool)
 		limitSize = 10 * 1024 * 1024 // 10MB
 	}
 
-	// metaType 为服务端 Filemeta.FILEMETA_TYPE，这里只有两个值：
-	//
-	//	5: SiYuan，表示为 SiYuan 上传图床
-	//	4: Client，表示作为客户端分享发布帖子时上传的文件
-	var metaType = "5"
-	if bizTypeUploadAssets == bizType {
-		metaType = "5"
-	} else if bizTypeExport2Liandi == bizType {
-		metaType = "4"
-	}
+	// metaType 为服务端 Filemeta.FILEMETA_TYPE，5 表示作为客户端资源上传。
+	const metaType = "5"
 
 	pushErrMsgCount := 0
 	var completedUploadAssets []string

@@ -21,4 +21,3 @@ jobs:
           change-to: dev
           comment: |
               The base branch of this PR has been automatically changed to `dev`, please check that there are no merge conflicts.
-              此 PR 的基础分支已自动更改为 `dev`，请检查是否存在合并冲突。

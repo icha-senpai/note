@@ -43,7 +43,7 @@
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
 					"TextMarkAHref": "https://ld246.com",
-					"TextMarkTextContent": "Liandi"
+					"TextMarkTextContent": "Community publishing"
 				},
 				{
 					"Type": "NodeText",
@@ -101,7 +101,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "Liandi のアカウントに登録して Scribli でログインする必要があります"
+									"Data": "コミュニティ公開機能は削除されました"
 								}
 							]
 						}
@@ -285,7 +285,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "custom-liandi-articleid"
+									"TextMarkTextContent": "custom-community-articleid"
 								},
 								{
 									"Type": "NodeText",
@@ -294,7 +294,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "custom-liandi-articleId"
+									"TextMarkTextContent": "custom-community-articleId"
 								},
 								{
 									"Type": "NodeText",

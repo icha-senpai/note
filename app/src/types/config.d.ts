@@ -31,8 +31,8 @@ declare namespace Config {
         appearance: IAppearance;
         /**
          * Cloud Service Provider Region
-         * - `0`: Chinese mainland (LianDi)
-         * - `1`: North America (LiuYun)
+         * - `0`: Chinese mainland
+         * - `1`: North America
          */
         cloudRegion: number;
         editor: IEditor;

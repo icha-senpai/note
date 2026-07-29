@@ -36,22 +36,9 @@
     "notebook"
   ],
   "author": {
-    "name": "Yunnan Liandi Technology Co., Ltd.",
-    "email": "845765@qq.com",
-    "url": "https://ld246.com"
+    "name": "Scribli LLC",
+    "url": "https://scribli.local"
   },
-  "maintainers": [
-    {
-      "name": "Liang Ding",
-      "email": "845765@qq.com",
-      "url": "https://ld246.com/member/88250"
-    },
-    {
-      "name": "Liyuan Li",
-      "email": "84588990@qq.com",
-      "url": "https://ld246.com/member/Vanessa"
-    }
-  ],
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.24.0",

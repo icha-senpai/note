@@ -1,5 +1,4 @@
 [English](API.md)
-| [中文](API.zh-CN.md)
 | **日本語**
 
 * [仕様](#仕様)

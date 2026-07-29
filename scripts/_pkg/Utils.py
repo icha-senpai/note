@@ -6,7 +6,7 @@ def find_milestone(repo, title, len=0):
     Args:
         repo (github.repository.Repository): The repository to search
         title (str): the title to match
-        len: 版本号长度限制，默认 0 不限制
+        len: Version length limit; defaults to 0 for no limit.
 
     Returns:
         The milestone which title matches the given argument.

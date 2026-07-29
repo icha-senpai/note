@@ -1,5 +1,4 @@
 **English**
-| [中文](CONTRIBUTING.zh-CN.md)
 
 ## Get the source code
 

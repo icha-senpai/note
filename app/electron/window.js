@@ -1,9 +1,9 @@
-// 桌面端 pre-boot 窗口（init.html / workspace.html）共享脚本
-// 由各 HTML 通过 <script src="window.js"></script> 引入，依赖 nodeIntegration: true
-// 外部支持、社区和下载链接已禁用
+// Shared script for desktop pre-boot windows (init.html / workspace.html).
+// Included by each HTML file through <script src="window.js"></script>; depends on nodeIntegration: true.
+// External support, community, and download links are disabled.
 "use strict";
 
-// 解析 URL query 参数
+// Parse URL query parameters.
 const getSearch = (key) => {
     if (window.location.search.indexOf("?") === -1) {
         return "";
@@ -20,7 +20,7 @@ const getSearch = (key) => {
     return value;
 };
 
-// 多语言文案，集中维护所有窗口的全部文案
+// Multilingual copy shared by all pre-boot windows.
 const I18N_BASE = {
     "zh-CN": {
         title: "Scribli",
@@ -654,10 +654,10 @@ const I18N_BASE = {
     },
 };;
 
-// 当前界面语言，由各 HTML 设置
+// Current interface language, set by each HTML file.
 let currentLang = decodeURIComponent(getSearch("lang"));
 
-// 应用指定语言文案到 DOM 并返回当前语言的文案对象
+// Apply the specified language copy to the DOM and return the current language object.
 const applyLang = (lang) => {
     const langData = I18N_BASE[lang] || I18N_BASE["en"];
     document.title = `${langData.title} v${getSearch("v")}`;
@@ -667,7 +667,7 @@ const applyLang = (lang) => {
             item.textContent = langData[key];
         }
     });
-    // 含 HTML 标签（如 <kbd>）的文案用 innerHTML
+    // Copy containing HTML tags such as <kbd> uses innerHTML.
     document.querySelectorAll("[data-i18n-html]").forEach(item => {
         const key = item.getAttribute("data-i18n-html");
         if (langData[key]) {
@@ -684,7 +684,7 @@ const applyLang = (lang) => {
     return langData;
 };
 
-// 工作空间路径校验函数
+// Workspace path validation helpers.
 const isPartitionRootPath = (absPath) => {
     const path = require("path");
     return path.parse(absPath).root === absPath;
@@ -723,7 +723,8 @@ const isCloudDrivePath = (absPath) => {
         -1 < absPathLower.indexOf("腾讯微云") || -1 < absPathLower.indexOf("weiyun");
 };
 
-// macOS 端对工作空间放置在 iCloud 路径下做检查 https://github.com/siyuan-note/siyuan/issues/7747
+// Check whether a macOS workspace is placed under an iCloud path.
+// https://github.com/siyuan-note/siyuan/issues/7747
 const isICloudPath = (absPath) => {
     const os = require("os");
     if ("darwin" !== os.platform()) {
@@ -734,7 +735,7 @@ const isICloudPath = (absPath) => {
     const absPathLower = absPath.toLowerCase();
     const iCloudRoot = path.join(homePath, "Library", "Mobile Documents");
     if (!simpleCheckIcloudPath(absPath, homePath)) {
-        // 简单判断无法通过则复杂验证
+        // Fall back to a deeper check when the simple check cannot rule it out.
         const allFiles = walk(iCloudRoot);
         for (const file of allFiles) {
             if (-1 < absPathLower.indexOf(file.toLowerCase())) {
@@ -745,8 +746,8 @@ const isICloudPath = (absPath) => {
     return false;
 };
 
-// 简单判断 iCloud 同步目录
-// 不允许 为桌面 文档 和 iCloud 文件夹 和软链接
+// Simple iCloud sync directory check.
+// Reject Desktop, Documents, iCloud folders, and symbolic links.
 const simpleCheckIcloudPath = (absPath, homePath) => {
     const fs = require("fs");
     const path = require("path");
@@ -791,7 +792,7 @@ const walk = (dir, files = []) => {
             continue;
         }
         if (stat.isDirectory()) {
-            // 如果已经遍历过则不再遍历
+            // Skip directories that have already been walked.
             if (files.includes(dir + path.sep + f)) {
                 continue;
             }
@@ -802,7 +803,7 @@ const walk = (dir, files = []) => {
     return files;
 };
 
-// 选择工作空间目录并做路径校验，返回选中的路径；取消或校验失败返回 null
+// Choose a workspace directory and validate it; return null on cancel or validation failure.
 const chooseWorkspacePath = async (langData) => {
     const path = require("path");
     const fs = require("fs");
@@ -853,7 +854,7 @@ const chooseWorkspacePath = async (langData) => {
     return initPath;
 };
 
-// 窗口通用初始化：macOS body class、关闭/最小化按钮 IPC
+// Shared window initialization: macOS body class plus close/minimize button IPC.
 const initWindowChrome = () => {
     const {ipcRenderer} = require("electron");
     if ("darwin" === process.platform) {

@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"io/fs"
 	"maps"
-	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
@@ -48,7 +47,6 @@ import (
 	"github.com/88250/lute/render"
 	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/emirpasic/gods/stacks/linkedliststack"
-	"github.com/imroc/req/v3"
 	shellquote "github.com/kballard/go-shellquote"
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 	"github.com/pdfcpu/pdfcpu/pkg/font"
@@ -56,7 +54,6 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/httpclient"
 	"github.com/siyuan-note/logging"
 	"github.com/siyuan-note/riff"
 	"github.com/siyuan-note/siyuan/kernel/av"
@@ -338,131 +335,6 @@ func ExportAv2CSV(avID, blockID string) (zipPath string, err error) {
 		} else {
 			zipPath = "/export/csv/" + url.PathEscape(filepath.Base(absZipPath))
 		}
-		return nil
-	})
-	return
-}
-
-func Export2Liandi(id string) (err error) {
-	if util.OfficialServicesUnavailable() {
-		return util.OfficialServicesError()
-	}
-
-	err = withExportReadLockByBlockID(id, func() error {
-		tree, loadErr := LoadTreeByBlockID(id)
-		if loadErr != nil {
-			logging.LogErrorf("load tree by block id [%s] failed: %s", id, loadErr)
-			return loadErr
-		}
-
-		if IsUserGuide(tree.Box) {
-			// Doc in the user guide no longer supports one-click sending to the community https://github.com/siyuan-note/siyuan/issues/8388
-			return errors.New(Conf.Language(204))
-		}
-
-		assets := getAssetsLinkDests(tree.Root, false)
-		embedAssets := getQueryEmbedNodesAssetsLinkDests(tree.Root)
-		assets = append(assets, embedAssets...)
-		assets = gulu.Str.RemoveDuplicatedElem(assets)
-		_, err = uploadAssets2Cloud(assets, bizTypeExport2Liandi, false)
-		if err != nil {
-			return err
-		}
-
-		msgId := util.PushMsg(Conf.Language(182), 15000)
-		defer util.PushClearMsg(msgId)
-
-		// 判断帖子是否已经存在，存在则使用更新接口
-		const liandiArticleIdAttrName = "custom-liandi-articleid"
-		const liandiArticleIdAttrNameOld = "custom-liandi-articleId" // 兼容旧属性名
-		foundArticle := false
-		// 优先使用新属性名，如果不存在则尝试旧属性名
-		articleId := tree.Root.IALAttr(liandiArticleIdAttrName)
-		if "" == articleId {
-			articleId = tree.Root.IALAttr(liandiArticleIdAttrNameOld)
-		}
-		if "" != articleId {
-			result := gulu.Ret.NewResult()
-			request := httpclient.NewCloudRequest30s()
-			resp, getErr := request.
-				SetSuccessResult(result).
-				SetCookies(&http.Cookie{Name: "symphony", Value: Conf.GetUser().UserToken}).
-				Get(util.GetCloudAccountServer() + "/api/v2/article/update/" + articleId)
-			if nil != getErr {
-				logging.LogErrorf("get liandi article info failed: %s", getErr)
-				return getErr
-			}
-
-			switch resp.StatusCode {
-			case 200:
-				if 0 == result.Code {
-					foundArticle = true
-				} else if 1 == result.Code {
-					foundArticle = false
-				}
-			case 404:
-				foundArticle = false
-			default:
-				return fmt.Errorf("get liandi article info failed [sc=%d]", resp.StatusCode)
-			}
-		}
-
-		apiURL := util.GetCloudAccountServer() + "/api/v2/article"
-		if foundArticle {
-			apiURL += "/" + articleId
-		}
-
-		title := path.Base(tree.HPath)
-		tags := tree.Root.IALAttr("tags")
-		content := exportMarkdownContent0(id, tree, util.GetCloudForumAssetsServer()+time.Now().Format("2006/01")+"/siyuan/"+Conf.GetUser().UserId+"/",
-			true, false, false,
-			".md", 3, 1, 1,
-			"#", "#",
-			"", "",
-			false, false, nil, true, false)
-		result := gulu.Ret.NewResult()
-		request := httpclient.NewCloudRequest30s()
-		request = request.
-			SetSuccessResult(result).
-			SetCookies(&http.Cookie{Name: "symphony", Value: Conf.GetUser().UserToken}).
-			SetBody(map[string]any{
-				"articleTitle":   title,
-				"articleTags":    tags,
-				"articleContent": content})
-		var resp *req.Response
-		var sendErr error
-		if foundArticle {
-			resp, sendErr = request.Put(apiURL)
-		} else {
-			resp, sendErr = request.Post(apiURL)
-		}
-		if nil != sendErr {
-			logging.LogErrorf("send article to liandi failed: %s", sendErr)
-			return sendErr
-		}
-		if 200 != resp.StatusCode {
-			msg := fmt.Sprintf("send article to liandi failed [sc=%d]", resp.StatusCode)
-			logging.LogError(msg)
-			return errors.New(msg)
-		}
-
-		if 0 != result.Code {
-			msg := fmt.Sprintf("send article to liandi failed [code=%d, msg=%s]", result.Code, result.Msg)
-			logging.LogError(msg)
-			util.PushClearMsg(msgId)
-			return errors.New(result.Msg)
-		}
-
-		if !foundArticle {
-			articleId = result.Data.(string)
-			tree, _ = LoadTreeByBlockID(id) // 这里必须重新加载，因为前面导出时已经修改了树结构
-			tree.Root.SetIALAttr(liandiArticleIdAttrName, articleId)
-			if err = writeTreeUpsertQueue(tree); err != nil {
-				return err
-			}
-		}
-
-		util.PushMsg(fmt.Sprintf(Conf.Language(181), util.GetCloudAccountServer()+"/article/"+articleId), 7000)
 		return nil
 	})
 	return
