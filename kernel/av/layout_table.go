@@ -20,7 +20,6 @@ import (
 	"github.com/88250/lute/ast"
 )
 
-// TableColumnAlign 描述了表格列内容的对齐方式。
 type TableColumnAlign string
 
 const (
@@ -30,21 +29,18 @@ const (
 	TableColumnAlignRight   TableColumnAlign = "right"
 )
 
-// IsValid 判断表格列内容的对齐方式是否合法。
 func (align TableColumnAlign) IsValid() bool {
 	return TableColumnAlignDefault == align || TableColumnAlignLeft == align || TableColumnAlignCenter == align ||
 		TableColumnAlignRight == align
 }
 
-// LayoutTable 描述了表格布局的结构。
 type LayoutTable struct {
 	*BaseLayout
 
-	Columns []*ViewTableColumn `json:"columns"` // 表格列
+	Columns []*ViewTableColumn `json:"columns"`
 
-	// TODO RowIDs 字段已经废弃，计划于 2026 年 6 月 30 日后删除 https://github.com/siyuan-note/siyuan/issues/15194
 	//Deprecated
-	RowIDs []string `json:"rowIds"` // 行 ID，用于自定义排序
+	RowIDs []string `json:"rowIds"`
 }
 
 func NewLayoutTable() *LayoutTable {
@@ -57,46 +53,41 @@ func NewLayoutTable() *LayoutTable {
 	}
 }
 
-// ViewTableColumn 描述了表格列的结构。
 type ViewTableColumn struct {
 	*BaseField
 
-	Pin   bool             `json:"pin"`             // 是否固定
-	Width string           `json:"width"`           // 列宽度
-	Align TableColumnAlign `json:"align,omitempty"` // 内容对齐方式
-	Calc  *FieldCalc       `json:"calc,omitempty"`  // 计算规则
+	Pin   bool             `json:"pin"`
+	Width string           `json:"width"`
+	Align TableColumnAlign `json:"align,omitempty"`
+	Calc  *FieldCalc       `json:"calc,omitempty"`
 }
 
-// Table 描述了表格视图实例的结构。
 type Table struct {
 	*BaseInstance
 
-	Columns  []*TableColumn `json:"columns"`  // 表格列
-	Rows     []*TableRow    `json:"rows"`     // 表格行
-	RowCount int            `json:"rowCount"` // 表格总行数
+	Columns  []*TableColumn `json:"columns"`
+	Rows     []*TableRow    `json:"rows"`
+	RowCount int            `json:"rowCount"`
 }
 
-// TableColumn 描述了表格实例列的结构。
 type TableColumn struct {
 	*BaseInstanceField
 
-	Pin   bool             `json:"pin"`   // 是否固定
-	Width string           `json:"width"` // 列宽度
-	Align TableColumnAlign `json:"align"` // 内容对齐方式
+	Pin   bool             `json:"pin"`
+	Width string           `json:"width"`
+	Align TableColumnAlign `json:"align"`
 }
 
-// TableRow 描述了表格实例行的结构。
 type TableRow struct {
-	ID    string       `json:"id"`    // 行 ID
-	Cells []*TableCell `json:"cells"` // 行单元格
+	ID    string       `json:"id"`
+	Cells []*TableCell `json:"cells"`
 }
 
-// TableCell 描述了表格实例单元格的结构。
 type TableCell struct {
 	*BaseValue
 
-	Color   string `json:"color"`   // 单元格颜色
-	BgColor string `json:"bgColor"` // 单元格背景颜色
+	Color   string `json:"color"`
+	BgColor string `json:"bgColor"`
 }
 
 func (table *Table) GetColumn(id string) *TableColumn {

@@ -62,7 +62,7 @@ var (
 	mcpMu            sync.Mutex
 	mcpConns         []Connection
 	mcpServers       []conf.MCPServer
-	mcpConnecting    bool // 是否有后台连接 goroutine 正在进行，防止重复启动
+	mcpConnecting    bool
 	mcpConnectCancel context.CancelFunc
 	mcpGeneration    uint64
 	mcpRuntime       = map[string]mcpRuntimeState{}
@@ -121,10 +121,6 @@ func setMCPRuntimeStateLocked(serverID, status string, toolsCount int, errMsg, a
 	}
 }
 
-// EnsureMCPConnected 确保 MCP server 已连接。
-// 首次调用时在后台异步连接，立即返回不阻塞调用方（如 Agent 请求路径）。
-// 连接完成前发起的 Agent 请求本轮可能看不到 MCP 工具，下轮即可用。
-// 后续调用若已连接则直接返回；若后台连接仍在进行则也直接返回，等其完成。
 func EnsureMCPConnected(servers []conf.MCPServer) {
 	servers = append([]conf.MCPServer(nil), servers...)
 	mcpMu.Lock()
@@ -149,7 +145,6 @@ func EnsureMCPConnected(servers []conf.MCPServer) {
 	}
 }
 
-// serverTimeout 归一化服务器配置的超时（秒），未配置或非法时回退到默认值。
 func serverTimeout(server conf.MCPServer) time.Duration {
 	if server.Timeout > 0 {
 		return time.Duration(server.Timeout) * time.Second
@@ -157,7 +152,6 @@ func serverTimeout(server conf.MCPServer) time.Duration {
 	return defaultMCPServerTimeout
 }
 
-// headerRoundTripper 把 server 配置的自定义 HTTP 头附加到每个出站请求上。
 type headerRoundTripper struct {
 	base    http.RoundTripper
 	headers map[string]string
@@ -166,8 +160,7 @@ type headerRoundTripper struct {
 func (h *headerRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	clone := req.Clone(req.Context())
 	for k, v := range h.headers {
-		// 对每个 header 值里的 {{secrets.NAME}}、{{vars.NAME}} 占位符插值，
-		// 使 MCP 服务的 Authorization 等头部可引用密钥/变量而无需明文存储。
+
 		clone.Header.Set(k, conf.ResolveSecretsVars(model.Conf.Secrets, model.Conf.Variables, v))
 	}
 	return h.base.RoundTrip(clone)
@@ -432,7 +425,7 @@ func connectHTTP(ctx context.Context, client *mcp.Client, server conf.MCPServer,
 		oauthHandler = newMCPOAuthHandler(server, interactive)
 		transport.OAuthHandler = oauthHandler
 	}
-	// 所有 MCP HTTP 出站请求统一带上 Scribli UA，便于第三方 MCP server 识别客户端身份
+
 	uaBase := httpclient.NewUserAgentRoundTripper(http.DefaultTransport)
 	if len(server.Headers) > 0 {
 		transport.HTTPClient = &http.Client{
@@ -519,7 +512,6 @@ func updateMCPRuntimeAfterToolCall(serverName string, callErr error) {
 	mcpMu.Unlock()
 }
 
-// callMCPToolOnce 保证一次工具请求最多发送一次。断线时只恢复后续调用所需的连接，不重放当前请求。
 func callMCPToolOnce(call func() (*mcp.CallToolResult, error), reconnect func(error)) tools.CallToolResult {
 	result, err := call()
 	if err != nil && isExecutionUnknownError(err) {
@@ -590,7 +582,6 @@ func getMCPSession(serverName string) *mcp.ClientSession {
 	return nil
 }
 
-// reconnectMCP 关闭现有连接并重新注册工具。
 func reconnectMCP(serverName string) bool {
 	mcpMu.Lock()
 	if mcpConnecting {
@@ -613,8 +604,6 @@ func reconnectMCP(serverName string) bool {
 	return true
 }
 
-// ReconnectMCPAsync 用最新的 server 配置异步重连，不阻塞调用方（如 setAI 配置保存）。
-// 适用于配置变更（开关切换、编辑、增删 server）后让连接立即跟上，而非等下次 Agent 请求。
 func ReconnectMCPAsync(servers []conf.MCPServer, forceServerIDs, interactiveServerIDs []string) {
 	servers = append([]conf.MCPServer(nil), servers...)
 	force := make(map[string]bool, len(forceServerIDs))
@@ -697,7 +686,6 @@ func ReconnectMCPAsync(servers []conf.MCPServer, forceServerIDs, interactiveServ
 	}()
 }
 
-// isReconnectableError 判断 MCP 调用失败是否可能因连接断开，值得尝试重连。
 func isReconnectableError(err error) bool {
 	if err == nil {
 		return false
@@ -742,18 +730,16 @@ func sanitize(s string) string {
 	return sb.String()
 }
 
-// MCPStatusItem 描述单个 MCP server 的连接状态，供前端展示。
 type MCPStatusItem struct {
 	ID               string `json:"id"`
 	Name             string `json:"name"`
 	Status           string `json:"status"` // connected | connecting | authorizing | authorization_required | failed | disabled
-	Tools            int    `json:"tools"`  // 已注册工具数（仅 connected 时有意义）
+	Tools            int    `json:"tools"`
 	Error            string `json:"error,omitempty"`
 	AuthorizationURL string `json:"authorizationURL,omitempty"`
 	Authorized       bool   `json:"authorized"`
 }
 
-// MCPStatus 返回所有已配置 MCP server 的当前连接状态。
 func MCPStatus() []MCPStatusItem {
 	mcpMu.Lock()
 	servers := append([]conf.MCPServer(nil), mcpServers...)

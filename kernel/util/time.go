@@ -44,7 +44,7 @@ func Weekday(date time.Time) int {
 }
 
 // WeekdayCN returns the day of the week specified by date.
-// Sunday=日, Monday=一, ..., Saturday=六.
+
 func WeekdayCN(date time.Time) string {
 	week := Weekday(date)
 	weekdayCN := []string{"日", "一", "二", "三", "四", "五", "六"}
@@ -52,7 +52,7 @@ func WeekdayCN(date time.Time) string {
 }
 
 // WeekdayCN2 returns the day of the week specified by date.
-// Sunday=天, Monday=一, ..., Saturday=六.
+
 func WeekdayCN2(date time.Time) string {
 	week := Weekday(date)
 	weekdayCN2 := []string{"天", "一", "二", "三", "四", "五", "六"}
@@ -77,20 +77,14 @@ func ISOYear(date time.Time) int {
 func ISOMonth(date time.Time) int {
 	isoYear, isoWeek := date.ISOWeek()
 
-	// 1. 找到该 ISO 年份的 1 月 4 日（它必然属于第 1 周）
 	jan4 := time.Date(isoYear, time.January, 4, 0, 0, 0, 0, date.Location())
 
-	// 2. 找到第 1 周的周四
-	// (jan4.Weekday() + 6) % 7 将周一~周日映射为 0~6
 	daysToMonday := (int(jan4.Weekday()) + 6) % 7
 	mondayOfWeek1 := jan4.AddDate(0, 0, -daysToMonday)
 	thursdayOfWeek1 := mondayOfWeek1.AddDate(0, 0, 3)
 
-	// 3. 计算目标周的周四
-	// 目标周四 = 第一周周四 + (isoWeek-1) * 7天
 	targetThursday := thursdayOfWeek1.AddDate(0, 0, (isoWeek-1)*7)
 
-	// 4. 返回该周四所在的自然月份
 	return int(targetThursday.Month())
 }
 
@@ -164,7 +158,6 @@ func HumanizeDiffTime(a, b time.Time, lang string) string {
 }
 
 func humanizeDiffTime(a, b time.Time) (year, month, day, hour, min, sec int) {
-	// 感谢 https://stackoverflow.com/a/36531443/1043233
 
 	if a.Location() != b.Location() {
 		b = b.In(a.Location())

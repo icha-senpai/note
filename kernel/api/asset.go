@@ -122,7 +122,6 @@ func getImageOCRText(c *gin.Context) {
 
 	path = arg["path"].(string)
 
-	// 加密笔记本的资源不参与全局 OCR（OCR 文本存在全局 data/assets/ocr-texts.json）
 	if absPath, absErr := model.GetAssetAbsPathInBox(path, ""); absErr == nil && model.IsEncryptedAssetPath(absPath) {
 		ret.Data = map[string]any{
 			"text": "",
@@ -147,13 +146,11 @@ func setImageOCRText(c *gin.Context) {
 	path := arg["path"].(string)
 	text := arg["text"].(string)
 
-	// 加密笔记本的资源不参与全局 OCR
 	if absPath, absErr := model.GetAssetAbsPathInBox(path, ""); absErr == nil && model.IsEncryptedAssetPath(absPath) {
 		return
 	}
 	util.SetAssetText(path, text)
 
-	// 刷新 OCR 结果到数据库
 	util.NodeOCRQueueLock.Lock()
 	defer util.NodeOCRQueueLock.Unlock()
 	for _, id := range util.NodeOCRQueue {
@@ -173,7 +170,6 @@ func ocr(c *gin.Context) {
 
 	path := arg["path"].(string)
 
-	// 加密笔记本的资源不参与全局 OCR
 	if absPath, absErr := model.GetAssetAbsPathInBox(path, ""); absErr == nil && model.IsEncryptedAssetPath(absPath) {
 		ret.Code = -1
 		ret.Msg = "OCR is not supported for assets in encrypted notebooks"
@@ -302,7 +298,7 @@ func setFileAnnotation(c *gin.Context) {
 			return
 		}
 	} else {
-		// 加密笔记本的 .sya 写盘前必须加密；加密笔记本未解锁时拒绝写入（fail-closed，避免明文落盘）
+
 		writeData := []byte(data)
 		if boxID := model.ExtractBoxIDFromAssetsPath(writePath); boxID != "" && model.IsEncryptedBox(boxID) {
 			model.HoldBoxReadLock(boxID)
@@ -360,7 +356,7 @@ func getFileAnnotation(c *gin.Context) {
 		ret.Msg = err.Error()
 		return
 	}
-	// 加密笔记本的 .sya 读盘后必须解密；未解锁时拒绝返回（fail-closed，避免返回密文或误判）
+
 	if boxID := model.ExtractBoxIDFromAssetsPath(readPath); boxID != "" && model.IsEncryptedBox(boxID) {
 		model.HoldBoxReadLock(boxID)
 		defer model.ReleaseBoxReadLock(boxID)
@@ -384,8 +380,7 @@ func getFileAnnotation(c *gin.Context) {
 }
 
 func resolveFileAnnotationAbsPath(assetRelPath string) (ret string, err error) {
-	// .sya 在 URL 末尾，例如 assets/a.pdf?box=<id>.sya
-	// TrimSuffix 去掉 .sya 得到 assets/a.pdf?box=<id>，保留 query 供 box-aware 解析
+
 	filePath := strings.TrimSuffix(assetRelPath, ".sya")
 	absPath, err := model.GetAssetAbsPathInBox(filePath, "")
 	if err != nil {
@@ -579,7 +574,7 @@ func insertCover(c *gin.Context) {
 	}
 
 	name := arg["name"].(string)
-	// 防止路径穿越：只允许文件名，不能含分隔符或 ..
+
 	name = filepath.Base(name)
 	if "" == name || "." == name || ".." == name {
 		ret.Code = -1

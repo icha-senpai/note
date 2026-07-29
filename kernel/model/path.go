@@ -51,12 +51,12 @@ func createDocsByHPath(boxID, hPath, content, parentID, id string, titleEmpty bo
 			return
 		}
 		// The save path is incorrect when creating a sub-doc by ref in a doc with the same name https://github.com/siyuan-note/siyuan/issues/8138
-		// 在指定了父文档 ID 的情况下优先查找父文档
+
 		parentHPath, name := path.Split(hPath)
 		parentHPath = strings.TrimSuffix(parentHPath, "/")
 		preferredParent := treenode.GetBlockTreeByHPathPreferredParentID(boxID, parentHPath, parentID)
 		if nil != preferredParent && preferredParent.RootID == parentID {
-			// 如果父文档存在且 ID 一致，则直接在父文档下创建
+
 			p := strings.TrimSuffix(preferredParent.Path, ".sy") + "/" + id + ".sy"
 			if _, err = createDoc(boxID, p, name, content, titleEmpty); err != nil {
 				logging.LogErrorf("create doc [%s] failed: %s", p, err)
@@ -69,7 +69,7 @@ func createDocsByHPath(boxID, hPath, content, parentID, id string, titleEmpty bo
 	hpathBtMap := map[string]*treenode.BlockTree{}
 	parts := strings.Split(hPath, "/")[1:]
 	// The subdoc creation path is unstable when a parent doc with the same name exists https://github.com/siyuan-note/siyuan/issues/9322
-	// 存在同名父文档时子文档创建路径不稳定，这里需要按照完整的 hpath 映射，不能在下面的循环中边构建 hpath 边构建 path，否则虽然 hpath 相同，但是会导致 path 组装错位
+
 	for i, part := range parts {
 		if i == len(parts)-1 {
 			break
@@ -191,7 +191,6 @@ func toSubTree(blocks []*Block, keyword string) (ret []*Path) {
 	return toSubTreeInBox(blocks, keyword, "")
 }
 
-// toSubTreeInBox 与 toSubTree 一致，但按 boxID 路由到加密 db 或全局 db。
 func toSubTreeInBox(blocks []*Block, keyword, boxID string) (ret []*Path) {
 	keyword = strings.TrimSpace(keyword)
 	var blockRoots []*Block
@@ -222,7 +221,7 @@ func toSubTreeInBox(blocks []*Block, keyword, boxID string) (ret []*Path) {
 				tree, _ := loadTreeByBlockIDInBox(c.RootID, boxID)
 				li := treenode.GetNodeInTree(tree, c.ID)
 				if nil == li || nil == li.FirstChild {
-					// 反链面板拖拽到文档以后可能会出现这种情况 https://github.com/siyuan-note/siyuan/issues/5363
+
 					continue
 				}
 
@@ -276,7 +275,7 @@ func toSubTreeInBox(blocks []*Block, keyword, boxID string) (ret []*Path) {
 									subPos, content = search.MarkText(subFirst.Content, keyword, 12, Conf.Search.CaseSensitive)
 								}
 								if -1 < subPos {
-									parentPos = 0 // 需要显示父级
+									parentPos = 0
 								}
 								subLiBlock.Content = content
 								subLiBlock.Depth = 2
@@ -301,7 +300,7 @@ func toSubTreeInBox(blocks []*Block, keyword, boxID string) (ret []*Path) {
 								block.Depth = 3
 								subRoot.Blocks = append(subRoot.Blocks, block)
 								if ast.NodeHeading == n.Type {
-									// 跳过子标题下面的块
+
 									breakSub = true
 									break
 								}

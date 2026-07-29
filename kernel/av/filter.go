@@ -26,29 +26,24 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// ViewFilter 描述了视图过滤规则的结构。
-// 叶子节点：Column/Operator/Value 等字段有效，Filters 为空。
-// 分组节点：Combination 指明子节点的组合方式，Filters 为子节点列表（递归）。
 type ViewFilter struct {
-	Column        string            `json:"column"`                  // 字段（列）ID，叶子节点有效
-	Qualifier     FilterQuantifier  `json:"quantifier,omitempty"`    // 量词，叶子节点有效
-	Operator      FilterOperator    `json:"operator"`                // 操作符，叶子节点有效
-	Value         *Value            `json:"value"`                   // 过滤值，叶子节点有效
-	RelativeDate  *RelativeDate     `json:"relativeDate,omitempty"`  // 相对时间，叶子节点有效
-	RelativeDate2 *RelativeDate     `json:"relativeDate2,omitempty"` // 第二个相对时间，叶子节点有效
-	Combination   FilterCombination `json:"combination,omitempty"`   // 组合方式，分组节点有效
-	Filters       []*ViewFilter     `json:"filters,omitempty"`       // 子节点，分组节点有效（递归）
+	Column        string            `json:"column"`
+	Qualifier     FilterQuantifier  `json:"quantifier,omitempty"`
+	Operator      FilterOperator    `json:"operator"`
+	Value         *Value            `json:"value"`
+	RelativeDate  *RelativeDate     `json:"relativeDate,omitempty"`
+	RelativeDate2 *RelativeDate     `json:"relativeDate2,omitempty"`
+	Combination   FilterCombination `json:"combination,omitempty"`
+	Filters       []*ViewFilter     `json:"filters,omitempty"`
 }
 
-// FilterCombination 描述了分组节点中子过滤条件的组合方式。
 type FilterCombination string
 
 const (
-	FilterCombinationAnd FilterCombination = "and" // 全部满足
-	FilterCombinationOr  FilterCombination = "or"  // 任一满足
+	FilterCombinationAnd FilterCombination = "and"
+	FilterCombinationOr  FilterCombination = "or"
 )
 
-// IsGroup 判断该过滤节点是否为分组节点：设置了组合方式或带有子节点即为分组。
 func (filter *ViewFilter) IsGroup() bool {
 	return nil != filter && ("" != filter.Combination || 0 < len(filter.Filters))
 }
@@ -71,9 +66,9 @@ const (
 )
 
 type RelativeDate struct {
-	Count     int                   `json:"count"`     // 数量
-	Unit      RelativeDateUnit      `json:"unit"`      // 单位：0 天、1 周、2 月、3 年
-	Direction RelativeDateDirection `json:"direction"` // 方向：-1 前、0 当前、1 后
+	Count     int                   `json:"count"`
+	Unit      RelativeDateUnit      `json:"unit"`
+	Direction RelativeDateDirection `json:"direction"`
 }
 
 type FilterOperator string
@@ -99,7 +94,7 @@ const (
 type FilterQuantifier string
 
 const (
-	FilterQuantifierUndefined FilterQuantifier = "" // 等同于 Any
+	FilterQuantifierUndefined FilterQuantifier = ""
 	FilterQuantifierAny       FilterQuantifier = "Any"
 	FilterQuantifierAll       FilterQuantifier = "All"
 	FilterQuantifierNone      FilterQuantifier = "None"
@@ -112,14 +107,11 @@ func Filter(viewable Viewable, attrView *AttributeView, rollupFurtherCollections
 		return
 	}
 
-	// 归一化为单一根组：spec 5 起顶层应为一个根组；旧数据/异常数据为扁平叶子数组时，
-	// 在内存里包成隐式 AND 根组参与求值，不修改原数据、不崩溃。
 	root := normalizeFiltersAsRoot(filters)
 	if nil == root {
 		return
 	}
 
-	// 递归收集所有叶子引用的列 ID 在 values 中的下标，避免每行重复查找。
 	fields := collection.GetFields()
 	colIndexByColumn := map[string]int{}
 	collectLeafColumnIndexes([]*ViewFilter{root}, fields, colIndexByColumn)
@@ -134,9 +126,6 @@ func Filter(viewable Viewable, attrView *AttributeView, rollupFurtherCollections
 	collection.SetItems(items)
 }
 
-// normalizeFiltersAsRoot 将 view.Filters 归一化为一个根组并返回。
-// 正常情况（spec 5）下 filters 为 [根组]，直接返回 filters[0]。
-// 若 filters 为扁平叶子数组（旧数据或异常），构造一个隐式 AND 根组返回（不写回原 slice）。
 func normalizeFiltersAsRoot(filters []*ViewFilter) *ViewFilter {
 	if 1 > len(filters) {
 		return nil
@@ -173,7 +162,6 @@ func validateFilterNodeDepth(node *ViewFilter, depth int) (err error) {
 	return
 }
 
-// collectLeafColumnIndexes 递归收集所有叶子节点引用的列 ID 在 fields 中的下标。
 func collectLeafColumnIndexes(nodes []*ViewFilter, fields []Field, colIndexByColumn map[string]int) {
 	for _, node := range nodes {
 		if nil == node {
@@ -198,8 +186,6 @@ func collectLeafColumnIndexes(nodes []*ViewFilter, fields []Field, colIndexByCol
 	}
 }
 
-// evalNode 递归求值：分组按 Combination 聚合子节点，叶子调用原单元格求值逻辑。
-// 空分组：AND 恒真、OR 恒假。叶子节点的空值/未配置语义由 evalLeaf → value.Filter 保留原扁平行为。
 func evalNode(node *ViewFilter, values []*Value, colIndexByColumn map[string]int, attrView *AttributeView, itemID string, rollupFurtherCollections map[string]Collection, cachedAttrViews map[string]*AttributeView) bool {
 	if nil == node {
 		return false
@@ -207,39 +193,35 @@ func evalNode(node *ViewFilter, values []*Value, colIndexByColumn map[string]int
 
 	if node.IsGroup() {
 		if 1 > len(node.Filters) {
-			// 空分组：AND 视为全部满足（恒真，不阻断）；OR 视为任一满足（空集恒假）。
+
 			return FilterCombinationOr != node.Combination
 		}
 		switch node.Combination {
 		case FilterCombinationOr:
 			for _, child := range node.Filters {
 				if evalNode(child, values, colIndexByColumn, attrView, itemID, rollupFurtherCollections, cachedAttrViews) {
-					return true // OR 短路：任一子节点通过即通过
+					return true
 				}
 			}
 			return false
-		default: // FilterCombinationAnd 及空值兜底为 AND
+		default:
 			for _, child := range node.Filters {
 				if !evalNode(child, values, colIndexByColumn, attrView, itemID, rollupFurtherCollections, cachedAttrViews) {
-					return false // AND 短路：任一子节点不通过即不通过
+					return false
 				}
 			}
 			return true
 		}
 	}
 
-	// 叶子节点：列不存在（字段被删）则不过；其余交由 evalLeaf → value.Filter 判定。
-	// 注意：未配置的叶子（Value/RelativeDate 均为 nil）由 value.Filter 返回 true（视为通过），
-	// 保留扁平时代的原语义，避免对已存在但未填值的过滤条件产生回归。
 	index, ok := colIndexByColumn[node.Column]
 	if !ok {
-		return false // 列不存在（字段被删）则不过
+		return false
 	}
 
 	return evalLeaf(node, values, index, attrView, itemID, rollupFurtherCollections, cachedAttrViews)
 }
 
-// evalLeaf 对叶子过滤节点做单元格级判定，保留扁平时代 Filter() 的空值特判与 text 豁免语义。
 func evalLeaf(filter *ViewFilter, values []*Value, index int, attrView *AttributeView, itemID string, rollupFurtherCollections map[string]Collection, cachedAttrViews map[string]*AttributeView) bool {
 	if 0 > index || index >= len(values) {
 		return false
@@ -247,7 +229,7 @@ func evalLeaf(filter *ViewFilter, values []*Value, index int, attrView *Attribut
 
 	operator := filter.Operator
 	if nil == values[index] {
-		// 单元格无值：Is not empty 不过、Is empty 过、其余操作符一律不过
+
 		if FilterOperatorIsNotEmpty == operator {
 			return false
 		} else if FilterOperatorIsEmpty == operator {
@@ -259,7 +241,6 @@ func evalLeaf(filter *ViewFilter, values []*Value, index int, attrView *Attribut
 	return values[index].Filter(filter, attrView, itemID, rollupFurtherCollections, cachedAttrViews)
 }
 
-// remapFilterColumns 递归将过滤节点树中所有叶子引用的列 ID 映射为新 ID（用于复制视图）。
 func remapFilterColumns(nodes []*ViewFilter, keyIDMap map[string]string) []*ViewFilter {
 	for _, node := range nodes {
 		if nil == node {
@@ -274,7 +255,6 @@ func remapFilterColumns(nodes []*ViewFilter, keyIDMap map[string]string) []*View
 	return nodes
 }
 
-// CloneFilters 递归深拷贝过滤节点树，叶子与分组结构均完整复制（含新 Combination/Filters 字段）。
 func CloneFilters(filters []*ViewFilter) (ret []*ViewFilter) {
 	for _, f := range filters {
 		if nil == f {
@@ -297,8 +277,6 @@ func CloneFilters(filters []*ViewFilter) (ret []*ViewFilter) {
 	return
 }
 
-// RemoveFiltersByColumn 递归移除所有引用指定列的叶子节点，并裁剪变空的分组节点。
-// 返回处理后的节点列表（原列表不被修改，返回新列表）。
 func RemoveFiltersByColumn(filters []*ViewFilter, column string) (ret []*ViewFilter) {
 	for _, f := range filters {
 		if nil == f {
@@ -306,7 +284,7 @@ func RemoveFiltersByColumn(filters []*ViewFilter, column string) (ret []*ViewFil
 		}
 		if f.IsGroup() {
 			children := RemoveFiltersByColumn(f.Filters, column)
-			// 子节点全部被移除时丢弃空分组
+
 			if 0 < len(children) {
 				f.Filters = children
 				ret = append(ret, f)
@@ -321,9 +299,6 @@ func RemoveFiltersByColumn(filters []*ViewFilter, column string) (ret []*ViewFil
 	return
 }
 
-// RemoveSelectOptionFromFilters 递归从引用指定列的 select/mSelect 叶子中移除给定选项值。
-// 若叶子移除后选项为空（且非 Is empty/Is not empty 操作符），则整体移除该叶子；并裁剪变空的分组。
-// 返回处理后的节点列表。
 func RemoveSelectOptionFromFilters(filters []*ViewFilter, column, optionContent string) (ret []*ViewFilter) {
 	for _, f := range filters {
 		if nil == f {
@@ -356,14 +331,13 @@ func RemoveSelectOptionFromFilters(filters []*ViewFilter, column, optionContent 
 			}
 		}
 		if 1 > len(f.Value.MSelect) {
-			continue // 选项删空则移除该过滤条件
+			continue
 		}
 		ret = append(ret, f)
 	}
 	return
 }
 
-// RenameSelectOptionInFilters 递归将引用指定列的 select/mSelect 叶子中的旧选项名改为新名与新颜色。
 func RenameSelectOptionInFilters(filters []*ViewFilter, column, oldContent, newContent, newColor string) {
 	for _, f := range filters {
 		if nil == f {
@@ -388,8 +362,6 @@ func RenameSelectOptionInFilters(filters []*ViewFilter, column, oldContent, newC
 	}
 }
 
-// PruneInvalidColumnFilters 递归移除引用了不存在列的叶子节点，并裁剪变空的分组节点。
-// validColumns 为当前仍存在的列 ID 集合。返回处理后的节点列表及是否有改动。
 func PruneInvalidColumnFilters(filters []*ViewFilter, validColumns map[string]bool) (ret []*ViewFilter, changed bool) {
 	for _, f := range filters {
 		if nil == f {
@@ -401,9 +373,8 @@ func PruneInvalidColumnFilters(filters []*ViewFilter, validColumns map[string]bo
 				f.Filters = children
 				ret = append(ret, f)
 			} else if 0 < len(f.Filters) {
-				// 仅当分组原本有子节点却被裁空时才算改动；原本就是空的分组丢弃不算改动，
-				// 否则无筛选条件的视图每次渲染都会误判为已改动而触发保存，干扰数据同步判断
-				changed = true // 分组变为空被丢弃
+
+				changed = true
 			}
 			if childChanged {
 				changed = true
@@ -425,7 +396,7 @@ func (value *Value) Filter(filter *ViewFilter, attrView *AttributeView, itemID s
 	}
 
 	if nil != filter.Value && value.Type != filter.Value.Type {
-		// 由于字段类型被用户编辑过导致和过滤规则值类型不匹配，该情况下不过滤
+
 		return true
 	}
 
@@ -438,7 +409,6 @@ func (value *Value) Filter(filter *ViewFilter, attrView *AttributeView, itemID s
 		}
 	}
 
-	// 单独处理汇总
 	if nil != value.Rollup && KeyTypeRollup == value.Type && nil != filter.Value && KeyTypeRollup == filter.Value.Type && nil != filter.Value.Rollup {
 		key, _ := attrView.GetKey(value.KeyID)
 		if nil == key {
@@ -480,7 +450,7 @@ func (value *Value) Filter(filter *ViewFilter, attrView *AttributeView, itemID s
 					return true
 				}
 
-				if len(value.Rollup.Contents) < len(relVal.Relation.Contents) { // 说明汇总的目标字段存在空值
+				if len(value.Rollup.Contents) < len(relVal.Relation.Contents) {
 					return true
 				}
 
@@ -609,7 +579,6 @@ func (value *Value) Filter(filter *ViewFilter, attrView *AttributeView, itemID s
 		}
 	}
 
-	// 单独处理关联
 	if nil != value.Relation && KeyTypeRelation == value.Type && nil != filter.Value && KeyTypeRelation == filter.Value.Type && nil != filter.Value.Relation {
 		if 1 > len(filter.Value.Relation.BlockIDs) {
 			return true
@@ -645,7 +614,6 @@ func (value *Value) Filter(filter *ViewFilter, attrView *AttributeView, itemID s
 		}
 	}
 
-	// 单独处理资源
 	if nil != value.MAsset && KeyTypeMAsset == value.Type && nil != filter.Value && KeyTypeMAsset == filter.Value.Type {
 		key, _ := attrView.GetKey(value.KeyID)
 		if nil == key {
@@ -793,7 +761,6 @@ func (value *Value) Filter(filter *ViewFilter, attrView *AttributeView, itemID s
 	return value.filter(filter.Value, filter.RelativeDate, filter.RelativeDate2, filter.Operator)
 }
 
-// isRollupFilterValueEmpty 判断汇总筛选是否缺少比较值，相对日期仅依赖相对时间配置。
 func isRollupFilterValueEmpty(filter *ViewFilter) bool {
 	valueType := filter.Value.Rollup.Contents[0].Type
 	if nil != filter.RelativeDate && (KeyTypeDate == valueType || KeyTypeCreated == valueType || KeyTypeUpdated == valueType) {
@@ -848,13 +815,13 @@ func (value *Value) filter(other *Value, relativeDate, relativeDate2 *RelativeDa
 
 		if nil != value.Date {
 			if !value.Date.IsNotEmpty {
-				// 空值不进行比较，直接排除
+
 				// Database date filter excludes empty values https://github.com/siyuan-note/siyuan/issues/11061
 				return false
 			}
 
-			if nil != relativeDate { // 使用相对时间比较
-				// 非 Is between 时前端不会下发 relativeDate2，为 nil 时复用第一段作为安全默认，避免空指针
+			if nil != relativeDate {
+
 				secondRelativeDate := relativeDate2
 				if nil == secondRelativeDate {
 					secondRelativeDate = relativeDate
@@ -863,7 +830,7 @@ func (value *Value) filter(other *Value, relativeDate, relativeDate2 *RelativeDa
 				relativeTimeStart2, relativeTimeEnd2 := calcRelativeTimeRegion(secondRelativeDate.Count, secondRelativeDate.Unit, secondRelativeDate.Direction)
 				return filterRelativeTime(value.Date.Content, value.Date.IsNotEmpty, operator, relativeTimeStart, relativeTimeEnd, relativeDate.Direction, relativeTimeStart2, relativeTimeEnd2, secondRelativeDate.Direction)
 			}
-			// 使用具体时间比较
+
 			if nil == other.Date {
 				return true
 			}
@@ -871,8 +838,8 @@ func (value *Value) filter(other *Value, relativeDate, relativeDate2 *RelativeDa
 		}
 	case KeyTypeCreated:
 		if nil != value.Created {
-			if nil != relativeDate { // 使用相对时间比较
-				// 非 Is between 时前端不会下发 relativeDate2，为 nil 时复用第一段作为安全默认，避免空指针
+			if nil != relativeDate {
+
 				secondRelativeDate := relativeDate2
 				if nil == secondRelativeDate {
 					secondRelativeDate = relativeDate
@@ -881,7 +848,7 @@ func (value *Value) filter(other *Value, relativeDate, relativeDate2 *RelativeDa
 				relativeTimeStart2, relativeTimeEnd2 := calcRelativeTimeRegion(secondRelativeDate.Count, secondRelativeDate.Unit, secondRelativeDate.Direction)
 				return filterRelativeTime(value.Created.Content, true, operator, relativeTimeStart, relativeTimeEnd, relativeDate.Direction, relativeTimeStart2, relativeTimeEnd2, secondRelativeDate.Direction)
 			}
-			// 使用具体时间比较
+
 			if nil == other.Created {
 				return true
 			}
@@ -889,8 +856,8 @@ func (value *Value) filter(other *Value, relativeDate, relativeDate2 *RelativeDa
 		}
 	case KeyTypeUpdated:
 		if nil != value.Updated {
-			if nil != relativeDate { // 使用相对时间比较
-				// 非 Is between 时前端不会下发 relativeDate2，为 nil 时复用第一段作为安全默认，避免空指针
+			if nil != relativeDate {
+
 				secondRelativeDate := relativeDate2
 				if nil == secondRelativeDate {
 					secondRelativeDate = relativeDate
@@ -899,7 +866,7 @@ func (value *Value) filter(other *Value, relativeDate, relativeDate2 *RelativeDa
 				relativeTimeStart2, relativeTimeEnd2 := calcRelativeTimeRegion(secondRelativeDate.Count, secondRelativeDate.Unit, secondRelativeDate.Direction)
 				return filterRelativeTime(value.Updated.Content, true, operator, relativeTimeStart, relativeTimeEnd, relativeDate.Direction, relativeTimeStart2, relativeTimeEnd2, secondRelativeDate.Direction)
 			}
-			// 使用具体时间比较
+
 			if nil == other.Updated {
 				return true
 			}
@@ -1048,7 +1015,7 @@ func (value *Value) filter(other *Value, relativeDate, relativeDate2 *RelativeDa
 				return !value.Checkbox.Checked
 			}
 		}
-	case KeyTypeRelation: // 过滤汇总字段，并且汇总目标是关联字段时才会进入该分支
+	case KeyTypeRelation:
 		if nil != value.Relation && 0 < len(value.Relation.Contents) && nil != value.Relation.Contents[0].Block &&
 			nil != other && nil != other.Relation && 0 < len(other.Relation.BlockIDs) {
 			filterValue := &Value{Type: KeyTypeBlock, Block: &ValueBlock{Content: other.Relation.BlockIDs[0]}}
@@ -1254,26 +1221,25 @@ func filterTime(valueMills int64, valueIsNotEmpty bool, otherValueMills, otherVa
 	return false
 }
 
-// 根据 Count、Unit 和 Direction 计算相对当前时间的开始时间和结束时间
 func calcRelativeTimeRegion(count int, unit RelativeDateUnit, direction RelativeDateDirection) (start, end time.Time) {
 	now := time.Now()
 	switch unit {
 	case RelativeDateUnitDay:
 		switch direction {
 		case RelativeDateDirectionBefore:
-			// 结束时间：今天的 0 点
+
 			end = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-			// 开始时间：结束时间减去 count 天
+
 			start = end.AddDate(0, 0, -count)
 		case RelativeDateDirectionThis:
-			// 开始时间：今天的 0 点
+
 			start = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-			// 结束时间：今天的 23:59:59.999999999
+
 			end = time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 999999999, now.Location())
 		case RelativeDateDirectionAfter:
-			// 开始时间：今天的 0 点加上 count 天
+
 			start = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).AddDate(0, 0, count)
-			// 结束时间：开始时间的 23:59:59.999999999
+
 			end = time.Date(start.Year(), start.Month(), start.Day(), 23, 59, 59, 999999999, now.Location())
 		}
 	case RelativeDateUnitWeek:
@@ -1283,63 +1249,61 @@ func calcRelativeTimeRegion(count int, unit RelativeDateUnit, direction Relative
 		}
 		switch direction {
 		case RelativeDateDirectionBefore:
-			// 结束时间：本周的周一
+
 			end = time.Date(now.Year(), now.Month(), now.Day()-weekday+1, 0, 0, 0, 0, now.Location())
-			// 开始时间：结束时间减去 count*7 天
+
 			start = end.AddDate(0, 0, -count*7)
 		case RelativeDateDirectionThis:
-			// 开始时间：本周的周一
+
 			start = time.Date(now.Year(), now.Month(), now.Day()-weekday+1, 0, 0, 0, 0, now.Location())
-			// 结束时间：本周的周日
+
 			end = time.Date(now.Year(), now.Month(), now.Day()-weekday+7, 23, 59, 59, 999999999, now.Location())
 		case RelativeDateDirectionAfter:
-			// 开始时间：本周的周一加上 count*7 天
+
 			start = time.Date(now.Year(), now.Month(), now.Day()-weekday+1, 0, 0, 0, 0, now.Location()).AddDate(0, 0, count*7)
-			// 结束时间：开始时间的周日
+
 			end = time.Date(start.Year(), start.Month(), start.Day()-int(start.Weekday())+7, 23, 59, 59, 999999999, now.Location())
 		}
 	case RelativeDateUnitMonth:
 		switch direction {
 		case RelativeDateDirectionBefore:
-			// 结束时间：本月的 1 号
+
 			end = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
-			// 开始时间：结束时间减去 count 个月
+
 			start = end.AddDate(0, -count, 0)
 		case RelativeDateDirectionThis:
-			// 开始时间：本月的 1 号
+
 			start = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
-			// 结束时间：下个月的 1 号减去 1 纳秒
+
 			end = time.Date(now.Year(), now.Month()+1, 1, 0, 0, 0, 0, now.Location()).Add(-time.Nanosecond)
 		case RelativeDateDirectionAfter:
-			// 开始时间：count 个月后的 1 号
+
 			start = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location()).AddDate(0, count, 0)
-			// 结束时间：开始时间的下个月的 1 号减去 1 纳秒
+
 			end = time.Date(start.Year(), start.Month()+1, 1, 0, 0, 0, 0, now.Location()).Add(-time.Nanosecond)
 		}
 	case RelativeDateUnitYear:
 		switch direction {
 		case RelativeDateDirectionBefore:
-			// 结束时间：今年的 1 月 1 号
+
 			end = time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
-			// 开始时间：结束时间减去 count 年
+
 			start = end.AddDate(-count, 0, 0)
 		case RelativeDateDirectionThis:
-			// 开始时间：今年的 1 月 1 号
+
 			start = time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
-			// 结束时间：明年的 1 月 1 号减去 1 纳秒
+
 			end = time.Date(now.Year()+1, 1, 1, 0, 0, 0, 0, now.Location()).Add(-time.Nanosecond)
 		case RelativeDateDirectionAfter:
-			// 开始时间：count 年后的 1 月 1 号
+
 			start = time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location()).AddDate(count, 0, 0)
-			// 结束时间：开始时间的 count+1 年的 1 月 1 号减去 1 纳秒
+
 			end = time.Date(start.Year()+1, 1, 1, 0, 0, 0, 0, now.Location()).Add(-time.Nanosecond)
 		}
 	}
 	return
 }
 
-// IsValid 判断叶子过滤节点是否可参与「新增行默认值」计算。仅对叶子节点调用；
-// 分组节点 filter.Value 为 nil 会返回 false（视为不可参与），调用方应先递归到叶子。
 func (filter *ViewFilter) IsValid() bool {
 	if nil == filter || nil == filter.Value {
 		return false
@@ -1356,7 +1320,7 @@ func (filter *ViewFilter) IsValid() bool {
 func (filter *ViewFilter) GetAffectValue(key *Key, addingBlockID string) (ret *Value) {
 	if nil != filter.Value {
 		if KeyTypeRelation == filter.Value.Type || KeyTypeTemplate == filter.Value.Type || KeyTypeRollup == filter.Value.Type || KeyTypeUpdated == filter.Value.Type || KeyTypeCreated == filter.Value.Type {
-			// 所有生成的数据都不设置默认值
+
 			return nil
 		}
 	}
@@ -1367,7 +1331,7 @@ func (filter *ViewFilter) GetAffectValue(key *Key, addingBlockID string) (ret *V
 
 	if FilterOperatorIsEmpty != filter.Operator && FilterOperatorIsNotEmpty != filter.Operator {
 		if filter.Value.IsEmpty() && nil == filter.RelativeDate {
-			// 在不是过滤空值和非空值的情况下，空值不设置默认值 https://github.com/siyuan-note/siyuan/issues/11297
+
 			return nil
 		}
 	}

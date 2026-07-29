@@ -50,7 +50,7 @@ func GetBoxByName(name string) (ret *Box) {
 func CreateBox(name string) (id string, err error) {
 	name = normalizeBoxName(name)
 	if 512 < utf8.RuneCountInString(name) {
-		// 限制笔记本名和文档名最大长度为 `512` https://github.com/siyuan-note/siyuan/issues/6299
+
 		err = errors.New(Conf.Language(106))
 		return
 	}
@@ -102,7 +102,7 @@ func RenameBox(boxID, name string) (err error) {
 
 	name = normalizeBoxName(name)
 	if 512 < utf8.RuneCountInString(name) {
-		// 限制笔记本名和文档名最大长度为 `512` https://github.com/siyuan-note/siyuan/issues/6299
+
 		err = errors.New(Conf.Language(106))
 		return
 	}
@@ -161,7 +161,6 @@ func RemoveBox(boxID string) (err error) {
 
 	unmount0(boxID)
 
-	// 删目录前缓存加密状态：删目录后 conf.json 不复存在，IsEncryptedBox 会返回 false
 	isEncrypted := IsEncryptedBox(boxID)
 
 	if !isUserGuide {
@@ -171,7 +170,7 @@ func RemoveBox(boxID string) (err error) {
 			logging.LogErrorf("get history dir failed: %s", err)
 			return
 		}
-		// 删除前备份到历史目录（密文原样拷贝，加密笔记本的整个目录保持密文）
+
 		p := strings.TrimPrefix(localPath, util.DataDir)
 		historyPath := filepath.Join(historyDir, p)
 		if err = filelock.Copy(localPath, historyPath); err != nil {
@@ -179,15 +178,11 @@ func RemoveBox(boxID string) (err error) {
 			return
 		}
 
-		// 加密笔记本的 assets 不提升到全局 data/assets，避免密文污染全局或被全局索引
 		if !isEncrypted {
 			copyBoxAssetsToDataAssets(boxID)
 		}
 	}
 
-	// 加密笔记本删除前先清理导出临时目录并撤销托管下载注册表。
-	// 必须在 filelock.Remove 之前执行：若 box 目录删除失败导致提前 return，导出清理仍已完成，
-	// 避免明文产物在 IsEncryptedBox 返回 false 后被 fail-open 下载
 	if isEncrypted {
 		if rmErr := os.RemoveAll(filepath.Join(util.TempDir, "export", boxID)); rmErr != nil {
 			logging.LogWarnf("remove export/[%s] dir failed: %s", boxID, rmErr)
@@ -198,7 +193,7 @@ func RemoveBox(boxID string) (err error) {
 	if err = filelock.Remove(localPath); err != nil {
 		return
 	}
-	// 加密笔记本删除时清理其独立加密 db 文件（含 WAL/SHM），避免残留
+
 	if isEncrypted {
 		sql.RemoveEncryptedDBFile(boxID)
 		treenode.RemoveEncryptedBlockTreeDBFile(boxID)
@@ -246,9 +241,6 @@ func Unmount(boxID string) {
 	}
 }
 
-// clearDEKIfUnlockedEncryptedBox 清除已解锁但未挂载的加密笔记本的 DEK。
-// unmount0 在 box 未挂载（Conf.Box 返回 nil）时调用，覆盖 unlockBox 解锁后未 mount 即 lock 的场景：
-// 此时 DEK 仍在内存，若不清除，锁定后认证 API 仍可读取明文。
 func clearDEKIfUnlockedEncryptedBox(boxID string) {
 	if IsEncryptedBox(boxID) && IsBoxUnlocked(boxID) {
 		ClearDEK(boxID)
@@ -258,8 +250,7 @@ func clearDEKIfUnlockedEncryptedBox(boxID string) {
 func unmount0(boxID string) {
 	box := Conf.Box(boxID)
 	if nil == box {
-		// 笔记本未挂载（Closed）。若它是已解锁的加密笔记本（DEK 在内存），
-		// 仍需 ClearDEK 清除残留密钥材料，否则锁定后认证 API 仍可读取明文。
+
 		clearDEKIfUnlockedEncryptedBox(boxID)
 		return
 	}
@@ -270,13 +261,10 @@ func unmount0(boxID string) {
 		logging.LogErrorf("save box conf [%s] failed: %s", box.ID, err)
 	}
 	if IsEncryptedBox(box.ID) {
-		// 加密笔记本关闭：跳过 Unindex（索引 db 马上要删，逐条删是白费），
-		// 先等待事务队列和 SQL 索引队列落盘（确保 pending 写入已持久化到加密 .sy），
-		// 生成文件历史，再 ClearDEK（=LockBox）清除 DEK 并删除加密 db 文件。
-		// 加密索引可由 box.Index() 全量重建，关闭即删文件避免残留旧索引数据导致下次解锁叠加重复行。
+
 		FlushTxQueue()
 		sql.FlushQueue()
-		// 关闭前生成一次文件历史：锁定后定时器无法为加密笔记本生成历史（不在 GetOpenedBoxes 里）
+
 		GenerateFileHistoryForBox(box)
 		ClearDEK(boxID)
 	} else {
@@ -299,7 +287,6 @@ func Mount(boxID string) (alreadyMount bool, err error) {
 	localPath := filepath.Join(util.DataDir, boxID)
 	var reMountGuide bool
 	if isUserGuide {
-		// 重新挂载帮助文档
 
 		guideBox := Conf.Box(boxID)
 		if nil != guideBox {
@@ -322,7 +309,6 @@ func Mount(boxID string) (alreadyMount bool, err error) {
 			return
 		}
 
-		// 清除所有缓存，确保重开用户指南时数据是最新的
 		cache.ClearTreeCache()
 		cache.ClearDocsIAL()
 		cache.ClearBlocksIAL()
@@ -344,7 +330,7 @@ func Mount(boxID string) (alreadyMount bool, err error) {
 
 		task.AppendAsyncTaskWithDelay(task.PushMsg, 3*time.Second, util.PushErrMsg, Conf.Language(244), 7000)
 		go func() {
-			// 每次打开帮助文档时自动检查版本更新并提醒 https://github.com/siyuan-note/siyuan/issues/5057
+
 			time.Sleep(time.Second * 10)
 			CheckUpdate(true)
 		}()
@@ -360,9 +346,6 @@ func Mount(boxID string) (alreadyMount bool, err error) {
 		}
 	}
 
-	// 加密笔记本必须先通过 UnlockBox 解出 DEK，否则拒绝挂载。Mount 本身不接收密码，
-	// 前端流程为：先调 /api/notebook/unlockBox 解锁，再调 openNotebook 挂载。
-	// 使用 IsEncryptedBox 统一判定（含 backup fallback，不依赖 conf 完整性）。
 	if IsEncryptedBox(boxID) && !IsBoxUnlocked(boxID) {
 		return false, errors.New("encrypted notebook locked, please unlock it first")
 	}
@@ -377,7 +360,6 @@ func Mount(boxID string) (alreadyMount bool, err error) {
 		logging.LogErrorf("ensure box document [%s] failed: %s", boxID, ensureErr)
 	}
 
-	// 缓存根一级的文档树展开
 	files, _, _ := ListDocTree(box.ID, "/", util.SortModeUnassigned, false, false, Conf.FileTree.MaxListCount)
 	box = Conf.Box(boxID)
 	if 0 < len(files) || (nil != box && box.Exist(boxDocPath(box.ID))) {

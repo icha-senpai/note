@@ -27,7 +27,6 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// LocaleStrings 表示按语种 key 的字符串表，key 为语种如 "default"、"en_US"、"zh_CN" 等
 type LocaleStrings map[string]string
 
 type Funding struct {
@@ -37,7 +36,6 @@ type Funding struct {
 	Custom         []string `json:"custom"`
 }
 
-// Package 描述了本地扩展包元数据和传递给前端的其他信息。
 type Package struct {
 	Author            string        `json:"author"`
 	URL               string        `json:"url"`
@@ -58,8 +56,8 @@ type Package struct {
 	PreferredDesc    string `json:"preferredDesc"`
 	PreferredReadme  string `json:"preferredReadme"`
 
-	Name       string `json:"name"`    // 包名，不一定是仓库名
-	RepoURL    string `json:"repoURL"` // 形式为 https://github.com/owner/repo
+	Name       string `json:"name"`
+	RepoURL    string `json:"repoURL"`
 	RepoHash   string `json:"repoHash"`
 	PreviewURL string `json:"previewURL"`
 	IconURL    string `json:"iconURL"`
@@ -79,15 +77,13 @@ type Package struct {
 	Downloads               int    `json:"downloads"`
 	DisallowInstall         bool   `json:"disallowInstall"`
 	DisallowUpdate          bool   `json:"disallowUpdate"`
-	UpdateRequiredMinAppVer string `json:"updateRequiredMinAppVer,omitempty"` // 升级目标要求的最小应用版本
+	UpdateRequiredMinAppVer string `json:"updateRequiredMinAppVer,omitempty"`
 
-	// 专用字段，nil 时不序列化
-	InstalledIncompatible *bool     `json:"installedIncompatible,omitempty"` // Plugin：本地已安装版本是否不兼容
-	Enabled               *bool     `json:"enabled,omitempty"`               // Plugin：是否启用
-	Modes                 *[]string `json:"modes,omitempty"`                 // Theme：支持的模式列表
+	InstalledIncompatible *bool     `json:"installedIncompatible,omitempty"`
+	Enabled               *bool     `json:"enabled,omitempty"`
+	Modes                 *[]string `json:"modes,omitempty"`
 }
 
-// ParsePackageJSON 解析本地扩展包 JSON 文件
 func ParsePackageJSON(filePath string) (ret *Package, err error) {
 	if !filelock.IsExist(filePath) {
 		err = os.ErrNotExist
@@ -107,7 +103,6 @@ func ParsePackageJSON(filePath string) (ret *Package, err error) {
 	return
 }
 
-// GetPreferredLocaleString 从 LocaleStrings 中按当前语种取值，无则回退 default、en、en_US（历史命名兼容），再回退 fallback。
 func GetPreferredLocaleString(m LocaleStrings, fallback string) string {
 	if len(m) == 0 {
 		return fallback
@@ -115,7 +110,7 @@ func GetPreferredLocaleString(m LocaleStrings, fallback string) string {
 	if v := strings.TrimSpace(m[util.Lang]); "" != v {
 		return v
 	}
-	// 兼容本地扩展包 JSON 数据中历史下划线 key（zh_CN、en_US 等）
+
 	if v := strings.TrimSpace(m[util.LangToLegacy(util.Lang)]); "" != v {
 		return v
 	}
@@ -131,7 +126,6 @@ func GetPreferredLocaleString(m LocaleStrings, fallback string) string {
 	return fallback
 }
 
-// getPreferredFunding 获取包的首选赞助链接
 func getPreferredFunding(funding *Funding) string {
 	if nil == funding {
 		return ""
@@ -165,7 +159,6 @@ func normalizeFundingURL(s, base string) string {
 	return base + s
 }
 
-// FilterPackages 按关键词过滤本地扩展包列表
 func FilterPackages(packages []*Package, keyword string) []*Package {
 	keywords := getSearchKeywords(keyword)
 	if 0 == len(keywords) {
@@ -229,7 +222,7 @@ func packageContainsKeyword(pkg *Package, kw string) bool {
 			return true
 		}
 	}
-	if strings.Contains(strings.ToLower(path.Base(pkg.RepoURL)), kw) { // 仓库名，不一定是包名
+	if strings.Contains(strings.ToLower(path.Base(pkg.RepoURL)), kw) {
 		return true
 	}
 	return false

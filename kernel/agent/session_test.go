@@ -249,7 +249,7 @@ func TestRuntimeRecoveryCommitDoesNotDuplicateHistory(t *testing.T) {
 		repeatedCommit[key] = value
 	}
 	repeatedCommit["entries"].([]any)[1].(map[string]any)["content"] = "tampered repeated commit"
-	// 模拟提交已落盘但响应丢失：客户端会携带旧修订号原样重试。
+
 	repeatedCommit["expectedRevision"] = int64(1)
 	repeatedCommit["commitTurnID"] = turn.TurnID
 	if revision, canonicalState, err := SaveSessionState(marshalSession(t, repeatedCommit)); err != nil || revision != 2 {

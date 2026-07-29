@@ -329,7 +329,7 @@ func exportResources(c *gin.Context) {
 		name = util.TruncateLenFileName(arg["name"].(string))
 	}
 	if name == "" {
-		name = time.Now().Format("export-2006-01-02_15-04-05") // 生成的 *.zip 文件主文件名
+		name = time.Now().Format("export-2006-01-02_15-04-05")
 	}
 
 	if nil == arg["paths"] {
@@ -339,7 +339,7 @@ func exportResources(c *gin.Context) {
 		return
 	}
 
-	var resourcePaths []string // 文件/文件夹在工作空间中的路径
+	var resourcePaths []string
 	for _, resourcePath := range arg["paths"].([]any) {
 		resourcePaths = append(resourcePaths, resourcePath.(string))
 	}
@@ -352,7 +352,7 @@ func exportResources(c *gin.Context) {
 		return
 	}
 	ret.Data = map[string]any{
-		"path": zipFilePath, // 相对于工作空间目录的路径
+		"path": zipFilePath,
 	}
 }
 
@@ -554,7 +554,6 @@ func exportDocx(c *gin.Context) {
 		return
 	}
 
-	// savePath 由客户端指定，禁止写入加密笔记本目录（明文导出物会绕过加密、锁定后残留）
 	if rejectEncryptedBoxPath(savePath) {
 		ret.Code = -1
 		ret.Msg = model.Conf.Language(313)
@@ -593,7 +592,7 @@ func exportMdHTML(c *gin.Context) {
 	savePath = strings.TrimSpace(savePath)
 	if savePath == "" {
 		folderName := "htmlmd-" + id + "-" + util.CurrentTimeSecondsStr()
-		// 加密笔记本的导出临时目录归入 boxID 子目录，确保 LockBox 能清理和服务端可校验锁定状态
+
 		if bt := treenode.GetBlockTree(id); bt != nil && model.IsEncryptedBox(bt.BoxID) {
 			folderName = bt.BoxID + "/" + folderName
 		}
@@ -608,7 +607,6 @@ func exportMdHTML(c *gin.Context) {
 		return
 	}
 
-	// savePath 由客户端指定，禁止写入加密笔记本目录（明文导出物会绕过加密、锁定后残留）
 	if rejectEncryptedBoxPath(savePath) {
 		ret.Code = -1
 		ret.Msg = model.Conf.Language(313)
@@ -640,7 +638,7 @@ func exportTempContent(c *gin.Context) {
 		return
 	}
 	tmpExport := filepath.Join(util.TempDir, "export")
-	// 加密笔记本的临时导出归入 boxID 子目录，确保 LockBox 清理和服务端校验锁定状态
+
 	if id != "" {
 		if bt := treenode.GetBlockTree(id); bt != nil && model.IsEncryptedBox(bt.BoxID) {
 			tmpExport = filepath.Join(tmpExport, bt.BoxID)
@@ -670,7 +668,7 @@ func exportTempContent(c *gin.Context) {
 		}
 		return ""
 	}(); boxID != "" {
-		// 加密笔记本的临时导出产物须注册到托管表，否则服务端守卫（IsManagedEncryptedExportPath）会拒绝下载
+
 		token := model.RegisterManagedEncryptedExport(boxID, "temp", p)
 		urlPath += token
 	} else {
@@ -709,7 +707,6 @@ func exportBrowserHTML(c *gin.Context) {
 		return
 	}
 
-	// 检测是否来自加密笔记本：folder 形如 <boxID>/<folderName>
 	boxID := ""
 	if parts := strings.SplitN(folder, "/", 2); len(parts) >= 1 && ast.IsNodeIDPattern(parts[0]) && model.IsEncryptedBox(parts[0]) {
 		boxID = parts[0]
@@ -718,7 +715,7 @@ func exportBrowserHTML(c *gin.Context) {
 	zipFileName := util.FilterFileName(name) + ".zip"
 	var zipAbsPath string
 	if boxID != "" {
-		// 加密笔记本的导出 ZIP 写入 boxID 子目录，并注册托管 token
+
 		zipAbsPath = filepath.Join(util.TempDir, "export", boxID, "html", gulu.Rand.String(7)+"-"+zipFileName)
 		if err := os.MkdirAll(filepath.Dir(zipAbsPath), 0755); err != nil {
 			ret.Code = -1
@@ -785,7 +782,7 @@ func exportPreviewHTML(c *gin.Context) {
 		return
 	}
 	name, content, node := model.ExportHTML(id, "", true, keepFold, merge)
-	// 导出 PDF 预览时点击块引转换后的脚注跳转不正确 https://github.com/siyuan-note/siyuan/issues/5894
+
 	content = strings.ReplaceAll(content, "http://"+util.LocalHost+":"+util.ServerPort+"/#", "#")
 
 	// Add `data-doc-type` and attribute when exporting image and PDF https://github.com/siyuan-note/siyuan/issues/9497
@@ -829,7 +826,7 @@ func exportHTML(c *gin.Context) {
 	savePath = strings.TrimSpace(savePath)
 	if savePath == "" {
 		folderName := "html-" + id + "-" + util.CurrentTimeSecondsStr()
-		// 加密笔记本的导出临时目录归入 boxID 子目录，确保 LockBox 能清理和服务端可校验锁定状态
+
 		if bt := treenode.GetBlockTree(id); bt != nil && model.IsEncryptedBox(bt.BoxID) {
 			folderName = bt.BoxID + "/" + folderName
 		}
@@ -844,7 +841,6 @@ func exportHTML(c *gin.Context) {
 		return
 	}
 
-	// savePath 由客户端指定，禁止写入加密笔记本目录（明文导出物会绕过加密、锁定后残留）
 	if rejectEncryptedBoxPath(savePath) {
 		ret.Code = -1
 		ret.Msg = model.Conf.Language(313)
@@ -906,7 +902,7 @@ func exportPreview(c *gin.Context) {
 	if userAgentStr != "" {
 		ua := useragent.New(userAgentStr)
 		name, _ := ua.Browser()
-		// Chrome、Edge、SiYuan 桌面端不需要替换 CSS 变量
+
 		if !ua.Mobile() && (name == "Chrome" || name == "Edge" || strings.Contains(userAgentStr, "Electron") || strings.Contains(userAgentStr, "Scribli/")) {
 			fillCSSVar = false
 		}
@@ -1023,9 +1019,6 @@ func copyExportFile(c *gin.Context) {
 		return
 	}
 
-	// 加密导出受控路径（<boxID>/<kind>/<file>）：按注册表无条件校验，不依赖 IsEncryptedBox。
-	// 笔记本删除后 IsEncryptedBox 返回 false，若以它为门控会 fail-open 暴露明文产物。
-	// relativePath 去掉 "/export/" 前缀以与 serveExport 的守卫及托管注册 key（<boxID>/kind/<name>）对齐。
 	relativeExportPath := strings.TrimPrefix(srcPath, "/export/")
 	relativeExportPath = strings.TrimPrefix(relativeExportPath, "export/")
 	if model.IsManagedEncryptedExportPath(relativeExportPath) {

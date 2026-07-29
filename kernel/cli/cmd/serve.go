@@ -29,7 +29,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// serve 子命令自己的 flag 值。--workspace 复用 rootCmd 的 persistent flag，不再重复声明。
 var (
 	serveWdPath         string
 	servePort           string
@@ -46,10 +45,9 @@ var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Start kernel HTTP server",
 	Long:  "Start kernel HTTP server. All serving-related options below are passed to the kernel boot.",
-	// 这些 flag 由 cobra 解析（见 init），serve -h 可直接列出全部参数。
+
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// serve 绕过 root 的初始化，但 --log-level 需在 BootWithFlags（含 logBootInfo 等启动日志）之前应用，
-		// 否则命令行指定的级别会被丢弃；同时记入 util.CLILogLevel，使随后的 model.InitConf 不再用 conf.json 覆盖。
+
 		if "" != logLevel {
 			logging.SetLogLevel(logLevel)
 			util.CLILogLevel = logLevel
@@ -57,7 +55,7 @@ var serveCmd = &cobra.Command{
 		return nil // bypass root's init — BootWithFlags() handles it
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		// --workspace 优先取 serve 自己的（rootCmd 的 persistent flag），兜底环境变量与默认值交给 util.BootWithFlags 内部处理（与原 Boot() 行为一致）。
+
 		ws := workspacePath
 
 		util.BootWithFlags(ws, serveWdPath, servePort, serveReadOnly, serveAccessAuthCode, serveLang, serveMode, serveSSL, serveAttachUI, serveSafeMode)
@@ -96,8 +94,7 @@ var serveCmd = &cobra.Command{
 }
 
 func init() {
-	// --wd 默认值取内核可执行文件所在目录的上一级（打包后的 resources/，appearance/、stage/ 所在目录），
-	// 与 rootCmd.PersistentPreRunE 走同一个 resolveWorkingDir()，确保两条启动路径行为一致。
+
 	serveCmd.Flags().StringVar(&serveWdPath, "wd", resolveWorkingDir(), "working directory of Scribli")
 	serveCmd.Flags().StringVar(&servePort, "port", "0", "port of the HTTP server")
 	serveCmd.Flags().StringVar(&serveReadOnly, "readonly", "false", "read-only mode")

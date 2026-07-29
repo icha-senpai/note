@@ -44,7 +44,6 @@ import (
 	"github.com/xrash/smetrics"
 )
 
-// TemplateSearchResult 描述了模板搜索结果。
 type TemplateSearchResult struct {
 	Path         string `json:"path"`
 	RelativePath string `json:"relativePath"`
@@ -55,7 +54,6 @@ func RenderGoTemplate(templateContent string) (ret string, err error) {
 	return RenderGoTemplateAt(templateContent, time.Now())
 }
 
-// RenderGoTemplateAt 使用固定时间渲染 Go 模板，保证同一次业务操作中的多个模板结果一致。
 func RenderGoTemplateAt(templateContent string, now time.Time) (ret string, err error) {
 	tmpl := template.New("")
 	tplFuncMap := filesys.BuiltInTemplateFuncs()
@@ -85,7 +83,6 @@ func RemoveTemplate(p string) (err error) {
 	return
 }
 
-// getTemplateReadmePaths 返回模板包 README 的相对包根路径集合：恒含 README.md，并合并 template.json 的 readme 字段（大小写敏感）。
 func getTemplateReadmePaths(templateDir string) map[string]struct{} {
 	paths := map[string]struct{}{"README.md": {}}
 	pkg, err := extensions.ParsePackageJSON(filepath.Join(templateDir, "template.json"))
@@ -257,10 +254,10 @@ func DocSaveAsTemplate(id, name string, overwrite bool) (code int, err error) {
 
 		if ast.NodeCodeBlockFenceInfoMarker == n.Type {
 			if lang := string(n.CodeBlockInfo); "siyuan-template" == lang || "template" == lang {
-				// 将模板代码转换为段落文本 https://github.com/siyuan-note/siyuan/pull/15345
+
 				unlinks = append(unlinks, n.Parent)
 				p := treenode.NewParagraph(n.Parent.ID)
-				// 代码块内可能会有多个空行，但是这里不需要分块处理，后面渲染一个文本节点即可
+
 				p.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: n.Next.Tokens})
 				n.Parent.InsertBefore(p)
 			}
@@ -275,9 +272,8 @@ func DocSaveAsTemplate(id, name string, overwrite bool) (code int, err error) {
 	formatRenderer := render.NewFormatRenderer(tree, luteEngine.RenderOptions, luteEngine.ParseOptions)
 	md := formatRenderer.Render()
 
-	// 单独渲染根节点的 IAL
 	if 0 < len(tree.Root.KramdownIAL) {
-		// 把 docIAL 中的 id 调整到第一个
+
 		tree.Root.RemoveIALAttr("id")
 		tree.Root.KramdownIAL = append([][]string{{"id", tree.Root.ID}}, tree.Root.KramdownIAL...)
 		md = append(md, []byte("\n")...)
@@ -399,7 +395,7 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 	}
 
 	var nodesNeedAppendChild, unlinks []*ast.Node
-	// 模板内部块旧 ID 到新 ID 的映射，用于成套改写模板内部的自引用
+
 	blockIDs := map[string]string{}
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if !entering {
@@ -407,7 +403,7 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 		}
 
 		if "" != n.ID {
-			// 重新生成 ID，并记录旧 ID 到新 ID 的映射，用于后续成套改写模板内部的自引用
+
 			oldID := n.ID
 			n.ID = ast.NewNodeID()
 			blockIDs[oldID] = n.ID
@@ -427,13 +423,13 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 
 		if n.IsTextMarkType("inline-math") {
 			if n.ParentIs(ast.NodeTableCell) {
-				// 表格中的公式中带有管道符时使用 HTML 实体替换管道符 Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+
 				n.TextMarkInlineMathContent = strings.ReplaceAll(n.TextMarkInlineMathContent, "|", "&#124;")
 			}
 		}
 
 		if ast.NodeAttributeView == n.Type {
-			// 重新生成数据库视图
+
 			attrView, parseErr := av.ParseAttributeView(n.AttributeViewID)
 			if nil != parseErr {
 				logging.LogErrorf("parse attribute view [%s] failed: %s", n.AttributeViewID, parseErr)
@@ -446,12 +442,12 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 
 				n.AttributeViewID = cloned.ID
 				if !preview {
-					// 非预览时持久化数据库
+
 					if saveErr := av.SaveAttributeView(cloned); nil != saveErr {
 						logging.LogErrorf("save attribute view [%s] failed: %s", cloned.ID, saveErr)
 					}
 				} else {
-					// 预览时使用简单表格渲染
+
 					viewID := n.IALAttr(av.NodeAttrView)
 					view, getErr := attrView.GetCurrentView(viewID)
 					if nil != getErr {
@@ -482,8 +478,6 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 		return ast.WalkContinue
 	})
 
-	// 用映射成套改写模板内部的自引用，并补全指向外部块的引用锚文本
-	// 仅命中 blockIDs 的引用（模板内部块）才会改写 ID；未命中的（外部块）保持不变
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if !entering {
 			return ast.WalkContinue
@@ -492,10 +486,10 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 		if n.IsTextMarkType("block-ref") {
 			defID := n.TextMarkBlockRefID
 			if newDefID, internal := blockIDs[defID]; internal {
-				// 模板内部自引用：成套改写为新 ID
+
 				n.TextMarkBlockRefID = newDefID
 			} else {
-				// 外部引用：保持 ID 不变，补全空锚文本
+
 				if refText := n.Text(); "" == refText {
 					refText = strings.TrimSpace(sql.GetRefText(defID))
 					if "" != refText {
@@ -506,14 +500,14 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 				}
 			}
 		} else if ast.NodeBlockRef == n.Type {
-			// 兼容遗留块引用节点
+
 			if refID := n.ChildByType(ast.NodeBlockRefID); nil != refID {
 				defID := refID.TokensStr()
 				if newDefID, internal := blockIDs[defID]; internal {
-					// 模板内部自引用：成套改写为新 ID
+
 					refID.Tokens = []byte(newDefID)
 				} else {
-					// 外部引用：保持 ID 不变，补全空锚文本
+
 					if refText := n.Text(); "" == refText {
 						refText = strings.TrimSpace(sql.GetRefText(defID))
 						if "" != refText {
@@ -525,13 +519,13 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 				}
 			}
 		} else if treenode.IsBlockLink(n) {
-			// 块超链接指向模板内部块时成套改写
+
 			defID := strings.TrimPrefix(n.TextMarkAHref, "scribli://blocks/")
 			if newDefID, internal := blockIDs[defID]; internal {
 				n.TextMarkAHref = "scribli://blocks/" + newDefID
 			}
 		} else if ast.NodeBlockQueryEmbedScript == n.Type {
-			// 嵌入块查询脚本中引用模板内部块时成套改写
+
 			for oldID, newID := range blockIDs {
 				n.Tokens = bytes.ReplaceAll(n.Tokens, []byte(oldID), []byte(newID))
 			}
@@ -549,13 +543,12 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 		n.Unlink()
 	}
 
-	// 折叠标题导出为模板后使用会出现内容重复 https://github.com/siyuan-note/siyuan/issues/4488
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if !entering {
 			return ast.WalkContinue
 		}
 
-		if "1" == n.IALAttr("heading-fold") { // 为标题折叠下方块添加属性，前端渲染以后会统一做移除处理
+		if "1" == n.IALAttr("heading-fold") {
 			n.SetIALAttr("status", "temp")
 		}
 		return ast.WalkContinue
@@ -563,7 +556,7 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 
 	icon := tree.Root.IALAttr("icon")
 	if "" != icon {
-		// 动态图标需要反转义 https://github.com/siyuan-note/siyuan/issues/13211
+
 		icon = util.UnescapeHTML(icon)
 		tree.Root.SetIALAttr("icon", icon)
 	}
@@ -586,7 +579,7 @@ func addBlockIALNodes(tree *parse.Tree, removeUpdated bool) {
 			}
 		} else if ast.NodeHTMLBlock == n.Type {
 			n.Tokens = bytes.TrimSpace(n.Tokens)
-			// 使用 <div> 包裹，否则后续解析时会识别为行级 HTML https://github.com/siyuan-note/siyuan/issues/4244
+
 			if !bytes.HasPrefix(n.Tokens, []byte("<div>")) {
 				n.Tokens = append([]byte("<div>\n"), n.Tokens...)
 			}
@@ -608,8 +601,6 @@ func addBlockIALNodes(tree *parse.Tree, removeUpdated bool) {
 	}
 }
 
-// CreateTemplate 在 <data>/templates/ 下创建模板文件。name 不含扩展名，content 为 markdown 文本。
-// overwrite=false 且文件已存在时返回 code=1（与 DocSaveAsTemplate 一致）。
 func CreateTemplate(name, content string, overwrite bool) (code int, err error) {
 	name = util.FilterFileName(name) + ".md"
 	name = util.TruncateLenFileName(name)

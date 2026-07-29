@@ -37,7 +37,6 @@ func QueryAssetContentNoLimit(stmt string) (ret []map[string]any, err error) {
 	return queryAssetContentRawStmt(stmt, nil, math.MaxInt)
 }
 
-// QueryAssetContentNoLimitArgs 使用绑定参数查询资源文件内容数据库。
 func QueryAssetContentNoLimitArgs(stmt string, args ...any) (ret []map[string]any, err error) {
 	return queryAssetContentRawStmt(stmt, args, math.MaxInt)
 }
@@ -159,7 +158,6 @@ func SelectAssetContentsRawStmtNoParse(stmt string, limit int) (ret []*AssetCont
 	return selectAssetContentsRawStmt(stmt, nil, limit)
 }
 
-// SelectAssetContentsRawStmtNoParseArgs 使用绑定参数查询资源文件内容，并保留调用方构造的 SQL。
 func SelectAssetContentsRawStmtNoParseArgs(stmt string, args []any, limit int) (ret []*AssetContent) {
 	return selectAssetContentsRawStmt(stmt, args, limit)
 }

@@ -36,7 +36,7 @@ func EmojiPinYinCompare(str1, str2 string) bool {
 	str1_ := strings.TrimSpace(RemoveEmojiInvisible(str1))
 	str2_ := strings.TrimSpace(RemoveEmojiInvisible(str2))
 	if str1_ == str2_ && 0 == len(str1_) {
-		// 全部都是 emoji 的情况按 emoji 字符串排序
+
 		return strings.Compare(str1, str2) < 0
 	}
 	return PinYinCompare(str1, str2)
@@ -65,7 +65,7 @@ func PinYinCompare(str1, str2 string) bool {
 }
 
 func PinYinCompare4FileTree(str1, str2 string) bool {
-	// 文档树字母排序不复用 PinYinCompare 而是单独实现
+
 	// Improve doc tree Name Alphabet sorting https://github.com/siyuan-note/siyuan/issues/14773
 
 	str1 = RemoveEmojiInvisible(str1)
@@ -80,14 +80,12 @@ func PinYinCompare4FileTree(str1, str2 string) bool {
 	a, _ := UTF82GBK(str1)
 	b, _ := UTF82GBK(str2)
 
-	// 长度相等的情况下，直接比较字节数组
 	if len(a) == len(b) {
 		return bytes.Compare(a, b) < 0
 	}
 
-	// 长度不相等的情况下，比较前面相等的部分
 	if len(a) < len(b) {
-		if 0 == bytes.Compare(a, b[:len(a)]) { // 前面相等的情况下短的在前
+		if 0 == bytes.Compare(a, b[:len(a)]) {
 			return true
 		}
 		return bytes.Compare(a, b[:len(a)]) < 0
@@ -112,22 +110,22 @@ func GBK2UTF8(src []byte) (string, error) {
 }
 
 const (
-	SortModeNameASC         = iota // 0：文件名字母升序
-	SortModeNameDESC               // 1：文件名字母降序
-	SortModeUpdatedASC             // 2：文件更新时间升序
-	SortModeUpdatedDESC            // 3：文件更新时间降序
-	SortModeAlphanumASC            // 4：文件名自然数升序
-	SortModeAlphanumDESC           // 5：文件名自然数降序
-	SortModeCustom                 // 6：自定义排序
-	SortModeRefCountASC            // 7：引用数升序
-	SortModeRefCountDESC           // 8：引用数降序
-	SortModeCreatedASC             // 9：文件创建时间升序
-	SortModeCreatedDESC            // 10：文件创建时间降序
-	SortModeSizeASC                // 11：文件大小升序
-	SortModeSizeDESC               // 12：文件大小降序
-	SortModeSubDocCountASC         // 13：子文档数升序
-	SortModeSubDocCountDESC        // 14：子文档数降序
-	SortModeFileTree               // 15：使用文档树排序规则
+	SortModeNameASC = iota
+	SortModeNameDESC
+	SortModeUpdatedASC
+	SortModeUpdatedDESC
+	SortModeAlphanumASC
+	SortModeAlphanumDESC
+	SortModeCustom
+	SortModeRefCountASC
+	SortModeRefCountDESC
+	SortModeCreatedASC
+	SortModeCreatedDESC
+	SortModeSizeASC
+	SortModeSizeDESC
+	SortModeSubDocCountASC
+	SortModeSubDocCountDESC
+	SortModeFileTree
 
-	SortModeUnassigned = 256 // 256：未指定排序规则，按照笔记本优先于文档树获取排序规则
+	SortModeUnassigned = 256
 )

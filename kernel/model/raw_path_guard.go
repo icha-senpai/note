@@ -22,8 +22,6 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// EncryptedRawPathBoxID 返回原始文件路径所属的加密笔记本 ID。
-// 同时检查最长已存在父目录解析后的路径，防止通过符号链接绕过加密边界。
 func EncryptedRawPathBoxID(absPath string) string {
 	if normalized, err := filepath.Abs(absPath); err == nil {
 		absPath = normalized

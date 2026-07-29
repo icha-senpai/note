@@ -26,7 +26,6 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// WidgetSearchResult 描述了挂件搜索结果。
 type WidgetSearchResult struct {
 	Name    string `json:"name"`
 	Content string `json:"content"`

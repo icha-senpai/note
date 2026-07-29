@@ -37,7 +37,7 @@ type Task struct {
 	Handler reflect.Value
 	Args    []any
 	Created time.Time
-	Async   bool // 为 true 说明是异步任务，不会阻塞任务队列，满足 Delay 条件后立即执行
+	Async   bool
 	Delay   time.Duration
 	Timeout time.Duration
 }
@@ -100,10 +100,8 @@ func containTask(task *Task, tasks []*Task) bool {
 	return false
 }
 
-// areArgsEqual 比较两个参数是否相等
 func areArgsEqual(a, b any) bool {
 
-	// 如果两个参数都为 nil
 	if a == nil && b == nil {
 		return true
 	}
@@ -111,7 +109,6 @@ func areArgsEqual(a, b any) bool {
 		return false
 	}
 
-	// 快速处理常见的基本类型
 	switch av := a.(type) {
 	case string:
 		if bv, ok := b.(string); ok {
@@ -179,7 +176,6 @@ func areArgsEqual(a, b any) bool {
 		}
 	}
 
-	// 未处理的复杂类型，回退到 reflect.DeepEqual
 	return reflect.DeepEqual(a, b)
 }
 
@@ -200,36 +196,35 @@ func getCurrentTasks() (ret []*Task) {
 }
 
 const (
-	RepoCheckout        = "task.repo.checkout"         // 从快照中检出
-	RepoAutoPurge       = "task.repo.autoPurge"        // 自动清理数据仓库
-	DatabaseIndexFull   = "task.database.index.full"   // 重建索引
-	DatabaseIndexFTS    = "task.database.index.fts"    // 重建搜索索引
-	DatabaseIndex       = "task.database.index"        // 数据库索引
-	DatabaseIndexCommit = "task.database.index.commit" // 数据库索引提交
-	DatabaseIndexRef    = "task.database.index.ref"    // 数据库索引引用
+	RepoCheckout        = "task.repo.checkout"
+	RepoAutoPurge       = "task.repo.autoPurge"
+	DatabaseIndexFull   = "task.database.index.full"
+	DatabaseIndexFTS    = "task.database.index.fts"
+	DatabaseIndex       = "task.database.index"
+	DatabaseIndexCommit = "task.database.index.commit"
+	DatabaseIndexRef    = "task.database.index.ref"
 
-	OCRImage                          = "task.ocr.image"                            // 图片 OCR 提取文本
-	HistoryGenerateFile               = "task.history.generateFile"                 // 生成文件历史
-	HistoryDatabaseIndexFull          = "task.history.database.index.full"          // 历史数据库重建索引
-	HistoryDatabaseIndexCommit        = "task.history.database.index.commit"        // 历史数据库索引提交
-	DatabaseIndexEmbedBlock           = "task.database.index.embedBlock"            // 数据库索引嵌入块
-	ReloadUI                          = "task.reload.ui"                            // 重载 UI
-	AssetContentDatabaseIndexFull     = "task.asset.database.index.full"            // 资源文件数据库重建索引
-	AssetContentDatabaseIndexCommit   = "task.asset.database.index.commit"          // 资源文件数据库索引提交
-	DatabaseIndexEmbeddingFull        = "task.database.index.embedding.full"        // 嵌入向量重建索引
-	DatabaseIndexEmbeddingRetryFailed = "task.database.index.embedding.retryFailed" // 嵌入向量重试失败块
-	CacheVirtualBlockRef              = "task.cache.virtualBlockRef"                // 缓存虚拟块引用
-	ReloadAttributeView               = "task.reload.attributeView"                 // 重新加载属性视图
-	ReloadProtyle                     = "task.reload.protyle"                       // 重新加载编辑器
-	ReloadTag                         = "task.reload.tag"                           // 重新加载标签面板
-	ReloadFiletree                    = "task.reload.filetree"                      // 重新加载文档树面板
-	SetRefDynamicText                 = "task.ref.setDynamicText"                   // 设置引用的动态锚文本
-	SetDefRefCount                    = "task.def.setRefCount"                      // 设置定义的引用计数
-	UpdateIDs                         = "task.update.ids"                           // 更新 ID
-	PushMsg                           = "task.push.msg"                             // 推送消息
+	OCRImage                          = "task.ocr.image"
+	HistoryGenerateFile               = "task.history.generateFile"
+	HistoryDatabaseIndexFull          = "task.history.database.index.full"
+	HistoryDatabaseIndexCommit        = "task.history.database.index.commit"
+	DatabaseIndexEmbedBlock           = "task.database.index.embedBlock"
+	ReloadUI                          = "task.reload.ui"
+	AssetContentDatabaseIndexFull     = "task.asset.database.index.full"
+	AssetContentDatabaseIndexCommit   = "task.asset.database.index.commit"
+	DatabaseIndexEmbeddingFull        = "task.database.index.embedding.full"
+	DatabaseIndexEmbeddingRetryFailed = "task.database.index.embedding.retryFailed"
+	CacheVirtualBlockRef              = "task.cache.virtualBlockRef"
+	ReloadAttributeView               = "task.reload.attributeView"
+	ReloadProtyle                     = "task.reload.protyle"
+	ReloadTag                         = "task.reload.tag"
+	ReloadFiletree                    = "task.reload.filetree"
+	SetRefDynamicText                 = "task.ref.setDynamicText"
+	SetDefRefCount                    = "task.def.setRefCount"
+	UpdateIDs                         = "task.update.ids"
+	PushMsg                           = "task.push.msg"
 )
 
-// uniqueActions 描述了唯一的任务，即队列中只能存在一个在执行的任务。
 var uniqueActions = []string{
 	RepoCheckout,
 	RepoAutoPurge,
@@ -385,18 +380,16 @@ func popAsyncTasks() (ret []*Task) {
 		return
 	}
 
-	// writeIdx 指向下一个要写入的位置
 	writeIdx := 0
 	for readIdx := 0; readIdx < len(taskQueue); readIdx++ {
 		task := taskQueue[readIdx]
 
-		// 判断是否应该弹出此任务
 		shouldPop := task.Async && time.Since(task.Created) > task.Delay
 		if shouldPop {
 			ret = append(ret, task)
-			// 不写入 taskQueue，相当于删除
+
 		} else {
-			// 保留此任务，移动到 writeIdx 位置
+
 			if writeIdx != readIdx {
 				taskQueue[writeIdx] = task
 			}
@@ -404,7 +397,6 @@ func popAsyncTasks() (ret []*Task) {
 		}
 	}
 
-	// 清理队列尾部的引用，防止内存泄漏
 	for i := writeIdx; i < len(taskQueue); i++ {
 		taskQueue[i] = nil
 	}

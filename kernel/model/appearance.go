@@ -276,11 +276,11 @@ func LoadIcons() {
 
 func isCurrentUseTheme(themePath string) string {
 	themeName := filepath.Base(filepath.Dir(themePath))
-	if 0 == Conf.Appearance.Mode { // 明亮
+	if 0 == Conf.Appearance.Mode {
 		if Conf.Appearance.ThemeLight == themeName {
 			return themeName
 		}
-	} else if 1 == Conf.Appearance.Mode { // 暗黑
+	} else if 1 == Conf.Appearance.Mode {
 		if Conf.Appearance.ThemeDark == themeName {
 			return themeName
 		}
@@ -292,7 +292,7 @@ func broadcastRefreshThemeIfCurrent(themeCssPath string) {
 	if !strings.HasSuffix(themeCssPath, "theme.css") {
 		return
 	}
-	// 只处理主题根目录中的 theme.css
+
 	themeDir := filepath.Clean(filepath.Dir(themeCssPath))
 	themesRoot := filepath.Clean(util.ThemesPath)
 	if themeDir != filepath.Join(themesRoot, filepath.Base(themeDir)) {

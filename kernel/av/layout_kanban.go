@@ -20,20 +20,19 @@ import (
 	"github.com/88250/lute/ast"
 )
 
-// LayoutKanban 描述了看板视图的结构。
 type LayoutKanban struct {
 	*BaseLayout
 
-	CoverFrom           CoverFrom       `json:"coverFrom"`                     // 封面来源，0：无，1：内容图，2：资源字段
-	CoverFromAssetKeyID string          `json:"coverFromAssetKeyID,omitempty"` // 资源字段 ID，CoverFrom 为 2 时有效
-	CardAspectRatio     CardAspectRatio `json:"cardAspectRatio"`               // 卡片宽高比
-	CardSize            CardSize        `json:"cardSize"`                      // 卡片大小，0：小卡片，1：中卡片，2：大卡片
-	FitImage            bool            `json:"fitImage"`                      // 是否适应封面图片大小
-	DisplayFieldName    bool            `json:"displayFieldName"`              // 是否显示字段名称
+	CoverFrom           CoverFrom       `json:"coverFrom"`
+	CoverFromAssetKeyID string          `json:"coverFromAssetKeyID,omitempty"`
+	CardAspectRatio     CardAspectRatio `json:"cardAspectRatio"`
+	CardSize            CardSize        `json:"cardSize"`
+	FitImage            bool            `json:"fitImage"`
+	DisplayFieldName    bool            `json:"displayFieldName"`
 
-	FillColBackgroundColor bool `json:"fillColBackgroundColor"` // 是否填充列背景颜色
+	FillColBackgroundColor bool `json:"fillColBackgroundColor"`
 
-	Fields []*ViewKanbanField `json:"fields"` // 字段
+	Fields []*ViewKanbanField `json:"fields"`
 }
 
 func NewLayoutKanban() *LayoutKanban {
@@ -49,42 +48,37 @@ func NewLayoutKanban() *LayoutKanban {
 	}
 }
 
-// ViewKanbanField 描述了看板字段的结构。
 type ViewKanbanField struct {
 	*BaseField
 }
 
-// Kanban 描述了看板视图实例的结构。
 type Kanban struct {
 	*BaseInstance
 
-	CoverFrom              CoverFrom       `json:"coverFrom"`                     // 封面来源
-	CoverFromAssetKeyID    string          `json:"coverFromAssetKeyID,omitempty"` // 资源字段 ID，CoverFrom 为 CoverFromAssetField 时有效
-	CardAspectRatio        CardAspectRatio `json:"cardAspectRatio"`               // 卡片宽高比
-	CardSize               CardSize        `json:"cardSize"`                      // 卡片大小
-	FitImage               bool            `json:"fitImage"`                      // 是否适应封面图片大小
-	DisplayFieldName       bool            `json:"displayFieldName"`              // 是否显示字段名称
-	FillColBackgroundColor bool            `json:"fillColBackgroundColor"`        // 是否填充列背景颜色
-	Fields                 []*KanbanField  `json:"fields"`                        // 卡片字段
-	Cards                  []*KanbanCard   `json:"cards"`                         // 卡片
-	CardCount              int             `json:"cardCount"`                     // 总卡片数
+	CoverFrom              CoverFrom       `json:"coverFrom"`
+	CoverFromAssetKeyID    string          `json:"coverFromAssetKeyID,omitempty"`
+	CardAspectRatio        CardAspectRatio `json:"cardAspectRatio"`
+	CardSize               CardSize        `json:"cardSize"`
+	FitImage               bool            `json:"fitImage"`
+	DisplayFieldName       bool            `json:"displayFieldName"`
+	FillColBackgroundColor bool            `json:"fillColBackgroundColor"`
+	Fields                 []*KanbanField  `json:"fields"`
+	Cards                  []*KanbanCard   `json:"cards"`
+	CardCount              int             `json:"cardCount"`
 }
 
-// KanbanCard 描述了看板实例卡片的结构。
 type KanbanCard struct {
-	ID     string              `json:"id"`     // 卡片 ID
-	Values []*KanbanFieldValue `json:"values"` // 卡片字段值
+	ID     string              `json:"id"`
+	Values []*KanbanFieldValue `json:"values"`
 
-	CoverURL     string `json:"coverURL"`     // 卡片封面超链接
-	CoverContent string `json:"coverContent"` // 卡片封面文本内容
+	CoverURL     string `json:"coverURL"`
+	CoverContent string `json:"coverContent"`
 }
 
-// KanbanField 描述了看板实例字段的结构。
 type KanbanField struct {
 	*BaseInstanceField
 }
 
-// KanbanFieldValue 描述了卡片字段实例值的结构。
 type KanbanFieldValue struct {
 	*BaseValue
 }

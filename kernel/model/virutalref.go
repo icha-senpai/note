@@ -37,8 +37,6 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// virtualBlockRefCache 用于保存块关联的虚拟引用关键字。
-// 改进打开虚拟引用后加载文档的性能 https://github.com/siyuan-note/siyuan/issues/7378
 var virtualBlockRefCache, _ = ristretto.NewCache(&ristretto.Config{
 	NumCounters: 100000,
 	MaxCost:     10240,
@@ -126,7 +124,6 @@ func ResetVirtualBlockRefCache() {
 	virtualBlockRefCache.Set("virtual_ref", keywords, 1)
 }
 
-// addNewKeywords 将新关键字添加到虚拟引用关键字列表中，如果不存在则追加，保留空白字符
 func addNewKeywords(keywordsStr string, newKeywords []string) string {
 	keywordsStr = strings.TrimSpace(keywordsStr)
 	if 0 == len(newKeywords) {
@@ -146,22 +143,21 @@ func addNewKeywords(keywordsStr string, newKeywords []string) string {
 	newKeywords = gulu.Str.RemoveDuplicatedElem(newKeywords)
 	allKeys := make(map[string]bool)
 
-	// 添加新关键字
 	for _, keyword := range newKeywords {
 		keywordTrimmed := strings.TrimSpace(keyword)
 		if "" == keywordTrimmed {
 			continue
 		}
 		if gulu.Str.Contains(keywordTrimmed, keywords) {
-			// 剔除已存在的关键字
+
 			continue
 		}
 		if _, value := allKeys[keywordTrimmed]; value {
-			// 剔除重复的关键字
+
 			continue
 		}
 		allKeys[keywordTrimmed] = true
-		builder.WriteString(strings.ReplaceAll(keyword, ",", "\\,")) // 字符串切片转换为字符串，需要转义逗号
+		builder.WriteString(strings.ReplaceAll(keyword, ",", "\\,"))
 		builder.WriteString(",")
 	}
 
@@ -201,7 +197,7 @@ func processVirtualRef(n *ast.Node, unlinks *[]*ast.Node, virtualBlockRefKeyword
 	}
 
 	if 0 < refCount[parentBlock.ID] {
-		// 如果块被引用过，则将其自身的文本排除在虚拟引用关键字之外
+
 		// Referenced blocks support rendering virtual references https://github.com/siyuan-note/siyuan/issues/10960
 		parentText := getNodeRefText(parentBlock)
 		virtualBlockRefKeywords = gulu.Str.RemoveElem(virtualBlockRefKeywords, parentText)
@@ -216,7 +212,7 @@ func processVirtualRef(n *ast.Node, unlinks *[]*ast.Node, virtualBlockRefKeyword
 
 	newContent := markReplaceSpanWithSplit(content, virtualBlockRefKeywords, search.GetMarkSpanStart(search.VirtualBlockRefDataType), search.GetMarkSpanEnd())
 	if content != newContent {
-		// 虚拟引用排除命中自身块命名和别名的情况 https://github.com/siyuan-note/siyuan/issues/3185
+
 		var blockKeys []string
 		if name := parentBlock.IALAttr("name"); "" != name {
 			blockKeys = append(blockKeys, name)
@@ -248,24 +244,23 @@ func processVirtualRef(n *ast.Node, unlinks *[]*ast.Node, virtualBlockRefKeyword
 	return false
 }
 
-// parseKeywords 将字符串转换为关键字切片，并剔除前后的空白字符
 func parseKeywords(keywordsStr string) (keywords []string) {
 	keywords = []string{}
 	keywordsStr = strings.TrimSpace(keywordsStr)
 	if "" == keywordsStr {
 		return
 	}
-	// 先处理转义的逗号
+
 	keywordsStr = strings.ReplaceAll(keywordsStr, "\\,", "__comma@sep__")
-	// 再将连续或单个换行符替换为一个逗号，避免把 `\\\n` 转换为 `\,`
+
 	keywordsStr = util.ReplaceNewline(keywordsStr, ",")
-	// 按逗号分隔
+
 	for part := range strings.SplitSeq(keywordsStr, ",") {
-		part = strings.TrimSpace(part) // 剔除前后的空白字符
+		part = strings.TrimSpace(part)
 		if "" == part {
 			continue
 		}
-		// 恢复转义的逗号
+
 		part = strings.ReplaceAll(part, "__comma@sep__", ",")
 		keywords = append(keywords, part)
 	}
@@ -317,7 +312,6 @@ func getVirtualRefKeywords(root *ast.Node) (ret []string) {
 		}
 	}
 
-	// 虚拟引用排除当前文档名 https://github.com/siyuan-note/siyuan/issues/4537
 	// Virtual references exclude the name and aliases from the current document https://github.com/siyuan-note/siyuan/issues/9204
 	title := root.IALAttr("title")
 	ret = gulu.Str.ExcludeElem(ret, []string{title})
@@ -338,7 +332,7 @@ func prepareMarkKeywords(keywords []string) (ret []string) {
 	ret = gulu.Str.RemoveDuplicatedElem(keywords)
 	var tmp []string
 	for _, k := range ret {
-		if "" != k && "*" != k { // 提及和虚引排除 * Ignore `*` back mentions and virtual references https://github.com/siyuan-note/siyuan/issues/10873
+		if "" != k && "*" != k {
 			tmp = append(tmp, k)
 		}
 	}

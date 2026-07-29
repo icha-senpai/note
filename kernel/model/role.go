@@ -27,10 +27,10 @@ const (
 )
 
 const (
-	RoleAdministrator Role = iota // 管理员
-	RoleEditor                    // 编辑者
-	RoleReader                    // 读者
-	RoleVisitor                   // 匿名访问者
+	RoleAdministrator Role = iota
+	RoleEditor
+	RoleReader
+	RoleVisitor
 )
 
 func IsValidRole(role Role, roles []Role) bool {

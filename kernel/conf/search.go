@@ -46,7 +46,7 @@ type Search struct {
 
 	Limit         int   `json:"limit"`
 	CaseSensitive bool  `json:"caseSensitive"`
-	HanSensitive  *bool `json:"hanSensitive"` // 区分繁简：默认开启（与既往行为一致）；关闭后全文搜索不区分简体/繁体中文字形
+	HanSensitive  *bool `json:"hanSensitive"`
 
 	Name  bool `json:"name"`
 	Alias bool `json:"alias"`
@@ -115,7 +115,6 @@ func NewSearch() *Search {
 //go:fix inline
 func boolPtr(v bool) *bool { return new(v) }
 
-// HanSensitiveVal 返回 HanSensitive 的 bool 值；nil 视为 true（与既往行为一致）。
 func (s *Search) HanSensitiveVal() bool {
 	if s.HanSensitive == nil {
 		return true
@@ -123,7 +122,6 @@ func (s *Search) HanSensitiveVal() bool {
 	return *s.HanSensitive
 }
 
-// SetHanSensitive 设置 HanSensitive 字段。
 func (s *Search) SetHanSensitive(v bool) {
 	s.HanSensitive = new(v)
 }

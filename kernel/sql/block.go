@@ -60,8 +60,6 @@ type Block struct {
 	Updated  string
 }
 
-// blockRowIDByBlockID 返回指定 block 的 blocks 表隐式 rowid。
-// external content 模式下，blocks_fts 的写操作需以此为定位键。
 func blockRowIDByBlockID(tx *sql.Tx, id string) (rowID int64, err error) {
 	stmt := "SELECT ROWID FROM blocks WHERE id = ?"
 	rows, err := tx.Query(stmt, id)
@@ -82,8 +80,6 @@ func blockRowIDByBlockID(tx *sql.Tx, id string) (rowID int64, err error) {
 	return
 }
 
-// queryBlockRowIDsTx 批量返回 ids 对应的 blocks rowid，按 id 索引。
-// 与 deleteBlocksByIDs 一致，采用字符串内插 IN 列表（ids 为内核生成的 block id，非用户输入）。
 func queryBlockRowIDsTx(tx *sql.Tx, blocks []*Block) (ret map[string]int64, err error) {
 	ret = map[string]int64{}
 	if 1 > len(blocks) {
@@ -111,9 +107,6 @@ func queryBlockRowIDsTx(tx *sql.Tx, blocks []*Block) (ret map[string]int64, err 
 	}
 	return
 }
-
-// 下列局部更新索引列的路径（updateRootContent、updateBlockContent、indexNode）须先写 blocks_fts、再写 blocks，
-// 以便 FTS 删除旧 token 时仍能从 blocks 读到旧值。
 
 func updateRootContent(tx *sql.Tx, content, updated, ialContent, id string) (err error) {
 	var rowID int64
@@ -274,7 +267,7 @@ func nodeStaticContent(node *ast.Node, excludeTypes []string, includeTextMarkATi
 				buf.WriteByte(' ')
 			}
 		case ast.NodeTableCell:
-			// 表格块写入数据库表时在单元格之间添加空格 https://github.com/siyuan-note/siyuan/issues/7654
+
 			if 0 < buf.Len() && ' ' != buf.Bytes()[buf.Len()-1] {
 				buf.WriteByte(' ')
 			}
@@ -316,7 +309,7 @@ func nodeStaticContent(node *ast.Node, excludeTypes []string, includeTextMarkATi
 		case ast.NodeText, ast.NodeCodeBlockCode, ast.NodeMathBlockContent, ast.NodeHTMLBlock:
 			tokens := n.Tokens
 			if treenode.IsChartCodeBlockCode(n) {
-				// 图表块的内容在数据库 `blocks` 表 `content` 字段中被转义 https://github.com/siyuan-note/siyuan/issues/6326
+
 				tokens = html.UnescapeHTML(tokens)
 			}
 			buf.Write(tokens)
@@ -341,7 +334,7 @@ func nodeStaticContent(node *ast.Node, excludeTypes []string, includeTextMarkATi
 				buf.WriteByte('#')
 			}
 			if n.IsTextMarkType("a") && includeTextMarkATitleURL {
-				// 搜索不到超链接元素的 URL 和标题 https://github.com/siyuan-note/siyuan/issues/7352
+
 				if "" != n.TextMarkATitle {
 					buf.WriteString(" " + util.UnescapeHTML(n.TextMarkATitle))
 				}
@@ -361,7 +354,6 @@ func nodeStaticContent(node *ast.Node, excludeTypes []string, includeTextMarkATi
 		return ast.WalkContinue
 	})
 
-	// 这里不要 trim，否则无法搜索首尾空格
 	// Improve search and replace for spaces https://github.com/siyuan-note/siyuan/issues/10231
 	return buf.String()
 }
@@ -433,8 +425,7 @@ func BatchGetBlockAttrs(ids []string) (ret map[string]map[string]string) {
 
 func GetBlockAttrs(id string) (ret map[string]string) {
 	ret = map[string]string{}
-	// 写入端部分路径用 box-aware key、部分用 bare key，这里按 box-aware 优先、bare key 回退查询，
-	// 避免漏掉任一命名空间的更新（如块绑定数据库后写 box-aware key，但旧 bare key 仍是绑定前旧值）。
+
 	bt := treenode.GetBlockTree(id)
 	boxID := ""
 	if nil != bt {

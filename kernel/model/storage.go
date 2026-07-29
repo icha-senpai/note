@@ -124,16 +124,16 @@ func setLocalStorage(val map[string]any) (err error) {
 
 type Criterion struct {
 	Name         string                 `json:"name"`
-	Sort         int                    `json:"sort"`       // 0：按块类型（默认），1：按创建时间升序，2：按创建时间降序，3：按更新时间升序，4：按更新时间降序，5：按内容顺序（仅在按文档分组时）
-	Group        int                    `json:"group"`      // 0：不分组，1：按文档分组
-	HasReplace   bool                   `json:"hasReplace"` // 是否有替换
-	Method       int                    `json:"method"`     // 0：文本，1：查询语法，2：SQL，3：正则表达式
+	Sort         int                    `json:"sort"`
+	Group        int                    `json:"group"`
+	HasReplace   bool                   `json:"hasReplace"`
+	Method       int                    `json:"method"`
 	HPath        string                 `json:"hPath"`
 	IDPath       []string               `json:"idPath"`
-	K            string                 `json:"k"`            // 搜索关键字
-	R            string                 `json:"r"`            // 替换关键字
-	Types        *CriterionTypes        `json:"types"`        // 类型过滤选项
-	ReplaceTypes *CriterionReplaceTypes `json:"replaceTypes"` // 替换类型过滤选项
+	K            string                 `json:"k"`
+	R            string                 `json:"r"`
+	Types        *CriterionTypes        `json:"types"`
+	ReplaceTypes *CriterionReplaceTypes `json:"replaceTypes"`
 }
 
 type CriterionTypes struct {
@@ -289,9 +289,9 @@ type RecentDoc struct {
 	RootID   string `json:"rootID"`
 	Icon     string `json:"icon,omitempty"`
 	Title    string `json:"title,omitempty"`
-	ViewedAt int64  `json:"viewedAt,omitempty"` // 浏览时间字段
-	ClosedAt int64  `json:"closedAt,omitempty"` // 关闭时间字段
-	OpenAt   int64  `json:"openAt,omitempty"`   // 文档第一次从文档树加载到页签的时间
+	ViewedAt int64  `json:"viewedAt,omitempty"`
+	ClosedAt int64  `json:"closedAt,omitempty"`
+	OpenAt   int64  `json:"openAt,omitempty"`
 }
 
 var recentDocLock = sync.Mutex{}
@@ -302,7 +302,6 @@ func GetRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 	return getRecentDocs(sortBy)
 }
 
-// UpdateRecentDocOpenTime 更新文档打开时间（只在第一次从文档树加载到页签时调用）
 func UpdateRecentDocOpenTime(rootID string) (err error) {
 	recentDocLock.Lock()
 	defer recentDocLock.Unlock()
@@ -313,7 +312,7 @@ func UpdateRecentDocOpenTime(rootID string) (err error) {
 	}
 
 	timeNow := time.Now().Unix()
-	// 查找文档并更新打开时间和浏览时间
+
 	found := false
 	for _, doc := range recentDocs {
 		if doc.RootID == rootID {
@@ -325,7 +324,6 @@ func UpdateRecentDocOpenTime(rootID string) (err error) {
 		}
 	}
 
-	// 如果文档不存在，创建新记录
 	if !found {
 		recentDoc := &RecentDoc{
 			RootID:   rootID,
@@ -339,7 +337,6 @@ func UpdateRecentDocOpenTime(rootID string) (err error) {
 	return
 }
 
-// UpdateRecentDocViewTime 更新文档浏览时间
 func UpdateRecentDocViewTime(rootID string) (err error) {
 	recentDocLock.Lock()
 	defer recentDocLock.Unlock()
@@ -350,11 +347,11 @@ func UpdateRecentDocViewTime(rootID string) (err error) {
 	}
 
 	timeNow := time.Now().Unix()
-	// 查找文档并更新浏览时间，保留原来的打开时间
+
 	found := false
 	for _, doc := range recentDocs {
 		if doc.RootID == rootID {
-			// OpenAt 保持不变，保留原来的打开时间
+
 			doc.ViewedAt = timeNow
 			doc.ClosedAt = 0
 			found = true
@@ -362,11 +359,10 @@ func UpdateRecentDocViewTime(rootID string) (err error) {
 		}
 	}
 
-	// 如果文档不存在，创建新记录
 	if !found {
 		recentDoc := &RecentDoc{
 			RootID: rootID,
-			// 新创建的记录不设置 OpenAt，因为这是浏览而不是打开
+
 			ViewedAt: timeNow,
 		}
 		recentDocs = append([]*RecentDoc{recentDoc}, recentDocs...)
@@ -376,12 +372,10 @@ func UpdateRecentDocViewTime(rootID string) (err error) {
 	return
 }
 
-// UpdateRecentDocCloseTime 更新文档关闭时间
 func UpdateRecentDocCloseTime(rootID string) (err error) {
 	return BatchUpdateRecentDocCloseTime([]string{rootID})
 }
 
-// BatchUpdateRecentDocCloseTime 批量更新文档关闭时间
 func BatchUpdateRecentDocCloseTime(rootIDs []string) (err error) {
 	if len(rootIDs) == 0 {
 		return
@@ -403,17 +397,15 @@ func BatchUpdateRecentDocCloseTime(rootIDs []string) (err error) {
 
 	closeTime := time.Now().Unix()
 
-	// 更新已存在的文档
 	updated := false
 	for _, doc := range recentDocs {
 		if rootIDsMap[doc.RootID] {
 			doc.ClosedAt = closeTime
 			updated = true
-			delete(rootIDsMap, doc.RootID) // 标记已处理
+			delete(rootIDsMap, doc.RootID)
 		}
 	}
 
-	// 为不存在的文档创建新记录
 	for rootID := range rootIDsMap {
 		tree, loadErr := LoadTreeByBlockID(rootID)
 		if loadErr != nil {
@@ -422,7 +414,7 @@ func BatchUpdateRecentDocCloseTime(rootIDs []string) (err error) {
 
 		recentDoc := &RecentDoc{
 			RootID:   tree.Root.ID,
-			ClosedAt: closeTime, // 设置关闭时间
+			ClosedAt: closeTime,
 		}
 
 		recentDocs = append([]*RecentDoc{recentDoc}, recentDocs...)
@@ -459,7 +451,7 @@ func loadRecentDocsRaw() (ret []*RecentDoc, err error) {
 }
 
 func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
-	ret = []*RecentDoc{} // 初始化为空切片，确保 API 始终返回非 nil
+	ret = []*RecentDoc{}
 	recentDocs, err := loadRecentDocsRaw()
 	if err != nil {
 		return
@@ -480,7 +472,7 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 			changed = true
 			continue
 		}
-		// 文档块可能已经转换成标题块 https://github.com/siyuan-note/siyuan/pull/16727#issuecomment-3810081850
+
 		if doc.RootID != bt.RootID {
 			changed = true
 			doc.RootID = bt.RootID
@@ -491,7 +483,7 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 			mergedDocs[bt.RootID] = doc
 			rootIDs = append(rootIDs, bt.RootID)
 		} else {
-			// 合并重复记录
+
 			changed = true
 			if doc.ViewedAt > merged.ViewedAt {
 				merged.ViewedAt = doc.ViewedAt
@@ -531,10 +523,9 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 		ret = filtered
 	}
 
-	// 根据排序参数进行排序
 	switch sortBy {
-	case "updated": // 按更新时间排序
-		// 从数据库查询最近修改的文档
+	case "updated":
+
 		boxDocFilter, boxDocArgs := buildRootIDExclusionFilter(hiddenBoxDocRootIDs())
 		var sqlBlocks []*sql.Block
 		if "" == boxDocFilter {
@@ -549,7 +540,6 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 			return
 		}
 
-		// 获取文档树信息
 		var rootIDs []string
 		for _, sqlBlock := range sqlBlocks {
 			rootIDs = append(rootIDs, sqlBlock.ID)
@@ -562,7 +552,6 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 				continue
 			}
 
-			// 解析 IAL 获取 icon
 			icon := ""
 			if sqlBlock.IAL != "" {
 				ialStr := strings.TrimPrefix(sqlBlock.IAL, "{:")
@@ -575,7 +564,7 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 					}
 				}
 			}
-			// 获取文档标题
+
 			title := path.Base(bt.HPath)
 			doc := &RecentDoc{
 				RootID: sqlBlock.ID,
@@ -584,7 +573,7 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 			}
 			ret = append(ret, doc)
 		}
-	case "closedAt": // 按关闭时间排序
+	case "closedAt":
 		filtered := make([]*RecentDoc, 0, len(ret))
 		for _, doc := range ret {
 			if doc.ClosedAt > 0 {
@@ -597,7 +586,7 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 				return ret[i].ClosedAt > ret[j].ClosedAt
 			})
 		}
-	case "openAt": // 按打开时间排序
+	case "openAt":
 		filtered := make([]*RecentDoc, 0, len(ret))
 		for _, doc := range ret {
 			if doc.OpenAt > 0 {
@@ -610,7 +599,7 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 				return ret[i].OpenAt > ret[j].OpenAt
 			})
 		}
-	case "viewedAt": // 按浏览时间排序
+	case "viewedAt":
 		fallthrough
 	default:
 		filtered := make([]*RecentDoc, 0, len(ret))
@@ -629,11 +618,9 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 	return
 }
 
-// normalizeRecentDocs 规范化最近文档列表：去重、清空 Title/Icon、按类型截取配置的最大数量记录
 func normalizeRecentDocs(recentDocs []*RecentDoc) []*RecentDoc {
 	maxCount := Conf.FileTree.RecentDocsMaxListCount
 
-	// 去重
 	seen := make(map[string]struct{}, len(recentDocs))
 	deduplicated := make([]*RecentDoc, 0, len(recentDocs))
 	for _, doc := range recentDocs {
@@ -647,7 +634,6 @@ func normalizeRecentDocs(recentDocs []*RecentDoc) []*RecentDoc {
 		return deduplicated
 	}
 
-	// 分别统计三种类型的记录
 	var viewedDocs []*RecentDoc
 	var openedDocs []*RecentDoc
 	var closedDocs []*RecentDoc
@@ -664,7 +650,6 @@ func normalizeRecentDocs(recentDocs []*RecentDoc) []*RecentDoc {
 		}
 	}
 
-	// 分别按时间排序并截取配置的最大数量记录
 	if len(viewedDocs) > maxCount {
 		sort.Slice(viewedDocs, func(i, j int) bool {
 			return viewedDocs[i].ViewedAt > viewedDocs[j].ViewedAt
@@ -684,7 +669,6 @@ func normalizeRecentDocs(recentDocs []*RecentDoc) []*RecentDoc {
 		closedDocs = closedDocs[:maxCount]
 	}
 
-	// 合并三类记录
 	docMap := make(map[string]*RecentDoc, maxCount*2)
 	for _, doc := range viewedDocs {
 		docMap[doc.RootID] = doc
@@ -734,11 +718,8 @@ func setRecentDocs(recentDocs []*RecentDoc) (err error) {
 
 var refUsedLock = sync.Mutex{}
 
-// refUsedMaxCount 限制最近引用记录的最大条数，超出时淘汰最旧的记录，防止文件无限膨胀。
 const refUsedMaxCount = 512
 
-// TouchRefUsed 在用户真实插入引用时刷新目标块的最近引用时间。该时间独立于 refs 表的重建机制，
-// 仅在事务处理（真实编辑）时写入，用于稳定块引"最近引用"排序。
 func TouchRefUsed(defBlockIDs []string) {
 	if 1 > len(defBlockIDs) {
 		return
@@ -753,7 +734,7 @@ func TouchRefUsed(defBlockIDs []string) {
 		used[defBlockID] = now
 	}
 	if refUsedMaxCount < len(used) {
-		// 超出上限时按时间戳淘汰最旧的记录
+
 		type entry struct {
 			id string
 			ts int64
@@ -773,7 +754,6 @@ func TouchRefUsed(defBlockIDs []string) {
 	setRefUsed(used)
 }
 
-// GetRefUsed 返回目标块→最近引用时间戳映射，供块引排序使用。
 func GetRefUsed() (ret map[string]int64) {
 	refUsedLock.Lock()
 	defer refUsedLock.Unlock()
@@ -864,7 +844,6 @@ func SetOutlineStorage(docID string, val map[string]any) (err error) {
 		return
 	}
 
-	// 如果文档已存在，先移除旧的
 	for i, doc := range outlineDocs {
 		if doc.DocID == docID {
 			outlineDocs = append(outlineDocs[:i], outlineDocs[i+1:]...)
@@ -872,10 +851,8 @@ func SetOutlineStorage(docID string, val map[string]any) (err error) {
 		}
 	}
 
-	// 将新的文档信息添加到最前面
 	outlineDocs = append([]*OutlineDoc{outlineDoc}, outlineDocs...)
 
-	// 限制为2000个文档
 	if 2000 < len(outlineDocs) {
 		outlineDocs = outlineDocs[:2000]
 	}

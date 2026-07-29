@@ -32,8 +32,6 @@ func TestValidEmbedBlockIDs(t *testing.T) {
 	}
 }
 
-// TestIsValidSearchBoxPath 覆盖搜索入参的笔记本 ID 与文档路径校验，阻止 SQL 元字符进入语句拼接。
-// 回归用例参考 /api/search/fullTextSearchBlock 的 SQL 注入报告（paths[] 投毒）。
 func TestIsValidSearchBoxPath(t *testing.T) {
 	validBox := "20210808180117-6v0mkxr"
 
@@ -61,7 +59,7 @@ func TestIsValidSearchBoxPath(t *testing.T) {
 		box  string
 		path string
 	}{
-		// 报告中的 UNION 投毒 payload
+
 		{
 			"SQL注入UNION投影",
 			validBox,
@@ -86,7 +84,6 @@ func TestIsValidSearchBoxPath(t *testing.T) {
 	}
 }
 
-// TestBuildBoxesPathFiltersArgCount 验证参数化过滤器产出的 "?" 数量与 args 长度一致。
 func TestBuildBoxesPathFiltersArgCount(t *testing.T) {
 	boxes := []string{"20210808180117-6v0mkxr", "20210808180117-a1b2c3d"}
 	clause, args := buildBoxesFilter(boxes)

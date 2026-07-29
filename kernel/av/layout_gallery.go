@@ -20,22 +20,20 @@ import (
 	"github.com/88250/lute/ast"
 )
 
-// LayoutGallery 描述了卡片布局的结构。
 type LayoutGallery struct {
 	*BaseLayout
 
-	CoverFrom           CoverFrom       `json:"coverFrom"`                     // 封面来源，0：无，1：内容图，2：资源字段
-	CoverFromAssetKeyID string          `json:"coverFromAssetKeyID,omitempty"` // 资源字段 ID，CoverFrom 为 2 时有效
-	CardAspectRatio     CardAspectRatio `json:"cardAspectRatio"`               // 卡片宽高比
-	CardSize            CardSize        `json:"cardSize"`                      // 卡片大小，0：小卡片，1：中卡片，2：大卡片
-	FitImage            bool            `json:"fitImage"`                      // 是否适应封面图片大小
-	DisplayFieldName    bool            `json:"displayFieldName"`              // 是否显示字段名称
+	CoverFrom           CoverFrom       `json:"coverFrom"`
+	CoverFromAssetKeyID string          `json:"coverFromAssetKeyID,omitempty"`
+	CardAspectRatio     CardAspectRatio `json:"cardAspectRatio"`
+	CardSize            CardSize        `json:"cardSize"`
+	FitImage            bool            `json:"fitImage"`
+	DisplayFieldName    bool            `json:"displayFieldName"`
 
-	CardFields []*ViewGalleryCardField `json:"fields"` // 卡片字段
+	CardFields []*ViewGalleryCardField `json:"fields"`
 
-	// TODO CardIDs 字段已经废弃，计划于 2026 年 6 月 30 日后删除 https://github.com/siyuan-note/siyuan/issues/15194
 	//Deprecated
-	CardIDs []string `json:"cardIds"` // 卡片 ID，用于自定义排序
+	CardIDs []string `json:"cardIds"`
 }
 
 func NewLayoutGallery() *LayoutGallery {
@@ -66,56 +64,50 @@ const (
 type CardSize int
 
 const (
-	CardSizeSmall  CardSize = iota // 小卡片
-	CardSizeMedium                 // 中卡片
-	CardSizeLarge                  // 大卡片
+	CardSizeSmall CardSize = iota
+	CardSizeMedium
+	CardSizeLarge
 )
 
-// CoverFrom 描述了卡片封面来源的枚举类型。
 type CoverFrom int
 
 const (
-	CoverFromNone         CoverFrom = iota // 无封面
-	CoverFromContentImage                  // 内容图
-	CoverFromAssetField                    // 资源字段
-	CoverFromContentBlock                  // 内容块
+	CoverFromNone CoverFrom = iota
+	CoverFromContentImage
+	CoverFromAssetField
+	CoverFromContentBlock
 )
 
-// ViewGalleryCardField 描述了卡片字段的结构。
 type ViewGalleryCardField struct {
 	*BaseField
 }
 
-// Gallery 描述了卡片视图实例的结构。
 type Gallery struct {
 	*BaseInstance
 
-	CoverFrom           CoverFrom       `json:"coverFrom"`                     // 封面来源
-	CoverFromAssetKeyID string          `json:"coverFromAssetKeyID,omitempty"` // 资源字段 ID，CoverFrom 为 CoverFromAssetField 时有效
-	CardAspectRatio     CardAspectRatio `json:"cardAspectRatio"`               // 卡片宽高比
-	CardSize            CardSize        `json:"cardSize"`                      // 卡片大小
-	FitImage            bool            `json:"fitImage"`                      // 是否适应封面图片大小
-	DisplayFieldName    bool            `json:"displayFieldName"`              // 是否显示字段名称
-	Fields              []*GalleryField `json:"fields"`                        // 卡片字段
-	Cards               []*GalleryCard  `json:"cards"`                         // 卡片
-	CardCount           int             `json:"cardCount"`                     // 总卡片数
+	CoverFrom           CoverFrom       `json:"coverFrom"`
+	CoverFromAssetKeyID string          `json:"coverFromAssetKeyID,omitempty"`
+	CardAspectRatio     CardAspectRatio `json:"cardAspectRatio"`
+	CardSize            CardSize        `json:"cardSize"`
+	FitImage            bool            `json:"fitImage"`
+	DisplayFieldName    bool            `json:"displayFieldName"`
+	Fields              []*GalleryField `json:"fields"`
+	Cards               []*GalleryCard  `json:"cards"`
+	CardCount           int             `json:"cardCount"`
 }
 
-// GalleryCard 描述了卡片实例的结构。
 type GalleryCard struct {
-	ID     string               `json:"id"`     // 卡片 ID
-	Values []*GalleryFieldValue `json:"values"` // 卡片字段值
+	ID     string               `json:"id"`
+	Values []*GalleryFieldValue `json:"values"`
 
-	CoverURL     string `json:"coverURL"`     // 卡片封面超链接
-	CoverContent string `json:"coverContent"` // 卡片封面文本内容
+	CoverURL     string `json:"coverURL"`
+	CoverContent string `json:"coverContent"`
 }
 
-// GalleryField 描述了卡片实例字段的结构。
 type GalleryField struct {
 	*BaseInstanceField
 }
 
-// GalleryFieldValue 描述了卡片字段实例值的结构。
 type GalleryFieldValue struct {
 	*BaseValue
 }

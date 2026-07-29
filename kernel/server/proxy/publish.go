@@ -67,7 +67,6 @@ func InitPublishService() (uint16, error) {
 			return 0, nil
 		}
 
-		// 启动新端口的发布服务
 		initPublishService()
 	}
 	return util.ParsePort(Port)
@@ -101,26 +100,21 @@ func closePublishListener() {
 
 	util.ClosePublishServiceSessions()
 
-	// 先关闭监听器，停止接收新连接
 	if err := listener.Close(); err != nil {
 		logging.LogErrorf("close publish listener failed: %s", err)
 	}
 
-	// 再关闭已建立的活跃连接（含 HTTP/2 长连接），否则浏览器会复用旧连接
-	// 继续访问到已关闭发布服务的工作空间内核。HTTP 与 HTTPS 各自独立，需分别关闭。
 	for _, srv := range []*http.Server{httpServer, httpsServer} {
 		if srv == nil {
 			continue
 		}
 
-		// Shutdown 优雅关闭：等待活跃请求处理完毕（最多 5 秒），并触发 keep-alive/HTTP2 连接断开
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		if err := srv.Shutdown(ctx); err != nil {
 			logging.LogErrorf("shutdown publish server failed: %s", err)
 		}
 		cancel()
 
-		// Close 强制关闭所有残留连接，确保端口和连接彻底释放
 		if err := srv.Close(); err != nil {
 			logging.LogErrorf("close publish server failed: %s", err)
 		}
@@ -138,9 +132,7 @@ func startPublishReverseProxyService() {
 
 	certPath, keyPath, certErr := util.GetOrCreateTLSCert()
 	if certErr == nil && "" != certPath {
-		// 提前创建 HTTP/HTTPS 各自的 *http.Server 并传入，这样在服务运行期间就能持有它们的引用，
-		// closePublishListener 调用其 Shutdown/Close 时才能关闭已建立的活跃连接（含 HTTP/2 长连接），
-		// 避免切换工作空间后旧连接仍被旧内核接管。
+
 		httpServer = &http.Server{Handler: handler}
 		httpsServer = &http.Server{Handler: handler}
 		if _, _, serveErr := util.ServeMultiplexed(listener, handler, certPath, keyPath, httpServer, httpsServer); serveErr != nil {
@@ -190,7 +182,7 @@ func (PublishServiceTransport) RoundTrip(request *http.Request) (response *http.
 		account := model.GetBasicAuthAccount(username)
 		if !ok ||
 			account == nil ||
-			account.Username == "" || // 匿名用户
+			account.Username == "" ||
 			account.Password != password {
 
 			return &http.Response{

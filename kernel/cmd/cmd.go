@@ -24,7 +24,7 @@ import (
 
 type Cmd interface {
 	Name() string
-	IsRead() bool // 非读即写
+	IsRead() bool
 	Id() float64
 	Exec()
 }

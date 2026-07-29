@@ -74,8 +74,8 @@ func GetFlashcardsByBlockIDs(blockIDs []string) (ret []*Block) {
 }
 
 type SetFlashcardDueTime struct {
-	ID  string `json:"id"`  // 卡片 ID
-	Due string `json:"due"` // 下次复习时间，格式为 YYYYMMDDHHmmss
+	ID  string `json:"id"`
+	Due string `json:"due"`
 }
 
 func SetFlashcardsDueTime(cardDues []*SetFlashcardDueTime) (err error) {
@@ -118,7 +118,7 @@ func ResetFlashcards(typ, id, deckID string, blockIDs []string) {
 
 	if 0 < len(blockIDs) {
 		if "" == deckID {
-			// 从全局管理进入时不会指定卡包 ID，这时需要遍历所有卡包
+
 			for _, deck := range Decks {
 				allBlockIDs := deck.GetBlockIDs()
 				for _, blockID := range blockIDs {
@@ -215,7 +215,7 @@ func GetFlashcardNotebooks() (ret []*Box) {
 	deckBlockIDs := deck.GetBlockIDs()
 	boxes := Conf.GetOpenedBoxes()
 	for _, box := range boxes {
-		// 加密笔记本不支持闪卡，不在闪卡笔记本列表中展示
+
 		if IsEncryptedBox(box.ID) {
 			continue
 		}
@@ -461,10 +461,8 @@ func getRiffCard(card *fsrs.Card) *RiffCard {
 }
 
 var (
-	// reviewCardCache <cardID, card> 用于复习时缓存卡片，以便支持撤销。
 	reviewCardCache = map[string]riff.Card{}
 
-	// skipCardCache <cardID, card> 用于复习时缓存跳过的卡片，以便支持跳过过滤。
 	skipCardCache = map[string]riff.Card{}
 )
 
@@ -481,14 +479,12 @@ func ReviewFlashcard(deckID, cardID string, rating riff.Rating, reviewedCardIDs 
 	}
 
 	if cachedCard := reviewCardCache[cardID]; nil != cachedCard {
-		// 命中缓存说明这张卡片已经复习过了，这次调用复习是撤销后再次复习
-		// 将缓存的卡片重新覆盖回卡包中，以恢复最开始复习前的状态
+
 		deck.SetCard(cachedCard)
 
-		// 从跳过缓存中移除（如果上一次点的是跳过的话），如果不在跳过缓存中，说明上一次点的是复习，这里移除一下也没有副作用
 		delete(skipCardCache, cardID)
 	} else {
-		// 首次复习该卡片，将卡片缓存以便后续支持撤销后再次复习
+
 		reviewCardCache[cardID] = card.Clone()
 	}
 
@@ -505,7 +501,7 @@ func ReviewFlashcard(deckID, cardID string, rating riff.Rating, reviewedCardIDs 
 
 	_, unreviewedCount, _, _ := getDueFlashcards(deckID, reviewedCardIDs)
 	if 1 > unreviewedCount {
-		// 该卡包中没有待复习的卡片了，说明最后一张卡片已经复习完了，清空撤销缓存和跳过缓存
+
 		reviewCardCache = map[string]riff.Card{}
 		skipCardCache = map[string]riff.Card{}
 	}
@@ -623,7 +619,7 @@ func GetTreeDueFlashcards(rootID string, reviewedCardIDs []string) (ret []*Flash
 	_, treeBlockIDs := getTreeSubTreeChildBlocks(rootID)
 	newCardLimit := Conf.Flashcard.NewCardLimit
 	reviewCardLimit := Conf.Flashcard.ReviewCardLimit
-	// 文档级新卡/复习卡上限控制 Document-level new card/review card limit control https://github.com/siyuan-note/siyuan/issues/9365
+
 	ial := sql.GetBlockAttrs(rootID)
 	if newCardLimitStr := ial["custom-riff-new-card-limit"]; "" != newCardLimitStr {
 		var convertErr error
@@ -732,7 +728,7 @@ func getAllDueFlashcards(reviewedCardIDs []string) (ret []*Flashcard, unreviewed
 	now := time.Now()
 	for _, deck := range Decks {
 		if deck.ID != builtinDeckID {
-			// Alt+0 闪卡复习入口不再返回卡包闪卡
+
 			// Alt+0 flashcard review entry no longer returns to card deck flashcards https://github.com/siyuan-note/siyuan/issues/10635
 			continue
 		}
@@ -767,7 +763,7 @@ func (tx *Transaction) doRemoveFlashcards(operation *Operation) (ret *TxErr) {
 		return &TxErr{code: TxErrCodeWriteTree, msg: err.Error(), id: deckID}
 	}
 
-	if "" == deckID { // 支持在 All 卡包中移除闪卡 https://github.com/siyuan-note/siyuan/issues/7425
+	if "" == deckID {
 		for _, deck := range Decks {
 			removeFlashcardsByBlockIDs(blockIDs, deck)
 		}
@@ -785,7 +781,7 @@ func (tx *Transaction) removeBlocksDeckAttr(blockIDs []string, deckID string) (e
 		if nil == bt {
 			continue
 		}
-		// 加密笔记本不支持闪卡，移除时也跳过，避免无谓写入加密 tree
+
 		if IsEncryptedBox(bt.BoxID) {
 			continue
 		}
@@ -897,7 +893,7 @@ func (tx *Transaction) doAddFlashcards(operation *Operation) (ret *TxErr) {
 		if nil == bt {
 			continue
 		}
-		// 闪卡是全局调度与存储，加密笔记本不支持闪卡，跳过其块避免明文复习计划落盘全局 riff
+
 		if IsEncryptedBox(bt.BoxID) {
 			continue
 		}
@@ -949,7 +945,7 @@ func (tx *Transaction) doAddFlashcards(operation *Operation) (ret *TxErr) {
 	for _, blockID := range blockIDs {
 		cards := deck.GetCardsByBlockID(blockID)
 		if 0 < len(cards) {
-			// 一个块只能添加生成一张闪卡 https://github.com/siyuan-note/siyuan/issues/7476
+
 			continue
 		}
 
@@ -1133,7 +1129,7 @@ func getDeckDueCards(deck *riff.Deck, reviewedCardIDs, blockIDs []string, newCar
 
 	reviewedCardCount := len(reviewedCardIDs)
 	if 1 > reviewedCardCount {
-		// 未传入已复习的卡片 ID，说明是开始新的复习，需要清空缓存
+
 		reviewCardCache = map[string]riff.Card{}
 		skipCardCache = map[string]riff.Card{}
 	}
@@ -1199,11 +1195,11 @@ func getDeckDueCards(deck *riff.Deck, reviewedCardIDs, blockIDs []string, newCar
 	}
 
 	switch reviewMode {
-	case 1: // 优先复习新卡
+	case 1:
 		ret = nil
 		ret = append(ret, retNew...)
 		ret = append(ret, retOld...)
-	case 2: // 优先复习旧卡
+	case 2:
 		ret = nil
 		ret = append(ret, retOld...)
 		ret = append(ret, retNew...)

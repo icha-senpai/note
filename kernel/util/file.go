@@ -36,8 +36,6 @@ import (
 	"github.com/siyuan-note/logging"
 )
 
-// IsOfficeTempFile 判断是否为 Office（Word/Excel/PowerPoint/WPS）打开文档时生成的临时文件。
-// 这些文件名以 `~$` 开头，且被宿主程序独占，尝试读取会触发 filelock 的致命错误，需跳过。
 func IsOfficeTempFile(assetAbsPath string) bool {
 	return strings.HasPrefix(filepath.Base(assetAbsPath), "~$")
 }
@@ -218,7 +216,7 @@ func IsValidUploadFileName(name string) bool {
 
 func FilterUploadEmojiFileName(name string) string {
 	if strings.HasPrefix(name, "api/icon/") {
-		// 忽略动态图标 https://github.com/siyuan-note/siyuan/issues/15139
+
 		return name
 	}
 
@@ -231,9 +229,8 @@ func FilterUploadEmojiFileName(name string) string {
 func FilterUploadFileName(name string) string {
 	ret := FilterFileName(name)
 
-	// 插入资源文件时去除 `[`、`(` 等符号 https://github.com/siyuan-note/siyuan/issues/6708
 	ret = strings.ReplaceAll(ret, "~", "")
-	//ret = strings.ReplaceAll(ret, "_", "") // 插入资源文件时允许下划线 https://github.com/siyuan-note/siyuan/issues/3534
+
 	ret = strings.ReplaceAll(ret, "[", "")
 	ret = strings.ReplaceAll(ret, "]", "")
 	ret = strings.ReplaceAll(ret, "(", "")
@@ -253,7 +250,7 @@ func FilterUploadFileName(name string) string {
 }
 
 func TruncateLenFileName(name string) (ret string) {
-	// 插入资源文件时文件名长度最大限制 189 字节 https://github.com/siyuan-note/siyuan/issues/7099
+
 	ext := filepath.Ext(name)
 	extLen := len(ext)
 	var byteCount int
@@ -262,7 +259,7 @@ func TruncateLenFileName(name string) (ret string) {
 	maxLen := 189 - extLen
 	var pdfAnnoPngPart string
 	if ".png" == ext {
-		// PNG 图片可能是 PDF 标注的截图，包含页面和旋转角度（name--P1--270-id.png），所以允许的长度更短一些
+
 		// https://github.com/siyuan-note/siyuan/pull/16714#issuecomment-3737987302
 
 		pdfAnnoPngPattern := "-{0,1}P{0,1}[0-9]{0,4}-{0,1}[0-9]{1,3}-[0-9]{14}-[0-9a-zA-Z]{7}\\.png$"
@@ -273,8 +270,6 @@ func TruncateLenFileName(name string) (ret string) {
 			name = strings.TrimSuffix(name, pdfAnnoPngPart)
 		}
 	}
-
-	// 深入理解计算机系统原书第3版彩色扫描 -- 美兰德尔 E_布莱恩特Randal,E_·Bryant,等 龚奕利,贺莲 -- 计算机科学丛书, 3rd, 2016 -- 机械工业出版社123-P57-90-20260113113402-prc0u4k.png
 
 	for _, r := range name {
 		byteCount += utf8.RuneLen(r)
@@ -406,7 +401,6 @@ func IsReservedFilename(baseName string) bool {
 }
 
 func WalkWithSymlinks(root string, fn fs.WalkDirFunc) error {
-	// 感谢 https://github.com/edwardrf/symwalk/blob/main/symwalk.go
 
 	rr, err := filepath.EvalSymlinks(root) // Find real base if there is any symlinks in the path
 	if err != nil {

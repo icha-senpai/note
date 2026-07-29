@@ -65,7 +65,6 @@ import (
 	"github.com/studio-b12/gowebdav"
 )
 
-// AutoPurgeRepoJob 自动清理数据仓库 https://github.com/siyuan-note/siyuan/issues/13091
 func AutoPurgeRepoJob() {
 	task.AppendTaskWithTimeout(task.RepoAutoPurge, 12*time.Hour, autoPurgeRepo, true)
 }
@@ -102,8 +101,8 @@ func autoPurgeRepo(cron bool) {
 
 	now := time.Now()
 
-	dateGroupedIndexes := map[string][]*entity.Index{} // 按照日期分组
-	// 收集指定日期内需要保留的索引
+	dateGroupedIndexes := map[string][]*entity.Index{}
+
 	var date string
 	page := 1
 	for {
@@ -139,7 +138,7 @@ func autoPurgeRepo(cron bool) {
 	}
 
 	todayDate := now.Format("2006-01-02")
-	// 过滤出每日需要保留的索引
+
 	var retentionIndexIDs []string
 	for date, indexes := range dateGroupedIndexes {
 		if len(indexes) <= Conf.Repo.RetentionIndexesDaily || todayDate == date {
@@ -150,8 +149,8 @@ func autoPurgeRepo(cron bool) {
 		}
 
 		keepIndexes := hashset.New()
-		keepIndexes.Add(indexes[0]) // 每天最后一个固定保留
-		// 随机保留指定数量的索引
+		keepIndexes.Add(indexes[0])
+
 		for i := 0; i < Conf.Repo.RetentionIndexesDaily*7; i++ {
 			keepIndexes.Add(indexes[mathRand.Intn(len(indexes)-1)])
 			if keepIndexes.Size() >= Conf.Repo.RetentionIndexesDaily {
@@ -245,7 +244,6 @@ func RollbackRepoSnapshotFile(fileID string) (err error) {
 		return
 	}
 
-	// 回滚快照时默认为当前数据创建一个快照
 	// When rolling back a snapshot, a snapshot is created for the current data by default https://github.com/siyuan-note/siyuan/issues/12470
 	FlushTxQueue()
 	_, err = repo.Index("Backup before checkout", false, map[string]any{eventbus.CtxPushMsg: eventbus.CtxPushMsgToStatusBarAndProgress})
@@ -258,7 +256,7 @@ func RollbackRepoSnapshotFile(fileID string) (err error) {
 	util.PushClearProgress()
 
 	from := filepath.Join(tempRepoDiffDir, f)
-	// 加密笔记本的快照数据是密文，写入临时文件前先解密
+
 	if strings.HasSuffix(file.Path, ".sy") {
 		boxID := strings.TrimPrefix(file.Path, "/")
 		boxID = strings.Split(boxID, "/")[0]
@@ -270,18 +268,14 @@ func RollbackRepoSnapshotFile(fileID string) (err error) {
 		logging.LogErrorf("write file [%s] failed: %v", filepath.Join(tempRepoDiffDir, file.Path), err)
 		return
 	}
-	// 解密后的临时文件在函数返回时清理，避免加密文档明文残留在磁盘
+
 	defer os.Remove(from)
 
 	if strings.HasSuffix(file.Path, ".sy") {
 		boxID := strings.TrimPrefix(file.Path, "/")
 		boxID = strings.Split(boxID, "/")[0]
-		origBoxID := boxID // 保留原始 boxID 用于加密边界校验
+		origBoxID := boxID
 
-		// 加密笔记本的快照回滚要求原笔记本已挂载：
-		// WriteTree 根据 tree.Box 判断是否加密落盘。若原笔记本未挂载导致
-		// getRollbackBox fallback 到普通 Rollback 笔记本，解密后的 .sy 将被 WriteTree
-		// 以明文落盘，违反加密笔记本"数据不跨边界"的约束。
 		if IsEncryptedBox(origBoxID) && nil == Conf.Box(origBoxID) {
 			logging.LogErrorf("rollback encrypted repo snapshot requires notebook [%s] to be mounted", origBoxID)
 			err = errors.New(Conf.Language(314))
@@ -388,7 +382,7 @@ func OpenRepoSnapshotFile(fileID string) (title, content string, displayInText b
 	updated = file.Updated
 
 	if strings.HasSuffix(file.Path, ".sy") {
-		// 加密笔记本的 .sy 在仓库里是密文，按路径提取 boxID 解密
+
 		data = decryptRepoDataIfNeeded(data, file.Path)
 		luteEngine := NewLute()
 		var snapshotTree *parse.Tree
@@ -438,7 +432,7 @@ func OpenRepoSnapshotFile(fileID string) (title, content string, displayInText b
 	} else {
 		displayInText = true
 		title = file.Path
-		// 加密 notebook 的 AV 定义在仓库里是密文，需先解密再展示
+
 		if strings.Contains(file.Path, "storage/av/") && strings.HasSuffix(file.Path, ".json") {
 			repoBoxID := ""
 			origPath := strings.TrimPrefix(file.Path, "/")
@@ -464,13 +458,12 @@ func OpenRepoSnapshotFile(fileID string) (title, content string, displayInText b
 			}
 		}
 		if mimeType := mime.TypeByExtension(filepath.Ext(file.Path)); strings.HasPrefix(mimeType, "text/") || strings.Contains(mimeType, "json") {
-			// 如果是文本文件，直接返回文本内容
+
 			// All plain text formats are supported when comparing data snapshots https://github.com/siyuan-note/siyuan/issues/12975
 			content = gulu.Str.FromBytes(data)
 		} else {
-			if strings.Contains(file.Path, "assets/") { // 剔除笔记本级或者文档级资源文件路径前缀
-				// 加密 notebook 的 asset 在仓库里是密文，不解密直接写临时目录会泄漏密文
-				// 先用原始 path 检测是否加密 box，再裁剪 file.Path 到 assets/ 前缀
+			if strings.Contains(file.Path, "assets/") {
+
 				repoBoxID := ""
 				origPath := strings.TrimPrefix(file.Path, "/")
 				if parts := strings.SplitN(origPath, "/", 2); len(parts) >= 1 && ast.IsNodeIDPattern(parts[0]) {
@@ -479,7 +472,7 @@ func OpenRepoSnapshotFile(fileID string) (title, content string, displayInText b
 				if repoBoxID != "" && IsEncryptedBox(repoBoxID) {
 					HoldBoxReadLock(repoBoxID)
 					defer ReleaseBoxReadLock(repoBoxID)
-					// 加密 asset：尝试解密后预览，无法解密则 fail-closed
+
 					if dek, dekErr := GetDEKIfUnlocked(repoBoxID); dekErr == nil && dek != nil {
 						diskName := filepath.Base(file.Path)
 						if plainData, decErr := DecryptAsset(repoBoxID, diskName, dek, data); decErr == nil {
@@ -494,7 +487,7 @@ func OpenRepoSnapshotFile(fileID string) (title, content string, displayInText b
 						return
 					}
 				}
-				// 保留 boxID 前缀，确保 LockBox 清理和 serveRepoDiff 加密校验能命中
+
 				file.Path = path.Join(repoBoxID, file.Path[strings.Index(file.Path, "assets/"):])
 				if util.IsDisplayableAsset(file.Path) {
 					dir, f := filepath.Split(file.Path)
@@ -657,7 +650,6 @@ func parseTitleInSnapshot(fileID string, repo *dejavu.Repo, luteEngine *lute.Lut
 			return
 		}
 
-		// 加密笔记本的 .sy 在仓库里是密文，按路径提取 boxID 解密
 		data = decryptRepoDataIfNeeded(data, file.Path)
 
 		var tree *parse.Tree
@@ -673,10 +665,8 @@ func parseTitleInSnapshot(fileID string, repo *dejavu.Repo, luteEngine *lute.Lut
 	return
 }
 
-// decryptRepoDataIfNeeded 判断仓库数据是否属于加密笔记本，如果是则按路径类型分流解密。
-// file.Path 格式：/<boxID>/...
 // .sy → DecryptFile，assets/* → DecryptAsset，storage/av/*.json → av.DecryptAVData。
-// 其他文件或解锁失败时返回原数据（调用方 fallback）。
+
 func decryptRepoDataIfNeeded(data []byte, filePath string) []byte {
 	relPath := strings.TrimPrefix(filePath, "/")
 	parts := strings.SplitN(relPath, "/", 2)
@@ -687,18 +677,18 @@ func decryptRepoDataIfNeeded(data []byte, filePath string) []byte {
 	if !IsEncryptedBox(boxID) {
 		return data
 	}
-	// 持读锁，防止 LockBox 在解密期间清 DEK/缓存
+
 	HoldBoxReadLock(boxID)
 	defer ReleaseBoxReadLock(boxID)
 	dek, err := GetDEKIfUnlocked(boxID)
 	if err != nil {
-		return data // 加密笔记本未解锁：返回原数据
+		return data
 	}
 	if len(parts) < 2 {
 		return data
 	}
 	boxRelPath := parts[1]
-	// 按路径类型分流
+
 	if strings.HasPrefix(boxRelPath, "assets/") {
 		diskName := filepath.Base(boxRelPath)
 		plain, decErr := DecryptAsset(boxID, diskName, dek, data)
@@ -715,7 +705,7 @@ func decryptRepoDataIfNeeded(data []byte, filePath string) []byte {
 		}
 		return plain
 	}
-	// .sy 和其他文件用 file 子密钥 + 相对路径 AAD
+
 	plain, decErr := DecryptFile(boxID, boxRelPath, dek, data)
 	if decErr != nil {
 		return data
@@ -725,8 +715,7 @@ func decryptRepoDataIfNeeded(data []byte, filePath string) []byte {
 
 func parseTreeInSnapshot(data []byte, luteEngine *lute.Lute) (isLargeDoc bool, tree *parse.Tree, err error) {
 	isLargeDoc = 1024*1024*1 <= len(data)
-	// data 可能是加密笔记本的密文，但 parseTreeInSnapshot 没有 file.Path 上下文
-	// 密文解析会失败返回 err，调用方会 fallback 到文件名
+
 	tree, err = dataparser.ParseJSONWithoutFix(data, luteEngine.ParseOptions)
 	if err != nil {
 		return
@@ -810,9 +799,8 @@ func ExportRepoFile(id string) (exportPath string, err error) {
 		encryptedBoxID = repoParts[0]
 	}
 
-	// 加密笔记本的 .sy 在仓库里是密文，按路径提取 boxID 解密
 	data = decryptRepoDataIfNeeded(data, file.Path)
-	// 如果加密 box 已锁定，decryptRepoDataIfNeeded 返回原密文，应拒绝导出
+
 	if encryptedBoxID != "" {
 		HoldBoxReadLock(encryptedBoxID)
 		defer ReleaseBoxReadLock(encryptedBoxID)
@@ -841,7 +829,6 @@ func ExportRepoFile(id string) (exportPath string, err error) {
 	}
 	exportDir := exportRoot
 
-	// 如果是 .sy 文件需要打包为 .sy.zip 以便导入
 	var docTitle string
 	if strings.HasSuffix(file.Path, ".sy") {
 		var tree *parse.Tree
@@ -957,7 +944,7 @@ func GetRepoSnapshots(page int) (ret []*Snapshot, pageCount, totalCount int, err
 func buildSnapshots(logs []*dejavu.Log) (ret []*Snapshot) {
 	for _, l := range logs {
 		typesCount := statTypesByPath(l.Files)
-		l.Files = nil // 置空，否则返回前端数据量太大
+		l.Files = nil
 		ret = append(ret, &Snapshot{
 			Log:        l,
 			TypesCount: typesCount,
@@ -1124,7 +1111,7 @@ func InitRepoKeyFromPassphrase(passphrase string) (err error) {
 	var key []byte
 	base64Data, base64Err := base64.StdEncoding.DecodeString(passphrase)
 	if nil == base64Err && 32 == len(base64Data) {
-		// 改进数据仓库 `通过密码生成密钥` https://github.com/siyuan-note/siyuan/issues/6782
+
 		logging.LogInfof("passphrase is base64 encoded, use it as key directly")
 		key = base64Data
 	} else {
@@ -1221,11 +1208,9 @@ func checkoutRepo(id string) {
 	CloseWatchEmojis()
 	defer WatchEmojis()
 
-	// 若主题支持同步，需关闭监听器
 	// CloseWatchThemes()
 	// defer WatchThemes()
 
-	// 恢复快照时自动暂停同步，避免刚刚恢复后的数据又被同步覆盖
 	syncEnabled := Conf.Sync.Enabled
 	Conf.Sync.Enabled = false
 	Conf.Save()
@@ -1233,7 +1218,6 @@ func checkoutRepo(id string) {
 		util.PushMsg(Conf.Language(134), 0)
 	}
 
-	// 回滚快照时默认为当前数据创建一个快照
 	// When rolling back a snapshot, a snapshot is created for the current data by default https://github.com/siyuan-note/siyuan/issues/12470
 	FlushTxQueue()
 	_, err = repo.Index("Backup before checkout", false, map[string]any{eventbus.CtxPushMsg: eventbus.CtxPushMsgToStatusBarAndProgress})
@@ -2014,9 +1998,9 @@ func syncRepo(exit, byHand bool) (dataChanged bool, err error) {
 
 	if !exit {
 		go func() {
-			// 首次数据同步执行完成后再执行索引订正 Index fixing should not be performed before data synchronization https://github.com/siyuan-note/siyuan/issues/10761
+
 			checkIndex()
-			// 索引订正结束后执行数据仓库清理 Automatic purge for local data repo https://github.com/siyuan-note/siyuan/issues/13091
+
 			autoPurgeRepo(false)
 		}()
 	}
@@ -2060,7 +2044,6 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 	if 0 < len(mergeResult.Conflicts) {
 		luteEngine := util.NewLute()
 		if Conf.Sync.GenerateConflictDoc {
-			// 云端同步发生冲突时生成副本 https://github.com/siyuan-note/siyuan/issues/5687
 
 			for _, file := range mergeResult.Conflicts {
 				if !strings.HasSuffix(file.Path, ".sy") {
@@ -2074,7 +2057,7 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 				boxID := parts[0]
 
 				absPath := filepath.Join(util.TempDir, "repo", "sync", "conflicts", mergeResult.Time.Format("2006-01-02-150405"), file.Path)
-				// 加密笔记本的冲突 .sy 在临时目录里是密文，loadTree 无法从 temp 路径反推 box 解密
+
 				if IsEncryptedBox(boxID) {
 					raw, readErr := os.ReadFile(absPath)
 					if readErr == nil {
@@ -2084,7 +2067,7 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 							continue
 						}
 					}
-					// 解密后的冲突文件在函数返回时清理
+
 					defer os.Remove(absPath)
 				}
 				tree, loadTreeErr := loadTree(absPath, luteEngine)
@@ -2111,7 +2094,7 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 		indexHistoryDir(filepath.Base(historyDir), luteEngine)
 	}
 
-	if 1 > len(mergeResult.Upserts) && 1 > len(mergeResult.Removes) && 1 > len(mergeResult.Conflicts) { // 没有数据变更
+	if 1 > len(mergeResult.Upserts) && 1 > len(mergeResult.Removes) && 1 > len(mergeResult.Conflicts) {
 		syncSameCount.Add(1)
 		if 10 < syncSameCount.Load() {
 			syncSameCount.Store(5)
@@ -2126,15 +2109,14 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 		return
 	}
 
-	// 有数据变更，需要重建索引
 	var upserts, removes []string
 	var upsertTrees int
-	// 可能需要重新加载部分功能
+
 	var needReloadFlashcard, needReloadOcrTexts, needReloadPlugin, needReloadSnippet bool
-	reloadPluginSet := hashset.New()     // 插件代码变更 data/plugins/
-	dataChangePluginSet := hashset.New() // 插件存储数据变更 data/storage/petal/
+	reloadPluginSet := hashset.New()
+	dataChangePluginSet := hashset.New()
 	needUnindexBoxes, needIndexBoxes := map[string]bool{}, map[string]bool{}
-	needRestoreNotebookCrypto := false // 加密笔记本备份文件随同步到达，需恢复本机启用状态
+	needRestoreNotebookCrypto := false
 	for _, file := range mergeResult.Upserts {
 		upserts = append(upserts, file.Path)
 		if strings.HasPrefix(file.Path, "/storage/riff/") {
@@ -2196,8 +2178,6 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 		}
 	}
 
-	// 加密笔记本备份文件随同步到达：若本机未启用，自动把配置装回 conf.json（不需主密码），
-	// 让本机进入"已启用"状态，用户输主密码即可解锁。仅本机 Enabled=false 时生效，不覆盖已启用配置。
 	if needRestoreNotebookCrypto {
 		restoreNotebookCryptoConfigFromBackup()
 	}
@@ -2237,7 +2217,7 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 		if strings.HasPrefix(file.Path, "/plugins/") {
 			if parts := strings.Split(file.Path, "/"); 2 < len(parts) {
 				needReloadPlugin = true
-				// 删除插件目录：卸载
+
 				uninstallPluginSet.Add(parts[2])
 			}
 		}
@@ -2268,7 +2248,7 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 	}
 	for _, removePetal := range mergeResult.RemovePetals {
 		needReloadPlugin = true
-		// Petal 中删除插件：卸载
+
 		uninstallPluginSet.Add(removePetal)
 	}
 
@@ -2296,12 +2276,12 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 	syncingFiles = sync.Map{}
 	syncingStorages.Store(false)
 
-	if needFullReindex(upsertTrees) { // 改进同步后全量重建索引判断 https://github.com/siyuan-note/siyuan/issues/5764
+	if needFullReindex(upsertTrees) {
 		FullReindex(false)
 		return
 	}
 
-	if exit { // 退出时同步不用推送事件
+	if exit {
 		return
 	}
 
@@ -2351,7 +2331,7 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 			}
 
 			if syConflict {
-				// 数据同步发生冲突时在界面上进行提醒 https://github.com/siyuan-note/siyuan/issues/7332
+
 				util.PushMsg(Conf.Language(108), 7000)
 			}
 		}
@@ -2412,7 +2392,7 @@ func indexRepoBeforeCloudSync(repo *dejavu.Repo) (beforeIndex, afterIndex *entit
 
 	checkChunks := true
 	if util.IsMobileContainer() {
-		// 因为移动端私有数据空间不会存在外部操作导致分块损坏的情况，所以不需要检查分块以提升性能 https://github.com/siyuan-note/siyuan/issues/13216
+
 		checkChunks = false
 	}
 
@@ -2425,7 +2405,7 @@ func indexRepoBeforeCloudSync(repo *dejavu.Repo) (beforeIndex, afterIndex *entit
 	elapsed := time.Since(start)
 
 	if nil == beforeIndex || beforeIndex.ID != afterIndex.ID {
-		// 对新创建的快照需要更新备注，加入耗时统计
+
 		afterIndex.Memo = fmt.Sprintf("[Sync] Cloud sync, completed in %.2fs", elapsed.Seconds())
 		if err = repo.PutIndex(afterIndex); err != nil {
 			util.PushStatusBar("Save data snapshot for cloud sync failed")
@@ -2445,7 +2425,7 @@ func indexRepoBeforeCloudSync(repo *dejavu.Repo) (beforeIndex, afterIndex *entit
 				time.Sleep(3 * time.Second)
 
 				if indexCount, _ := repo.CountIndexes(); 128 > indexCount {
-					// 快照数量较少时不推送提示
+
 					return
 				}
 
@@ -2472,7 +2452,7 @@ func newRepository() (ret *dejavu.Repo, err error) {
 		}
 		cloudRepo = cloud.NewSiYuan(&cloud.BaseCloud{Conf: cloudConf})
 	case conf.ProviderS3:
-		// 显式注入 Scribli UA，覆盖 aws SDK 默认 UA（含架构、Go 版本、SDK 版本等冗余信息），便于 S3 服务端按 Scribli/ 前缀识别加白名单
+
 		s3HTTPClient := httpclient.NewUserAgentClient(httpclient.NewTransport(cloudConf.S3.SkipTlsVerify))
 		s3HTTPClient.Timeout = time.Duration(cloudConf.S3.Timeout) * time.Second
 		cloudRepo = cloud.NewS3(&cloud.BaseCloud{Conf: cloudConf}, s3HTTPClient)
@@ -2493,7 +2473,7 @@ func newRepository() (ret *dejavu.Repo, err error) {
 	}
 
 	ignoreLines := getSyncIgnoreLines()
-	ignoreLines = append(ignoreLines, "/.siyuan/conf.json") // 忽略旧版同步配置
+	ignoreLines = append(ignoreLines, "/.siyuan/conf.json")
 	ret, err = dejavu.NewRepo(util.DataDir, util.RepoDir, util.HistoryDir, util.TempDir, Conf.System.ID, Conf.System.Name, Conf.System.OS, Conf.Repo.Key, ignoreLines, cloudRepo)
 	if err != nil {
 		logging.LogErrorf("init data repo failed: %s", err)
@@ -2792,15 +2772,15 @@ type Backup struct {
 	Size    int64  `json:"size"`
 	HSize   string `json:"hSize"`
 	Updated string `json:"updated"`
-	SaveDir string `json:"saveDir"` // 本地备份数据存放目录路径
+	SaveDir string `json:"saveDir"`
 }
 
 type Sync struct {
 	Size      int64  `json:"size"`
 	HSize     string `json:"hSize"`
 	Updated   string `json:"updated"`
-	CloudName string `json:"cloudName"` // 云端同步数据存放目录名
-	SaveDir   string `json:"saveDir"`   // 本地同步数据存放目录路径
+	CloudName string `json:"cloudName"`
+	SaveDir   string `json:"saveDir"`
 }
 
 func GetCloudSpace() (s *Sync, b *Backup, hSize, hAssetSize, hTotalSize, hExchangeSize, hTrafficUploadSize, hTrafficDownloadSize, hTrafficAPIGet, hTrafficAPIPut string, err error) {

@@ -34,10 +34,10 @@ import (
 
 type Value struct {
 	ID         string  `json:"id,omitempty"`
-	KeyID      string  `json:"keyID,omitempty"`      // 字段 ID
-	BlockID    string  `json:"blockID,omitempty"`    // 项目 ID
-	Type       KeyType `json:"type,omitempty"`       // 字段类型
-	IsDetached bool    `json:"isDetached,omitempty"` // 是否为非绑定块，注意这个字段只能在主键（KeyTypeBlock）上使用，其他类型的值不要使用
+	KeyID      string  `json:"keyID,omitempty"`
+	BlockID    string  `json:"blockID,omitempty"`
+	Type       KeyType `json:"type,omitempty"`
+	IsDetached bool    `json:"isDetached,omitempty"`
 
 	CreatedAt int64 `json:"createdAt,omitempty"`
 	UpdatedAt int64 `json:"updatedAt,omitempty"`
@@ -58,13 +58,13 @@ type Value struct {
 	Relation *ValueRelation `json:"relation,omitempty"`
 	Rollup   *ValueRollup   `json:"rollup,omitempty"`
 
-	IsRenderAutoFill bool `json:"-"` // 标识是否是渲染阶段自动填充的值，保存数据的时候要删掉
+	IsRenderAutoFill bool `json:"-"`
 }
 
 func (value *Value) SetUpdatedAt(mills int64) {
 	value.UpdatedAt = mills
 	if value.CreatedAt == value.UpdatedAt {
-		value.UpdatedAt += 1000 // 防止更新时间和创建时间一样
+		value.UpdatedAt += 1000
 	}
 }
 
@@ -206,7 +206,7 @@ func (value *Value) Clone() (ret *Value) {
 
 func (value *Value) IsEdited() bool {
 	if 1709740800000 > value.CreatedAt {
-		// 说明是旧数据，认为都是编辑过的
+
 		return true
 	}
 
@@ -215,7 +215,7 @@ func (value *Value) IsEdited() bool {
 	}
 
 	if KeyTypeCheckbox == value.Type {
-		// 复选框不会为空，即使复选框未勾选，也不算是空，所以不能用下面的 IsEmpty 判断，这里使用更新时间判断是否编辑过 https://github.com/siyuan-note/siyuan/issues/11016
+
 		return value.CreatedAt != value.UpdatedAt
 	}
 
@@ -294,7 +294,7 @@ func (value *Value) IsBlank() bool {
 		if nil == value.Checkbox {
 			return true
 		}
-		return false // 复选框不会为空
+		return false
 	case KeyTypeRelation:
 		return 1 > len(value.Relation.Contents)
 	case KeyTypeRollup:
@@ -372,7 +372,7 @@ func (value *Value) IsEmpty() bool {
 		if nil == value.Checkbox {
 			return true
 		}
-		return false // 复选框不会为空
+		return false
 	case KeyTypeRelation:
 		return 1 > len(value.Relation.Contents)
 	case KeyTypeRollup:
@@ -419,7 +419,7 @@ func (value *Value) SetValByType(typ KeyType, val any) {
 }
 
 func (value *Value) GetValByType(typ KeyType) (ret any) {
-	// 单独处理汇总
+
 	if KeyTypeRollup == value.Type {
 		if 1 > len(value.Rollup.Contents) {
 			return nil
@@ -465,7 +465,7 @@ func (value *Value) GetValByType(typ KeyType) (ret any) {
 }
 
 type ValueBlock struct {
-	ID      string `json:"id,omitempty"` // 绑定的块 ID，非绑定块时为空
+	ID      string `json:"id,omitempty"`
 	Icon    string `json:"icon,omitempty"`
 	Content string `json:"content"`
 	Created int64  `json:"created,omitempty"`
@@ -490,26 +490,26 @@ const (
 	NumberFormatCommas  NumberFormat = "commas"
 	NumberFormatPercent NumberFormat = "percent"
 
-	NumberFormatUSD NumberFormat = "USD" // 美元
-	NumberFormatCNY NumberFormat = "CNY" // 人民币
-	NumberFormatEUR NumberFormat = "EUR" // 欧元
-	NumberFormatGBP NumberFormat = "GBP" // 英镑
-	NumberFormatJPY NumberFormat = "JPY" // 日元
-	NumberFormatRUB NumberFormat = "RUB" // 卢布
-	NumberFormatINR NumberFormat = "INR" // 卢比
-	NumberFormatKRW NumberFormat = "KRW" // 韩元
-	NumberFormatTRY NumberFormat = "TRY" // 土耳其里拉
-	NumberFormatCAD NumberFormat = "CAD" // 加拿大元
-	NumberFormatCHF NumberFormat = "CHF" // 瑞士法郎
-	NumberFormatTHB NumberFormat = "THB" // 泰铢
-	NumberFormatAUD NumberFormat = "AUD" // 澳大利亚元
-	NumberFormatHKD NumberFormat = "HKD" // 港币
-	NumberFormatTWD NumberFormat = "TWD" // 新台币
-	NumberFormatMOP NumberFormat = "MOP" // 澳门币
-	NumberFormatSGD NumberFormat = "SGD" // 新加坡元
-	NumberFormatNZD NumberFormat = "NZD" // 新西兰元
-	NumberFormatILS NumberFormat = "ILS" // 以色列新谢克尔
-	NumberFormatSKK NumberFormat = "SKK" // 斯洛伐克克朗
+	NumberFormatUSD NumberFormat = "USD"
+	NumberFormatCNY NumberFormat = "CNY"
+	NumberFormatEUR NumberFormat = "EUR"
+	NumberFormatGBP NumberFormat = "GBP"
+	NumberFormatJPY NumberFormat = "JPY"
+	NumberFormatRUB NumberFormat = "RUB"
+	NumberFormatINR NumberFormat = "INR"
+	NumberFormatKRW NumberFormat = "KRW"
+	NumberFormatTRY NumberFormat = "TRY"
+	NumberFormatCAD NumberFormat = "CAD"
+	NumberFormatCHF NumberFormat = "CHF"
+	NumberFormatTHB NumberFormat = "THB"
+	NumberFormatAUD NumberFormat = "AUD"
+	NumberFormatHKD NumberFormat = "HKD"
+	NumberFormatTWD NumberFormat = "TWD"
+	NumberFormatMOP NumberFormat = "MOP"
+	NumberFormatSGD NumberFormat = "SGD"
+	NumberFormatNZD NumberFormat = "NZD"
+	NumberFormatILS NumberFormat = "ILS"
+	NumberFormatSKK NumberFormat = "SKK"
 )
 
 func NewFormattedValueNumber(content float64, format NumberFormat) (ret *ValueNumber) {
@@ -735,7 +735,7 @@ type ValuePhone struct {
 type AssetType string
 
 const (
-	AssetTypeFile  = "file" // 链接也使用文件类型
+	AssetTypeFile  = "file"
 	AssetTypeImage = "image"
 )
 
@@ -854,7 +854,7 @@ func (r *ValueRollup) BuildContents(keyValues []*KeyValues, destKey *Key, relati
 
 		if nil == destVal {
 			if KeyTypeCheckbox == destKey.Type {
-				// 没有编辑过复选框的时候没有值，没有值等同于未选中，所以这里补一个未选中的值 https://github.com/siyuan-note/siyuan/issues/15858
+
 				defaultVal := GetAttributeViewDefaultValue(ast.NewNodeID(), destKey.ID, blockID, destKey.Type, false)
 				r.Contents = append(r.Contents, defaultVal)
 			}
@@ -862,7 +862,7 @@ func (r *ValueRollup) BuildContents(keyValues []*KeyValues, destKey *Key, relati
 		}
 
 		if val := destVal.GetValByType(destKey.Type); nil == val || reflect.ValueOf(val).IsNil() {
-			// 目标字段因为修改类型导致空值
+
 			continue
 		}
 

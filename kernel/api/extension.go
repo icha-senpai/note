@@ -76,8 +76,7 @@ func extensionCopy(c *gin.Context) {
 
 	uploaded := map[string]string{}
 	for originalName, file := range form.File {
-		// 链滴/流云整页剪藏走服务端原始 Markdown，扩展上传的 DOM 资源地址与原始 Markdown 中的地址必然不一致，
-		// 上传的文件无法被匹配引用；该路径下由内核按“下载资源”开关统一下载本地化，因此跳过扩展上传的文件
+
 		if clippingSym {
 			continue
 		}
@@ -133,7 +132,7 @@ func extensionCopy(c *gin.Context) {
 		fName = util.FilterUploadFileName(fName)
 		ext := util.Ext(fName)
 		if !util.IsCommonExt(ext) || strings.Contains(ext, "!") {
-			// 改进浏览器剪藏扩展转换本地图片后缀 https://github.com/siyuan-note/siyuan/issues/7467 https://github.com/siyuan-note/siyuan/issues/15320
+
 			if mtype := mimetype.Detect(data); nil != mtype {
 				ext = mtype.Extension()
 				fName += ext
@@ -144,7 +143,6 @@ func extensionCopy(c *gin.Context) {
 			fName += ext
 		}
 
-		// 统一通过 storeAssetForBox 写入，加密 box 自动脱敏 + 加密落盘 + 追加 ?box=
 		storedName, storeErr := model.StoreAssetForBox(boxID, assets, fName, data)
 		if storeErr != nil {
 			ret.Code = -1
@@ -177,7 +175,7 @@ func extensionCopy(c *gin.Context) {
 			}
 
 			md = string(bodyData)
-			luteEngine.SetIndentCodeBlock(true) // 链滴支持缩进代码块，因此需要开启
+			luteEngine.SetIndentCodeBlock(true)
 			tree := parse.Parse("", []byte(md), luteEngine.ParseOptions)
 			tree.Box = boxID
 			ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
@@ -186,7 +184,7 @@ func extensionCopy(c *gin.Context) {
 					return ast.WalkStop
 				} else if ast.NodeCodeBlock == n.Type {
 					if !n.IsFencedCodeBlock {
-						// 将缩进代码块转换为围栏代码块
+
 						n.IsFencedCodeBlock = true
 						n.CodeBlockFenceChar = '`'
 						n.PrependChild(&ast.Node{Type: ast.NodeCodeBlockFenceInfoMarker})
@@ -204,8 +202,6 @@ func extensionCopy(c *gin.Context) {
 				return ast.WalkContinue
 			})
 
-			// 链滴/流云整页剪藏时扩展上传的 DOM 资源地址与服务端原始 Markdown 中的地址不一致，
-			// 扩展上传的文件无法匹配；当用户开启“下载资源”时由内核直接下载原始 Markdown 中的网络资源到本地
 			if assetsOn := len(form.Value["assets"]) > 0 && "true" == form.Value["assets"][0]; assetsOn {
 				model.DownloadNetAssets2LocalAssets(tree, false, symArticleHref, assets)
 			}
@@ -216,7 +212,7 @@ func extensionCopy(c *gin.Context) {
 
 	var tree *parse.Tree
 	if "" == md {
-		// 通过正则将 <iframe>.*</iframe> 标签中间包含的换行去掉
+
 		regx, _ := regexp.Compile(`(?i)<iframe[^>]*>([\s\S]*?)<\/iframe>`)
 		dom = regx.ReplaceAllStringFunc(dom, func(s string) string {
 			s = strings.ReplaceAll(s, "\n", "")
@@ -236,7 +232,7 @@ func extensionCopy(c *gin.Context) {
 		}
 
 		if ast.NodeText == n.Type {
-			// 剔除行首空白
+
 			if ast.NodeParagraph == n.Parent.Type && n.Parent.FirstChild == n {
 				n.Tokens = bytes.TrimLeft(n.Tokens, " \t\n")
 			}
@@ -250,7 +246,6 @@ func extensionCopy(c *gin.Context) {
 					dest.Tokens = []byte(assetPath)
 				}
 
-				// 检测 alt 和 title 格式，如果不是文本的话转换为文本 https://github.com/siyuan-note/siyuan/issues/14233
 				if linkText := n.ChildByType(ast.NodeLinkText); nil != linkText {
 					if inlineTree := parse.Inline("", linkText.Tokens, luteEngine.ParseOptions); nil != inlineTree && nil != inlineTree.Root && nil != inlineTree.Root.FirstChild {
 						if fc := inlineTree.Root.FirstChild.FirstChild; nil != fc {
@@ -277,7 +272,7 @@ func extensionCopy(c *gin.Context) {
 		unlink.Unlink()
 	}
 
-	parse.TextMarks2Inlines(tree) // 先将 TextMark 转换为 Inlines https://github.com/siyuan-note/siyuan/issues/13056
+	parse.TextMarks2Inlines(tree)
 	parse.NestedInlines2FlattedSpansHybrid(tree, false)
 
 	md, _ = lute.FormatNodeSync(tree.Root, luteEngine.ParseOptions, luteEngine.RenderOptions)

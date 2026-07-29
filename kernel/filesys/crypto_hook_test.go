@@ -21,8 +21,6 @@ import (
 	"testing"
 )
 
-// TestSyObjectBase 校验稳定文件基名的提取与合法性。
-// .sy 的 AAD 绑定 <rootID>.sy，父目录不参与，因此提取器必须正确剥离目录前缀并严格校验。
 func TestSyObjectBase(t *testing.T) {
 	validBase := "20240101120000-1a2b3c4.sy"
 
@@ -62,9 +60,6 @@ func TestSyObjectBase(t *testing.T) {
 	}
 }
 
-// TestSyAADIndependentOfParentDir 校验 AAD 只依赖稳定文件基名，不依赖父目录。
-// 这是「同 box 内文件名不变的移动可原样 Rename 密文」的密码学前提：
-// 同一基名、不同父目录构造出的 AAD 必须完全相同。
 func TestSyAADIndependentOfParentDir(t *testing.T) {
 	boxID := "20240101120000-boxid01"
 	base := "20240101120000-1a2b3c4.sy"
@@ -85,13 +80,12 @@ func TestSyAADIndependentOfParentDir(t *testing.T) {
 	if aadBare != aadWithDir || aadBare != aadDeepDir {
 		t.Fatalf("AAD must be independent of parent dir: bare=%q dir=%q deep=%q", aadBare, aadWithDir, aadDeepDir)
 	}
-	// AAD 不应包含目录分隔符，只含基名
+
 	if strings.Contains(strings.TrimPrefix(aadBare, "siyuan:v1:file:"+boxID+":"), "/") {
 		t.Fatalf("AAD must not contain path separator: %q", aadBare)
 	}
 }
 
-// TestSyAADRejectsInvalidBase 校验非法基名直接报错，不产生可用于加密的 AAD。
 func TestSyAADRejectsInvalidBase(t *testing.T) {
 	if _, err := SyAAD("20240101120000-boxid01", "random.txt"); err == nil {
 		t.Fatal("should reject non-.sy base")

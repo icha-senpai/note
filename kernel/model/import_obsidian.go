@@ -2400,5 +2400,3 @@ func removeObsidianTemp(taskID string) {
 		logging.LogWarnf("remove Obsidian import temp [%s] failed: %s", target, err)
 	}
 }
-
-// Obsidian 导入保持独立实现，避免改变通用 Markdown 导入行为。

@@ -60,7 +60,6 @@ type Editing struct {
 	MaxCompletionTokens int     `json:"maxCompletionTokens"` // Alignment with Agent.MaxCompletionTokens
 }
 
-// Vision 配置图片理解场景及发送到模型前的资源限制。
 type Vision struct {
 	ModelID        string `json:"modelId"`
 	RequestTimeout int    `json:"requestTimeout"`
@@ -69,7 +68,6 @@ type Vision struct {
 	MaxEdge        int    `json:"maxEdge"`
 }
 
-// ImageGeneration 配置图片生成场景的模型和默认输出参数。
 type ImageGeneration struct {
 	ModelID        string `json:"modelId"`
 	RequestTimeout int    `json:"requestTimeout"`
@@ -85,20 +83,17 @@ type Embedding struct {
 	BaseURL    string `json:"baseURL"`
 	Name       string `json:"name"`
 	Timeout    int    `json:"timeout"`
-	Dimensions int    `json:"dimensions"` // 输出向量维度，仅 text-embedding-3 及以上模型支持；0 表示用模型默认值（不传该参数）
+	Dimensions int    `json:"dimensions"`
 }
 
-// Rerank 配置语义搜索结果的重排模型。重排在向量召回后对 query 与候选文档逐对精排，
-// 采用主流重排服务的 /rerank 协议（OpenAI 官方暂无 rerank API）。
-// 各服务商端点路径不一（Jina /v1/rerank、阿里云 /v1/reranks 等），故 Endpoint 为完整端点地址。
 type Rerank struct {
 	ID             string `json:"id"`
 	Enabled        bool   `json:"enabled"`
 	APIKey         string `json:"apiKey"`
-	Endpoint       string `json:"endpoint"` // 完整重排端点 URL，按目标模型文档填写
+	Endpoint       string `json:"endpoint"`
 	Name           string `json:"name"`
 	Timeout        int    `json:"timeout"`
-	CandidateCount int    `json:"candidateCount"` // 向量召回后送入重排的候选文档数，默认 30；越大越准但越慢
+	CandidateCount int    `json:"candidateCount"`
 }
 
 type Provider struct {
@@ -505,7 +500,7 @@ func (ai *AI) Normalize() {
 		ai.Embedding.Timeout = 30
 	}
 	if ai.Embedding.Dimensions < 0 {
-		ai.Embedding.Dimensions = 0 // 负值非法，归零表示用模型默认维度
+		ai.Embedding.Dimensions = 0
 	}
 	if !ast.IsNodeIDPattern(ai.Embedding.ID) {
 		ai.Embedding.ID = ast.NewNodeID()

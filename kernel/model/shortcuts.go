@@ -83,7 +83,7 @@ func MoveLocalShorthands(boxID string) (retIDs []string, err error) {
 
 	var toRemoves []string
 
-	if "" == hPath { // hPath 为空的话每一个速记对应创建一个文档记录
+	if "" == hPath {
 		for _, entry := range entries {
 			if filepath.Ext(entry.Name()) != ".md" {
 				continue
@@ -110,7 +110,7 @@ func MoveLocalShorthands(boxID string) (retIDs []string, err error) {
 			}
 			created := time.UnixMilli(i)
 			hPath = "/" + created.Format("2006-01-02 15:04:05")
-			// 块 ID 用速记输入时刻，而非 kernel 消费时刻
+
 			dom := shorthandDOM(content, created)
 			docID := util.NodeIDByTime(created)
 			var retID string
@@ -123,7 +123,7 @@ func MoveLocalShorthands(boxID string) (retIDs []string, err error) {
 			retIDs = append(retIDs, retID)
 			toRemoves = append(toRemoves, p)
 		}
-	} else { // 不为空的话将所有速记合并到指定路径的文档中
+	} else {
 		if !strings.HasPrefix(hPath, "/") {
 			hPath = "/" + hPath
 		}
@@ -155,7 +155,7 @@ func MoveLocalShorthands(boxID string) (retIDs []string, err error) {
 			i, parseErr := strconv.ParseInt(t, 10, 64)
 			var created time.Time
 			if nil != parseErr {
-				// 文件名不是时间戳时退化为消费时刻，避免丢失速记内容
+
 				created = time.Now()
 			} else {
 				created = time.UnixMilli(i)
@@ -167,7 +167,7 @@ func MoveLocalShorthands(boxID string) (retIDs []string, err error) {
 		if 0 < len(shorthands) {
 			bt := treenode.GetBlockTreeRootByHPath(boxID, hPath)
 			if nil == bt {
-				// 目标文档不存在，新建文档：根文档块 ID 取所有速记中最早的输入时刻
+
 				earliest := shorthands[0].created
 				for _, s := range shorthands[1:] {
 					if s.created.Before(earliest) {
@@ -200,7 +200,6 @@ func MoveLocalShorthands(boxID string) (retIDs []string, err error) {
 					last = c
 				}
 
-				// 按条独立解析，每条速记的块 ID 用其各自的输入时刻
 				luteEngine := util.NewStdLute()
 				var nodes []*ast.Node
 				for _, s := range shorthands {
@@ -242,9 +241,6 @@ func MoveLocalShorthands(boxID string) (retIDs []string, err error) {
 	return
 }
 
-// resetBlockIDsByTime 递归地将节点及其子孙块的 ID 重置为基于指定时间。
-// 无论节点原本是否有 ID 都会主动分配，以兼容上游 lute 未开启 KramdownBlockIAL 的解析路径。
-// 重赋 ID 后同步更新 IAL 中的 id 和 updated（updated 取 ID 前 14 位，对齐 createDoc 新建块的处理）。
 func resetBlockIDsByTime(node *ast.Node, created time.Time) {
 	if nil == node {
 		return
@@ -260,7 +256,6 @@ func resetBlockIDsByTime(node *ast.Node, created time.Time) {
 	})
 }
 
-// shorthandDOM 将速记 markdown 解析为 DOM，并把所有块 ID 替换为基于速记输入时刻。
 func shorthandDOM(md string, created time.Time) string {
 	luteEngine := util.NewLute()
 	luteEngine.SetHTMLTag2TextMark(true)
@@ -272,8 +267,6 @@ func shorthandDOM(md string, created time.Time) string {
 	return luteEngine.Tree2BlockDOM(tree, luteEngine.RenderOptions, luteEngine.ParseOptions)
 }
 
-// createShorthandDocByDOM 创建速记文档，使用指定的 DOM 和文档块 ID（均基于速记输入时刻）。
-// 速记场景无需 tags、父文档、数学公式、剪藏链接等处理，直接基于 DOM 和指定 docID 落盘。
 func createShorthandDocByDOM(boxID, hPath, dom, docID string) (retID string, err error) {
 	createDocLock.Lock()
 	defer createDocLock.Unlock()
@@ -310,8 +303,6 @@ func consumeShorthands() {
 		return
 	}
 
-	// 消费速记涉及读取临时文件、创建/追加文档、删除临时文件等非原子操作，
-	// 启动同步、同步流程、定时任务都可能并发调用，这里串行化避免重复消费或丢失
 	consumeShorthandsLock.Lock()
 	defer consumeShorthandsLock.Unlock()
 

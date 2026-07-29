@@ -19,50 +19,50 @@ package conf
 import "github.com/siyuan-note/siyuan/kernel/util"
 
 type Editor struct {
-	AllowSVGScript                  bool           `json:"allowSVGScript"`                  // 允许执行 SVG 内脚本
-	AllowHTMLBLockScript            bool           `json:"allowHTMLBLockScript"`            // 允许执行 HTML 内容中的脚本
-	FontSize                        int            `json:"fontSize"`                        // 字体大小
-	FontSizeScrollZoom              bool           `json:"fontSizeScrollZoom"`              // 字体大小是否支持滚轮缩放
-	FontFamily                      string         `json:"fontFamily"`                      // 字体
-	FontWeight                      int            `json:"fontWeight"`                      // 字重
-	FontFamilyDisplay               string         `json:"fontFamilyDisplay"`               // 设置面板中展示的字体名称（与 FontFamily/FontWeight 对应，可选）
-	CodeSyntaxHighlightLineNum      bool           `json:"codeSyntaxHighlightLineNum"`      // 代码块是否显示行号
-	CodeTabSpaces                   int            `json:"codeTabSpaces"`                   // 代码块中 Tab 转换空格数，配置为 0 则表示不转换
-	CodeLineWrap                    bool           `json:"codeLineWrap"`                    // 代码块是否自动折行
-	CodeLigatures                   bool           `json:"codeLigatures"`                   // 代码块是否连字
-	DisplayBookmarkIcon             bool           `json:"displayBookmarkIcon"`             // 是否显示内容块角标
-	DisplayNetImgMark               bool           `json:"displayNetImgMark"`               // 是否显示网络图片角标
-	DatabaseAttrViewMode            int            `json:"databaseAttrViewMode"`            // 数据库属性默认展开状态，0：展开，1：折叠
-	GenerateHistoryInterval         int            `json:"generateHistoryInterval"`         // 生成历史时间间隔，单位：分钟
-	HistoryRetentionDays            int            `json:"historyRetentionDays"`            // 历史保留天数
-	Emoji                           []string       `json:"emoji"`                           // 常用表情
-	VirtualBlockRef                 bool           `json:"virtualBlockRef"`                 // 是否启用虚拟引用
-	VirtualBlockRefExclude          string         `json:"virtualBlockRefExclude"`          // 虚拟引用关键字排除列表
-	VirtualBlockRefInclude          string         `json:"virtualBlockRefInclude"`          // 虚拟引用关键字包含列表
-	BlockRefDynamicAnchorTextMaxLen int            `json:"blockRefDynamicAnchorTextMaxLen"` // 块引动态锚文本最大长度
-	PlantUMLServePath               string         `json:"plantUMLServePath"`               // PlantUML 伺服地址
-	FullWidth                       bool           `json:"fullWidth"`                       // 是否使用最大宽度
-	KaTexMacros                     string         `json:"katexMacros"`                     // KeTex 宏定义
-	ReadOnly                        bool           `json:"readOnly"`                        // 只读模式
-	EmbedBlockBreadcrumb            bool           `json:"embedBlockBreadcrumb"`            // 嵌入块是否显示面包屑
-	ListLogicalOutdent              bool           `json:"listLogicalOutdent"`              // 列表逻辑反向缩进
-	ListItemDotNumberClickFocus     bool           `json:"listItemDotNumberClickFocus"`     // 单击列表项标记聚焦
-	FloatWindowMode                 int            `json:"floatWindowMode"`                 // 浮窗触发模式，0：光标悬停，1：按住 Ctrl 悬停，2：不触发浮窗
-	FloatWindowDelay                *int           `json:"floatWindowDelay"`                // 浮窗悬停触发延迟，单位：毫秒，默认 620，nil 表示未设置
-	DynamicLoadBlocks               int            `json:"dynamicLoadBlocks"`               // 块动态数，下限 48
-	Justify                         bool           `json:"justify"`                         // 是否两端对齐
-	RTL                             bool           `json:"rtl"`                             // 是否从右到左显示
-	Spellcheck                      bool           `json:"spellcheck"`                      // 是否启用拼写检查
-	SpellcheckLanguages             []string       `json:"spellcheckLanguages"`             // 拼写检查语言
-	OnlySearchForDoc                bool           `json:"onlySearchForDoc"`                // 是否启用 [[ 仅搜索文档块
-	BacklinkExpandCount             int            `json:"backlinkExpandCount"`             // 反向链接默认展开数量
-	BackmentionExpandCount          int            `json:"backmentionExpandCount"`          // 反链提及默认展开数量
-	BacklinkContainChildren         bool           `json:"backlinkContainChildren"`         // 反向链接是否包含子块进行计算
-	BacklinkSort                    *int           `json:"backlinkSort"`                    // 反向链接排序方式
-	BackmentionSort                 *int           `json:"backmentionSort"`                 // 反链提及排序方式
-	HeadingEmbedMode                int            `json:"headingEmbedMode"`                // 标题嵌入块模式，0：显示标题与下方的块，1：仅显示标题，2：仅显示标题下方的块
-	PasteURLAutoConvert             bool           `json:"pasteURLAutoConvert"`             // 粘贴网址时自动转为链接
-	Markdown                        *util.Markdown `json:"markdown"`                        // Markdown 配置
+	AllowSVGScript                  bool           `json:"allowSVGScript"`
+	AllowHTMLBLockScript            bool           `json:"allowHTMLBLockScript"`
+	FontSize                        int            `json:"fontSize"`
+	FontSizeScrollZoom              bool           `json:"fontSizeScrollZoom"`
+	FontFamily                      string         `json:"fontFamily"`
+	FontWeight                      int            `json:"fontWeight"`
+	FontFamilyDisplay               string         `json:"fontFamilyDisplay"`
+	CodeSyntaxHighlightLineNum      bool           `json:"codeSyntaxHighlightLineNum"`
+	CodeTabSpaces                   int            `json:"codeTabSpaces"`
+	CodeLineWrap                    bool           `json:"codeLineWrap"`
+	CodeLigatures                   bool           `json:"codeLigatures"`
+	DisplayBookmarkIcon             bool           `json:"displayBookmarkIcon"`
+	DisplayNetImgMark               bool           `json:"displayNetImgMark"`
+	DatabaseAttrViewMode            int            `json:"databaseAttrViewMode"`
+	GenerateHistoryInterval         int            `json:"generateHistoryInterval"`
+	HistoryRetentionDays            int            `json:"historyRetentionDays"`
+	Emoji                           []string       `json:"emoji"`
+	VirtualBlockRef                 bool           `json:"virtualBlockRef"`
+	VirtualBlockRefExclude          string         `json:"virtualBlockRefExclude"`
+	VirtualBlockRefInclude          string         `json:"virtualBlockRefInclude"`
+	BlockRefDynamicAnchorTextMaxLen int            `json:"blockRefDynamicAnchorTextMaxLen"`
+	PlantUMLServePath               string         `json:"plantUMLServePath"`
+	FullWidth                       bool           `json:"fullWidth"`
+	KaTexMacros                     string         `json:"katexMacros"`
+	ReadOnly                        bool           `json:"readOnly"`
+	EmbedBlockBreadcrumb            bool           `json:"embedBlockBreadcrumb"`
+	ListLogicalOutdent              bool           `json:"listLogicalOutdent"`
+	ListItemDotNumberClickFocus     bool           `json:"listItemDotNumberClickFocus"`
+	FloatWindowMode                 int            `json:"floatWindowMode"`
+	FloatWindowDelay                *int           `json:"floatWindowDelay"`
+	DynamicLoadBlocks               int            `json:"dynamicLoadBlocks"`
+	Justify                         bool           `json:"justify"`
+	RTL                             bool           `json:"rtl"`
+	Spellcheck                      bool           `json:"spellcheck"`
+	SpellcheckLanguages             []string       `json:"spellcheckLanguages"`
+	OnlySearchForDoc                bool           `json:"onlySearchForDoc"`
+	BacklinkExpandCount             int            `json:"backlinkExpandCount"`
+	BackmentionExpandCount          int            `json:"backmentionExpandCount"`
+	BacklinkContainChildren         bool           `json:"backlinkContainChildren"`
+	BacklinkSort                    *int           `json:"backlinkSort"`
+	BackmentionSort                 *int           `json:"backmentionSort"`
+	HeadingEmbedMode                int            `json:"headingEmbedMode"`
+	PasteURLAutoConvert             bool           `json:"pasteURLAutoConvert"`
+	Markdown                        *util.Markdown `json:"markdown"`
 }
 
 const (

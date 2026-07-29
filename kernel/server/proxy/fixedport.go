@@ -36,7 +36,6 @@ func InitFixedPortService(host string, certPath, keyPath string) {
 
 		addr := host + ":" + util.FixedPort
 
-		// 启动一个固定 6806 端口的反向代理服务器，这样浏览器扩展才能直接使用 127.0.0.1:6806，不用配置端口
 		proxy := httputil.NewSingleHostReverseProxy(util.ServerURL)
 		proxy.Transport = &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},

@@ -27,8 +27,6 @@ import (
 	"github.com/88250/lute/ast"
 )
 
-// InboxTool 把收集箱（剪藏、消息、语音/视频/文件等）暴露给智能体，使其能够列出、阅读并把内容批量转为本地文档。
-// 底层复用 model 层的 shorthand 读写函数。
 var InboxTool = &Tool{
 	Name:        "inbox",
 	Description: "Inbox management (clipped web pages, messages, and audio/video/file attachments). Actions: list(page=1), get(id), convert(ids, notebook, path=/, remove_after=true) — converts one or more shorthands into local documents under the target notebook, deleting the originals on success.",
@@ -68,7 +66,6 @@ func inboxHandler(args map[string]any) (CallToolResult, error) {
 	}, nil
 }
 
-// inboxList 分页列出收集箱，仅返回摘要而非正文，控制 token 开销；正文用 get 按需拉取。
 func inboxList(args map[string]any) (CallToolResult, error) {
 	page := 1
 	if v, ok := args["page"]; ok {
@@ -116,7 +113,6 @@ func inboxList(args map[string]any) (CallToolResult, error) {
 	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
 }
 
-// inboxGet 取单条收集箱详情，返回完整 markdown 正文（shorthandMd）。
 func inboxGet(args map[string]any) (CallToolResult, error) {
 	id, _ := args["id"].(string)
 	if id == "" {
@@ -141,8 +137,6 @@ func inboxGet(args map[string]any) (CallToolResult, error) {
 	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
 }
 
-// inboxConvert 把一条或多条剪藏转为本地文档：取云端 md → 本地建文档 → 成功后清理云端原件。
-// 失败的条目不会被删除，也不会中断后续条目的处理；返回逐条结果供智能体汇报与生成文档链接。
 func inboxConvert(args map[string]any) (CallToolResult, error) {
 	notebook, _ := args["notebook"].(string)
 	if notebook == "" {
@@ -165,7 +159,6 @@ func inboxConvert(args map[string]any) (CallToolResult, error) {
 		}
 	}
 
-	// 解析目标父路径（与 document.create 保持一致的 hPath→fsPath 解析逻辑）。
 	parentPath := "/"
 	parentDir := parentDir(hPath)
 	if parentDir != "/" {
@@ -194,7 +187,7 @@ func inboxConvert(args map[string]any) (CallToolResult, error) {
 			title = "Untitled"
 		}
 		md, _ := sh["shorthandMd"].(string)
-		// content 为空（既无 md 也无渲染正文）但有来源 URL 时，回退为 markdown 链接，与前端行为一致。
+
 		if md == "" {
 			if content, _ := sh["shorthandContent"].(string); content == "" {
 				if url, _ := sh["shorthandURL"].(string); url != "" {
@@ -215,7 +208,6 @@ func inboxConvert(args map[string]any) (CallToolResult, error) {
 		sb.WriteString(fmt.Sprintf("- [%s] %s -> created %s\n", id, title, tree.Root.ID))
 	}
 
-	// 仅在全部转换成功的条目上清理云端原件；失败条目保留以便重试。
 	if removeAfter && len(successIDs) > 0 {
 		if err := model.RemoveCloudShorthands(successIDs); err != nil {
 			sb.WriteString("\nWARNING: failed to remove cloud originals: " + err.Error())
@@ -227,7 +219,6 @@ func inboxConvert(args map[string]any) (CallToolResult, error) {
 	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
 }
 
-// parseShorthandIDs 兼容字符串（逗号分隔）和数组两种形态的 ids 入参，去除空白与重复。
 func parseShorthandIDs(v any) []string {
 	if v == nil {
 		return nil
@@ -272,7 +263,6 @@ func parseShorthandIDs(v any) []string {
 	return out
 }
 
-// toInt 把 JSON 反序列化出的数字（float64）或整数类型安全地转成 int。
 func toInt(v any) (int, bool) {
 	switch n := v.(type) {
 	case float64:
@@ -287,7 +277,6 @@ func toInt(v any) (int, bool) {
 	return 0, false
 }
 
-// toBool 把 JSON 反序列化出的布尔值安全地转成 bool。
 func toBool(v any) (bool, bool) {
 	if b, ok := v.(bool); ok {
 		return b, true

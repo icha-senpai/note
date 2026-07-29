@@ -24,7 +24,6 @@ import (
 	"github.com/siyuan-note/httpclient"
 )
 
-// NewCustomReqClient 创建自定义 req 客户端
 func NewCustomReqClient() *req.Client {
 	client := req.C().
 		SetTLSClientConfig(createCustomTLSConfig()).
@@ -34,14 +33,12 @@ func NewCustomReqClient() *req.Client {
 	return client
 }
 
-// createCustomTLSConfig 创建自定义 TLS 配置
 func createCustomTLSConfig() *tls.Config {
 	return &tls.Config{
 		InsecureSkipVerify: true,
 		MinVersion:         tls.VersionTLS12,
 		MaxVersion:         tls.VersionTLS13,
 
-		// 模拟 Chrome 的密码套件顺序
 		CipherSuites: []uint16{
 			tls.TLS_AES_128_GCM_SHA256,
 			tls.TLS_AES_256_GCM_SHA384,

@@ -26,10 +26,6 @@ import (
 	"github.com/siyuan-note/logging"
 )
 
-// 本文件提供加密笔记本的 box-scoped 读查询。每个函数接收 boxID，路由到加密 db（已打开）或全局 db。
-// 调用方（model 层）在加密笔记本上下文里改用这些 InBox 版；全局功能继续用原函数。
-
-// GetBlockInBox 按 id 在指定 box 的 db 里查 block。boxID 为空则查全局 db。
 func GetBlockInBox(id, boxID string) (ret *Block) {
 	ret = getBlockCacheInBox(id, boxID)
 	if nil != ret {
@@ -46,7 +42,6 @@ func GetBlockInBox(id, boxID string) (ret *Block) {
 	return
 }
 
-// GetBlocksInBox 按 ids 在指定 box 的 db 里批量查 block。
 func GetBlocksInBox(ids []string, boxID string) (ret []*Block) {
 	if 1 > len(ids) {
 		return
@@ -91,7 +86,6 @@ func GetBlocksInBox(ids []string, boxID string) (ret []*Block) {
 	return
 }
 
-// GetRefTextInBox 按 defBlockID 在指定 box 的 db 里查引用文本。
 func GetRefTextInBox(defBlockID, boxID string) (ret string) {
 	row := queryRowForBox(boxID, "SELECT content FROM blocks WHERE id = ?", defBlockID)
 	if row == nil {
@@ -106,8 +100,6 @@ func GetRefTextInBox(defBlockID, boxID string) (ret string) {
 	return
 }
 
-// QueryRefsByDefIDInBox 按 defBlockID 在指定 box 的 db 里查引用列表。
-// containChildren 为 true 时递归查询定义块及其所有子块，与 QueryRefsByDefID 保持一致。
 func QueryRefsByDefIDInBox(defBlockID string, containChildren bool, boxID string) (ret []*Ref) {
 	var sqlStmt string
 	var args []any
@@ -139,7 +131,6 @@ func QueryRefsByDefIDInBox(defBlockID string, containChildren bool, boxID string
 	return
 }
 
-// QueryRootChildrenRefCountInBox 按 defRootID 在指定 box 的 db 里查询根文档下各块的引用计数。
 func QueryRootChildrenRefCountInBox(defRootID, boxID string) (ret map[string]int) {
 	ret = map[string]int{}
 	sqlStmt := "SELECT def_block_id, COUNT(*) AS ref_cnt FROM refs WHERE def_block_root_id = ? GROUP BY def_block_id"
@@ -161,7 +152,6 @@ func QueryRootChildrenRefCountInBox(defRootID, boxID string) (ret map[string]int
 	return
 }
 
-// SelectBlocksRawStmtInBox 在指定 box 的 db 里执行原始 SQL 查询 blocks。
 func SelectBlocksRawStmtInBox(stmt string, page, limit int, boxID string) (ret []*Block) {
 	queryFn := func(stmt string, args ...any) (*sql.Rows, error) {
 		return queryForBox(boxID, stmt, args...)
@@ -169,7 +159,6 @@ func SelectBlocksRawStmtInBox(stmt string, page, limit int, boxID string) (ret [
 	return selectBlocksRawStmtWithQuery(stmt, page, limit, queryFn)
 }
 
-// QueryRefCountInBox 按 defBlockIDs 在指定 box 的 db 里查引用计数。
 func QueryRefCountInBox(defIDs []string, boxID string) (ret map[string]int) {
 	ret = map[string]int{}
 	if 1 > len(defIDs) {
@@ -194,18 +183,14 @@ func QueryRefCountInBox(defIDs []string, boxID string) (ret map[string]int) {
 	return
 }
 
-// QueryNoLimitInBox 在指定 box 的 db 里执行无 limit 的原始查询（返回 map 行）。
 func QueryNoLimitInBox(stmt, boxID string) (ret []map[string]any, err error) {
 	return queryRawStmtForBox(boxID, stmt, math.MaxInt)
 }
 
-// QueryNoLimitArgsInBox 与 QueryNoLimitInBox 一致，但支持参数化查询。
 func QueryNoLimitArgsInBox(stmt, boxID string, args ...any) (ret []map[string]any, err error) {
 	return queryRawStmtArgsForBox(boxID, stmt, args, math.MaxInt)
 }
 
-// SelectBlocksRawStmtArgsInBox 在指定 box 的 db 里执行参数化原始 SQL 查询 blocks。
-// 与 SelectBlocksRawStmtArgs 对应，绕开 sqlparser 对 "?" 占位的改写。
 func SelectBlocksRawStmtArgsInBox(stmt string, args []any, limit int, boxID string) (ret []*Block) {
 	rows, err := queryForBox(boxID, stmt, args...)
 	if err != nil {
@@ -235,7 +220,6 @@ func SelectBlocksRawStmtArgsInBox(stmt string, args []any, limit int, boxID stri
 	return
 }
 
-// SelectBlocksRegexInBox 在指定 box 的 db 里执行正则匹配查询 blocks（无占位参数版）。
 func SelectBlocksRegexInBox(stmt string, exp *regexp.Regexp, name, alias, memo, ial bool, page, pageSize int, boxID string) (ret []*Block) {
 	rows, err := queryForBox(boxID, stmt)
 	if err != nil {
@@ -266,7 +250,6 @@ func SelectBlocksRegexInBox(stmt string, exp *regexp.Regexp, name, alias, memo, 
 	return
 }
 
-// SelectBlocksRegexArgsInBox 与 SelectBlocksRegexInBox 一致，但通过绑定参数执行。
 func SelectBlocksRegexArgsInBox(stmt string, exp *regexp.Regexp, name, alias, memo, ial bool, page, pageSize int, boxID string, args ...any) (ret []*Block) {
 	rows, err := queryForBox(boxID, stmt, args...)
 	if err != nil {
@@ -297,7 +280,6 @@ func SelectBlocksRegexArgsInBox(stmt string, exp *regexp.Regexp, name, alias, me
 	return
 }
 
-// matchRegexBlock 对 block 各字段做正则命中并就地高亮，命中返回 true。
 func matchRegexBlock(block *Block, exp *regexp.Regexp, name, alias, memo, ial bool) bool {
 	hitContent := exp.MatchString(block.Content)
 	hitName := name && exp.MatchString(block.Name)
@@ -325,7 +307,6 @@ func matchRegexBlock(block *Block, exp *regexp.Regexp, name, alias, memo, ial bo
 	return false
 }
 
-// QueryBlockNamesByRootIDInBox 按 rootID 在指定 box 的 db 里查块命名。
 func QueryBlockNamesByRootIDInBox(rootID, boxID string) (ret []string) {
 	sqlStmt := "SELECT DISTINCT name FROM blocks WHERE root_id = ? AND name != ''"
 	rows, err := queryForBox(boxID, sqlStmt, rootID)
@@ -342,7 +323,6 @@ func QueryBlockNamesByRootIDInBox(rootID, boxID string) (ret []string) {
 	return
 }
 
-// QueryBlockAliasesInBox 按 rootID 在指定 box 的 db 里查块别名（按逗号拆分去重）。
 func QueryBlockAliasesInBox(rootID, boxID string) (ret []string) {
 	sqlStmt := "SELECT alias FROM blocks WHERE root_id = ? AND alias != ''"
 	rows, err := queryForBox(boxID, sqlStmt, rootID)
@@ -375,7 +355,6 @@ func QueryBlockAliasesInBox(rootID, boxID string) (ret []string) {
 	return
 }
 
-// QueryRefsByDefIDRefIDInBox 按 defBlockID+refBlockID 在指定 box 的 db 里查引用。
 func QueryRefsByDefIDRefIDInBox(defBlockID, refBlockID, boxID string) (ret []*Ref) {
 	stmt := "SELECT * FROM refs WHERE def_block_id = ? AND block_id = ?"
 	rows, err := queryForBox(boxID, stmt, defBlockID, refBlockID)
@@ -391,7 +370,6 @@ func QueryRefsByDefIDRefIDInBox(defBlockID, refBlockID, boxID string) (ret []*Re
 	return
 }
 
-// QueryRefsRecentInBox 按 boxID 路由查最近引用，用于加密笔记本内的块引搜索。
 func QueryRefsRecentInBox(onlyDoc bool, typeFilter string, ignoreLines []string, boxID string) (ret []*Ref) {
 	stmt := "SELECT r.* FROM refs AS r, blocks AS b WHERE b.id = r.def_block_id AND b.type IN " + typeFilter
 	if onlyDoc {
@@ -419,7 +397,6 @@ func QueryRefsRecentInBox(onlyDoc bool, typeFilter string, ignoreLines []string,
 	return
 }
 
-// QueryChildRefDefIDsByRootDefIDInBox 按 rootDefID 查子引用定义，按 boxID 路由。
 func QueryChildRefDefIDsByRootDefIDInBox(rootDefID, boxID string) (ret map[string][]string) {
 	ret = map[string][]string{}
 	rows, err := queryForBox(boxID, "SELECT block_id, def_block_id FROM refs WHERE def_block_root_id = ?", rootDefID)
@@ -443,7 +420,6 @@ func QueryChildRefDefIDsByRootDefIDInBox(rootDefID, boxID string) (ret map[strin
 	return
 }
 
-// QueryRefIDsByDefIDInBox 按 defID 查引用 ID 列表，按 boxID 路由。
 func QueryRefIDsByDefIDInBox(defID string, containChildren bool, boxID string) (refIDs []string) {
 	refIDs = []string{}
 	var rows *sql.Rows
@@ -469,7 +445,6 @@ func QueryRefIDsByDefIDInBox(defID string, containChildren bool, boxID string) (
 	return
 }
 
-// SelectBlocksRawStmtNoParseInBox 与 SelectBlocksRawStmtNoParse 一致，但按 boxID 路由。
 func SelectBlocksRawStmtNoParseInBox(stmt string, limit int, boxID string) (ret []*Block) {
 	rows, err := queryForBox(boxID, stmt)
 	if err != nil {
@@ -498,7 +473,6 @@ func SelectBlocksRawStmtNoParseInBox(stmt string, limit int, boxID string) (ret 
 	return
 }
 
-// GetChildBlocksInBox 按 parentID 在指定 box 的 db 里查所有子块。
 func GetChildBlocksInBox(parentID, condition string, limit int, boxID string) (ret []*Block) {
 	blockIDs := queryBlockChildrenIDsForBox(parentID, boxID)
 	var params []string
@@ -526,7 +500,6 @@ func GetChildBlocksInBox(parentID, condition string, limit int, boxID string) (r
 	return
 }
 
-// queryBlockChildrenIDsForBox 递归收集 parentID 及其全部子块 id，按 boxID 路由。
 func queryBlockChildrenIDsForBox(id, boxID string) (ret []string) {
 	ret = append(ret, id)
 	childIDs := queryBlockIDByParentIDForBox(id, boxID)
@@ -536,7 +509,6 @@ func queryBlockChildrenIDsForBox(id, boxID string) (ret []string) {
 	return
 }
 
-// queryBlockIDByParentIDForBox 按 parentID 查直接子块 id，按 boxID 路由。
 func queryBlockIDByParentIDForBox(parentID, boxID string) (ret []string) {
 	sqlStmt := "SELECT id FROM blocks WHERE parent_id = ?"
 	rows, err := queryForBox(boxID, sqlStmt, parentID)
@@ -553,12 +525,10 @@ func queryBlockIDByParentIDForBox(parentID, boxID string) (ret []string) {
 	return
 }
 
-// itoa 是 strconv.Itoa 的简写别名，避免重复 import。
 func itoa(i int) string {
 	return intToStr(i)
 }
 
-// intToStr 把 int 转字符串（避免 import strconv 的循环）。
 func intToStr(i int) string {
 	if i == 0 {
 		return "0"
@@ -582,7 +552,6 @@ func intToStr(i int) string {
 	return string(buf[pos:])
 }
 
-// queryRawStmtForBox 与 queryRawStmt 一致，但按 boxID 路由到加密 db 或全局 db。
 func queryRawStmtForBox(boxID, stmt string, limit int) (ret []map[string]any, err error) {
 	rows, err := queryForBox(boxID, stmt)
 	if err != nil {
@@ -626,7 +595,6 @@ func queryRawStmtForBox(boxID, stmt string, limit int) (ret []map[string]any, er
 	return
 }
 
-// queryRawStmtArgsForBox 与 queryRawStmtArgs 一致，但按 boxID 路由到加密 db 或全局 db。
 func queryRawStmtArgsForBox(boxID, stmt string, args []any, limit int) (ret []map[string]any, err error) {
 	rows, err := queryForBox(boxID, stmt, args...)
 	if err != nil {

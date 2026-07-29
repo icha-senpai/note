@@ -42,7 +42,7 @@ const (
 
 	ClaimsContextKey = "claims"
 
-	iss = "siyuan-kernel" // token 的发行者
+	iss = "siyuan-kernel"
 
 	ClaimsKeyRole string = "role"
 )
@@ -90,7 +90,7 @@ func DeleteSession(sessionID string) {
 
 func InitPublishAccounts() {
 	accountsMap = AccountsMap{
-		"": &Account{}, // 匿名用户
+		"": &Account{},
 	}
 	for _, account := range Conf.Publish.Auth.Accounts {
 		accountsMap[account.Username] = &Account{
@@ -113,12 +113,12 @@ func InitPublishJWT() {
 		t := jwt.NewWithClaims(
 			jwt.SigningMethodHS256,
 			jwt.MapClaims{
-				"iss": iss,                     // token 的发行者
-				"sub": username,                // token 代表的主体
-				"aud": "siyuan-publish-server", // token 的受众
-				"jti": uuid.New().String(),     // token 的唯一标识
+				"iss": iss,
+				"sub": username,
+				"aud": "siyuan-publish-server",
+				"jti": uuid.New().String(),
 
-				ClaimsKeyRole: RoleReader, // 角色
+				ClaimsKeyRole: RoleReader,
 			},
 		)
 		if token, err := t.SignedString(jwtKey); err != nil {
@@ -130,7 +130,6 @@ func InitPublishJWT() {
 	}
 }
 
-// CreatePluginJWT 为指定名称的内核插件创建一个 JWT，包含管理员权限。插件使用这个 JWT 调用内核 API。
 func CreatePluginJWT(name string) (string, error) {
 	t := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
@@ -185,7 +184,6 @@ func GetClaimRole(claims jwt.MapClaims) Role {
 	return RoleVisitor
 }
 
-// IsPublishServiceToken 检查 token 是否来自发布服务
 func IsPublishServiceToken(token *jwt.Token) bool {
 	if token == nil || !token.Valid {
 		return false

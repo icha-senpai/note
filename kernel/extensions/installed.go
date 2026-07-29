@@ -31,26 +31,23 @@ import (
 )
 
 func isBelowRequiredAppVersion(pkg *Package) bool {
-	// 如果包没有指定 minAppVersion，则允许安装
+
 	if "" == pkg.MinAppVersion {
 		return false
 	}
 
-	// 如果包要求的 minAppVersion 大于当前版本，则不允许安装
 	if 0 < semver.Compare("v"+pkg.MinAppVersion, "v"+util.Ver) {
 		return true
 	}
 	return false
 }
 
-// ExtensionsInfo 本地扩展包的持久化信息
 type ExtensionsInfo struct {
 	Packages map[string]map[string]*PackageInfo `json:"packages"`
 }
 
-// PackageInfo 本地扩展包的持久化信息
 type PackageInfo struct {
-	InstallTime int64 `json:"installTime"` // 安装时间戳（毫秒）
+	InstallTime int64 `json:"installTime"`
 }
 
 var (
@@ -60,7 +57,6 @@ var (
 	extensionsInfoSingleFlight singleflight.Group
 )
 
-// getExtensionsInfo 确保本地扩展包持久化信息已加载到内存缓存
 func getExtensionsInfo() {
 	infoPath := filepath.Join(util.DataDir, "storage", "extensions.json")
 	info, err := os.Stat(infoPath)
@@ -69,15 +65,15 @@ func getExtensionsInfo() {
 	cache := extensionsInfoCache
 	modTime := extensionsInfoModTime
 	extensionsInfoCacheLock.RUnlock()
-	// 文件修改时间没变则认为缓存有效
+
 	if cache != nil && err == nil && info.ModTime().Equal(modTime) {
 		return
 	}
 
 	_, _, _ = extensionsInfoSingleFlight.Do("loadExtensionsInfo", func() (any, error) {
-		// 缓存失效时从磁盘加载
+
 		newRet := loadExtensionsInfo()
-		// 更新缓存和修改时间
+
 		extensionsInfoCacheLock.Lock()
 		extensionsInfoCache = newRet
 		if err == nil {
@@ -88,9 +84,8 @@ func getExtensionsInfo() {
 	})
 }
 
-// loadExtensionsInfo 从磁盘加载本地扩展包持久化信息
 func loadExtensionsInfo() (ret *ExtensionsInfo) {
-	// 初始化一个空的 ExtensionsInfo，后续使用时无需判断 nil
+
 	ret = &ExtensionsInfo{
 		Packages: make(map[string]map[string]*PackageInfo),
 	}
@@ -122,7 +117,6 @@ func loadExtensionsInfo() (ret *ExtensionsInfo) {
 	return
 }
 
-// saveExtensionsInfo 保存本地扩展包持久化信息（调用者需持有 extensionsInfoCacheLock 写锁）
 func saveExtensionsInfo() {
 	infoPath := filepath.Join(util.DataDir, "storage", "extensions.json")
 
@@ -141,7 +135,6 @@ func saveExtensionsInfo() {
 	}
 }
 
-// setPackageInstallTime 设置本地扩展包的安装时间
 func setPackageInstallTime(pkgType, pkgName string, installTime time.Time) {
 	getExtensionsInfo()
 
@@ -163,7 +156,6 @@ func setPackageInstallTime(pkgType, pkgName string, installTime time.Time) {
 	saveExtensionsInfo()
 }
 
-// getPackageHInstallDate 获取本地扩展包的安装日期
 func getPackageHInstallDate(pkgType, pkgName, installPath string) string {
 	getExtensionsInfo()
 	extensionsInfoCacheLock.RLock()
@@ -179,7 +171,6 @@ func getPackageHInstallDate(pkgType, pkgName, installPath string) string {
 		return time.UnixMilli(installTime).Format("2006-01-02")
 	}
 
-	// 如果 extensions.json 中没有记录，使用文件夹修改时间并记录到 extensions.json 中
 	fi, err := os.Stat(installPath)
 	if err != nil {
 		logging.LogWarnf("stat install package folder [%s] failed: %s", installPath, err)
@@ -190,7 +181,6 @@ func getPackageHInstallDate(pkgType, pkgName, installPath string) string {
 	return fi.ModTime().Format("2006-01-02")
 }
 
-// RemovePackageInfo 删除本地扩展包的持久化信息
 func RemovePackageInfo(pkgType, pkgName string) {
 	getExtensionsInfo()
 

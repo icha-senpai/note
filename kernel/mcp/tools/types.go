@@ -31,14 +31,13 @@ type Tool struct {
 	Description  string      `json:"description"`
 	InputSchema  ToolSchema  `json:"inputSchema"`
 	OutputSchema *ToolSchema `json:"outputSchema,omitempty"`
-	// Source 标记工具来源："native"（Scribli 内置）、"plugin"（插件注册）、"mcp"（外部 MCP 服务）。
-	// 用于 token 分类统计按来源拆分。空值按 "native" 处理（兼容旧调用方）。
+
 	Source string `json:"source,omitempty"`
-	// ReadOnlyHint 仅在外部工具明确声明只读时为 true；未声明时按可能写入处理并要求确认。
+
 	ReadOnlyHint bool `json:"readOnlyHint,omitempty"`
-	// EffectScope 描述写操作影响范围，用于判断本地数据仓库快照是否具有回滚价值。
+
 	EffectScope string `json:"effectScope,omitempty"`
-	// ActionEffects 按 action 描述本地读写、数据外发与外部计费，供智能体精确执行确认和快照策略。
+
 	ActionEffects map[string]ToolEffects `json:"-"`
 
 	Handler        func(args map[string]any) (CallToolResult, error)                      `json:"-"`

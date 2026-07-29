@@ -89,10 +89,8 @@ func GetAssetContent(id, query string, queryMethod int) (ret *AssetContent) {
 	return
 }
 
-// GetAssetContentByPath 按资源文件路径获取已索引的完整内容。
 //
-// path 为工作空间相对路径，形如 "assets/xxx.pdf"。返回 nil 表示该文件尚未被索引。
-// 与 GetAssetContent（按索引记录 id）不同，此处直接返回 content 原文，不做高亮。
+
 func GetAssetContentByPath(path string) (ret *AssetContent) {
 	path = strings.TrimSpace(path)
 	if "" == path {
@@ -110,15 +108,13 @@ func GetAssetContentByPath(path string) (ret *AssetContent) {
 	return
 }
 
-// FullTextSearchAssetContent 搜索资源文件内容。
 //
-// method：0：关键字，1：查询语法，2：SQL，3：正则表达式
-// orderBy: 0：按相关度降序，1：按相关度升序，2：按更新时间升序，3：按更新时间降序
+
 func FullTextSearchAssetContent(query string, types map[string]bool, method, orderBy, page, pageSize int) (ret []*AssetContent, matchedAssetCount, pageCount int, err error) {
 	query = strings.TrimSpace(query)
 	orderByClause := buildAssetContentOrderBy(orderBy)
 	switch method {
-	case 1: // 查询语法
+	case 1:
 		filter, filterArgs := buildAssetContentTypeFilter(types)
 		ret, matchedAssetCount = fullTextSearchAssetContentByQuerySyntax(query, filter, filterArgs, orderByClause, page, pageSize)
 	case 2: // SQL
@@ -126,10 +122,10 @@ func FullTextSearchAssetContent(query string, types map[string]bool, method, ord
 		if err != nil {
 			return
 		}
-	case 3: // 正则表达式
+	case 3:
 		typeFilter, typeArgs := buildAssetContentTypeFilter(types)
 		ret, matchedAssetCount = fullTextSearchAssetContentByRegexp(query, typeFilter, typeArgs, orderByClause, page, pageSize)
-	default: // 关键字
+	default:
 		filter, filterArgs := buildAssetContentTypeFilter(types)
 		ret, matchedAssetCount = fullTextSearchAssetContentByKeyword(query, filter, filterArgs, orderByClause, page, pageSize)
 	}
@@ -426,7 +422,6 @@ func (searcher *AssetsSearcher) FullIndex() {
 			return nil
 		}
 
-		// 加密笔记本的 asset 是密文，跳过全量内容索引（避免密文污染搜索索引、泄漏文件名集合）
 		if IsEncryptedAssetPath(absPath) {
 			return nil
 		}

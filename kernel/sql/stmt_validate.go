@@ -30,8 +30,6 @@ type readonlyStmt interface {
 	Readonly() bool
 }
 
-// tailIsOnlyWhitespaceOrSQLComments 判断分号之后的片段是否仅由空白、行注释（-- 至换行或 EOF）、
-// 块注释（/* … */，含未闭合则吞至 EOF）构成。与 SQLite 解析对齐：分号后若只有这些内容，不会被视为另一条可执行的 SQL 语句。
 func tailIsOnlyWhitespaceOrSQLComments(s string) bool {
 	runes := []rune(s)
 	for i := 0; i < len(runes); {
@@ -144,7 +142,7 @@ func containsMultipleStatements(stmt string) bool {
 		case ';' == ch:
 			tail := string(runes[i+1:])
 			if tailIsOnlyWhitespaceOrSQLComments(tail) {
-				// 分号后仅有空白与 SQL 注释时，SQLite 仍视为同一条语句末尾，不应判为多语句。
+
 				continue
 			}
 			return true
@@ -160,22 +158,16 @@ func CheckSingleStatement(stmt string) error {
 	return nil
 }
 
-// CheckReadonlyStatement 对整段 SQL 做 prepare（不执行），用 sqlite3_stmt_readonly 判断首条语句是否只读。
-// 见 https://sqlite.org/c3ref/stmt_readonly.html
 //
-// 注意：若字符串里在语法上还有第二条及以后的语句，本函数只针对「首条」对应的 stmt 做判断，
-// 不会拒绝多语句。与 CheckSingleStatement 组合即可得到「单条 + 只读」策略。
-// 仅允许 SELECT 和 WITH 查询，避免 SQLite 将 ATTACH、DETACH 和事务控制语句标记为只读后放行。
+
 func CheckReadonlyStatement(stmt string) error {
 	return checkReadonlyStatement(stmt, db)
 }
 
-// CheckAssetContentReadonlyStatement 在资源文件内容数据库连接上检查 SQL 是否只读。
 func CheckAssetContentReadonlyStatement(stmt string) error {
 	return checkReadonlyStatement(stmt, assetContentDB)
 }
 
-// CheckReadonlyStatementInBox 在指定笔记本对应的数据库连接上检查 SQL 是否只读。
 func CheckReadonlyStatementInBox(stmt, boxID string) error {
 	targetDB := db
 	if boxDB := GetEncryptedDB(boxID); nil != boxDB {
@@ -225,8 +217,6 @@ func checkReadonlyStatement(stmt string, targetDB *sql.DB) error {
 	})
 }
 
-// isReadonlyQueryStatement 仅允许查询语句进入 SQLite prepare，提前拒绝会被 sqlite3_stmt_readonly
-// 视为只读的 ATTACH、DETACH 和事务控制语句。WITH 中的写操作仍由 sqlite3_stmt_readonly 拒绝。
 func isReadonlyQueryStatement(stmt string) bool {
 	stmt = strings.TrimSpace(stmt)
 	for "" != stmt {

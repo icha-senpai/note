@@ -31,7 +31,6 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// getReadmeFileCandidates 根据包的 README 配置返回去重的按优先级排序的 README 候选文件名列表：当前语言首选、default、README.md。
 func getReadmeFileCandidates(readme LocaleStrings) []string {
 	preferred := GetPreferredLocaleString(readme, "README.md")
 	defaultName := "README.md"
@@ -41,7 +40,6 @@ func getReadmeFileCandidates(readme LocaleStrings) []string {
 	return gulu.Str.RemoveDuplicatedElem([]string{preferred, defaultName, "README.md"})
 }
 
-// getInstalledPackageREADME 获取本地扩展包的 README。
 func getInstalledPackageREADME(installPath, linkBase string, readme LocaleStrings) (ret string) {
 	candidates := getReadmeFileCandidates(readme)
 	var errMsgs []string
@@ -58,9 +56,8 @@ func getInstalledPackageREADME(installPath, linkBase string, readme LocaleString
 	return
 }
 
-// renderPackageREADME 渲染 README Markdown 为 HTML。
 func renderPackageREADME(linkBase string, mdData []byte) (ret string) {
-	mdData = bytes.TrimPrefix(mdData, []byte("\xef\xbb\xbf")) // 移除文件开头的 BOM
+	mdData = bytes.TrimPrefix(mdData, []byte("\xef\xbb\xbf"))
 	luteEngine := lute.New()
 	luteEngine.SetSanitize(true)
 	luteEngine.SetSoftBreak2HardBreak(false)
@@ -85,7 +82,7 @@ func normalizeNodesIAL(tree *parse.Tree) {
 			return ast.WalkContinue
 		}
 		if n.Type == ast.NodeCodeBlock {
-			// 代码块添加 code-block 类名以修正样式。
+
 			n.KramdownIAL = addClassToKramdownIAL(n.KramdownIAL, "code-block")
 		}
 		return ast.WalkContinue

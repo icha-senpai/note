@@ -328,7 +328,6 @@ func forwardProxy(c *gin.Context) {
 	//	elapsed.Seconds(), len(bodyData), data["url"], headers, contentType, arg["payload"], data["status"], shortBody)
 }
 
-// 创建安全的 HTTP Client，防止 SSRF 和 DNS 重绑定
 func getSafeClient(timeout time.Duration) *req.Client {
 	dialer := util.SSRFSafeDialer(timeout)
 

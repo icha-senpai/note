@@ -56,9 +56,9 @@ func LoadSysFonts() []*Font {
 }
 
 type Font struct {
-	Family      string `json:"family"`      // 对应 CSS font-family
-	Weight      int    `json:"weight"`      // 对应 CSS font-weight
-	DisplayName string `json:"displayName"` // 给人看的名称 (Family + Subfamily)
+	Family      string `json:"family"`
+	Weight      int    `json:"weight"`
+	DisplayName string `json:"displayName"`
 }
 
 func loadFonts() (ret []*Font) {
@@ -184,7 +184,7 @@ func parseFont(font *sfnt.Font) *Font {
 
 	if weight == 400 && subfamily != "" {
 		s := strings.ToLower(subfamily)
-		// 自动匹配 W01-W09
+
 		for i := 1; i <= 9; i++ {
 			wStr := "w0" + strconv.Itoa(i)
 			if strings.Contains(s, wStr) {
@@ -193,7 +193,6 @@ func parseFont(font *sfnt.Font) *Font {
 			}
 		}
 
-		// 自动匹配 W1-W9（部分字体使用不带前导零的缩写）
 		if weight == 400 {
 			for i := 1; i <= 9; i++ {
 				wStr := "w" + strconv.Itoa(i)
@@ -204,8 +203,7 @@ func parseFont(font *sfnt.Font) *Font {
 			}
 		}
 
-		// 自动匹配标准关键词
-		if weight == 400 { // 如果 W 系列没匹配到
+		if weight == 400 {
 			switch {
 			case strings.Contains(s, "thin"):
 				weight = 100

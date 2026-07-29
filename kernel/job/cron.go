@@ -59,7 +59,6 @@ func StartCron() {
 func every(interval time.Duration, f func(), name ...string) {
 	util.RandomSleep(50, 200)
 
-	// 启动后立即执行一次
 	func() {
 		defer logging.Recover()
 		f()

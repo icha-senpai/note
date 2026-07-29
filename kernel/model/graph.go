@@ -91,10 +91,10 @@ func BuildTreeGraph(id, query string) (boxID string, nodes []*GraphNode, links [
 	}
 	blocks := fromSQLBlocks(&sqlBlocks, "", 0)
 	if "" != rootID {
-		// 局部关系图中添加文档链接关系 https://github.com/siyuan-note/siyuan/issues/4996
+
 		rootBlock := getBlockIn(blocks, rootID)
 		if nil != rootBlock {
-			// 按引用处理
+
 			sqlRootDefs := sql.QueryDefRootBlocksByRefRootID(rootID)
 			rootDefBlocks := fromSQLBlocks(&sqlRootDefs, "", 0)
 			var rootIDs []string
@@ -116,11 +116,9 @@ func BuildTreeGraph(id, query string) (boxID string, nodes []*GraphNode, links [
 				blocks = append(blocks, refBlocks...)
 			}
 
-			// 按定义处理
 			blocks = append(blocks, rootBlock)
 			sqlRefBlocks = sql.QueryRefRootBlocksByDefRootIDs([]string{rootID})
 
-			// 关系图日记过滤失效 https://github.com/siyuan-note/siyuan/issues/7547
 			dailyNotesPaths := dailyNotePaths(true)
 			for _, sqlRefBs := range sqlRefBlocks {
 				refBlocks := fromSQLBlocks(&sqlRefBs, "", 0)
@@ -192,7 +190,6 @@ func BuildGraph(query string) (boxID string, nodes []*GraphNode, links []*GraphL
 	genTreeNodes(treeBlocks, &nodes, &links, false)
 	blocks = append(blocks, treeBlocks...)
 
-	// 文档块关联
 	sqlRootRefBlocks := sql.QueryRefRootBlocksByDefRootIDs(rootIDs)
 	for defRootID, sqlRefBlocks := range sqlRootRefBlocks {
 		rootBlock := getBlockIn(treeBlocks, defRootID)
@@ -229,7 +226,6 @@ func linkTagBlocks(blocks *[]*Block, nodes *[]*GraphNode, links *[]*GraphLink, p
 		nodeSize = Conf.Graph.Local.NodeSize
 	}
 
-	// 构造标签节点
 	var tagNodes []*GraphNode
 	for _, tagSpan := range tagSpans {
 		if nil == tagNodeIn(tagNodes, tagSpan.Content) {
@@ -244,18 +240,17 @@ func linkTagBlocks(blocks *[]*Block, nodes *[]*GraphNode, links *[]*GraphLink, p
 		}
 	}
 
-	// 连接标签和块
 	for _, block := range *blocks {
 		for _, tagSpan := range tagSpans {
-			if isGlobal { // 全局关系图将标签链接到文档块上
-				if block.RootID == tagSpan.RootID { // 局部关系图将标签链接到子块上
+			if isGlobal {
+				if block.RootID == tagSpan.RootID {
 					*links = append(*links, &GraphLink{
 						From: tagSpan.Content,
 						To:   block.RootID,
 					})
 				}
 			} else {
-				if block.ID == tagSpan.BlockID { // 局部关系图将标签链接到子块上
+				if block.ID == tagSpan.BlockID {
 					*links = append(*links, &GraphLink{
 						From: tagSpan.Content,
 						To:   block.ID,
@@ -265,7 +260,6 @@ func linkTagBlocks(blocks *[]*Block, nodes *[]*GraphNode, links *[]*GraphLink, p
 		}
 	}
 
-	// 连接层级标签
 	for _, tagNode := range tagNodes {
 		ids := strings.Split(tagNode.ID, "/")
 		if 2 > len(ids) {

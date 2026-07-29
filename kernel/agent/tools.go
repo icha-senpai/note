@@ -41,8 +41,6 @@ func convertMCPToolsToOpenAI() []openai.Tool {
 	return result
 }
 
-// executeTool 执行单次工具调用。
-// 返回值：结果文本（已展平为字符串），isErr 表示工具是否返回错误结果，executionUnknown 表示副作用结果无法确定。
 func executeTool(ctx context.Context, tc openai.ToolCall, sessionID string) (resultText string, isErr, executionUnknown bool) {
 	t := tools.GetTool(tc.Function.Name)
 	if t == nil {
@@ -56,9 +54,7 @@ func executeTool(ctx context.Context, tc openai.ToolCall, sessionID string) (res
 	}
 
 	args := parseToolArgs(tc.Function.Arguments)
-	// _sessionID 和 _toolCallID 是原生工具专用的内部字段，用于关联会话状态和实现幂等操作。
-	// 仅注入给原生工具；MCP/插件工具的参数会原样转发给外部服务端，
-	// 严格校验（additionalProperties:false）的服务端（如 Flomo MCP）会因这个多余字段报错。
+
 	// https://github.com/siyuan-note/siyuan/issues/17927
 	if t.Source == "native" || t.Source == "" {
 		args["_sessionID"] = sessionID
@@ -98,7 +94,7 @@ func executeTool(ctx context.Context, tc openai.ToolCall, sessionID string) (res
 }
 
 func convertSchema(schema tools.ToolSchema) any {
-	// 根级 anyOf 常见于 Zod 生成的 schema，取第一个 object 变体展开。
+
 	if schema.Type == "" && len(schema.AnyOf) > 0 {
 		for _, variant := range schema.AnyOf {
 			if variant.Type == "object" || len(variant.Properties) > 0 {
@@ -134,7 +130,7 @@ func convertSchema(schema tools.ToolSchema) any {
 }
 
 func convertProperty(prop tools.Property) map[string]any {
-	// Zod 可选字段常生成 anyOf: [{type: T}, {type: null}]，简化为单一类型即可。
+
 	if prop.Type == "" && len(prop.AnyOf) > 0 {
 		if simplified := simplifyNullUnionProp(prop); simplified != nil {
 			return simplified
@@ -184,7 +180,6 @@ func convertProperty(prop tools.Property) map[string]any {
 	return p
 }
 
-// simplifyNullUnionProp 将 anyOf: [T, null] 形式的 Zod 可选字段简化为 T。
 func simplifyNullUnionProp(prop tools.Property) map[string]any {
 	var candidate *tools.Property
 	for i := range prop.AnyOf {

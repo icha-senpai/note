@@ -31,16 +31,14 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// setDEKForTest 把指定 DEK 直接注入 boxID 的缓存，绕过 UnlockBox 的 Argon2id 派生，便于纯内存测试。
 func setDEKForTest(boxID string, dek []byte) {
 	cachedDEKsLock.Lock()
 	defer cachedDEKsLock.Unlock()
 	cachedDEKs[boxID] = dek
 }
 
-// TestIsBoxUnlockedLifecycle 验证 DEK 缓存的存在/缺失状态。
 func TestIsBoxUnlockedLifecycle(t *testing.T) {
-	LockBox("lifecycle-test-box") // 确保初始干净
+	LockBox("lifecycle-test-box")
 	boxID := "lifecycle-test-box"
 	if IsBoxUnlocked(boxID) {
 		t.Fatalf("box should not be unlocked after LockBox")
@@ -56,7 +54,6 @@ func TestIsBoxUnlockedLifecycle(t *testing.T) {
 	}
 }
 
-// TestGetDEKReturnsErrorAfterLock 验证 LockBox 后 GetDEK 报错。
 func TestGetDEKReturnsErrorAfterLock(t *testing.T) {
 	dek, _ := util.GenerateDEK()
 	boxID := "get-dek-test-box"
@@ -76,7 +73,6 @@ func TestGetDEKReturnsErrorAfterLock(t *testing.T) {
 	}
 }
 
-// TestWrapNewDEKRoundTrip 验证用 KEK 生成 DEK → 包络 → 解包 → 还原。
 func TestWrapNewDEKRoundTrip(t *testing.T) {
 	kek, _ := util.GenerateDEK()
 	defer LockBox("wrap-roundtrip-box")
@@ -98,7 +94,6 @@ func TestWrapNewDEKRoundTrip(t *testing.T) {
 	}
 }
 
-// TestDecryptWrappedDEKWithWrongKEK 验证用错误的 KEK 解密 WrappedDEK 失败（GCM MAC 校验）。
 func TestDecryptWrappedDEKWithWrongKEK(t *testing.T) {
 	kek1, _ := util.GenerateDEK()
 	boxEnc, _, _ := WrapNewDEK("wrong-kek-box", kek1)
@@ -111,7 +106,6 @@ func TestDecryptWrappedDEKWithWrongKEK(t *testing.T) {
 	}
 }
 
-// TestWrapNewDEKProducesUniqueDEKs 验证两次调用 WrapNewDEK 生成不同的 DEK（随机性）。
 func TestWrapNewDEKProducesUniqueDEKs(t *testing.T) {
 	kek, _ := util.GenerateDEK()
 	defer LockBox("uniq-box-1")
@@ -120,13 +114,11 @@ func TestWrapNewDEKProducesUniqueDEKs(t *testing.T) {
 	_, dek1, _ := WrapNewDEK("uniq-box-1", kek)
 	_, dek2, _ := WrapNewDEK("uniq-box-2", kek)
 
-	// WrapNewDEK 同时返回原始 DEK，可直接比对随机性
 	if bytes.Equal(dek1, dek2) {
 		t.Fatalf("two WrapNewDEK calls produced identical DEKs (not random?)")
 	}
 }
 
-// TestBoxEncryptionRoundTripViaUtil 验证 conf.BoxEncryption 的字段能正确往返加解密（端到端，绕过缓存）。
 func TestBoxEncryptionRoundTripViaUtil(t *testing.T) {
 	kek, _ := util.GenerateDEK()
 	originalDEK, _ := util.GenerateDEK()
@@ -146,58 +138,46 @@ func TestBoxEncryptionRoundTripViaUtil(t *testing.T) {
 	}
 }
 
-// TestUnmount0ClearsDEKForUnmountedEncryptedBox 验证安全修复：加密笔记本在
-// "已解锁（DEK 在内存）但未挂载（不在 GetOpenedBoxes）"的状态下调用 unmount0，
-// DEK 仍应被清除，否则锁定后认证 API 仍可读取明文。
-// 直接测试 clearDEKIfUnlockedEncryptedBox（unmount0 在 box==nil 分支调用的清理逻辑），
-// 避免依赖未初始化的全局 Conf。
 func TestUnmount0ClearsDEKForUnmountedEncryptedBox(t *testing.T) {
 	boxID := "unmount-unlocked-test-box"
 
-	// 临时替换 DataDir，创建加密 box 的 conf.json，让 IsEncryptedBox 返回 true
 	origDataDir := util.DataDir
 	tempDir := t.TempDir()
 	util.DataDir = tempDir
 	defer func() {
 		util.DataDir = origDataDir
-		LockBox("unmount-unlocked-test-box") // 测试后清理 DEK 缓存
+		LockBox("unmount-unlocked-test-box")
 	}()
 
-	// 写入加密 box 的 conf.json
 	confDir := filepath.Join(tempDir, boxID, ".siyuan")
 	if err := os.MkdirAll(confDir, 0755); err != nil {
 		t.Fatalf("mkdir conf dir failed: %v", err)
 	}
 	boxConf := conf.NewBoxConf()
 	boxConf.Encrypted = true
-	boxConf.Closed = true // 未挂载（关闭状态）
+	boxConf.Closed = true
 	confData, _ := gulu.JSON.MarshalIndentJSON(boxConf, "", "  ")
 	if err := os.WriteFile(filepath.Join(confDir, "conf.json"), confData, 0644); err != nil {
 		t.Fatalf("write conf.json failed: %v", err)
 	}
 
-	// 确认 IsEncryptedBox 返回 true
 	if !IsEncryptedBox(boxID) {
 		t.Fatalf("precondition failed: IsEncryptedBox should return true")
 	}
 
-	// 注入 DEK 模拟已解锁状态
 	dek, _ := util.GenerateDEK()
 	setDEKForTest(boxID, dek)
 	if !IsBoxUnlocked(boxID) {
 		t.Fatalf("precondition failed: box should be unlocked after setDEKForTest")
 	}
 
-	// 调用清理逻辑（unmount0 在 box 未挂载分支调用的函数）
 	clearDEKIfUnlockedEncryptedBox(boxID)
 
-	// 验证 DEK 已被清除
 	if IsBoxUnlocked(boxID) {
 		t.Fatalf("DEK should be cleared for unlocked encrypted box")
 	}
 }
 
-// TestBackupRejectsUnsupportedSpec 验证非当前版本的备份被明确拒绝，不执行静默升级或降级。
 func TestBackupRejectsUnsupportedSpec(t *testing.T) {
 	for _, spec := range []int{0, conf.CurrentNotebookCryptoSpec + 1} {
 		t.Run(fmt.Sprintf("spec-%d", spec), func(t *testing.T) {
@@ -222,14 +202,12 @@ func TestBackupRejectsUnsupportedSpec(t *testing.T) {
 	}
 }
 
-// TestBackupChecksumCorruption 验证校验和可检测备份损坏。
 func TestBackupChecksumCorruption(t *testing.T) {
 	origDataDir := util.DataDir
 	tempDir := t.TempDir()
 	util.DataDir = tempDir
 	defer func() { util.DataDir = origDataDir }()
 
-	// 创建有效备份
 	nc := &conf.NotebookCrypto{
 		Enabled:    true,
 		MasterSalt: []byte("corrupt-test-salt12"),
@@ -240,7 +218,6 @@ func TestBackupChecksumCorruption(t *testing.T) {
 	data, _ := json.Marshal(nc)
 	os.WriteFile(backupPath, data, 0644)
 
-	// 验证正常加载
 	nc1, err := loadNotebookCryptoBackup()
 	if err != nil {
 		t.Fatalf("loadNotebookCryptoBackup should succeed with valid backup: %v", err)
@@ -249,20 +226,17 @@ func TestBackupChecksumCorruption(t *testing.T) {
 		t.Fatalf("expected Spec=1, got %d", nc1.Spec)
 	}
 
-	// 篡改 MasterSalt 一个字节
 	nc.MasterSalt[0] ^= 0xFF
-	// 不更新 Checksum（模拟磁盘损坏）
+
 	data, _ = json.Marshal(nc)
 	os.WriteFile(backupPath, data, 0644)
 
-	// 应检测到损坏
 	_, err = loadNotebookCryptoBackup()
 	if err == nil {
 		t.Fatalf("loadNotebookCryptoBackup should fail with corrupted backup")
 	}
 }
 
-// TestBackupKEKMACVerification 验证 KEKMAC 认证码正确性。
 func TestBackupKEKMACVerification(t *testing.T) {
 	nc := &conf.NotebookCrypto{
 		Enabled:    true,
@@ -273,19 +247,16 @@ func TestBackupKEKMACVerification(t *testing.T) {
 	correctKek, _ := util.GenerateDEK()
 	nc.KEKMAC = computeKEKMAC(nc, correctKek)
 
-	// 正确 KEK 验证通过
 	if !verifyKEKMAC(nc, correctKek) {
 		t.Fatalf("verifyKEKMAC should pass with correct KEK")
 	}
 
-	// 错误 KEK 验证失败
 	wrongKek, _ := util.GenerateDEK()
 	if verifyKEKMAC(nc, wrongKek) {
 		t.Fatalf("verifyKEKMAC should fail with wrong KEK")
 	}
 }
 
-// TestDeriveKEKRejectsTamperedBackupMAC 验证 verifier 正确但备份 MAC 被篡改时仍拒绝派生。
 func TestDeriveKEKRejectsTamperedBackupMAC(t *testing.T) {
 	origDataDir := util.DataDir
 	util.DataDir = t.TempDir()
@@ -326,7 +297,6 @@ func TestDeriveKEKRejectsTamperedBackupMAC(t *testing.T) {
 	}
 }
 
-// TestDeriveKEKAllowsLocalAutoLockChange 验证本机修改自动锁定时间不会使已认证的密钥备份失效。
 func TestDeriveKEKAllowsLocalAutoLockChange(t *testing.T) {
 	origDataDir := util.DataDir
 	util.DataDir = t.TempDir()
@@ -363,7 +333,6 @@ func TestDeriveKEKAllowsLocalAutoLockChange(t *testing.T) {
 	zeroAndClear(derived)
 }
 
-// TestDeepCopyBoxEncryptionPreservesSpec 验证保存笔记本配置前的深拷贝不会丢失包络版本。
 func TestDeepCopyBoxEncryptionPreservesSpec(t *testing.T) {
 	src := &conf.BoxEncryption{Spec: 1, WrappedDEK: []byte{1, 2}, WrapNonce: []byte{3, 4}, CreatedAt: 5}
 	got := DeepCopyBoxEncryption(src)
@@ -372,15 +341,12 @@ func TestDeepCopyBoxEncryptionPreservesSpec(t *testing.T) {
 	}
 }
 
-// TestUnknownBlockRefFailsClosed 验证普通库无法定位定义块时按跨边界处理，防止锁定加密块 ID 被写入全局库。
 func TestUnknownBlockRefFailsClosed(t *testing.T) {
 	if !normalBoxBlockRefCrossesBoundary(nil) {
 		t.Fatalf("an unresolved block reference should fail closed")
 	}
 }
 
-// TestBackupMACRoundTrip 验证 writeNotebookCryptoBackupData(nc, kek) 写入的备份，
-// 重新加载后 verifyKEKMAC 能通过——即 MAC 在 prepareBackupForWrite 之后计算（顺序正确）。
 func TestBackupMACRoundTrip(t *testing.T) {
 	origDataDir := util.DataDir
 	tempDir := t.TempDir()
@@ -401,12 +367,10 @@ func TestBackupMACRoundTrip(t *testing.T) {
 		KEKVerifier: verifierCT,
 	}
 
-	// 通过 writeNotebookCryptoBackupData 写入（内部 prepareBackupForWrite 后计算 MAC）
 	if err := writeNotebookCryptoBackupData(nc, kek); err != nil {
 		t.Fatalf("writeNotebookCryptoBackupData failed: %v", err)
 	}
 
-	// 重新加载，验证 Checksum 和 MAC 均通过
 	loaded, err := loadNotebookCryptoBackup()
 	if err != nil {
 		t.Fatalf("loadNotebookCryptoBackup failed: %v", err)
@@ -416,9 +380,8 @@ func TestBackupMACRoundTrip(t *testing.T) {
 	}
 }
 
-// TestLockBoxConcurrentReads 验证 LockBox（单 box）能与在途读锁正确串行化。
 func TestLockBoxConcurrentReads(t *testing.T) {
-	LockBox("concurrent-single-box") // 清理初始状态
+	LockBox("concurrent-single-box")
 	boxID := "concurrent-single-box"
 	dek, _ := util.GenerateDEK()
 	setDEKForTest(boxID, dek)
@@ -450,7 +413,6 @@ func TestLockBoxConcurrentReads(t *testing.T) {
 	}
 }
 
-// TestLockBoxClearsTempDirs 验证 LockBox 删除 per-box 临时目录。
 func TestLockBoxClearsTempDirs(t *testing.T) {
 	boxID := "temp-cleanup-box"
 	dek, _ := util.GenerateDEK()
@@ -464,7 +426,6 @@ func TestLockBoxClearsTempDirs(t *testing.T) {
 		LockBox("temp-cleanup-box")
 	}()
 
-	// 创建模拟临时目录和文件
 	exportDir := filepath.Join(tempDir, "export", boxID)
 	repoDiffDir := filepath.Join(tempDir, "repo", "diff", boxID)
 	repoRollbackDir := filepath.Join(tempDir, "repo", "rollback", boxID)
@@ -486,22 +447,17 @@ func TestLockBoxClearsTempDirs(t *testing.T) {
 	}
 }
 
-// TestEncryptFileAADBoundToBaseNameNotPath 验证 .sy 密文 AAD 绑定稳定文件基名而非父目录。
-// 同一基名、不同父目录加密出的密文，可用任一父目录路径解密；基名变化或 box 变化则解密失败。
-// 这是同 box 内移动文档可原样 Rename 密文（不重新封装）的密码学保证。
 func TestEncryptFileAADBoundToBaseNameNotPath(t *testing.T) {
 	boxID := "20240101120000-boxaaaaa"
 	dek, _ := util.GenerateDEK()
 	base := "20240101120000-1a2b3c4.sy"
 	plain := []byte(`{"ID":"20240101120000-1a2b3c4","Properties":{"title":"doc"}}`)
 
-	// 用父目录 A 加密
 	ct, err := EncryptFile(boxID, "/20240101120000-parentA/"+base, dek, plain)
 	if err != nil {
 		t.Fatalf("EncryptFile failed: %v", err)
 	}
 
-	// 用父目录 B（及裸基名）解密：必须成功——AAD 只绑基名
 	if got, err := DecryptFile(boxID, "/20240101120000-parentB/"+base, dek, ct); err != nil {
 		t.Fatalf("decrypt with different parent dir should succeed: %v", err)
 	} else if string(got) != string(plain) {
@@ -513,21 +469,17 @@ func TestEncryptFileAADBoundToBaseNameNotPath(t *testing.T) {
 		t.Fatalf("decrypted content mismatch")
 	}
 
-	// 用不同基名解密：必须失败——AAD 绑定基名
 	otherBase := "20240101120000-zzzzzzz.sy"
 	if _, err := DecryptFile(boxID, otherBase, dek, ct); err == nil {
 		t.Fatal("decrypt with different base name must fail")
 	}
 
-	// 用不同 boxID 解密：必须失败——AAD 绑定 boxID
 	otherBox := "20240101120000-otherbox"
 	if _, err := DecryptFile(otherBox, base, dek, ct); err == nil {
 		t.Fatal("decrypt with different boxID must fail")
 	}
 }
 
-// TestEncryptFileRejectsInvalidBaseName 验证非法基名（非 .sy、非节点 ID）直接拒绝加密，
-// 不产生可用于落盘的密文，避免把任意路径当 AAD 绑定物。
 func TestEncryptFileRejectsInvalidBaseName(t *testing.T) {
 	boxID := "20240101120000-boxaaaaa"
 	dek, _ := util.GenerateDEK()
@@ -541,7 +493,6 @@ func TestEncryptFileRejectsInvalidBaseName(t *testing.T) {
 	}
 }
 
-// TestDecryptFileRejectsInvalidBaseName 验证解密路径同样拒绝非法基名。
 func TestDecryptFileRejectsInvalidBaseName(t *testing.T) {
 	boxID := "20240101120000-boxaaaaa"
 	dek, _ := util.GenerateDEK()
@@ -555,9 +506,6 @@ func TestDecryptFileRejectsInvalidBaseName(t *testing.T) {
 	}
 }
 
-// TestEnabledWithoutBackupReturnsRecoveryError 验证「已启用但密钥备份缺失」不锁死全部笔记本：
-// 启动回填已删除（无 KEK 生成的备份 KEKMAC 必空，会被解锁路径拒绝），deriveKEK 在此情形返回
-// 恢复提示（Language 315，引导用户导入匹配备份），而非误报密钥损坏（316），且不在磁盘制造无效备份。
 func TestEnabledWithoutBackupReturnsRecoveryError(t *testing.T) {
 	origDataDir := util.DataDir
 	tempDir := t.TempDir()
@@ -570,7 +518,6 @@ func TestEnabledWithoutBackupReturnsRecoveryError(t *testing.T) {
 	kek := util.DeriveKey(password, salt, params)
 	defer zeroAndClear(kek)
 
-	// 构造本机已启用、本机 verifier 有效的配置（主密码能派生出可用 KEK），但不写备份文件
 	verifierCT, _ := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("siyuan:v1:kek-verifier"))
 	nc := &conf.NotebookCrypto{
 		Enabled:     true,
@@ -587,20 +534,16 @@ func TestEnabledWithoutBackupReturnsRecoveryError(t *testing.T) {
 	if err == nil {
 		t.Fatal("deriveKEK should fail when enabled but backup is missing")
 	}
-	// 主密码正确（verifier 通过），故不应报「密码错」（311）或「密钥损坏」（316），
-	// 而应报「需恢复」（315）引导用户导入匹配备份
+
 	if err.Error() != Conf.Language(315) {
 		t.Fatalf("expected recovery hint (Language 315), got: %v", err)
 	}
 
-	// 关键：不在磁盘制造无效备份——备份文件应仍不存在
 	if _, statErr := os.Stat(notebookCryptoBackupPath()); !os.IsNotExist(statErr) {
 		t.Fatalf("backup file should not be generated during deriveKEK; stat err=%v", statErr)
 	}
 }
 
-// TestSaveNotebookCryptoBackupRejectsNilKEK 验证无 KEK 时拒绝生成备份（收口）：
-// nil KEK 生成的备份 KEKMAC 必空，会被解锁/恢复路径拒绝，等于制造无法解锁的状态。
 func TestSaveNotebookCryptoBackupRejectsNilKEK(t *testing.T) {
 	origDataDir := util.DataDir
 	util.DataDir = t.TempDir()

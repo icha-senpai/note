@@ -575,7 +575,6 @@ func getRefText(c *gin.Context) {
 		return
 	}
 
-	// 加密笔记本的块引解析走 InBox 版（查加密 blocktree + content db）
 	var refText string
 	if notebook, ok := arg["notebook"].(string); ok && notebook != "" && model.IsEncryptedBox(notebook) {
 		refText = model.GetBlockRefTextInBox(id, notebook)
@@ -583,14 +582,14 @@ func getRefText(c *gin.Context) {
 		refText = model.GetBlockRefText(id)
 	}
 	if "" == refText {
-		// 空块返回 id https://github.com/siyuan-note/siyuan/issues/10259
+
 		refText = id
 		ret.Data = refText
 		return
 	}
 
 	if strings.Count(refText, "\\") == len(refText) {
-		// 全部都是 \ 的话使用实体 https://github.com/siyuan-note/siyuan/issues/11473
+
 		refText = strings.ReplaceAll(refText, "\\", "&#92;")
 		ret.Data = refText
 		return
@@ -753,7 +752,6 @@ func getBlockInfo(c *gin.Context) {
 		return
 	}
 
-	// 仅在此处使用带重建索引的加载函数，其他地方不要使用
 	var tree *parse.Tree
 	var err error
 	if notebook, ok := arg["notebook"].(string); ok && notebook != "" && model.IsEncryptedBox(notebook) {
@@ -774,7 +772,7 @@ func getBlockInfo(c *gin.Context) {
 		}
 		if errors.Is(err, model.ErrBoxUnindexed) {
 			ret.Code = -1
-			ret.Msg = "" // 加载的时候已经推送过提示了，这里不需要再提示
+			ret.Msg = ""
 			return
 		}
 		if errors.Is(err, model.ErrTreeNotFound) {
@@ -1002,8 +1000,6 @@ func getBlockKramdown(c *gin.Context) {
 		return
 	}
 
-	// md：Markdown 标记符模式，使用标记符导出
-	// textmark：文本标记模式，使用 span 标签导出
 	// https://github.com/siyuan-note/siyuan/issues/13183
 	mode := "md"
 	if modeArg := arg["mode"]; nil != modeArg {
@@ -1056,14 +1052,12 @@ func getBlockKramdowns(c *gin.Context) {
 	var ids []string
 	for _, id := range idsArg {
 		idStr := id.(string)
-		// 验证 ID 格式，跳过无效的 ID
+
 		if !util.InvalidIDPattern(idStr, nil) {
 			ids = append(ids, idStr)
 		}
 	}
 
-	// md：Markdown 标记符模式，使用标记符导出
-	// textmark：文本标记模式，使用 span 标签导出
 	// https://github.com/siyuan-note/siyuan/issues/13183
 	mode := "md"
 	if modeArg := arg["mode"]; nil != modeArg {

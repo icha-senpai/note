@@ -23,11 +23,10 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// FieldCalc 描述了字段计算操作和结果的结构。
 type FieldCalc struct {
-	Operator CalcOperator `json:"operator"`           // 计算操作符
-	Result   *Value       `json:"result"`             // 计算结果
-	Template string       `json:"template,omitempty"` // 自定义模板统计内容，仅当 Operator 为 CalcOperatorTemplate 时使用
+	Operator CalcOperator `json:"operator"`
+	Result   *Value       `json:"result"`
+	Template string       `json:"template,omitempty"`
 }
 
 type CalcOperator string
@@ -61,7 +60,6 @@ const (
 func Calc(viewable Viewable, attrView *AttributeView) {
 	collection := viewable.(Collection)
 
-	// 字段计算
 	for i, field := range collection.GetFields() {
 		calc := field.GetCalc()
 		if nil == calc || CalcOperatorNone == calc.Operator {
@@ -71,19 +69,18 @@ func Calc(viewable Viewable, attrView *AttributeView) {
 		calcField(collection, field, i, attrView)
 	}
 
-	// 分组计算
 	if groupCalc := viewable.GetGroupCalc(); nil != groupCalc {
 		if groupCalcKey, _ := attrView.GetKey(groupCalc.Field); nil != groupCalcKey {
 			if field, fieldIndex := collection.GetField(groupCalcKey.ID); nil != field {
 				var calcResult *GroupCalc
 
 				if calc := field.GetCalc(); nil != calc && field.GetID() == groupCalcKey.ID {
-					// 直接使用字段计算结果
+
 					calcResult = &GroupCalc{Field: groupCalcKey.ID, FieldCalc: calc}
 				}
 
 				if nil == calcResult {
-					// 在字段上设置计算规则，使用字段结算结果作为分组计算结果，最后再清除字段上的计算规则
+
 					field.SetCalc(groupCalc.FieldCalc)
 					calcField(collection, field, fieldIndex, attrView)
 					calcResult = &GroupCalc{Field: groupCalcKey.ID, FieldCalc: field.GetCalc()}
@@ -1969,7 +1966,7 @@ func calcFieldRollup(collection Collection, field Field, fieldIndex int) {
 			calc.Result = &Value{Number: NewFormattedValueNumber(maxVal-minVal, field.GetNumberFormat())}
 		}
 	case CalcOperatorTemplate:
-		// 自定义模板统计：对整列已汇总的值执行用户编写的 .action{...} 模板
+
 		nums := []float64{}
 		strs := []string{}
 		raw := []*Value{}

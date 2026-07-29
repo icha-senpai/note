@@ -41,7 +41,7 @@ func (tx *Transaction) doFoldHeading(operation *Operation) (ret *TxErr) {
 		return &TxErr{code: TxErrCodeBlockNotFound, id: headingID}
 	}
 
-	childrenIDs := []string{} // 这里不能用 nil，否则折叠下方没内容的标题时会内核中断 https://github.com/siyuan-note/siyuan/issues/3643
+	childrenIDs := []string{}
 	heading := treenode.GetNodeInTree(tree, headingID)
 	if nil == heading {
 		return &TxErr{code: TxErrCodeBlockNotFound, id: headingID}
@@ -89,7 +89,7 @@ func (tx *Transaction) doUnfoldHeading(operation *Operation) (ret *TxErr) {
 	luteEngine := NewLute()
 	parentFoldedHeading := treenode.GetParentFoldedHeading(heading)
 	if nil != parentFoldedHeading {
-		// 如果当前标题在上方某个折叠的标题下方，则展开上方那个折叠标题以保持一致性
+
 		children := treenode.HeadingChildren(parentFoldedHeading)
 		for _, child := range children {
 			ast.Walk(child, func(n *ast.Node, entering bool) ast.WalkStatus {
@@ -134,7 +134,6 @@ func (tx *Transaction) doUnfoldHeading(operation *Operation) (ret *TxErr) {
 	}
 	sql.UpsertTreeQueue(tree)
 
-	// 展开折叠的标题后显示块引用计数 Display reference counts after unfolding headings https://github.com/siyuan-note/siyuan/issues/13618
 	fillBlockRefCount(children)
 
 	operation.RetData = renderBlockDOMByNodes(children, luteEngine)
@@ -165,24 +164,22 @@ func Doc2Heading(srcID, targetID string, after bool) (srcTreeBox, srcTreePath st
 			return
 		}
 
-		if removeErr := os.Remove(subDir); nil != removeErr { // 移除空文件夹不会有副作用
+		if removeErr := os.Remove(subDir); nil != removeErr {
 			logging.LogWarnf("remove empty dir [%s] failed: %s", subDir, removeErr)
 		}
 	}
 
 	if nil == treenode.GetBlockTree(targetID) {
-		// 目标块不存在时忽略处理
+
 		return
 	}
 
 	targetTree, _ := LoadTreeByBlockID(targetID)
 	if nil == targetTree {
-		// 目标块不存在时忽略处理
+
 		return
 	}
 
-	// 禁止跨加密边界：Doc2Heading 会合并 srcTree 和 targetTree 的内容，
-	// 不同加密笔记本各有独立 DEK，跨边界合并会导致密文用错 DEK 损坏数据
 	if !IsSameCryptoBoundary(srcTree.Box, targetTree.Box) {
 		err = errors.New(Conf.Language(313))
 		return
@@ -194,10 +191,8 @@ func Doc2Heading(srcID, targetID string, after bool) (srcTreeBox, srcTreePath st
 		return
 	}
 
-	// 生成文档历史 https://github.com/siyuan-note/siyuan/issues/14359
 	generateOpTypeHistory(srcTree, HistoryOpUpdate)
 
-	// 移动前先删除引用 https://github.com/siyuan-note/siyuan/issues/7819
 	sql.DeleteRefsTreeQueue(srcTree)
 	sql.DeleteRefsTreeQueue(targetTree)
 
@@ -208,14 +203,14 @@ func Doc2Heading(srcID, targetID string, after bool) (srcTreeBox, srcTreePath st
 	pivotLevel := treenode.HeadingLevel(pivot)
 	deltaLevel := pivotLevel - treenode.TopHeadingLevel(srcTree) + 1
 	headingLevel := pivotLevel
-	if ast.NodeHeading == pivot.Type { // 平级插入
+	if ast.NodeHeading == pivot.Type {
 		children := treenode.HeadingChildren(pivot)
 		if after {
 			if length := len(children); 0 < length {
 				pivot = children[length-1]
 			}
 		}
-	} else { // 子节点插入
+	} else {
 		headingLevel++
 		deltaLevel++
 	}
@@ -234,7 +229,6 @@ func Doc2Heading(srcID, targetID string, after bool) (srcTreeBox, srcTreePath st
 	heading.RemoveIALAttr("title")
 	heading.Box, heading.Path = targetTree.Box, targetTree.Path
 	if "" != tagIAL && 0 < len(tags) {
-		// 带标签的文档块转换为标题块时将标签移动到标题块下方 https://github.com/siyuan-note/siyuan/issues/6550
 
 		tagPara := treenode.NewParagraph("")
 		for i, tag := range tags {
@@ -295,7 +289,7 @@ func Doc2Heading(srcID, targetID string, after bool) (srcTreeBox, srcTreePath st
 	}
 	util.PushEvent(evt)
 
-	srcTreeBox, srcTreePath = srcTree.Box, srcTree.Path // 返回旧的文档块位置，前端后续会删除旧的文档块
+	srcTreeBox, srcTreePath = srcTree.Box, srcTree.Path
 	targetTree.Root.SetIALAttr("updated", util.CurrentTimeSecondsStr())
 	treenode.RemoveBlockTreesByRootID(srcTree.Box, srcTree.ID)
 	treenode.RemoveBlockTreesByRootID(targetTree.Box, targetTree.ID)
@@ -381,7 +375,6 @@ func Heading2Doc(srcHeadingID, targetBoxID, targetPath, previousPath string, toT
 		}
 	}
 
-	// 折叠标题转换为文档时需要自动展开下方块 https://github.com/siyuan-note/siyuan/issues/2947
 	children := treenode.HeadingChildren(headingNode)
 	for _, child := range children {
 		ast.Walk(child, func(n *ast.Node, entering bool) ast.WalkStatus {

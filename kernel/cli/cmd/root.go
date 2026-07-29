@@ -44,12 +44,9 @@ var rootCmd = &cobra.Command{
 	Use:     "Scribli-Kernel",
 	Version: util.Ver,
 	PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
-		// CLI 单次命令没有后台 cron 周期性 flush SQL 队列（server 模式才有 job.StartCron），进程在 main 返回后
-		// 即退出，内存里的 SQL 索引队列会随进程丢失（操作虽已落 index.queue，但要等下次启动 recoverIndexQueue
-		// 才恢复）。这里在命令执行完后统一落库，保证写完即可搜索。
+
 		name := cmd.Name()
-		// serve 子命令有自己的长驻退出流程（HandleSignal → model.Close 会 flush），不在此处理；
-		// workspace 子命令在 PersistentPreRunE 中跳过了数据库初始化，此时 sql 包未就绪，调用会 panic。
+
 		if name == "serve" || (cmd.Parent() != nil && cmd.Parent().Name() == "workspace") {
 			return nil
 		}
@@ -58,14 +55,11 @@ var rootCmd = &cobra.Command{
 		return nil
 	},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// workspace 子命令不需要工作空间校验
+
 		if cmd.Parent() != nil && cmd.Parent().Name() == "workspace" {
 			return nil
 		}
 
-		// 默认工作目录取内核可执行文件所在目录的上一级（打包后的 resources/，appearance/、stage/ 所在目录），
-		// 而非内核可执行文件所在目录本身（resources/kernel/）。resolveWorkingDir() 会校验 appearance/langs 实际存在，
-		// 兼容开发态等多种目录布局。
 		if workingDir := resolveWorkingDir(); workingDir != "" {
 			util.WorkingDir = workingDir
 		}
@@ -75,7 +69,6 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("appearance files not found at [%s]", langsDir)
 		}
 
-		// 设置工作空间路径
 		if workspacePath == "" {
 			workspacePath = os.Getenv("SIYUAN_WORKSPACE_PATH")
 		}
@@ -96,9 +89,6 @@ var rootCmd = &cobra.Command{
 		logging.SetLogPath(filepath.Join(util.TempDir, "siyuan-cli.log"))
 		logging.SetLogToStdout(false)
 
-		// CLI 单次命令默认 warn 级别（siyuan-cli.log 只保留警告及以上），避免内核初始化的大量 Info/Debug 日志噪声；
-		// 用户可通过 --log-level 显式覆盖。把级别记入 util.CLILogLevel，使随后的 model.InitConf 不再用 conf.json 覆盖。
-		// 注意 serve 子命令走自己的 PersistentPreRunE，不受此默认值影响，仍跟随 conf.json 的 system.logLevel。
 		effectiveLevel := logLevel
 		if "" == effectiveLevel {
 			effectiveLevel = "warn"
@@ -112,7 +102,7 @@ var rootCmd = &cobra.Command{
 		sql.InitAssetContentDatabase(false)
 		sql.SetCaseSensitive(model.Conf.Search.CaseSensitive)
 		sql.SetIndexAssetPath(model.Conf.Search.IndexAssetPath)
-		// 让 CLI 一次性命令（如 search -m 4）也能命中语义搜索：StartEmbeddingIndexer 是死循环不能用于会立即退出的进程，这里只把开关置真
+
 		model.PrepareEmbeddingSearch()
 		if err := rejectEncryptedNotebookCLI(cmd, args); err != nil {
 			return err
@@ -121,8 +111,6 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-// rejectEncryptedNotebookCLI 拒绝 CLI 对加密笔记本及其块的操作。
-// 加密笔记本只能通过应用内专用流程解锁和操作，避免 CLI 进程成为明文或密文文件的旁路入口。
 func rejectEncryptedNotebookCLI(cmd *cobra.Command, args []string) error {
 	if cmd == serveCmd {
 		return nil
@@ -206,7 +194,6 @@ func firstEncryptedNotebookID() (string, error) {
 	return "", nil
 }
 
-// isEncryptedNotebookWorkspacePath 判断工作区内路径是否位于加密笔记本目录。
 func isEncryptedNotebookWorkspacePath(p string) bool {
 	return isEncryptedNotebookWorkspacePathWith(p, util.WorkspaceDir, util.DataDir, model.IsEncryptedBox)
 }
@@ -224,9 +211,6 @@ func isEncryptedNotebookWorkspacePathWith(p, workspaceDir, dataDir string, isEnc
 	return isEncryptedBox(boxID)
 }
 
-// resolveWorkingDir 从内核可执行文件路径出发，探测若干候选目录，返回首个包含 appearance/langs 的目录作为
-// 工作目录（打包后为 resources/，开发态视目录布局而定）；找不到返回空串。rootCmd.PersistentPreRunE 与
-// serve 子命令的 --wd 默认值都走这个函数，确保两条启动路径行为一致。
 func resolveWorkingDir() string {
 	if exePath, err := os.Executable(); err == nil {
 		if resolved, err2 := filepath.EvalSymlinks(exePath); err2 == nil {
@@ -239,7 +223,7 @@ func resolveWorkingDir() string {
 			filepath.Join(exeDir, "app"),             // kernel/ → app/
 			filepath.Join(exeDir, "..", "..", "app"), // kernel/cli/cmd/... → .../app/
 		}
-		// 添加 macOS app bundle 路径
+
 		if runtime.GOOS == "darwin" {
 			candidates = append(candidates,
 				filepath.Join(exeDir, "..", "..", "..", "..", "Resources"),

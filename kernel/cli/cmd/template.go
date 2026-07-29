@@ -185,8 +185,6 @@ var templateCreateCmd = &cobra.Command{
 	},
 }
 
-// resolveTemplateAbs 把模板路径解析为 data/templates 下的绝对路径，拒绝越界。
-// 接受绝对路径或相对 data/templates 的相对路径。
 func resolveTemplateAbs(p string) (string, error) {
 	if p == "" {
 		return "", fmt.Errorf("--path is required")

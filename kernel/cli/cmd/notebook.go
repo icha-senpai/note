@@ -197,8 +197,6 @@ func printNotebookTable(boxes []*model.Box) {
 	w.Flush()
 }
 
-// notebookSetIconCmd 设置笔记本图标。
-// icon 取值格式：emoji hex 码点（如 "1f4ca"）、emoji 字符、自定义图片路径或动态图标 URL。
 var notebookSetIconCmd = &cobra.Command{
 	Use:   "set-icon --id <id> --icon <icon>",
 	Short: "Set a notebook icon",
@@ -212,7 +210,6 @@ var notebookSetIconCmd = &cobra.Command{
 			return fmt.Errorf("--icon is required")
 		}
 
-		// 校验笔记本存在，避免对一个不存在的 id 静默写入图标。
 		exists := false
 		notebooks, err := model.ListNotebooks()
 		if err != nil {
@@ -233,7 +230,6 @@ var notebookSetIconCmd = &cobra.Command{
 			return nil
 		}
 
-		// SetBoxIcon 内部对自定义图片名做 XSS 过滤。
 		model.SetBoxIcon(id, icon)
 		util.PushReloadFiletree()
 
@@ -248,8 +244,6 @@ var notebookSetIconCmd = &cobra.Command{
 	},
 }
 
-// notebookRandomIconCmd 为笔记本随机换一个内置 emoji 图标。
-// 传 --id 仅换该笔记本；不传则对全部笔记本各随机换一个。
 var notebookRandomIconCmd = &cobra.Command{
 	Use:   "random-icon [--id <id>]",
 	Short: "Randomly set notebook icon(s) from built-in emojis",
@@ -261,7 +255,6 @@ var notebookRandomIconCmd = &cobra.Command{
 			return err
 		}
 
-		// 目标范围：传 id 仅换该笔记本；不传则对全部笔记本各随机换一个。
 		targets := notebooks
 		if id != "" {
 			var found *model.Box
@@ -280,7 +273,6 @@ var notebookRandomIconCmd = &cobra.Command{
 			return fmt.Errorf("no notebooks to update")
 		}
 
-		// 先把拟定的新图标算好，便于 dry-run 预览与失败回滚。
 		type change struct {
 			ID      string `json:"id"`
 			Name    string `json:"name"`
@@ -320,16 +312,11 @@ var notebookRandomIconCmd = &cobra.Command{
 	},
 }
 
-// builtinEmojiUnicodes 缓存内置 emoji 的全部 unicode 码点（来自 appearance/emojis/conf.json）。
-// 与前端 getRandomEmoji() 数据源一致，但刻意排除用户自定义图片，
-// 保持随机图标风格统一、避免误用用户的重要图片。
 var (
 	builtinEmojiUnicodes     []string
 	builtinEmojiUnicodesOnce sync.Once
 )
 
-// loadBuiltinEmojiUnicodes 懒加载内置 emoji 的 unicode 列表。
-// 失败时回退到一个固定码点，调用方始终拿到可用值。
 func loadBuiltinEmojiUnicodes() {
 	builtinEmojiUnicodesOnce.Do(func() {
 		confPath := filepath.Join(util.AppearancePath, "emojis", "conf.json")
@@ -367,7 +354,6 @@ func loadBuiltinEmojiUnicodes() {
 	})
 }
 
-// randomEmoji 返回一个随机的内置 emoji unicode 码点（如 "1f4d6"）。
 func randomEmoji() string {
 	loadBuiltinEmojiUnicodes()
 	return builtinEmojiUnicodes[rand.Intn(len(builtinEmojiUnicodes))]

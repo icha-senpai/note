@@ -135,7 +135,7 @@ func IsPetalsEnabled() bool {
 	}
 
 	if !Conf.Extensions.Trust {
-		// 移动端默认开启插件，桌面端和 Docker 容器需要用户明确允许后才能开启
+
 		if util.Container == util.ContainerStd || util.Container == util.ContainerDocker {
 			return false
 		}
@@ -144,7 +144,7 @@ func IsPetalsEnabled() bool {
 }
 
 func LoadPetals(frontend string, isPublish bool) (ret []*Petal) {
-	// 调用 setPetalEnabled 接口之后推送消息到所有前端实例，接着会同时调用 loadPetals 接口，合并相同类型的请求为一次执行
+
 	key := "loadPetals:" + frontend + ":" + strconv.FormatBool(isPublish)
 	v, err, _ := loadPetalsFlight.Do(key, func() (any, error) {
 		return loadPetals(frontend, isPublish, false), nil
@@ -276,7 +276,7 @@ func loadCode(petal *Petal) {
 				found[name] = true
 			}
 			if 0 < len(langFiles) {
-				// 按 Conf.Lang、en、zh-CN 及其历史下划线文件名依次回退，最后取首个可用文件
+
 				candidates := make([]string, 0, 6)
 				candidateSeen := make(map[string]bool, 6)
 				for _, lang := range []string{Conf.Lang, "en", "zh-CN"} {
@@ -386,7 +386,7 @@ func getPetals() (ret []*Petal) {
 		if filelock.IsExist(pluginJSONPath) {
 			tmp = append(tmp, petal)
 		} else {
-			// 插件不存在时，删除对应的持久化信息
+
 			extensions.RemovePackageInfo("plugins", petal.Name)
 		}
 	}

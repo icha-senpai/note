@@ -31,13 +31,11 @@ import (
 )
 
 const (
-	maxHTTPRequestBytes     = 5 * 1024 * 1024  // text/html、text/plain、application/json 等文本类响应上限
-	maxHTTPRequestFileBytes = 10 * 1024 * 1024 // 二进制响应落盘上限
+	maxHTTPRequestBytes     = 5 * 1024 * 1024
+	maxHTTPRequestFileBytes = 10 * 1024 * 1024
 	maxHTTPRequestChars     = 50000
 )
 
-// CheckHostSSRF 校验主机名解析出的 IP 不落在内网/回环等不可达地址段，
-// 防止智能体被诱导发起 SSRF 攻击。web_fetch 与 http_request 共用此校验。
 func CheckHostSSRF(host string) error {
 	ips, err := net.LookupIP(host)
 	if err != nil {
@@ -51,10 +49,6 @@ func CheckHostSSRF(host string) error {
 	return nil
 }
 
-// HTTPRequest 发起一次通用 HTTP 调用，供智能体 http_request 工具使用。
-// 与 WebFetch 不同：本函数不做 HTML→Markdown 转换，文本类响应（含 JSON/XML）原样返回，
-// 便于智能体直接消费 REST API 的 JSON 输出。method 取值：GET/POST/PUT/DELETE/PATCH。
-// 返回的 text 为响应正文（文本类）或落盘后的文件路径（二进制类）。
 func HTTPRequest(method, rawURL string, headers map[string]string, body string) (statusCode int, contentType string, text string, err error) {
 	u, err := url.Parse(rawURL)
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
@@ -97,7 +91,7 @@ func HTTPRequest(method, rawURL string, headers map[string]string, body string) 
 	if !isTextContentType(contentType) {
 		maxReadBytes = maxHTTPRequestFileBytes
 	}
-	// ContentLength 为 -1（chunked）时跳过大小预检，交由 LimitReader 兜底截断。
+
 	if resp.ContentLength > maxReadBytes {
 		return statusCode, contentType, "", errors.New("response too large")
 	}
@@ -107,7 +101,6 @@ func HTTPRequest(method, rawURL string, headers map[string]string, body string) 
 		return statusCode, contentType, "", errors.New("read body failed: " + rerr.Error())
 	}
 
-	// 二进制响应落盘，返回文件路径，供智能体按需进一步处理。
 	if !isTextContentType(contentType) {
 		importDir := filepath.Join(TempDir, "import")
 		if merr := os.MkdirAll(importDir, 0755); merr != nil {
@@ -124,7 +117,6 @@ func HTTPRequest(method, rawURL string, headers map[string]string, body string) 
 	return statusCode, contentType, truncateRunes(string(respBody), maxHTTPRequestChars), nil
 }
 
-// sendByMethod 按 method 分发请求，统一走 NewBrowserRequest 返回的 *req.Request。
 func sendByMethod(request *req.Request, method, rawURL string) (*req.Response, error) {
 	switch method {
 	case "GET", "":
@@ -142,8 +134,6 @@ func sendByMethod(request *req.Request, method, rawURL string) (*req.Response, e
 	}
 }
 
-// isTextContentType 判断 Content-Type 是否为可直接展示给智能体的文本类响应。
-// 覆盖 text/*、application/json、application/xml、application/*+json 等。
 func isTextContentType(contentType string) bool {
 	ct := strings.ToLower(strings.TrimSpace(strings.SplitN(contentType, ";", 2)[0]))
 	if ct == "" {

@@ -25,10 +25,9 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// ViewSort 描述了视图排序规则的结构。
 type ViewSort struct {
-	Column string    `json:"column"` // 字段（列）ID
-	Order  SortOrder `json:"order"`  // 排序顺序
+	Column string    `json:"column"`
+	Order  SortOrder `json:"order"`
 }
 
 type SortOrder string
@@ -61,7 +60,6 @@ func Sort(viewable Viewable, attrView *AttributeView) {
 		}
 	}
 
-	// 预算每个排序字段的选项顺序映射，避免在比较器内每次比较都重建（O(N log N) 次比较 × 每次 O(选项数)）
 	optionSortByIndex := map[int]map[string]int{}
 	for _, fis := range fieldIndexSorts {
 		field := fields[fis.Index]
@@ -87,21 +85,20 @@ func Sort(viewable Viewable, attrView *AttributeView) {
 			val := items[i].GetValues()[fieldIndexSort.Index]
 			if KeyTypeCheckbox == val.Type {
 				if block := item.GetBlockValue(); nil != block && block.IsEdited() {
-					// 如果主键编辑过，则复选框也算作编辑过，参与排序 https://github.com/siyuan-note/siyuan/issues/11016
+
 					editedValItems[item.GetID()] = true
 					break
 				}
 			}
 
 			if val.IsEdited() {
-				// 如果该项目某字段的值已经编辑过，则该项目可参与排序
+
 				editedValItems[item.GetID()] = true
 				break
 			}
 		}
 	}
 
-	// 将未编辑的项目和已编辑的项目分开排序
 	var uneditedItems, editedItems []Item
 	for _, item := range items {
 		if _, ok := editedValItems[item.GetID()]; ok {
@@ -171,7 +168,6 @@ func Sort(viewable Viewable, attrView *AttributeView) {
 		return false
 	})
 
-	// 将包含未编辑的项目放在最后
 	collection.SetItems(append(editedItems, uneditedItems...))
 	if 1 > len(collection.GetItems()) {
 		collection.SetItems([]Item{})
@@ -287,7 +283,7 @@ func (value *Value) Compare(other *Value, optionSort map[string]int) int {
 		}
 	case KeyTypeSelect, KeyTypeMSelect:
 		if nil != value.MSelect && nil != other.MSelect {
-			// 按设置的选项顺序排序，optionSort 由外层 Sort 按字段预算好后传入
+
 			if nil == optionSort {
 				optionSort = map[string]int{}
 			}

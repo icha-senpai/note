@@ -101,9 +101,9 @@ func Pandoc(from, to, o, content string) (err error) {
 }
 
 var (
-	PandocBinPath         string // Pandoc 可执行文件路径
-	PandocTemplatePath    string // Pandoc Docx 模板文件路径
-	PandocColorFilterPath string // Pandoc 颜色过滤器路径
+	PandocBinPath         string
+	PandocTemplatePath    string
+	PandocColorFilterPath string
 )
 
 func InitPandoc() {
@@ -230,18 +230,15 @@ func IsValidPandocBin(binPath string) bool {
 		return false
 	}
 
-	// 解析符号链接
 	if real, err := filepath.EvalSymlinks(binPath); err == nil {
 		binPath = real
 	}
 
-	// 文件信息检查
 	fi, err := os.Stat(binPath)
 	if err != nil || fi.IsDir() || !fi.Mode().IsRegular() {
 		return false
 	}
 
-	// 读取文件头判断是否为二进制并排除脚本（#!）
 	f, err := os.Open(binPath)
 	if err != nil {
 		return false
@@ -252,13 +249,12 @@ func IsValidPandocBin(binPath string) bool {
 	n, _ := f.Read(header)
 	header = header[:n]
 
-	// 拒绝以 shebang 开头的脚本
 	if bytes.HasPrefix(header, []byte("#!")) {
 		return false
 	}
 
 	isBin := false
-	// 常见二进制魔数：ELF, PE("MZ"), Mach-O (32/64, big/little), FAT
+
 	if len(header) >= 4 {
 		switch {
 		case bytes.Equal(header[:4], []byte{0x7f, 'E', 'L', 'F'}):
@@ -279,7 +275,6 @@ func IsValidPandocBin(binPath string) bool {
 		isBin = true
 	}
 
-	// Windows 上允许 .exe 文件（作为补充判断）
 	if !isBin && gulu.OS.IsWindows() {
 		ext := strings.ToLower(filepath.Ext(binPath))
 		if ext == ".exe" {

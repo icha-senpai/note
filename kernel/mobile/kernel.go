@@ -39,25 +39,15 @@ import (
 	_ "golang.org/x/mobile/bind"
 )
 
-// VerifyAppStoreTransaction 用于验证苹果 App Store 交易。
 //
 // accountToken UUID:
 //
 //	6ba7b810-9dad-11d1-0001-377616491562
-//	6ba7b810-9dad-11d1-{Cloud Region}00{User ID}，中间的 00 为保留位
+
 //
-// 返回码：
+
 //
-// 0：验证通过
-// -1：云端区域无效
-// -2：服务器通讯失败，需要重试
-// -3：非 iOS 设备
-// -4：账号未登录
-// -5：账号状态异常
-// -6：参数错误
-// -7：校验 accountToken 失败
-// -8：校验 transaction 失败
-// -9：未知的商品
+
 func VerifyAppStoreTransaction(accountToken, transactionID string) (retCode int) {
 	retCode = -2
 	retMsg := "unknown error"
@@ -233,10 +223,6 @@ func Unzip(zipFilePath, destination string) {
 	}
 }
 
-// GetExportFilePath 解析导出文件绝对路径，绕过 HTTP 层以避免锁屏密码拦截。
-// exportPath 格式为 "/export/xxx.zip" 或 "assets/xxx"。
-// 返回文件在磁盘上的绝对路径，以便原生端分块拷贝，避免大文件内存溢出。
-// 解析失败返回空字符串。
 func GetExportFilePath(exportPath string) (ret string) {
 	var absPath string
 	if after, ok := strings.CutPrefix(exportPath, "/export/"); ok {
@@ -249,7 +235,7 @@ func GetExportFilePath(exportPath string) (ret string) {
 			logging.LogWarnf("get export file path [%s] blocked: path traversal attempt [%s]", exportPath, fileName)
 			return
 		}
-		// 加密导出受控路径（<boxID>/<kind>/<file>）：必须经注册表校验且 box 已解锁，否则 fail-closed
+
 		if model.IsManagedEncryptedExportPath(fileName) {
 			artifact, ok := model.ResolveManagedExportForMobile(fileName)
 			if !ok {

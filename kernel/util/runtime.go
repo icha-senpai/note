@@ -42,8 +42,6 @@ import (
 
 var DisabledFeatures []string
 
-// CLILogLevel 在 CLI 子命令通过 --log-level 显式指定日志级别时被设置，model.InitConf 末尾据此跳过对
-// logging.SetLogLevel 的覆盖，使命令行参数优先于 conf.json 的 system.logLevel。
 var CLILogLevel string
 
 func DisableFeature(feature string) {
@@ -52,15 +50,14 @@ func DisableFeature(feature string) {
 }
 
 var (
-	UseSingleLineSave    = true // UseSingleLineSave 是否使用单行保存 .sy 和数据库 .json 文件。
-	LargeFileWarningSize = 8    // LargeFileWarningSize 大文件警告大小，单位：MB
+	UseSingleLineSave    = true
+	LargeFileWarningSize = 8
 )
 
 func ExceedLargeFileWarningSize(fileSize int) bool {
 	return fileSize > LargeFileWarningSize*1024*1024
 }
 
-// IsUILoaded 是否已经加载了 UI。
 var IsUILoaded = false
 
 func WaitForUILoaded() {
@@ -84,15 +81,10 @@ func HookUILoaded() {
 	}
 }
 
-// IsExiting 是否正在退出程序。
 var IsExiting = atomic.Bool{}
 
-// MobileOSVer 移动端操作系统版本。
 var MobileOSVer string
 
-// DatabaseVer 数据库版本。
-// 格式：yyyyMMddHHmm。修改表结构时需要更新此值，启动时会检测版本变化，
-// 若不一致则自动移除旧数据库文件并重建表结构，同时触发全量重建索引。
 const DatabaseVer = "202607031200"
 
 func logBootInfo() {
@@ -176,7 +168,6 @@ func getWorkspaceDriveType() string {
 					continue
 				}
 
-				// 选路径最长的挂载点（如 /home/data 优于 /）
 				if len(mountPath) >= maxMountPathLen {
 					maxMountPathLen = len(mountPath)
 					matchedDriveType = partition.Disk.DriveType.String()
@@ -229,7 +220,6 @@ func SetNetworkProxy(proxyURL string) {
 }
 
 const (
-	// SQLFlushInterval 为数据库事务队列写入间隔。
 	SQLFlushInterval = 3000 * time.Millisecond
 )
 
@@ -401,7 +391,6 @@ func isICloudPath(workspaceAbsPath string) (ret bool) {
 
 	workspaceAbsPathLower := strings.ToLower(workspaceAbsPath)
 
-	// macOS 端对工作空间放置在 iCloud 路径下做检查 https://github.com/siyuan-note/siyuan/issues/7747
 	iCloudRoot := filepath.Join(HomeDir, "Library", "Mobile Documents")
 	WalkWithSymlinks(iCloudRoot, func(path string, d fs.DirEntry, err error) error {
 		if !d.IsDir() {
@@ -426,8 +415,6 @@ func existAvailabilityStatus(workspaceAbsPath string) bool {
 	if !gulu.File.IsExist(workspaceAbsPath) {
 		return false
 	}
-
-	// 改进 Windows 端第三方同步盘检测 https://github.com/siyuan-note/siyuan/issues/7777
 
 	defer logging.Recover()
 
@@ -510,5 +497,4 @@ const (
 
 var SearchCaseSensitive bool
 
-// SearchHanSensitive 是否区分繁简，由 sql.SetHanSensitive 维护；默认 true 与既往行为一致
 var SearchHanSensitive = true

@@ -21,12 +21,10 @@ import (
 	"time"
 )
 
-// leaf 构造一个叶子过滤节点。
 func leaf(column string) *ViewFilter {
 	return &ViewFilter{Column: column, Operator: FilterOperatorIsEmpty, Value: &Value{Type: KeyTypeText}}
 }
 
-// group 构造一个分组节点。
 func group(combination FilterCombination, filters ...*ViewFilter) *ViewFilter {
 	return &ViewFilter{Combination: combination, Filters: filters}
 }
@@ -38,7 +36,7 @@ func TestViewFilter_IsGroup(t *testing.T) {
 	if !group(FilterCombinationAnd).IsGroup() {
 		t.Fatalf("filter with combination should be group")
 	}
-	// 只有子节点、无 combination 也算分组（容错）
+
 	if !(&ViewFilter{Filters: []*ViewFilter{leaf("c1")}}).IsGroup() {
 		t.Fatalf("filter with children should be group")
 	}
@@ -48,7 +46,7 @@ func TestViewFilter_IsGroup(t *testing.T) {
 }
 
 func TestNormalizeFiltersAsRoot(t *testing.T) {
-	// 空数组返回 nil
+
 	if nil != normalizeFiltersAsRoot(nil) {
 		t.Fatalf("nil filters should return nil root")
 	}
@@ -56,14 +54,12 @@ func TestNormalizeFiltersAsRoot(t *testing.T) {
 		t.Fatalf("empty filters should return nil root")
 	}
 
-	// 已是根组：直接返回
 	root := group(FilterCombinationOr, leaf("c1"))
 	got := normalizeFiltersAsRoot([]*ViewFilter{root})
 	if got != root {
 		t.Fatalf("existing root group should be returned as-is")
 	}
 
-	// 扁平叶子数组：包成 AND 根组
 	flat := []*ViewFilter{leaf("c1"), leaf("c2")}
 	got = normalizeFiltersAsRoot(flat)
 	if !got.IsGroup() || FilterCombinationAnd != got.Combination {
@@ -90,10 +86,9 @@ func TestCollectLeafColumnIndexes(t *testing.T) {
 }
 
 func TestEvalNode_GroupSemantics(t *testing.T) {
-	// 这些用例构造空 value 叶子或缺失列叶子，绕开 Value.Filter，专注分组组合语义。
+
 	colIndex := map[string]int{"c1": 0}
 
-	// 空分组：AND 恒真（不阻断），OR 空集恒假
 	if !evalNode(group(FilterCombinationAnd), nil, colIndex, nil, "", nil, nil) {
 		t.Fatalf("empty AND group should pass")
 	}
@@ -101,8 +96,6 @@ func TestEvalNode_GroupSemantics(t *testing.T) {
 		t.Fatalf("empty OR group should not pass")
 	}
 
-	// 空叶子（filter 未配置 Value/RelativeDate）：保留扁平时代 value.Filter 的原语义返回 true（视为通过）。
-	// 需要单元格 values[index] 非 nil 才能走到 value.Filter 的早期返回分支。
 	emptyLeaf := &ViewFilter{Column: "c1", Operator: FilterOperatorIsEqual}
 	values := []*Value{{Type: KeyTypeText}}
 	root := group(FilterCombinationAnd, emptyLeaf)
@@ -114,7 +107,6 @@ func TestEvalNode_GroupSemantics(t *testing.T) {
 		t.Fatalf("OR group with unconfigured leaf should pass")
 	}
 
-	// 缺失列叶子：列不存在返回 false
 	missingCol := &ViewFilter{Column: "cx", Operator: FilterOperatorIsEqual, Value: &Value{Type: KeyTypeText}}
 	root = group(FilterCombinationAnd, missingCol)
 	if evalNode(root, values, colIndex, nil, "", nil, nil) {
@@ -186,14 +178,14 @@ func TestRollupRelativeDateFilter(t *testing.T) {
 }
 
 func TestRemoveFiltersByColumn(t *testing.T) {
-	// 树结构：root(AND) → [leaf(c1), group(OR) → [leaf(c2), leaf(c1)]]
+
 	root := group(FilterCombinationAnd, leaf("c1"), group(FilterCombinationOr, leaf("c2"), leaf("c1")))
 	got := RemoveFiltersByColumn([]*ViewFilter{root}, "c1")
 	if len(got) != 1 {
 		t.Fatalf("root should survive, got %d", len(got))
 	}
 	root = got[0]
-	// 顶层 c1 叶子被删，root 只剩 OR 组（其内 c1 也被删，只剩 c2）
+
 	if len(root.Filters) != 1 {
 		t.Fatalf("root should have 1 child after prune, got %d", len(root.Filters))
 	}
@@ -204,7 +196,6 @@ func TestRemoveFiltersByColumn(t *testing.T) {
 		t.Fatalf("OR group should retain only c2 leaf")
 	}
 
-	// 删除导致分组变空 → 分组被裁剪
 	root2 := group(FilterCombinationAnd, leaf("c1"), group(FilterCombinationOr, leaf("c1")))
 	got = RemoveFiltersByColumn([]*ViewFilter{root2}, "c1")
 	if len(got) != 0 {
@@ -227,7 +218,6 @@ func TestRemoveSelectOptionFromFilters(t *testing.T) {
 		t.Fatalf("option A should be removed, got %v", remaining)
 	}
 
-	// 删除最后一个选项 → 叶子被移除
 	got = RemoveSelectOptionFromFilters([]*ViewFilter{root}, "c1", "A")
 	got = RemoveSelectOptionFromFilters(got, "c1", "B")
 	if len(got) != 0 {
@@ -258,12 +248,12 @@ func TestCloneFilters(t *testing.T) {
 	if len(cloned) != len(original) {
 		t.Fatalf("clone length mismatch")
 	}
-	// 修改克隆不应影响原对象
+
 	cloned[0].Filters[0].Column = "mutated"
 	if original[0].Filters[0].Column == "mutated" {
 		t.Fatalf("clone should be deep: original leaf column should not change")
 	}
-	// 嵌套分组也应深拷贝
+
 	if len(cloned[0].Filters[1].Filters) != 1 {
 		t.Fatalf("nested group children not cloned")
 	}
@@ -273,8 +263,8 @@ func TestPruneInvalidColumnFilters(t *testing.T) {
 	valid := map[string]bool{"c1": true, "c2": true}
 	root := group(FilterCombinationAnd,
 		leaf("c1"),
-		leaf("cx"), // 失效列
-		group(FilterCombinationOr, leaf("c2"), leaf("cy")), // cy 失效
+		leaf("cx"),
+		group(FilterCombinationOr, leaf("c2"), leaf("cy")),
 	)
 	got, changed := PruneInvalidColumnFilters([]*ViewFilter{root}, valid)
 	if !changed {
@@ -287,20 +277,18 @@ func TestPruneInvalidColumnFilters(t *testing.T) {
 	if len(root.Filters) != 2 {
 		t.Fatalf("invalid leaf should be pruned, got %d children", len(root.Filters))
 	}
-	// OR 组只剩 c2
+
 	if len(root.Filters[1].Filters) != 1 || root.Filters[1].Filters[0].Column != "c2" {
 		t.Fatalf("OR group should retain only valid c2")
 	}
 
-	// 整组失效 → 被裁剪
 	root2 := group(FilterCombinationAnd, leaf("cx"), group(FilterCombinationOr, leaf("cy")))
 	got, changed = PruneInvalidColumnFilters([]*ViewFilter{root2}, valid)
 	if len(got) != 0 || !changed {
 		t.Fatalf("fully-invalid root should be dropped")
 	}
 
-	// 原本就是空的根组（无筛选条件视图的合法状态）不应报告 changed，否则会误触发保存
-	emptyRoot := group(FilterCombinationAnd) // Filters 为 nil
+	emptyRoot := group(FilterCombinationAnd)
 	got, changed = PruneInvalidColumnFilters([]*ViewFilter{emptyRoot}, valid)
 	if changed {
 		t.Fatalf("originally empty group should not report changed")
@@ -323,7 +311,7 @@ func TestRemapFilterColumns(t *testing.T) {
 }
 
 func TestUpgradeSpec5(t *testing.T) {
-	// spec 4 + 扁平叶子 → 包装成根组
+
 	av4 := &AttributeView{Spec: 4, Views: []*View{{Filters: []*ViewFilter{leaf("c1"), leaf("c2")}}}}
 	UpgradeSpec(av4)
 	if av4.Spec != CurrentSpec {
@@ -337,7 +325,6 @@ func TestUpgradeSpec5(t *testing.T) {
 		t.Fatalf("original leaves should be preserved, got %d", len(filters[0].Filters))
 	}
 
-	// 已是 spec 5 + 根组 → 不再处理
 	existingRoot := group(FilterCombinationOr, leaf("c1"))
 	av5 := &AttributeView{Spec: 5, Views: []*View{{Filters: []*ViewFilter{existingRoot}}}}
 	UpgradeSpec(av5)
@@ -345,7 +332,6 @@ func TestUpgradeSpec5(t *testing.T) {
 		t.Fatalf("already-rooted spec5 should not be re-wrapped")
 	}
 
-	// 空 filters → 包装成空 AND 根组
 	avEmpty := &AttributeView{Spec: 4, Views: []*View{{Filters: []*ViewFilter{}}}}
 	UpgradeSpec(avEmpty)
 	filters = avEmpty.Views[0].Filters

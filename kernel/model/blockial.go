@@ -197,7 +197,7 @@ func BatchSetBlockAttrs(blockAttrs []map[string]any) (err error) {
 	}
 
 	IncSync()
-	// 不做锚文本刷新
+
 	return
 }
 
@@ -275,14 +275,10 @@ func setNodeAttrs(node *ast.Node, tree *parse.Tree, nameValues map[string]string
 	return
 }
 
-// attrsAffectRefText 判断本次属性变更是否可能影响引用处的动态锚文本。
 //
-// 动态锚文本（ref-d）由定义块的 name（命名）或 title（文档标题）派生而来，
-// 仅当这两个属性发生变化时才需要调用 refreshDynamicRefText 去刷新引用方文档；
-// 其他属性（如锁定状态、滚动位置、自定义属性等）不影响锚文本，跳过刷新可避免
-// 对引用方文档的无意义落盘和历史记录生成（详见 https://github.com/siyuan-note/siyuan/issues/18058）。
+
 //
-// 注意：若后续动态锚文本的派生规则扩展到其他属性，需同步在本函数的白名单中补齐。
+
 func attrsAffectRefText(nameValues map[string]string) bool {
 	for name := range nameValues {
 		switch strings.ToLower(name) {
@@ -293,15 +289,10 @@ func attrsAffectRefText(nameValues map[string]string) bool {
 	return false
 }
 
-// attrsAffectAvBlock 判断本次属性变更是否可能影响数据库（属性视图）主键块的显示。
 //
-// 数据库主键块的 icon 和 content 由 getNodeAvBlockText 从块的 icon、name、
-// custom-sy-av-s-text-<avID> 属性派生，这些属性变更时需调用 updateAttributeViewBlockText
-// 同步到 AV JSON，否则数据库视图中显示的图标/内容不会更新。
+
 //
-// 该同步原本由 refreshDynamicRefText 顺带完成，但 #18058 的锚文本刷新优化用 attrsAffectRefText
-// 门槛拦截了非 name/title 属性的刷新，导致 icon 变更不再触发同步，故此处独立解耦触发
-// （详见 https://github.com/siyuan-note/siyuan/issues/18204）。
+
 func attrsAffectAvBlock(nameValues map[string]string) bool {
 	for name := range nameValues {
 		lowerName := strings.ToLower(name)
@@ -330,7 +321,7 @@ func setNodeAttrsWithTx(tx *Transaction, node *ast.Node, tree *parse.Tree, nameV
 }
 
 func setNodeAttrs0(node *ast.Node, nameValues map[string]string, boxID string) (oldAttrs map[string]string, err error) {
-	// 加密笔记本不支持书签和标签（依赖全局 SQLite 聚合，加密笔记本是孤岛）
+
 	if IsEncryptedBox(boxID) && boxID != "" {
 		for name := range nameValues {
 			switch strings.ToLower(name) {
@@ -347,7 +338,7 @@ func setNodeAttrs0(node *ast.Node, nameValues map[string]string, boxID string) (
 		value = util.RemoveInvalidRetainCtrl(value)
 		value = strings.TrimSpace(value)
 		lowerName := strings.ToLower(name)
-		// 转换为小写再验证属性名
+
 		if !isValidAttrName(lowerName) {
 			err = errors.New(Conf.Language(25) + " [" + node.ID + "]")
 			return
@@ -357,7 +348,6 @@ func setNodeAttrs0(node *ast.Node, nameValues map[string]string, boxID string) (
 			return
 		}
 
-		// 处理文档标签 https://github.com/siyuan-note/siyuan/issues/13311
 		if lowerName == "tags" {
 			var tags []string
 			tmp := strings.SplitSeq(value, ",")
@@ -380,20 +370,19 @@ func setNodeAttrs0(node *ast.Node, nameValues map[string]string, boxID string) (
 		}
 
 		if "" == value {
-			// 删除属性
+
 			if name != lowerName {
 				if _, exists := newAttrsUnEsc[name]; exists {
-					// 仅删除完全匹配的包含大写字母的属性
+
 					delete(newAttrsUnEsc, name)
 					continue
 				}
 			}
 			delete(newAttrsUnEsc, lowerName)
 		} else {
-			// 添加或更新属性
-			// 删除大小写完全匹配的属性
+
 			delete(newAttrsUnEsc, name)
-			// 保存小写的属性 https://github.com/siyuan-note/siyuan/issues/16447
+
 			newAttrsUnEsc[lowerName] = html.EscapeAttrVal(value)
 		}
 	}
@@ -406,41 +395,35 @@ func setNodeAttrs0(node *ast.Node, nameValues map[string]string, boxID string) (
 	return
 }
 
-// isValidAttrName 验证属性名是否合法
 func isValidAttrName(name string) bool {
 	n := len(name)
 	if n == 0 {
 		return false
 	}
 
-	// 首字符必须是小写字母
 	c := name[0]
 	if c < 'a' || c > 'z' {
 		return false
 	}
 
-	// 后续字符只能是小写字母、数字、连字符
 	if c != 'c' {
 		return validateChars(name, 1, n)
 	}
 
-	// 首字符是 'c'，检查自定义属性 custom- 前缀
 	if n >= 7 && name[1] == 'u' && name[2] == 's' && name[3] == 't' && name[4] == 'o' && name[5] == 'm' && name[6] == '-' {
 		if n == 7 {
-			return false // 不允许只包含前缀
+			return false
 		}
 
 		if c = name[7]; c < 'a' || c > 'z' {
-			return false // 首字符必须是小写字母
+			return false
 		}
 		return validateChars(name, 7, n)
 	}
 
-	// 非自定义属性
 	return validateChars(name, 1, n)
 }
 
-// validateChars 验证从指定索引开始的字符是否合法（小写字母、数字、连字符）
 func validateChars(name string, startIdx, n int) bool {
 	for i := startIdx; i < n; i++ {
 		c := name[i]

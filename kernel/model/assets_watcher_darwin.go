@@ -69,7 +69,6 @@ func watchAssets() {
 					IncSync()
 				}
 
-				// 重新缓存资源文件，以便使用 /资源 搜索
 				go cache.LoadAssets()
 
 				if watcher.Remove == event.Op {

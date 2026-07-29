@@ -77,7 +77,6 @@ func listDocTree(c *gin.Context) {
 		return
 	}
 
-	// 加密笔记本锁定时拒绝直接列举磁盘目录，防止泄漏文档 ID、层级和数量
 	if model.IsEncryptedBox(notebook) {
 		model.HoldBoxReadLock(notebook)
 		defer model.ReleaseBoxReadLock(notebook)
@@ -90,8 +89,7 @@ func listDocTree(c *gin.Context) {
 
 	p := arg["path"].(string)
 	p = strings.TrimSuffix(p, ".sy")
-	// 越界校验：拒绝 ..，确保路径位于 <data>/<notebook>/ 内。
-	// 无需 filepath.IsAbs —— notebook 路径全为 notebook 内相对路径，且跨 OS 对 "/" 判定不一致。
+
 	if found := strings.Contains(p, ".."); found {
 		ret.Code = -1
 		ret.Msg = "path must not contain '..'"
@@ -263,7 +261,6 @@ func heading2Doc(c *gin.Context) {
 	srcHeadingID := arg["srcHeadingID"].(string)
 	targetNotebook := arg["targetNoteBook"].(string)
 
-	// 禁止跨加密笔记本移动块：加密笔记本是孤岛
 	if bt := treenode.GetBlockTree(srcHeadingID); bt != nil && model.IsEncryptedBox(bt.BoxID) && bt.BoxID != targetNotebook {
 		ret.Code = -1
 		ret.Msg = model.Conf.Language(313)
@@ -314,7 +311,6 @@ func li2Doc(c *gin.Context) {
 	srcListItemID := arg["srcListItemID"].(string)
 	targetNotebook := arg["targetNoteBook"].(string)
 
-	// 禁止跨加密笔记本移动块：加密笔记本是孤岛
 	if bt := treenode.GetBlockTree(srcListItemID); bt != nil && model.IsEncryptedBox(bt.BoxID) && bt.BoxID != targetNotebook {
 		ret.Code = -1
 		ret.Msg = model.Conf.Language(313)
@@ -823,7 +819,7 @@ func createDailyNote(c *gin.Context) {
 	}
 
 	if !existed {
-		// 只有创建的情况才推送，已经存在的情况不推送
+
 		// Creating a dailynote existed no longer expands the doc tree https://github.com/siyuan-note/siyuan/issues/9959
 		appArg := arg["app"]
 		app := ""
@@ -934,7 +930,7 @@ func getDocCreateSavePath(c *gin.Context) {
 	}
 	if "" != docCreateSaveBox {
 		if nil == model.Conf.Box(docCreateSaveBox) {
-			// 如果配置的笔记本未打开或者不存在，则使用当前笔记本
+
 			docCreateSaveBox = notebook
 		}
 	}
@@ -948,7 +944,7 @@ func getDocCreateSavePath(c *gin.Context) {
 
 	if docCreateSaveBox != notebook {
 		if "" != docCreateSavePathTpl && !strings.HasPrefix(docCreateSavePathTpl, "/") {
-			// 如果配置的笔记本不是当前笔记本，则将相对路径转换为绝对路径
+
 			docCreateSavePathTpl = "/" + docCreateSavePathTpl
 		}
 	}
@@ -989,7 +985,7 @@ func getRefCreateSavePath(c *gin.Context) {
 	}
 	if "" != refCreateSaveBox {
 		if nil == model.Conf.Box(refCreateSaveBox) {
-			// 如果配置的笔记本未打开或者不存在，则使用当前笔记本
+
 			refCreateSaveBox = notebook
 		}
 	}
@@ -1002,7 +998,7 @@ func getRefCreateSavePath(c *gin.Context) {
 
 	if refCreateSaveBox != notebook {
 		if "" != refCreateSavePathTpl && !strings.HasPrefix(refCreateSavePathTpl, "/") {
-			// 如果配置的笔记本不是当前笔记本，则将相对路径转换为绝对路径
+
 			refCreateSavePathTpl = "/" + refCreateSavePathTpl
 		}
 	}
@@ -1116,7 +1112,6 @@ func listDocsByPath(c *gin.Context) {
 	notebook := arg["notebook"].(string)
 	p := arg["path"].(string)
 
-	// 越界校验：拒绝 ..，确保路径位于 <data>/<notebook>/ 内
 	if strings.Contains(p, "..") {
 		ret.Code = -1
 		ret.Msg = "path must not contain '..' and must be relative"
@@ -1151,7 +1146,7 @@ func listDocsByPath(c *gin.Context) {
 		ret.Msg = err.Error()
 		return
 	}
-	// 过滤掉发布不可见的文件
+
 	if model.IsReadOnlyRoleContext(c) {
 		publishAccess := model.GetPublishAccess()
 		publishIgnore := model.GetInvisiblePublishAccess(publishAccess)
@@ -1225,13 +1220,13 @@ func getDoc(c *gin.Context) {
 		}
 	}
 
-	m := arg["mode"] // 0: 仅当前 ID，1：向上 2：向下，3：上下都加载，4：加载末尾
+	m := arg["mode"]
 	mode := 0
 	if nil != m {
 		mode = int(m.(float64))
 	}
 	s := arg["size"]
-	size := 102400 // 默认最大加载块数
+	size := 102400
 	if nil != s {
 		size = int(s.(float64))
 	}
@@ -1270,7 +1265,7 @@ func getDoc(c *gin.Context) {
 	var isBacklinkExpand bool
 	var keywords []string
 	var err error
-	// 加密笔记本的打开文档走 InBox 版（查加密 blocktree + content db）
+
 	if notebook, ok := arg["notebook"].(string); ok && notebook != "" && model.IsEncryptedBox(notebook) {
 		blockCount, content, parentID, parent2ID, rootID, typ, eof, scroll, boxID, docPath, isBacklinkExpand, keywords, err =
 			model.GetDocInBox(startID, endID, id, index, query, queryTypes, querySubTypes, queryMethod, mode, size, isBacklink, originalRefBlockIDs, highlight, notebook)
@@ -1289,7 +1284,6 @@ func getDoc(c *gin.Context) {
 		return
 	}
 
-	// 判断是否正在同步中 https://github.com/siyuan-note/siyuan/issues/6290
 	isSyncing := model.IsSyncingFile(rootID)
 
 	if model.IsReadOnlyRoleContext(c) {
@@ -1297,7 +1291,7 @@ func getDoc(c *gin.Context) {
 		newContent := model.FilterContentByPublishAccess(c, publishAccess, boxID, docPath, content, false)
 		if newContent != content {
 			content = newContent
-			scroll = false // 避免长页面可通过滚动无限刷出多个锁
+			scroll = false
 		}
 	}
 

@@ -28,7 +28,6 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// rejectEncryptedArchivePath 检查路径是否落入加密笔记本目录（含 symlink 绕过），是则返回错误。
 func rejectEncryptedArchivePath(absPath string) error {
 	boxID := model.ExtractBoxIDFromAssetsPath(absPath)
 	if boxID != "" && model.IsEncryptedBox(boxID) {
@@ -54,8 +53,8 @@ func zip(c *gin.Context) {
 
 	var entryPath, zipFilePath string
 	if !util.ParseJsonArgs(arg, ret,
-		util.BindJsonArg("path", &entryPath, true, true),      // 相对于工作空间的路径（待打包目录或文件）
-		util.BindJsonArg("zipPath", &zipFilePath, true, true), // 相对于工作空间的路径（生成的 zip）
+		util.BindJsonArg("path", &entryPath, true, true),
+		util.BindJsonArg("zipPath", &zipFilePath, true, true),
 	) {
 		return
 	}
@@ -122,8 +121,8 @@ func unzip(c *gin.Context) {
 
 	var zipFilePath, entryPath string
 	if !util.ParseJsonArgs(arg, ret,
-		util.BindJsonArg("zipPath", &zipFilePath, true, true), // 相对于工作空间的路径
-		util.BindJsonArg("path", &entryPath, true, false),     // 相对于工作空间的路径（解压目标目录）
+		util.BindJsonArg("zipPath", &zipFilePath, true, true),
+		util.BindJsonArg("path", &entryPath, true, false),
 	) {
 		return
 	}

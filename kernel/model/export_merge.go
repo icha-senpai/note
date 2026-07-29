@@ -33,19 +33,17 @@ func mergeSubDocs(rootTree *parse.Tree) (ret *parse.Tree, err error) {
 
 	insertPoint := rootTree.Root.LastChild
 
-	// 跳过空段落插入点，向上寻找非空段落
 	for ; nil != insertPoint && ast.NodeParagraph == insertPoint.Type; insertPoint = insertPoint.Previous {
 		if nil != insertPoint.FirstChild {
 			break
 		}
 	}
 
-	// 导出空文档 Word 和 PDF 时合并子文档失败 https://github.com/siyuan-note/siyuan/issues/7429
 	if nil == insertPoint {
-		// 如果找不到非空段落，则使用第一个段落作为插入点
+
 		insertPoint = rootTree.Root.FirstChild
 		if nil == insertPoint {
-			// 如果文档为空，则创建一个空段落作为插入点
+
 			insertPoint = treenode.NewParagraph("")
 			rootTree.Root.AppendChild(insertPoint)
 		}
@@ -62,7 +60,7 @@ func mergeSubDocs(rootTree *parse.Tree) (ret *parse.Tree, err error) {
 	}
 
 	if ast.NodeParagraph == insertPoint.Type && nil == insertPoint.FirstChild {
-		// 删除空段落
+
 		// Ignore the last empty paragraph block when exporting merged sub-documents https://github.com/siyuan-note/siyuan/issues/15028
 		insertPoint.Unlink()
 	}
@@ -86,7 +84,7 @@ func walkBlock(insertPoint *ast.Node, block *Block, level int) (err error) {
 		for j := lastIndex; -1 < j; j-- {
 			node := nodes[j]
 			if j == lastIndex && ast.NodeParagraph == node.Type && nil == node.FirstChild {
-				// 跳过最后一个空段落块
+
 				// Ignore the last empty paragraph block when exporting merged sub-documents https://github.com/siyuan-note/siyuan/issues/15028
 				continue
 			}

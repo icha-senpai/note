@@ -26,14 +26,10 @@ import (
 	"github.com/siyuan-note/logging"
 )
 
-// WriteFileByMmap 使用内存映射将 data 原地覆写到 filePath。
 //
-// 流程：OpenFile(O_RDWR|O_CREATE) → Truncate 到精确长度 → mmap.Map(RDWR) →
-// copy 写入 → Flush → Unmap，全程持有 filelock 的进程内互斥锁，避免并发写冲突。
+
 //
-// 相比 filelock.WriteFile（临时文件 + rename + fsync），此路径在进程级 I/O
-// 计数（IO Write Bytes）上几乎不计——copy 是纯内存写，不经过 I/O 子系统，
-// 只有 Flush 会产生极少量计入。出错时由调用方回退到 filelock.WriteFile。
+
 func WriteFileByMmap(filePath string, data []byte) (err error) {
 	f, err := filelock.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {

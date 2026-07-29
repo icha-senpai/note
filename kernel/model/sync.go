@@ -55,7 +55,7 @@ func SyncDataDownload() {
 	}
 
 	util.BroadcastByType("main", "syncing", 0, Conf.Language(81), nil)
-	if !isProviderOnline(true) { // 这个操作比较耗时，所以要先推送 syncing 事件后再判断网络，这样才能给用户更即时的反馈
+	if !isProviderOnline(true) {
 		util.BroadcastByType("main", "syncing", 2, Conf.Language(28), nil)
 		return
 	}
@@ -89,7 +89,7 @@ func SyncDataUpload() {
 	}
 
 	util.BroadcastByType("main", "syncing", 0, Conf.Language(81), nil)
-	if !isProviderOnline(true) { // 这个操作比较耗时，所以要先推送 syncing 事件后再判断网络，这样才能给用户更即时的反馈
+	if !isProviderOnline(true) {
 		util.BroadcastByType("main", "syncing", 2, Conf.Language(28), nil)
 		return
 	}
@@ -117,7 +117,7 @@ var (
 	syncPlanTimeLock = sync.Mutex{}
 	syncPlanTime     = time.Now().Add(fixSyncInterval)
 
-	BootSyncSucc = -1 // -1：未执行，0：执行成功，1：执行失败
+	BootSyncSucc = -1
 	ExitSyncSucc = -1
 )
 
@@ -174,7 +174,7 @@ func BootSyncData() {
 	}
 	util.BroadcastByType("main", "syncing", code, Conf.Sync.Stat, nil)
 	if 1 == code {
-		// 启动同步成功后消费本地速记临时文件，避免移动端开启云同步时需手动触发同步才能刷新闪念速记
+
 		consumeShorthands()
 	}
 	return
@@ -205,7 +205,7 @@ func syncData(exit, byHand bool) {
 	defer unlockSync()
 
 	util.BroadcastByType("main", "syncing", 0, Conf.Language(81), nil)
-	if !exit && !isProviderOnline(byHand) { // 这个操作比较耗时，所以要先推送 syncing 事件后再判断网络，这样才能给用户更即时的反馈
+	if !exit && !isProviderOnline(byHand) {
 		util.BroadcastByType("main", "syncing", 2, Conf.Language(28), nil)
 		return
 	}
@@ -234,12 +234,12 @@ func syncData(exit, byHand bool) {
 	}
 
 	if nil == webSocketConn && Conf.Sync.Perception {
-		// 如果 websocket 连接已经断开，则重新连接
+
 		connectSyncWebSocket()
 	}
 
 	if 1 == Conf.Sync.Mode && nil != webSocketConn && Conf.Sync.Perception && dataChanged {
-		// 如果处于自动同步模式且不是由 WS 触发的同步，则通知其他设备上的内核进行同步
+
 		request := map[string]any{
 			"cmd":    "synced",
 			"synced": Conf.Sync.Synced,
@@ -252,11 +252,11 @@ func syncData(exit, byHand bool) {
 }
 
 func checkSync(boot, exit, byHand bool) bool {
-	if 2 == Conf.Sync.Mode && !boot && !exit && !byHand { // 手动模式下只有启动和退出进行同步
+	if 2 == Conf.Sync.Mode && !boot && !exit && !byHand {
 		return false
 	}
 
-	if 3 == Conf.Sync.Mode && !byHand { // 完全手动模式下只有手动进行同步
+	if 3 == Conf.Sync.Mode && !byHand {
 		return false
 	}
 
@@ -306,13 +306,12 @@ func checkSync(boot, exit, byHand bool) bool {
 	return true
 }
 
-// incReindex 增量重建索引。
 func incReindex(upserts, removes []string) (upsertRootIDs, removeRootIDs []string) {
 	upsertRootIDs = []string{}
 	removeRootIDs = []string{}
 
 	util.IncBootProgress(3, Conf.Language(308))
-	removeRootIDs = removeIndexes(removes) // 先执行 remove，否则移动文档时 upsert 会被忽略，导致未被索引
+	removeRootIDs = removeIndexes(removes)
 	upsertRootIDs = upsertIndexes(upserts)
 
 	if 1 > len(removeRootIDs) {
@@ -372,7 +371,7 @@ func upsertIndexes(upsertFilePaths []string) (upsertRootIDs []string) {
 
 		box, _, found := strings.Cut(upsertFile, "/")
 		if !found {
-			// .sy 直接出现在 data 文件夹下，没有出现在笔记本文件夹下的情况
+
 			continue
 		}
 
@@ -488,7 +487,6 @@ func SetSyncProviderWebDAV(webdav *conf.WebDAV) (err error) {
 	webdav.Endpoint = strings.TrimSpace(webdav.Endpoint)
 	webdav.Endpoint = util.NormalizeEndpoint(webdav.Endpoint)
 
-	// 不支持配置坚果云 WebDAV 进行同步 https://github.com/siyuan-note/siyuan/issues/7657
 	if strings.Contains(strings.ToLower(webdav.Endpoint), "dav.jianguoyun.com") {
 		err = errors.New(Conf.Language(194))
 		return
@@ -703,8 +701,6 @@ func formatRepoErrorMsg(err error) string {
 	return msg
 }
 
-// isDNSError 判断错误信息是否属于 DNS 解析类（域名解析失败、主机名无法解析等）。
-// dejavu/cloud 层用 fmt.Errorf 原样透传底层网络错误，因此这里用字符串匹配兜底。
 func isDNSError(msg string) bool {
 	return strings.Contains(msg, "no such host") ||
 		strings.Contains(msg, "connection failed") ||
@@ -712,15 +708,11 @@ func isDNSError(msg string) bool {
 		strings.Contains(msg, "no address associated with hostname")
 }
 
-// lastDNSFlushTime 及其锁用于 DNS 刷新节流，避免自动同步循环里反复 fork 系统命令。
-// 由于同步可能从多个入口并发执行（如启动后台同步与手动同步），这里用互斥锁保护。
 var (
 	lastDNSFlushTime   time.Time
 	lastDNSFlushTimeMu sync.Mutex
 )
 
-// flushAndRetryOnDNSError 在确认是 DNS 类错误且距上次刷新超过 5 分钟时，刷新系统 DNS 缓存并返回 true
-// 以触发上层重试一次同步；否则返回 false。节流是为了避免高频自动同步反复 fork 系统命令。
 func flushAndRetryOnDNSError(err error) bool {
 	if !isDNSError(strings.ToLower(err.Error())) {
 		return false
@@ -739,8 +731,6 @@ func flushAndRetryOnDNSError(err error) bool {
 	return true
 }
 
-// syncRepoWithDNSRetry 执行一次同步，若失败且判定为 DNS 类错误，则刷新系统 DNS 缓存后重试一次。
-// 统一封装 DNS 重试逻辑，供主同步流程（syncData）与启动后台同步复用。
 func syncRepoWithDNSRetry(exit, byHand bool) (dataChanged bool, err error) {
 	dataChanged, err = syncRepo(exit, byHand)
 	if nil != err && flushAndRetryOnDNSError(err) {
@@ -749,7 +739,6 @@ func syncRepoWithDNSRetry(exit, byHand bool) (dataChanged bool, err error) {
 	return
 }
 
-// syncRepoDownloadWithDNSRetry 仅下载同步，DNS 类错误时刷新系统 DNS 缓存后重试一次。
 func syncRepoDownloadWithDNSRetry() (err error) {
 	err = syncRepoDownload()
 	if nil != err && flushAndRetryOnDNSError(err) {
@@ -758,7 +747,6 @@ func syncRepoDownloadWithDNSRetry() (err error) {
 	return
 }
 
-// syncRepoUploadWithDNSRetry 仅上传同步，DNS 类错误时刷新系统 DNS 缓存后重试一次。
 func syncRepoUploadWithDNSRetry() (err error) {
 	err = syncRepoUpload()
 	if nil != err && flushAndRetryOnDNSError(err) {
@@ -788,12 +776,11 @@ func getSyncIgnoreLines() (ret []string) {
 	dataStr = strings.ReplaceAll(dataStr, "\r\n", "\n")
 	ret = strings.Split(dataStr, "\n")
 
-	// 忽略用户指南
 	ret = append(ret, "20210808180117-6v0mkxr/**/*")
 	ret = append(ret, "20210808180117-czj9bvb/**/*")
 	ret = append(ret, "20211226090932-5lcq56f/**/*")
 	ret = append(ret, "20240530133126-axarxgx/**/*")
-	// 忽略用户指南的数据库 JSON 文件
+
 	for _, avName := range getAllUserGuideAVJSONFiles() {
 		ret = append(ret, "/storage/av/"+avName)
 	}

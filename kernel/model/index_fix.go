@@ -44,29 +44,25 @@ import (
 var (
 	checkIndexOnce = sync.Once{}
 
-	// fixIndexMu 保证 checkIndex 与 AutoFixIndex 互斥，不会并发跑同一套订正。
 	fixIndexMu sync.Mutex
-	// lastFixedAt 记录上次订正完成时间，用于 AutoFixIndex 的冷却期判断。
+
 	lastFixedAt time.Time
 )
 
 const (
-	// idleFixThreshold 为用户空闲超过该阈值后才允许触发空闲订正。
 	idleFixThreshold = 7 * time.Minute
-	// fixCooldown 为上次订正后至少间隔该时长才允许下一次空闲订正。
+
 	fixCooldown = 120 * time.Minute
 )
 
-// checkIndex 自动校验数据库索引，仅在数据同步执行完成后执行一次。
 // Index fixing should not be performed before data synchronization https://github.com/siyuan-note/siyuan/issues/10761
 func checkIndex() {
 	checkIndexOnce.Do(func() {
 		if util.IsMobileContainer() {
-			// 移动端不执行校验 https://ld246.com/article/1734939896061
+
 			return
 		}
 
-		// 阻塞式获取锁：若 AutoFixIndex 正在跑则等其完成，确保唯一一次校验不会与之并发
 		fixIndexMu.Lock()
 		defer fixIndexMu.Unlock()
 
@@ -74,17 +70,13 @@ func checkIndex() {
 	})
 }
 
-// runFixIndexPipeline 执行索引订正流水线并完成收尾（清除脏标志、记录订正时间）。
-// 调用方需持有 fixIndexMu。
 func runFixIndexPipeline() {
 	fixIndexPipeline()
-	// 收尾：清除脏标志并记录订正时间，避免在冷却期内被 AutoFixIndex 重复触发
+
 	util.MarkIndexClean()
 	lastFixedAt = time.Now()
 }
 
-// fixIndexPipeline 执行索引订正流水线。
-// 由 checkIndex（同步后一次性）与 AutoFixIndex（空闲触发）共用，调用方负责加 fixIndexMu 互斥锁。
 func fixIndexPipeline() {
 	logging.LogInfof("start fixing index...")
 
@@ -102,15 +94,11 @@ func fixIndexPipeline() {
 
 	removeDuplicateDatabaseRefs()
 
-	// 后面要加任务的话记得修改推送任务栏的进度 util.PushStatusBar(fmt.Sprintf(Conf.Language(58), 1, 5))
-
 	debug.FreeOSMemory()
 	util.PushStatusBar(Conf.Language(185))
 	logging.LogInfof("finish fixing index")
 }
 
-// AutoFixIndex 在用户空闲且存在未订正变更时，自动订正索引。由 cron 每分钟调用。
-// 触发需同时满足：空闲达 idleFixThreshold、存在未订正变更（dirty）、冷却期已过。
 func AutoFixIndex() {
 	defer logging.Recover()
 
@@ -126,13 +114,12 @@ func AutoFixIndex() {
 	if !lastFixedAt.IsZero() && time.Since(lastFixedAt) < fixCooldown {
 		return
 	}
-	// TryLock 非阻塞：若 checkIndex 正在跑或上次还没跑完，直接跳过，不堆积 goroutine
+
 	if !fixIndexMu.TryLock() {
 		return
 	}
 	defer fixIndexMu.Unlock()
 
-	// double-check：拿到锁后再确认一次确实空闲，避免在等待锁期间用户又开始操作
 	if !util.IsIdle(idleFixThreshold) {
 		return
 	}
@@ -142,7 +129,6 @@ func AutoFixIndex() {
 	logging.LogInfof("finish auto fixing index on idle")
 }
 
-// removeDuplicateDatabaseRefs 删除重复的数据库引用关系。
 func removeDuplicateDatabaseRefs() {
 	defer logging.Recover()
 
@@ -157,7 +143,6 @@ func removeDuplicateDatabaseRefs() {
 	}
 }
 
-// removeDuplicateDatabaseIndex 删除重复的数据库索引。
 func removeDuplicateDatabaseIndex() {
 	defer logging.Recover()
 
@@ -197,7 +182,6 @@ func removeDuplicateDatabaseIndex() {
 	}
 }
 
-// resetDuplicateBlocksOnFileSys 重置重复 ID 的块。 https://github.com/siyuan-note/siyuan/issues/7357
 func resetDuplicateBlocksOnFileSys() {
 	defer logging.Recover()
 
@@ -207,11 +191,11 @@ func resetDuplicateBlocksOnFileSys() {
 	blockIDs := map[string]bool{}
 	needRefreshUI := false
 	for _, box := range boxes {
-		// 关闭的加密笔记本无法解密 .sy，跳过（避免密文被当损坏移走）
+
 		if IsEncryptedBox(box.ID) && !IsBoxUnlocked(box.ID) {
 			continue
 		}
-		// 校验索引阶段自动删除历史遗留的笔记本 history 文件夹
+
 		legacyHistory := filepath.Join(util.DataDir, box.ID, ".siyuan", "history")
 		if gulu.File.IsDir(legacyHistory) {
 			if removeErr := os.RemoveAll(legacyHistory); nil != removeErr {
@@ -230,7 +214,7 @@ func resetDuplicateBlocksOnFileSys() {
 
 			if d.IsDir() {
 				if boxPath == path {
-					// 跳过笔记本文件夹
+
 					return nil
 				}
 
@@ -279,16 +263,12 @@ func resetDuplicateBlocksOnFileSys() {
 					return ast.WalkContinue
 				}
 
-				// 存在重复的块 ID
-
 				if ast.NodeDocument == n.Type {
-					// 如果是文档根节点，则重置这颗树
-					// 这里不能在迭代中重置，因为如果这个文档存在子文档的话，重置时会重命名子文档文件夹，后续迭代可能会导致子文档 ID 重复
+
 					duplicatedTrees = append(duplicatedTrees, tree)
 					return ast.WalkStop
 				}
 
-				// 其他情况，重置节点 ID
 				needOverwrite = true
 				treenode.ResetNodeID(n)
 				needRefreshUI = true
@@ -319,7 +299,7 @@ func resetDuplicateBlocksOnFileSys() {
 }
 
 func recreateTree(tree *parse.Tree, absPath string) {
-	// 删除关于该树的所有块树数据，后面会调用 fixBlockTreeByFileSys() 进行订正补全
+
 	treenode.RemoveBlockTreesByPathPrefix(tree.Box, strings.TrimSuffix(tree.Path, ".sy"))
 	treenode.RemoveBlockTreesByRootID(tree.Box, tree.ID)
 
@@ -330,7 +310,7 @@ func recreateTree(tree *parse.Tree, absPath string) {
 	}
 
 	if gulu.File.IsDir(strings.TrimSuffix(absPath, ".sy")) {
-		// 重命名子文档文件夹
+
 		from := strings.TrimSuffix(absPath, ".sy")
 		to := filepath.Join(filepath.Dir(absPath), tree.ID)
 		if renameErr := os.Rename(from, to); nil != renameErr {
@@ -345,7 +325,6 @@ func recreateTree(tree *parse.Tree, absPath string) {
 	}
 }
 
-// fixBlockTreeByFileSys 通过文件系统订正块树。
 func fixBlockTreeByFileSys() {
 	defer logging.Recover()
 
@@ -361,7 +340,7 @@ func fixBlockTreeByFileSys() {
 			}
 
 			if boxPath == path {
-				// 跳过根路径（笔记本文件夹）
+
 				return nil
 			}
 
@@ -384,10 +363,8 @@ func fixBlockTreeByFileSys() {
 
 		size := len(paths)
 
-		// 清理块树中的冗余数据
 		treenode.ClearRedundantBlockTrees(box.ID, paths)
 
-		// 重新索引缺失的块树
 		missingPaths := treenode.GetNotExistPaths(box.ID, paths)
 		for i, p := range missingPaths {
 			id := path.Base(p)
@@ -407,14 +384,12 @@ func fixBlockTreeByFileSys() {
 		}
 	}
 
-	// 清理已关闭的笔记本块树
 	boxes = Conf.GetClosedBoxes()
 	for _, box := range boxes {
 		treenode.RemoveBlockTreesByBoxID(box.ID)
 	}
 }
 
-// fixDatabaseIndexByBlockTree 通过块树订正数据库索引。
 func fixDatabaseIndexByBlockTree() {
 	defer logging.Recover()
 
@@ -445,7 +420,7 @@ func reindexTreeByUpdated(rootUpdatedMap, dbRootUpdatedMap map[string]string) {
 		}
 
 		if "" == updated {
-			// BlockTree 迁移，v2.6.3 之前没有 updated 字段
+
 			reindexTree(rootID, i, size, luteEngine)
 			continue
 		}
@@ -514,7 +489,7 @@ func reindexTree(rootID string, i, size int, luteEngine *lute.Lute) {
 	tree, err := filesys.LoadTree(root.BoxID, root.Path, luteEngine)
 	if err != nil {
 		if os.IsNotExist(err) {
-			// 文件系统上没有找到该 .sy 文件，则订正块树
+
 			treenode.RemoveBlockTreesByRootID(root.BoxID, rootID)
 		}
 		return

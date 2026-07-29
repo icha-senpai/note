@@ -25,7 +25,6 @@ import (
 	"github.com/siyuan-note/logging"
 )
 
-// MarkdownSettings 运行时 Markdown 配置。
 var MarkdownSettings = &Markdown{
 	InlineAsterisk:      true,
 	InlineUnderscore:    true,
@@ -38,14 +37,14 @@ var MarkdownSettings = &Markdown{
 }
 
 type Markdown struct {
-	InlineAsterisk      bool `json:"inlineAsterisk"`      // 是否启用行级 * 语法
-	InlineUnderscore    bool `json:"inlineUnderscore"`    // 是否启用行级 _ 语法
-	InlineSup           bool `json:"inlineSup"`           // 是否启用行级上标
-	InlineSub           bool `json:"inlineSub"`           // 是否启用行级下标
-	InlineTag           bool `json:"inlineTag"`           // 是否启用行级标签
-	InlineMath          bool `json:"inlineMath"`          // 是否启用行级公式
-	InlineStrikethrough bool `json:"inlineStrikethrough"` // 是否启用行级删除线
-	InlineMark          bool `json:"inlineMark"`          // 是否启用行级标记
+	InlineAsterisk      bool `json:"inlineAsterisk"`
+	InlineUnderscore    bool `json:"inlineUnderscore"`
+	InlineSup           bool `json:"inlineSup"`
+	InlineSub           bool `json:"inlineSub"`
+	InlineTag           bool `json:"inlineTag"`
+	InlineMath          bool `json:"inlineMath"`
+	InlineStrikethrough bool `json:"inlineStrikethrough"`
+	InlineMark          bool `json:"inlineMark"`
 }
 
 func NewLute() (ret *lute.Lute) {
@@ -84,8 +83,8 @@ func NewLute() (ret *lute.Lute) {
 	ret.SetCallout(true)
 	ret.SetDataTask(true)
 	ret.SetArbitraryTaskListItemMarker(true)
-	ret.SetExportNormalizeTaskListMarker(false) // 只有导出 Markdown 的场景才将其设置为 true
-	ret.SetEnsureListItemParagraph(true)        // 空列表项下创建子列表前补一个空段落
+	ret.SetExportNormalizeTaskListMarker(false)
+	ret.SetEnsureListItemParagraph(true)
 	return
 }
 
@@ -93,17 +92,16 @@ func NewStdLute() (ret *lute.Lute) {
 	ret = lute.New()
 	ret.SetFootnotes(false)
 	ret.SetToC(false)
-	ret.SetIndentCodeBlock(true) // 导入 Markdown 时支持缩进代码块语法 Support indented code block syntax when importing Markdown https://github.com/siyuan-note/siyuan/issues/14429
+	ret.SetIndentCodeBlock(true)
 	ret.SetAutoSpace(false)
 	ret.SetHeadingID(false)
 	ret.SetSetext(false)
 	ret.SetYamlFrontMatter(false)
 	ret.SetLinkRef(false)
-	ret.SetGFMAutoLink(false) // 导入 Markdown 时不自动转换超链接 https://github.com/siyuan-note/siyuan/issues/7682
+	ret.SetGFMAutoLink(false)
 	ret.SetImgPathAllowSpace(true)
 	ret.SetInlineMathAllowDigitAfterOpenMarker(true) // Formula parsing supports $ followed by numbers when importing Markdown https://github.com/siyuan-note/siyuan/issues/8362
 
-	// 导入 Markdown 时遵循编辑器 Markdown 语法设置
 	// Follow editor Markdown syntax settings when importing Markdown https://github.com/siyuan-note/siyuan/issues/14731
 	ret.SetInlineAsterisk(MarkdownSettings.InlineAsterisk)
 	ret.SetInlineUnderscore(MarkdownSettings.InlineUnderscore)

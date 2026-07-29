@@ -55,7 +55,6 @@ func watchThemes() {
 		return
 	}
 
-	// 为每个子目录添加监听，以便收到 theme.css 的变更
 	addThemesSubdirs(themesWatcher, themesDir)
 
 	go func() {
@@ -68,7 +67,6 @@ func watchThemes() {
 					return
 				}
 
-				// 新目录创建时加入监听
 				if watcher.Create == event.Op {
 					if isThemesDirectSubdir(event.Path) {
 						if addErr := themesWatcher.Add(event.Path); addErr != nil {
@@ -95,7 +93,6 @@ func watchThemes() {
 	}
 }
 
-// addThemesSubdirs 为 themes 下每个子目录添加监听
 func addThemesSubdirs(w *watcher.Watcher, themesDir string) {
 	entries, err := os.ReadDir(themesDir)
 	if err != nil {
@@ -113,7 +110,6 @@ func addThemesSubdirs(w *watcher.Watcher, themesDir string) {
 	}
 }
 
-// isThemesDirectSubdir 判断 path 是否为 themes 下的直接子目录
 func isThemesDirectSubdir(path string) bool {
 	if !gulu.File.IsDir(path) {
 		return false

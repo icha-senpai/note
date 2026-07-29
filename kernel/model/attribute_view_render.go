@@ -59,7 +59,6 @@ func RenderAttributeViewWithTarget(blockID, avID, viewID, query string, page, pa
 
 	waitForSyncingStorages()
 
-	// 加密笔记本的 AV 定义存笔记本级路径，通过 blockID 反查 boxID
 	avBoxID := ""
 	if "" != blockID {
 		bt := treenode.GetBlockTree(blockID)
@@ -76,8 +75,6 @@ func RenderAttributeViewWithTarget(blockID, avID, viewID, query string, page, pa
 		}
 	}
 
-	// 通过 fallback 查找 AV 定义路径（普通 box 全局，加密笔记本笔记本级）
-	// 已知 box 时直接用 InBox 查找，避免全局 pending 映射被并发覆盖
 	var existPath string
 	if avBoxID != "" {
 		existPath, _ = av.FindAttributeViewPathInBox(avID, avBoxID)
@@ -88,7 +85,7 @@ func RenderAttributeViewWithTarget(blockID, avID, viewID, query string, page, pa
 		if avBoxID != "" {
 			existPath = filepath.Join(util.DataDir, avBoxID, "storage", "av", avID+".json")
 		} else {
-			// fallback 找不到时按全局路径检查（首次创建场景）
+
 			existPath = av.GetAttributeViewDataPath(avID)
 		}
 	}
@@ -98,10 +95,9 @@ func RenderAttributeViewWithTarget(blockID, avID, viewID, query string, page, pa
 			return
 		}
 
-		// 加密笔记本首次创建：仅设置 pending 用于 SaveAttributeView 路径路由，创建后立即清除
 		if avBoxID != "" {
 			av.SetAVBoxID(avID, avBoxID)
-			defer av.SetAVBoxID(avID, "") // 创建完成立即清除，避免污染后续路由
+			defer av.SetAVBoxID(avID, "")
 		}
 		attrView = av.NewAttributeView(avID)
 		if err = av.SaveAttributeView(attrView); err != nil {
@@ -113,7 +109,6 @@ func RenderAttributeViewWithTarget(blockID, avID, viewID, query string, page, pa
 		}
 	}
 
-	// 已知 box 时直接用 InBox 解析，不依赖全局 pending 状态
 	if avBoxID != "" {
 		attrView, err = av.ParseAttributeViewInBox(avID, avBoxID)
 	} else {
@@ -136,7 +131,6 @@ func RenderAttributeViewWithTarget(blockID, avID, viewID, query string, page, pa
 		}
 	}
 
-	// 诊断：AV 解析后的数据量
 	blockKV := attrView.GetBlockKeyValues()
 	if nil != blockKV {
 	} else {
@@ -147,25 +141,23 @@ func RenderAttributeViewWithTarget(blockID, avID, viewID, query string, page, pa
 }
 
 const (
-	groupValueDefault                                        = "_@default@_"    // 默认分组值（值为空的默认分组）
-	groupValueNotInRange                                     = "_@notInRange@_" // 不再范围内的分组值（只有数字类型的分组才可能是该值）
+	groupValueDefault                                        = "_@default@_"
+	groupValueNotInRange                                     = "_@notInRange@_"
 	groupValueLast30Days, groupValueLast7Days                = "_@last30Days@_", "_@last7Days@_"
 	groupValueYesterday, groupValueToday, groupValueTomorrow = "_@yesterday@_", "_@today@_", "_@tomorrow@_"
 	groupValueNext7Days, groupValueNext30Days                = "_@next7Days@_", "_@next30Days@_"
 )
 
 func renderAttributeView(attrView *av.AttributeView, nodeID, viewID, query string, page, pageSize int, groupPaging map[string]any, ignoreRows bool, target *AttributeViewRenderTarget, targetGroupID string) (viewable av.Viewable, err error) {
-	// 获取待渲染的视图
+
 	view, err := getRenderAttributeViewView(attrView, viewID, nodeID, nil == target)
 	if nil != err {
 		return
 	}
 
-	// 做一些数据兼容和订正处理
 	checkAttrView(attrView, view)
 	upgradeAttributeViewSpec(attrView)
 
-	// 渲染视图
 	viewable = sql.RenderView(attrView, view, query, ignoreRows)
 	renderTargetItemID := targetItemID(target)
 	if view.IsGroupView() || view.LayoutType == av.LayoutTypeKanban {
@@ -180,7 +172,6 @@ func renderAttributeView(attrView *av.AttributeView, nodeID, viewID, query strin
 		setAttributeViewRenderTarget(target, "", targetIndex, targetOffset, view.PageSize)
 	}
 
-	// 渲染分组视图。当 ignoreRows 时若有已生成的分组则渲染元数据供面板使用，无分组则跳过（生成分组需要行数据）
 	if !ignoreRows || len(view.Groups) > 0 {
 		err = renderAttributeViewGroups(viewable, attrView, view, query, page, pageSize, groupPaging, ignoreRows, target, targetGroupID)
 	}
@@ -207,12 +198,10 @@ func renderAttributeViewGroups(viewable av.Viewable, attrView *av.AttributeView,
 		}
 	}
 
-	// 当前日期可能会变，所以如果是按日期分组则需要重新生成分组。
-	// ignoreRows 时跳过重新生成（需要行数据），沿用已保存的分组。
 	if !ignoreRows && isGroupByDate(view) {
 		createdDate := time.UnixMilli(view.GroupCreated).Format("2006-01-02")
 		if time.Now().Format("2006-01-02") != createdDate {
-			genAttrViewGroups(view, attrView) // 仅重新生成一个视图的分组以提升性能
+			genAttrViewGroups(view, attrView)
 			if err = av.SaveAttributeView(attrView); err != nil {
 				logging.LogErrorf("save attribute view [%s] failed: %s", attrView.ID, err)
 				return
@@ -220,17 +209,14 @@ func renderAttributeViewGroups(viewable av.Viewable, attrView *av.AttributeView,
 		}
 	}
 
-	// 如果是按模板分组则需要重新生成分组。
-	// ignoreRows 时跳过重新生成（需要行数据），沿用已保存的分组。
 	if !ignoreRows && isGroupByTemplate(attrView, view) {
-		genAttrViewGroups(view, attrView) // 仅重新生成一个视图的分组以提升性能
+		genAttrViewGroups(view, attrView)
 		if err = av.SaveAttributeView(attrView); err != nil {
 			logging.LogErrorf("save attribute view [%s] failed: %s", attrView.ID, err)
 			return
 		}
 	}
 
-	// 渲染分组视图。ignoreRows 时若已存在分组则渲染元数据供面板使用，若无分组则返回（生成需要行数据）
 	if nil == view.Groups {
 		if ignoreRows {
 			return
@@ -313,7 +299,6 @@ func renderAttributeViewGroups(viewable av.Viewable, attrView *av.AttributeView,
 
 		groups = append(groups, groupViewable)
 
-		// 将分组视图的分组字段清空，减少冗余（字段信息可以在总的视图 view 对象上获取到）
 		switch groupView.LayoutType {
 		case av.LayoutTypeTable:
 			groupView.Table.Columns = nil
@@ -325,7 +310,6 @@ func renderAttributeViewGroups(viewable av.Viewable, attrView *av.AttributeView,
 	}
 	viewable.SetGroups(groups)
 
-	// 将总的视图上的项目清空，减少冗余
 	viewable.(av.Collection).SetItems(nil)
 	return
 }
@@ -360,9 +344,9 @@ func sortGroupViews(attrView *av.AttributeView, view *av.View) {
 		var last30Days, last7Days, yesterday, today, tomorrow, next7Days, next30Days, defaultGroup *av.View
 		for _, groupView := range view.Groups {
 			_, err := time.Parse("2006-01", groupView.GetGroupValue())
-			if nil == err { // 如果能解析出来说明是 30 天之前或 30 天之后的分组形式
+			if nil == err {
 				relativeDateGroups = append(relativeDateGroups, groupView)
-			} else { // 否则是相对日期分组形式
+			} else {
 				switch groupView.GetGroupValue() {
 				case groupValueLast30Days:
 					last30Days = groupView
@@ -523,7 +507,6 @@ func renderViewableInstance(viewable av.Viewable, view *av.View, attrView *av.At
 		return
 	}
 
-	// ignoreRows 时行已为空，跳过 filter/sort/calc 和分页（菜单不需要行数据）
 	if ignoreRows {
 		return
 	}
@@ -534,7 +517,6 @@ func renderViewableInstance(viewable av.Viewable, view *av.View, attrView *av.At
 	av.Sort(viewable, attrView)
 	av.Calc(viewable, attrView)
 
-	// 分页
 	switch viewable.GetType() {
 	case av.LayoutTypeTable:
 		table := viewable.(*av.Table)
@@ -674,12 +656,9 @@ func getRenderAttributeViewView(attrView *av.AttributeView, viewID, nodeID strin
 	return
 }
 
-// avBoxIDFromRepoPath 从快照文件路径反查 boxID。
-// 全局路径 /storage/av/<avID>.json 返回空串；加密笔记本路径 /<boxID>/storage/av/<avID>.json 返回 boxID。
 func avBoxIDFromRepoPath(repoPath string) string {
 	parts := strings.Split(repoPath, "/")
-	// 全局路径: ["", "storage", "av", "xxx.json"] → parts[1]=="storage"
-	// 加密 box: ["", "<boxID>", "storage", "av", "xxx.json"] → parts[1]=="<boxID>"
+
 	if len(parts) >= 4 && parts[2] == "storage" {
 		return parts[1]
 	}
@@ -708,7 +687,7 @@ func RenderRepoSnapshotAttributeView(indexID, avID string) (viewable av.Viewable
 	}
 	var avFile *entity.File
 	for _, f := range files {
-		// 匹配全局 /storage/av/<avID>.json 或加密笔记本/<boxID>/storage/av/<avID>.json
+
 		if strings.HasSuffix(f.Path, "/storage/av/"+avID+".json") {
 			avFile = f
 			break
@@ -728,7 +707,6 @@ func RenderRepoSnapshotAttributeView(indexID, avID string) (viewable av.Viewable
 		return
 	}
 
-	// 加密笔记本的 AV 在快照中是密文，按路径反查 boxID 后解密
 	if histBoxID := avBoxIDFromRepoPath(avFile.Path); histBoxID != "" && IsEncryptedBox(histBoxID) {
 		dec, decErr := av.DecryptAVData(histBoxID, avID, data)
 		if decErr != nil {
@@ -777,7 +755,7 @@ func RenderHistoryAttributeView(blockID, avID, viewID, query string, page, pageS
 	historyDir := matches[0]
 	avJSONPath := filepath.Join(historyDir, "storage", "av", avID+".json")
 	if !gulu.File.IsExist(avJSONPath) {
-		// 加密笔记本的 AV 定义可能在历史目录的 boxID 子目录下
+
 		entries, _ := os.ReadDir(historyDir)
 		for _, entry := range entries {
 			if entry.IsDir() && ast.IsNodeIDPattern(entry.Name()) {
@@ -791,7 +769,7 @@ func RenderHistoryAttributeView(blockID, avID, viewID, query string, page, pageS
 	}
 	if !gulu.File.IsExist(avJSONPath) {
 		logging.LogWarnf("attribute view [%s] not found in history data [%s], use current data instead", avID, historyDir)
-		// 加密笔记本的 AV 定义在 notebook 级目录
+
 		_, boxID := av.FindAttributeViewPath(avID)
 		if boxID != "" {
 			avJSONPath = filepath.Join(util.DataDir, boxID, "storage", "av", avID+".json")
@@ -813,8 +791,6 @@ func RenderHistoryAttributeView(blockID, avID, viewID, query string, page, pageS
 		return
 	}
 
-	// 加密笔记本的历史 AV 定义是密文，需要解密后才能解析。
-	// 从路径提取 boxID，提取不到时遍历所有已打开的加密笔记本尝试解密。
 	avAbsSlash := filepath.ToSlash(avJSONPath)
 	var histBoxID string
 	if idx := strings.Index(avAbsSlash, "/storage/av/"); idx > 0 {
@@ -834,7 +810,7 @@ func RenderHistoryAttributeView(blockID, avID, viewID, query string, page, pageS
 			return
 		}
 	} else {
-		// 路径没提取到 boxID（如历史目录无 boxID 前缀的旧路径），尝试遍历已打开的加密笔记本解密
+
 		for _, encBoxID := range treenode.GetOpenedEncryptedBoxIDs() {
 			if dec, decErr := av.DecryptAVData(encBoxID, avID, data); decErr == nil {
 				data = dec

@@ -38,21 +38,14 @@ import (
 	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
-// errMsgSeeKernelLog 接在 API 错误提示末尾，引导用户查看内核日志以获取完整信息（避免在 Msg 暴露工作空间绝对路径）。
 const errMsgSeeKernelLog = ". For details, see the Scribli kernel log."
 
-// rejectEncryptedBoxPath 检查 absPath 是否落在加密笔记本目录下（含 symlink 绕过），是则返回 true。
-// 原始文件 API（getFile/putFile/copyFile/renameFile/removeFile）是绕过加密层的逃生口，
-// 对加密笔记本的任何文件读写都应拒绝——合法读写走专用 API（upload/getBlockKramdown 等，已加密感知），
-// 避免密文泄漏给插件或明文破坏加密格式。
-// 防止 symlink 绕过：找到最长已存在的父路径，解析 symlink 后拼回剩余路径，再检查是否落入加密 box。
 func rejectEncryptedBoxPath(absPath string) bool {
 	return model.EncryptedRawPathBoxID(absPath) != ""
 }
 
-// copyDecryptedAsset 将加密 asset 解密后复制到目标路径（dest 必须在工作区外）。
 func copyDecryptedAsset(src, dest string) error {
-	// 安全守卫：dest 必须在工作区外，防止解密后的明文落入工作区普通目录
+
 	if gulu.File.IsSubPath(util.WorkspaceDir, dest) {
 		return fmt.Errorf("refuse to write decrypted asset inside workspace")
 	}
@@ -114,8 +107,8 @@ func globalCopyFiles(c *gin.Context) {
 	var srcsArg []any
 	var destDirArg string
 	if !util.ParseJsonArgs(arg, ret,
-		util.BindJsonArg("srcs", &srcsArg, true, true),        // 绝对路径
-		util.BindJsonArg("destDir", &destDirArg, true, false), // 相对于工作空间的路径
+		util.BindJsonArg("srcs", &srcsArg, true, true),
+		util.BindJsonArg("destDir", &destDirArg, true, false),
 	) {
 		return
 	}
@@ -170,7 +163,7 @@ func globalCopyFiles(c *gin.Context) {
 		ret.Msg = err.Error()
 		return
 	}
-	// 在 MkdirAll 前拒绝加密笔记本目录，避免在加密笔记本内创建明文目录
+
 	if rejectEncryptedBoxPath(destDir) {
 		ret.Code = -1
 		ret.Msg = "copying encrypted notebook files is not supported via this API"
@@ -204,7 +197,7 @@ func globalCopyFiles(c *gin.Context) {
 			ret.Msg = model.Conf.Language(321)
 			return
 		}
-		// 拒绝目标已存在的 symlink：os.Create 会跟随 symlink，可能写入加密笔记本内部
+
 		if li, lerr := os.Lstat(dest); lerr == nil && li.Mode()&os.ModeSymlink != 0 {
 			ret.Code = -1
 			ret.Msg = "destination path is a symlink, which is not supported"
@@ -233,8 +226,8 @@ func workspaceCopyFiles(c *gin.Context) {
 	var srcsArg []any
 	var destDirArg string
 	if !util.ParseJsonArgs(arg, ret,
-		util.BindJsonArg("srcs", &srcsArg, true, true),        // 相对于工作空间的路径
-		util.BindJsonArg("destDir", &destDirArg, true, false), // 相对于工作空间的路径
+		util.BindJsonArg("srcs", &srcsArg, true, true),
+		util.BindJsonArg("destDir", &destDirArg, true, false),
 	) {
 		return
 	}
@@ -290,7 +283,7 @@ func workspaceCopyFiles(c *gin.Context) {
 		ret.Msg = err.Error()
 		return
 	}
-	// 在 MkdirAll 前拒绝加密笔记本目录，避免在加密笔记本内创建明文目录
+
 	if rejectEncryptedBoxPath(destDir) {
 		ret.Code = -1
 		ret.Msg = "copying encrypted notebook files is not supported via this API"
@@ -351,8 +344,8 @@ func copyFile(c *gin.Context) {
 
 	var src, dest string
 	if !util.ParseJsonArgs(arg, ret,
-		util.BindJsonArg("src", &src, true, true),   // 资源路径，由 GetAssetAbsPath 解析
-		util.BindJsonArg("dest", &dest, true, true), // 绝对路径
+		util.BindJsonArg("src", &src, true, true),
+		util.BindJsonArg("dest", &dest, true, true),
 	) {
 		return
 	}
@@ -374,11 +367,9 @@ func copyFile(c *gin.Context) {
 		return
 	}
 
-	// 加密笔记本的文件不允许通过原始文件 API 复制（src 读出密文/明文，dest 写入破坏加密存储）
-	// 例外：dest 在工作区外且非加密 box 时允许解密复制（用户导出的场景）
 	if rejectEncryptedBoxPath(src) || rejectEncryptedBoxPath(dest) {
 		if !rejectEncryptedBoxPath(dest) && !gulu.File.IsSubPath(util.WorkspaceDir, dest) {
-			// dest 在工作区外且非加密 box，允许解密后复制
+
 			if err = copyDecryptedAsset(src, dest); err != nil {
 				ret.Code = -1
 				ret.Msg = err.Error()
@@ -451,8 +442,7 @@ func getFile(c *gin.Context) {
 		c.JSON(http.StatusAccepted, ret)
 		return
 	}
-	// 加密笔记本的任何文件都不允许通过原始文件 API 读取（不只 .sy）：
-	// 密文对插件无意义，且可能被误解析或泄漏；合法读取走专用 API（已加密感知）
+
 	if rejectEncryptedBoxPath(fileAbsPath) {
 		ret.Code = -3
 		ret.Msg = model.Conf.Language(321)
@@ -527,10 +517,9 @@ func getFile(c *gin.Context) {
 }
 
 func refuseToAccess(c *gin.Context, fileAbsPath string, ret *gulu.Result) bool {
-	// 规范化并解析符号链接，防止通过大小写或符号链接绕过
+
 	fileNorm := normalizeAndResolve(fileAbsPath)
 
-	// 禁止访问配置文件 conf/conf.json
 	confPath := normalizeAndResolve(filepath.Join(util.ConfDir, "conf.json"))
 	if fileNorm == confPath {
 		ret.Code = http.StatusForbidden
@@ -539,7 +528,6 @@ func refuseToAccess(c *gin.Context, fileAbsPath string, ret *gulu.Result) bool {
 		return true
 	}
 
-	// 禁止访问 data/snippets/conf.json
 	snippetPath := normalizeAndResolve(filepath.Join(util.DataDir, "snippets", "conf.json"))
 	if fileNorm == snippetPath {
 		ret.Code = http.StatusForbidden
@@ -548,7 +536,6 @@ func refuseToAccess(c *gin.Context, fileAbsPath string, ret *gulu.Result) bool {
 		return true
 	}
 
-	// 禁止访问 data/templates 目录
 	templatesBase := normalizeAndResolve(filepath.Join(util.DataDir, "templates"))
 	if gulu.File.IsSubPath(templatesBase, fileNorm) {
 		ret.Code = http.StatusForbidden
@@ -557,7 +544,6 @@ func refuseToAccess(c *gin.Context, fileAbsPath string, ret *gulu.Result) bool {
 		return true
 	}
 
-	// 禁止访问 data/.siyuan/publishAccess.json
 	publishAccessPath := normalizeAndResolve(filepath.Join(util.DataDir, ".siyuan", "publishAccess.json"))
 	if fileNorm == publishAccessPath {
 		ret.Code = http.StatusForbidden
@@ -566,7 +552,6 @@ func refuseToAccess(c *gin.Context, fileAbsPath string, ret *gulu.Result) bool {
 		return true
 	}
 
-	// 禁止访问 无发布访问权限的文件
 	publishAccess := model.GetPublishAccess()
 	if !model.CheckAbsPathAccessableByPublishAccess(c, fileAbsPath, publishAccess) {
 		ret.Code = http.StatusForbidden
@@ -578,7 +563,6 @@ func refuseToAccess(c *gin.Context, fileAbsPath string, ret *gulu.Result) bool {
 	return false
 }
 
-// normalizeAndResolve 将路径转为绝对、解析符号链接并清理；在需要时转为小写以实现不区分大小写比较
 func normalizeAndResolve(p string) string {
 	if abs, err := filepath.Abs(p); err == nil {
 		p = abs
@@ -587,7 +571,7 @@ func normalizeAndResolve(p string) string {
 		p = eval
 	}
 	p = filepath.Clean(p)
-	// 在 Windows 和 macOS 上文件系统通常为不区分大小写，使用小写统一比较
+
 	if runtime.GOOS == "windows" || runtime.GOOS == "darwin" {
 		p = strings.ToLower(p)
 	}
@@ -617,8 +601,7 @@ func readDir(c *gin.Context) {
 		ret.Msg = err.Error()
 		return
 	}
-	// 加密笔记本的任何目录都不允许通过原始文件 API 枚举（不只 .sy）：
-	// 目录结构、文档 ID、随机化资产名和时间戳可能泄漏信息；合法读取走专用 API（已加密感知）
+
 	if rejectEncryptedBoxPath(dirAbsPath) {
 		ret.Code = -3
 		ret.Msg = model.Conf.Language(321)
@@ -715,7 +698,7 @@ func renameFile(c *gin.Context) {
 		ret.Msg = err.Error()
 		return
 	}
-	// 加密笔记本的文件不允许通过原始文件 API 重命名（会破坏加密存储结构/跨 box 搬运密文）
+
 	if rejectEncryptedBoxPath(srcAbsPath) || rejectEncryptedBoxPath(destAbsPath) {
 		ret.Code = -3
 		ret.Msg = model.Conf.Language(321)
@@ -789,7 +772,7 @@ func removeFile(c *gin.Context) {
 		ret.Msg = err.Error()
 		return
 	}
-	// 加密笔记本的文件不允许通过原始文件 API 删除（破坏加密存储结构）
+
 	if rejectEncryptedBoxPath(fileAbsPath) {
 		ret.Code = -3
 		ret.Msg = model.Conf.Language(321)
@@ -840,8 +823,6 @@ func putFile(c *gin.Context) {
 		return
 	}
 
-	// 加密笔记本的任何文件都不允许通过原始文件 API 写入（不只 .sy）：
-	// 明文写入会破坏密文格式或污染加密存储；合法写入走专用 API（已加密感知）
 	if rejectEncryptedBoxPath(fileAbsPath) {
 		ret.Code = -3
 		ret.Msg = model.Conf.Language(321)

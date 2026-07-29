@@ -57,7 +57,6 @@ func GetDocInfo(blockID string) (ret *BlockInfo, err error) {
 	return GetDocInfoInBox(blockID, "")
 }
 
-// GetDocInfoInBox 与 GetDocInfo 一致，但按 boxID 路由 blocktree/refs 查询到加密 db 或全局 db。
 func GetDocInfoInBox(blockID, boxID string) (ret *BlockInfo, err error) {
 	FlushTxQueue()
 
@@ -72,10 +71,7 @@ func GetDocInfoInBox(blockID, boxID string) (ret *BlockInfo, err error) {
 	ret.IAL = parse.IAL2Map(tree.Root.KramdownIAL)
 	scrollData := ret.IAL["scroll"]
 	if 0 < len(scrollData) {
-		// scroll 属性值在持久化时会被 html.EscapeAttrVal() 进行 HTML 转义（如 " 变为 &quot;），
-		// 虽然 parse.IAL2Map() 中会调用 html.UnescapeAttrVal() 进行反转义，
-		// 但部分历史数据或某些历史路径下可能出现反转义不完整的情况，导致 JSON 解析失败，
-		// 这里做一次防御性反转义，确保 JSON 解析不会因为残留的 HTML 实体而报错
+
 		scrollData = util.UnescapeHTML(scrollData)
 		scroll := map[string]any{}
 		if parseErr := gulu.JSON.UnmarshalJSON([]byte(scrollData), &scroll); nil != parseErr {
@@ -114,7 +110,6 @@ func GetDocInfoInBox(blockID, boxID string) (ret *BlockInfo, err error) {
 	ret.RefIDs = refIDs
 	ret.RefCount = len(ret.RefIDs)
 
-	// 填充属性视图角标 Display the database title on the block superscript https://github.com/siyuan-note/siyuan/issues/10545
 	avIDs := strings.SplitSeq(ret.IAL[av.NodeAttrNameAvs], ",")
 	for avID := range avIDs {
 		if !ast.IsNodeIDPattern(avID) {
@@ -178,10 +173,7 @@ func GetDocsInfo(blockIDs []string, queryRefCount bool, queryAv bool) (rets []*B
 		ret.IAL = parse.IAL2Map(tree.Root.KramdownIAL)
 		scrollData := ret.IAL["scroll"]
 		if 0 < len(scrollData) {
-			// scroll 属性值在持久化时会被 html.EscapeAttrVal() 进行 HTML 转义（如 " 变为 &quot;），
-			// 虽然 parse.IAL2Map() 中会调用 html.UnescapeAttrVal() 进行反转义，
-			// 但部分历史数据或某些路径下可能出现反转义不完整的情况，导致 JSON 解析失败，
-			// 这里做一次防御性反转义，确保 JSON 解析不会因为残留的 HTML 实体而报错
+
 			scrollData = util.UnescapeHTML(scrollData)
 			scroll := map[string]any{}
 			if parseErr := gulu.JSON.UnmarshalJSON([]byte(scrollData), &scroll); nil != parseErr {
@@ -221,7 +213,7 @@ func GetDocsInfo(blockIDs []string, queryRefCount bool, queryAv bool) (rets []*B
 		}
 
 		if queryAv {
-			// 填充属性视图角标 Display the database title on the block superscript https://github.com/siyuan-note/siyuan/issues/10545
+
 			avIDs := strings.SplitSeq(ret.IAL[av.NodeAttrNameAvs], ",")
 			for avID := range avIDs {
 				if !ast.IsNodeIDPattern(avID) {
@@ -394,7 +386,6 @@ func GetBlockRefs(defID string) (refDefs []*RefDefs, originalRefBlockIDs map[str
 	return GetBlockRefsInBox(defID, "")
 }
 
-// GetBlockRefsInBox 获取指定笔记本内的块引用关系。空 box 不回退搜索加密笔记本。
 func GetBlockRefsInBox(defID, boxID string) (refDefs []*RefDefs, originalRefBlockIDs map[string]string) {
 	refDefs = []*RefDefs{}
 	originalRefBlockIDs = map[string]string{}
@@ -403,7 +394,6 @@ func GetBlockRefsInBox(defID, boxID string) (refDefs []*RefDefs, originalRefBloc
 		return
 	}
 
-	// 加密笔记本的 refs 在加密 db，用 bt.BoxID 路由
 	refDefs = queryBlockRefDefsInBox(bt, bt.BoxID)
 	originalRefBlockIDs = buildBacklinkListItemRefsInBox(refDefs, bt.BoxID)
 	return
@@ -413,7 +403,6 @@ func queryBlockRefDefs(bt *treenode.BlockTree) (refDefs []*RefDefs) {
 	return queryBlockRefDefsInBox(bt, bt.BoxID)
 }
 
-// queryBlockRefDefsInBox 与 queryBlockRefDefs 一致，但按 boxID 路由到加密 db 或全局 db。
 func queryBlockRefDefsInBox(bt *treenode.BlockTree, boxID string) (refDefs []*RefDefs) {
 	refDefs = []*RefDefs{}
 	if nil == bt {
@@ -535,7 +524,6 @@ func BuildBlockBreadcrumb(id string, excludeTypes []string) (ret []*BlockPath, e
 	return BuildBlockBreadcrumbInBox(id, excludeTypes, "")
 }
 
-// BuildBlockBreadcrumbInBox 与 BuildBlockBreadcrumb 一致，但按 boxID 路由 blocktree 查询到加密 db 或全局 db。
 func BuildBlockBreadcrumbInBox(id string, excludeTypes []string, boxID string) (ret []*BlockPath, err error) {
 	ret = []*BlockPath{}
 	tree, err := loadTreeByBlockIDInBox(id, boxID)
@@ -562,7 +550,6 @@ func buildBlockBreadcrumb(node *ast.Node, excludeTypes []string, isEmbedBlock bo
 		return
 	}
 
-	// 默认 headingMode 为 0
 	mode := 0
 	if len(headingMode) > 0 {
 		mode = headingMode[0]
@@ -631,11 +618,11 @@ func buildBlockBreadcrumb(node *ast.Node, excludeTypes []string, isEmbedBlock bo
 			}
 		} else {
 			if ast.NodeDocument != parent.Type {
-				// 当headingMode=2（仅显示标题下方的块）且当前节点是标题时，保留标题名称
+
 				if 2 == mode && ast.NodeHeading == parent.Type && parent == node {
-					// 保留标题名称，不清空
+
 				} else {
-					// 在嵌入块中隐藏最后一个非文档路径的面包屑中的文本 Hide text in breadcrumb of last non-document path in embed block https://github.com/siyuan-note/siyuan/issues/13866
+
 					name = ""
 				}
 			}
@@ -650,8 +637,6 @@ func buildBlockBreadcrumb(node *ast.Node, excludeTypes []string, isEmbedBlock bo
 			}}, ret...)
 		}
 
-		// 容器块（引述/超级块/列表等）内部的标题构成独立的子大纲，扫描容器外部同级标题前需重置标题层级约束，
-		// 否则容器内部更宽（层级更小）的标题会错误地限制容器外部同级标题的收集 https://github.com/siyuan-note/siyuan/issues/17930
 		if ast.NodeDocument != parent.Type && parent.IsContainerBlock() {
 			headingLevel = 16
 		}
@@ -659,17 +644,17 @@ func buildBlockBreadcrumb(node *ast.Node, excludeTypes []string, isEmbedBlock bo
 		for prev := parent.Previous; nil != prev; prev = prev.Previous {
 			b := prev
 			if ast.NodeSuperBlock == prev.Type {
-				// 超级块中包含标题块时下方块面包屑计算不正确 https://github.com/siyuan-note/siyuan/issues/6675
+
 				b = treenode.SuperBlockLastHeading(prev)
 				if nil == b {
-					// 超级块下方块被作为嵌入块时设置显示面包屑后不渲染 https://github.com/siyuan-note/siyuan/issues/6690
+
 					b = prev
 				}
 			}
 
 			if ast.NodeHeading == b.Type && headingLevel > b.HeadingLevel {
 				if b.ParentIs(ast.NodeListItem) {
-					// 标题在列表下时不显示 https://github.com/siyuan-note/siyuan/issues/13008
+
 					continue
 				}
 

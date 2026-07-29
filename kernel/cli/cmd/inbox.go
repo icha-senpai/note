@@ -31,14 +31,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// inboxCmd 收集箱管理：列出、阅读云端剪藏，并把它们批量转为本地文档。
-// 收集箱数据存放在思源云端，需要订阅会员；底层复用 model 层的云端 shorthand 读写函数。
 var inboxCmd = &cobra.Command{
 	Use:   "inbox",
 	Short: "Manage the cloud inbox (clipped shorthands)",
 }
 
-// inboxListCmd 分页列出收集箱，仅返回摘要而非正文，控制输出长度；正文用 get 按需拉取。
 var inboxListCmd = &cobra.Command{
 	Use:   "list [--page]",
 	Short: "List cloud inbox shorthands",
@@ -81,7 +78,6 @@ var inboxListCmd = &cobra.Command{
 	},
 }
 
-// inboxGetCmd 取单条收集箱详情，返回完整 markdown 正文（shorthandMd）。
 var inboxGetCmd = &cobra.Command{
 	Use:   "get --id <id>",
 	Short: "Get a cloud inbox shorthand with full markdown",
@@ -118,8 +114,6 @@ var inboxGetCmd = &cobra.Command{
 	},
 }
 
-// inboxConvertCmd 把一条或多条剪藏转为本地文档：取云端 md → 本地建文档 → 成功后清理云端原件。
-// 失败的条目不会被删除，也不会中断后续条目的处理；输出逐条结果。
 var inboxConvertCmd = &cobra.Command{
 	Use:   "convert --ids <id1,id2,...> --notebook <id> [--path </h/path>] [--remove-after]",
 	Short: "Convert cloud inbox shorthands into local documents",
@@ -141,8 +135,6 @@ var inboxConvertCmd = &cobra.Command{
 		}
 		removeAfter, _ := cmd.Flags().GetBool("remove-after")
 
-		// 解析目标父路径（hPath→fsPath）：hPath 指向新文档将要落入的父容器，
-		// 其父目录必须已存在；不传或传 "/" 时落到笔记本根目录。
 		parentPath := "/"
 		parentDir := parentDir(hPath)
 		if parentDir != "/" {
@@ -186,7 +178,7 @@ var inboxConvertCmd = &cobra.Command{
 				title = "Untitled"
 			}
 			md, _ := sh["shorthandMd"].(string)
-			// content 为空（既无 md 也无渲染正文）但有来源 URL 时，回退为 markdown 链接，与前端行为一致。
+
 			if md == "" {
 				if content, _ := sh["shorthandContent"].(string); content == "" {
 					if url, _ := sh["shorthandURL"].(string); url != "" {
@@ -207,7 +199,6 @@ var inboxConvertCmd = &cobra.Command{
 			results = append(results, result{ID: id, Title: title, DocID: tree.Root.ID, Status: "created"})
 		}
 
-		// 仅在转换成功的条目上清理云端原件；失败条目保留以便重试。
 		if removeAfter && len(successIDs) > 0 {
 			if err := model.RemoveCloudShorthands(successIDs); err != nil {
 				fmt.Fprintf(os.Stderr, "WARNING: failed to remove cloud originals: %s\n", err)
@@ -236,7 +227,6 @@ var inboxConvertCmd = &cobra.Command{
 	},
 }
 
-// parseShorthandIDs 把逗号分隔的 id 串拆成去空白、去重的切片。
 func parseShorthandIDs(s string) []string {
 	if s == "" {
 		return nil
@@ -259,7 +249,6 @@ func parseShorthandIDs(s string) []string {
 	return out
 }
 
-// parentDir 返回路径的父目录：去掉最后一个 "/" 段，根路径及单段路径返回 "/"。
 func parentDir(p string) string {
 	i := strings.LastIndex(p, "/")
 	if i <= 0 {

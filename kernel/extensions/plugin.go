@@ -62,14 +62,12 @@ func ParseInstalledPlugin(name, frontend string) (found bool, version, displayNa
 	return
 }
 
-// IsIncompatiblePlugin 判断插件是否与当前环境不兼容
 func IsIncompatiblePlugin(plugin *Package, frontend string) bool {
 	backend := GetCurrentBackend()
 	if !IsTargetSupported(plugin.Backends, backend) {
 		return true
 	}
 
-	// frontend 为空时不检查兼容性（视为兼容）
 	if "" == frontend {
 		return false
 	}
@@ -81,9 +79,8 @@ func IsIncompatiblePlugin(plugin *Package, frontend string) bool {
 	return false
 }
 
-// IsIncompatibleKernelPlugin 判断内核插件是否与当前环境不兼容
 func IsIncompatibleKernelPlugin(plugin *Package) bool {
-	// plugin.json 中 kernel 字段不存在时视为不兼容（允许安装插件但不启动其中的内核插件）
+
 	if len(plugin.Kernels) == 0 {
 		return true
 	}
@@ -104,9 +101,8 @@ func GetCurrentBackend() string {
 	return cachedBackend
 }
 
-// IsTargetSupported 检查 platforms 中是否包含 target 或 "all"
 func IsTargetSupported(platforms []string, target string) bool {
-	// 缺失字段时跳过检查，相当于 all
+
 	if len(platforms) == 0 {
 		return true
 	}

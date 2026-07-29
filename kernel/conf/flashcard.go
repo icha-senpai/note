@@ -24,14 +24,14 @@ import (
 )
 
 type Flashcard struct {
-	NewCardLimit    int  `json:"newCardLimit"`    // 新卡上限 https://github.com/siyuan-note/siyuan/issues/7695
-	ReviewCardLimit int  `json:"reviewCardLimit"` // 复习卡上限 https://github.com/siyuan-note/siyuan/issues/7703
-	Mark            bool `json:"mark"`            // 是否启用标记制卡 https://github.com/siyuan-note/siyuan/issues/7794
-	List            bool `json:"list"`            // 是否启用列表块制卡 https://github.com/siyuan-note/siyuan/issues/7701
-	SuperBlock      bool `json:"superBlock"`      // 是否启用超级块制卡 https://github.com/siyuan-note/siyuan/issues/7702
-	Heading         bool `json:"heading"`         // 是否启用标题块制卡 https://github.com/siyuan-note/siyuan/issues/9005
-	Deck            bool `json:"deck"`            // 是否启用卡包制卡 https://github.com/siyuan-note/siyuan/issues/7724
-	ReviewMode      int  `json:"reviewMode"`      // 复习模式，0：新旧混合，1：新卡优先，2：旧卡优先 https://github.com/siyuan-note/siyuan/issues/10303
+	NewCardLimit    int  `json:"newCardLimit"`
+	ReviewCardLimit int  `json:"reviewCardLimit"`
+	Mark            bool `json:"mark"`
+	List            bool `json:"list"`
+	SuperBlock      bool `json:"superBlock"`
+	Heading         bool `json:"heading"`
+	Deck            bool `json:"deck"`
+	ReviewMode      int  `json:"reviewMode"`
 
 	// Apply result optimized by FSRS optimizer https://github.com/siyuan-note/siyuan/issues/9309
 	RequestRetention float64 `json:"requestRetention"`

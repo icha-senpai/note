@@ -44,7 +44,7 @@ func RefreshBacklink(id string) {
 }
 
 func refreshRefsByDefID(defID string) {
-	// 全局查 + 加密笔记本fallback
+
 	refs := sql.QueryRefsByDefID(defID, true)
 	if len(refs) == 0 {
 		for _, encBoxID := range treenode.GetOpenedEncryptedBoxIDs() {
@@ -75,7 +75,7 @@ type Backlink struct {
 	BlockPaths []*BlockPath `json:"blockPaths"`
 	Expand     bool         `json:"expand"`
 
-	node *ast.Node // 仅用于按文档内容顺序排序
+	node *ast.Node
 }
 
 func GetBackmentionDoc(defID, refTreeID, keyword string, containChildren, highlight bool) (ret []*Backlink, keywords []string) {
@@ -314,7 +314,7 @@ func GetBackmentionDocInBox(defID, refTreeID, keyword string, containChildren, h
 func filterBlockPaths(blockLinks []*Backlink) {
 	for _, b := range blockLinks {
 		if 2 == len(b.BlockPaths) {
-			// 根下只有一层则不显示
+
 			b.BlockPaths = []*BlockPath{}
 		}
 	}
@@ -372,7 +372,6 @@ func buildBacklink(refID string, refTree *parse.Tree, originalRefBlockIDs map[st
 		}
 	}
 
-	// 反链面板中显示块引用计数 Display reference counts in the backlink panel https://github.com/siyuan-note/siyuan/issues/13618
 	fillBlockRefCount(renderNodes)
 
 	dom := renderBlockDOMByNodes(renderNodes, luteEngine)
@@ -399,7 +398,7 @@ func getBacklinkRenderNodes(n *ast.Node, originalRefBlockIDs map[string]string) 
 			c = n.FirstChild.Next
 		}
 
-		if c != n.LastChild { // 存在子列表
+		if c != n.LastChild {
 			for ; nil != c; c = c.Next {
 				if originalRefBlockIDs[n.ID] != c.ID {
 					continue
@@ -447,7 +446,6 @@ func GetBacklink2(id, keyword, mentionKeyword string, sortMode, mentionSortMode 
 	return GetBacklink2InBox(id, keyword, mentionKeyword, sortMode, mentionSortMode, containChildren, "")
 }
 
-// GetBacklink2InBox 与 GetBacklink2 一致，但按 boxID 路由到加密 db 或全局 db。
 func GetBacklink2InBox(id, keyword, mentionKeyword string, sortMode, mentionSortMode int, containChildren bool, boxID string) (boxIDOut string, backlinks, backmentions []*Path, linkRefsCount, mentionsCount int) {
 	keyword = strings.TrimSpace(keyword)
 	var keywords []string
@@ -529,7 +527,6 @@ func GetBacklink2InBox(id, keyword, mentionKeyword string, sortMode, mentionSort
 		mentionsCount += backmention.Count
 	}
 
-	// 添加笔记本名称
 	var boxIDs []string
 	for _, l := range backlinks {
 		boxIDs = append(boxIDs, l.Box)
@@ -554,7 +551,6 @@ func GetBacklink(id, keyword, mentionKeyword string, beforeLen int, containChild
 	return GetBacklinkInBox(id, keyword, mentionKeyword, beforeLen, containChildren, "")
 }
 
-// GetBacklinkInBox 与 GetBacklink 一致，但按 boxID 路由到加密 db 或全局 db。
 func GetBacklinkInBox(id, keyword, mentionKeyword string, beforeLen int, containChildren bool, boxID string) (boxIDOut string, linkPaths, mentionPaths []*Path, linkRefsCount, mentionsCount int) {
 	linkPaths = []*Path{}
 	mentionPaths = []*Path{}
@@ -570,7 +566,6 @@ func GetBacklinkInBox(id, keyword, mentionKeyword string, beforeLen int, contain
 	refs := sql.QueryRefsByDefIDInBox(id, containChildren, boxID)
 	refs = removeDuplicatedRefs(refs)
 
-	// 为了减少查询，组装好 IDs 后一次查出
 	defSQLBlockIDs, refSQLBlockIDs := map[string]bool{}, map[string]bool{}
 	var queryBlockIDs []string
 	for _, ref := range refs {
@@ -605,11 +600,11 @@ func GetBacklinkInBox(id, keyword, mentionKeyword string, beforeLen int, contain
 			continue
 		}
 		refBlock := fromSQLBlock(refSQLBlock, "", beforeLen)
-		if rootID == refBlock.RootID { // 排除当前文档内引用提及
+		if rootID == refBlock.RootID {
 			excludeBacklinkIDs.Add(refBlock.RootID, refBlock.ID)
 		}
 		defBlock := fromSQLBlock(defSQLBlock, "", beforeLen)
-		if defBlock.RootID == rootID { // 当前文档的定义块
+		if defBlock.RootID == rootID {
 			links = append(links, defBlock)
 			if ref.DefBlockID == defBlock.ID {
 				defBlock.Refs = append(defBlock.Refs, refBlock)
@@ -676,9 +671,8 @@ func buildLinkRefs(defRootID string, refs []*sql.Ref, keywords []string) (ret []
 	return buildLinkRefsInBox(defRootID, refs, keywords, "")
 }
 
-// buildLinkRefsInBox 与 buildLinkRefs 一致，但按 boxID 路由到加密 db 或全局 db。
 func buildLinkRefsInBox(defRootID string, refs []*sql.Ref, keywords []string, boxID string) (ret []*Block, refsCount int, excludeBacklinkIDs *hashset.Set, originalRefBlockIDs map[string]string) {
-	// 为了减少查询，组装好 IDs 后一次查出
+
 	defSQLBlockIDs, refSQLBlockIDs := map[string]bool{}, map[string]bool{}
 	var queryBlockIDs []string
 	for _, ref := range refs {
@@ -715,11 +709,11 @@ func buildLinkRefsInBox(defRootID string, refs []*sql.Ref, keywords []string, bo
 			continue
 		}
 		refBlock := fromSQLBlock(refSQLBlock, "", 12)
-		if defRootID == refBlock.RootID { // 排除当前文档内引用提及
+		if defRootID == refBlock.RootID {
 			excludeBacklinkIDs.Add(refBlock.RootID, refBlock.ID)
 		}
 		defBlock := fromSQLBlock(defSQLBlock, "", 12)
-		if defBlock.RootID == defRootID { // 当前文档的定义块
+		if defBlock.RootID == defRootID {
 			links = append(links, defBlock)
 			if ref.DefBlockID == defBlock.ID {
 				defBlock.Refs = append(defBlock.Refs, refBlock)
@@ -816,7 +810,7 @@ func buildLinkRefsInBox(defRootID string, refs []*sql.Ref, keywords []string, bo
 	}
 
 	if 0 < len(keywords) {
-		// 过滤场景处理标题下方块 Improve backlink filtering below the heading https://github.com/siyuan-note/siyuan/issues/14929
+
 		headingRefChildren := map[string]*Block{}
 		var headingIDs []string
 		for _, link := range links {
@@ -878,7 +872,7 @@ func matchBacklinkKeyword(block *Block, keywords []string) bool {
 }
 
 func removeDuplicatedRefs(refs []*sql.Ref) (ret []*sql.Ref) {
-	// 同一个块中引用多个块后反链去重
+
 	// De-duplication of backlinks after referencing multiple blocks in the same block https://github.com/siyuan-note/siyuan/issues/12147
 
 	for _, ref := range refs {
@@ -900,7 +894,6 @@ func buildTreeBackmention(defSQLBlock *sql.Block, refBlocks []*Block, keyword st
 	return buildTreeBackmentionInBox(defSQLBlock, refBlocks, keyword, excludeBacklinkIDs, beforeLen, "")
 }
 
-// buildTreeBackmentionInBox 与 buildTreeBackmention 一致，但按 boxID 路由到加密 db 或全局 db。
 func buildTreeBackmentionInBox(defSQLBlock *sql.Block, refBlocks []*Block, keyword string, excludeBacklinkIDs *hashset.Set, beforeLen int, boxID string) (ret []*Block, mentionKeywords []string) {
 	ret = []*Block{}
 
@@ -967,7 +960,6 @@ func searchBackmention(mentionKeywords []string, keyword string, excludeBacklink
 	return searchBackmentionInBox(mentionKeywords, keyword, excludeBacklinkIDs, rootID, beforeLen, "")
 }
 
-// searchBackmentionInBox 与 searchBackmention 一致，但按 boxID 路由到加密 db 或全局 db。
 func searchBackmentionInBox(mentionKeywords []string, keyword string, excludeBacklinkIDs *hashset.Set, rootID string, beforeLen int, boxID string) (retMentionKeywords []string, ret []*Block) {
 	ret = []*Block{}
 	if 1 > len(mentionKeywords) {
@@ -998,7 +990,7 @@ func searchBackmentionInBox(mentionKeywords []string, keyword string, excludeBac
 		buf.WriteString(" AND (\"" + keyword + "\")")
 	}
 	buf.WriteString("'")
-	buf.WriteString(" AND root_id != '" + rootID + "'") // 不在定义块所在文档中搜索
+	buf.WriteString(" AND root_id != '" + rootID + "'")
 	buf.WriteString(" AND type IN ('d', 'h', 'p', 't')")
 	buf.WriteString(" ORDER BY id DESC LIMIT " + strconv.Itoa(Conf.Search.Limit))
 	query := buf.String()
@@ -1023,7 +1015,7 @@ func searchBackmentionInBox(mentionKeywords []string, keyword string, excludeBac
 			if !entering || n.IsBlock() {
 				return ast.WalkContinue
 			}
-			if ast.NodeText == n.Type /* NodeText 包含了标签命中的情况 */ || ast.NodeLinkText == n.Type {
+			if ast.NodeText == n.Type || ast.NodeLinkText == n.Type {
 				textBuf.Write(n.Tokens)
 			}
 			return ast.WalkContinue
@@ -1042,8 +1034,7 @@ func searchBackmentionInBox(mentionKeywords []string, keyword string, excludeBac
 			k := gulu.Str.SubstringsBetween(newText, search.GetMarkSpanStart(search.MarkDataType), search.GetMarkSpanEnd())
 			retMentionKeywords = append(retMentionKeywords, k...)
 		} else {
-			// columnFilter 中的命名、别名和备注命中的情况
-			// 反链提及搜索范围增加命名、别名和备注 https://github.com/siyuan-note/siyuan/issues/7639
+
 			if gulu.Str.Contains(trimMarkTags(b.Name), mentionKeywords) ||
 				gulu.Str.Contains(trimMarkTags(b.Alias), mentionKeywords) ||
 				gulu.Str.Contains(trimMarkTags(b.Memo), mentionKeywords) {
@@ -1089,9 +1080,6 @@ func getContainStr(str string, strs []string) string {
 	return ""
 }
 
-// buildFullLinks 构建正向和反向链接列表。
-// forwardlinks：正向链接关系 refs
-// backlinks：反向链接关系 defs
 func buildFullLinks(condition string) (forwardlinks, backlinks []*Block) {
 	forwardlinks, backlinks = []*Block{}, []*Block{}
 	defs := buildDefsAndRefs(condition)
@@ -1109,7 +1097,6 @@ func buildDefsAndRefs(condition string) (defBlocks []*Block) {
 	refBlockMap := map[string]*Block{}
 	defRefs := sql.DefRefs(condition, Conf.Graph.MaxBlocks)
 
-	// 将 sql block 转为 block
 	for _, row := range defRefs {
 		for def, ref := range row {
 			if nil == ref {
@@ -1122,7 +1109,6 @@ func buildDefsAndRefs(condition string) (defBlocks []*Block) {
 				refBlockMap[ref.ID] = refBlock
 			}
 
-			// ref 块自己也需要作为定义块，否则图上没有节点
 			if defBlock := defBlockMap[ref.ID]; nil == defBlock {
 				defBlockMap[ref.ID] = refBlock
 			}
@@ -1134,7 +1120,6 @@ func buildDefsAndRefs(condition string) (defBlocks []*Block) {
 		}
 	}
 
-	// 组装 block.Defs 和 block.Refs 字段
 	for _, row := range defRefs {
 		for def, ref := range row {
 			if nil == ref {
@@ -1145,7 +1130,7 @@ func buildDefsAndRefs(condition string) (defBlocks []*Block) {
 
 			refBlock := refBlockMap[ref.ID]
 			defBlock := defBlockMap[def.ID]
-			if refBlock.ID == defBlock.ID { // 自引用
+			if refBlock.ID == defBlock.ID {
 				continue
 			}
 

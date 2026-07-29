@@ -89,7 +89,7 @@ func GetEmbedBlockRefID(stmt string) (blockRefID string) {
 		expr = paren.Expr
 	}
 
-	comp, ok := expr.(*sqlparser.ComparisonExpr) // 仅匹配 WHERE id = '20060102150405-1a2b3c4'
+	comp, ok := expr.(*sqlparser.ComparisonExpr)
 	if !ok || sqlparser.EqualStr != comp.Operator {
 		return
 	}
@@ -201,7 +201,7 @@ func GetNodeSrcTokens(n *ast.Node) (ret string) {
 	if index := bytes.Index(n.Tokens, []byte("src=\"")); 0 < index {
 		src := n.Tokens[index+len("src=\""):]
 		if before, _, ok := bytes.Cut(src, []byte("\"")); ok {
-			// src 为空时闭合引号紧随其后，closeQuote 为 0 也是合法情况
+
 			ret = strings.TrimSpace(string(before))
 			return
 		}
@@ -243,8 +243,6 @@ func CountBlockNodes(node *ast.Node) (ret int) {
 	return
 }
 
-// ParentNodesWithHeadings 返回所有父级节点。
-// 注意:返回的父级节点包括了标题节点，并且不保证父级层次顺序。
 func ParentNodesWithHeadings(node *ast.Node) (parents []*ast.Node) {
 	const maxDepth = 255
 	i := 0
@@ -260,7 +258,6 @@ func ParentNodesWithHeadings(node *ast.Node) (parents []*ast.Node) {
 			return
 		}
 
-		// 标题下方块编辑后刷新标题块更新时间
 		// The heading block update time is refreshed after editing the blocks under the heading https://github.com/siyuan-note/siyuan/issues/11374
 		parentHeadingLevel := 7
 		if ast.NodeHeading == n.Type {
@@ -375,7 +372,7 @@ func GetDocTitleImgPath(root *ast.Node) (ret string) {
 }
 
 var typeAbbrMap = map[string]string{
-	// 块级元素
+
 	"NodeDocument":         "d",
 	"NodeHeading":          "h",
 	"NodeList":             "l",
@@ -396,7 +393,7 @@ var typeAbbrMap = map[string]string{
 	"NodeVideo":            "video",
 	"NodeAudio":            "audio",
 	"NodeCallout":          "callout",
-	// 行级元素
+
 	"NodeText":     "text",
 	"NodeImage":    "img",
 	"NodeLinkText": "link_text",
@@ -484,10 +481,9 @@ func SetDynamicBlockRefText(blockRef *ast.Node, refText string) {
 	blockRef.TextMarkBlockRefSubtype = "d"
 	blockRef.TextMarkTextContent = refText
 
-	// 偶发编辑文档标题后引用处的动态锚文本不更新 https://github.com/siyuan-note/siyuan/issues/5891
 	defID := blockRef.TextMarkBlockRefID
 	DynamicRefTexts.Store(defID, refText)
-	// 同时以 box-aware key 存储（如果节点有 box 上下文）
+
 	if blockRef.Box != "" {
 		DynamicRefTexts.Store(dynamicRefTextsKey(defID, blockRef.Box), refText)
 	}
@@ -499,14 +495,13 @@ func GetDynamicRefText(defBlockID, boxID string) string {
 			return v.(string)
 		}
 	}
-	// 回退到无 boxID 的旧 key（兼容旧数据/无 box 上下文的调用）
+
 	if v, ok := DynamicRefTexts.Load(defBlockID); ok {
 		return v.(string)
 	}
 	return ""
 }
 
-// RemoveDynamicRefTexts 删除指定 box 的所有动态引用锚文本缓存。
 func RemoveDynamicRefTexts(boxID string) {
 	prefix := boxID + "\x00"
 	DynamicRefTexts.Range(func(k, _ any) bool {
@@ -533,13 +528,13 @@ func RefreshUpdated(node *ast.Node) {
 	updated := util.CurrentTimeSecondsStr()
 	node.SetIALAttr("updated", updated)
 	parents := ParentNodesWithHeadings(node)
-	for _, parent := range parents { // 更新所有父节点的更新时间字段
+	for _, parent := range parents {
 		parent.SetIALAttr("updated", updated)
 	}
 }
 
 func CreatedUpdated(node *ast.Node) {
-	// 补全子节点的更新时间 Improve block update time filling https://github.com/siyuan-note/siyuan/issues/12182
+
 	ast.Walk(node, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if !entering || !n.IsBlock() || ast.NodeKramdownBlockIAL == n.Type {
 			return ast.WalkContinue
@@ -563,7 +558,7 @@ func CreatedUpdated(node *ast.Node) {
 		updated = created
 	}
 	parents := ParentNodesWithHeadings(node)
-	for _, parent := range parents { // 更新所有父节点的更新时间字段
+	for _, parent := range parents {
 		parent.SetIALAttr("updated", updated)
 		cache.PutBlockIAL(parent.ID, parse.IAL2Map(parent.KramdownIAL))
 	}

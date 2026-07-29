@@ -61,8 +61,7 @@ func TestCollectFoldHiddenNodesKeepsCalloutChildren(t *testing.T) {
 }
 
 func TestDocLoadDoesNotStripCalloutChildren(t *testing.T) {
-	// 复现：前一段折叠标题下残留 fold=1 的兄弟块，getDoc AppendChild 改写兄弟链后，
-	// 旧逻辑对 callout 子块逐块 IsInFoldedHeading 会误卸子块；新逻辑用栈 + CollectFoldHiddenNodes 应保留。
+
 	root := &ast.Node{Type: ast.NodeDocument, ID: "doc"}
 	h4Folded := &ast.Node{Type: ast.NodeHeading, HeadingLevel: 4, ID: "h4-folded"}
 	h4Folded.SetIALAttr("id", "h4-folded")
@@ -90,7 +89,6 @@ func TestDocLoadDoesNotStripCalloutChildren(t *testing.T) {
 
 	tree := &parse.Tree{ID: "doc", Root: root}
 
-	// 模拟 loadNodes mode=0 isDoc：用折叠栈收集可见顶层块
 	var nodes []*ast.Node
 	node := tree.Root.FirstChild
 	nodes = append(nodes, node)

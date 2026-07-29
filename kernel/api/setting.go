@@ -170,7 +170,6 @@ func setAI(c *gin.Context) {
 	ai.Normalize()
 	model.Conf.SetAI(ai)
 
-	// MCP 配置可能变更（开关切换、编辑、增删 server），异步重连让连接立即跟上。
 	if model.Conf.AI.MCP != nil {
 		newServers := model.Conf.AI.MCP.Servers
 		oldByID := make(map[string]conf.MCPServer, len(oldServers))
@@ -441,7 +440,6 @@ func setExport(c *gin.Context) {
 		return
 	}
 
-	// 重置为空字符串表示恢复内置 Pandoc：先落盘清空自定义路径，再重新初始化并写回默认路径
 	if "" == export.PandocBin {
 		model.Conf.Export = export
 		model.Conf.Save()
@@ -557,7 +555,7 @@ func setSearch(c *gin.Context) {
 	}
 
 	if s.HanSensitive == nil {
-		// 兼容未携带该字段的旧版前端/第三方调用：保持当前值，避免被零值意外关闭并触发重建索引
+
 		s.HanSensitive = model.Conf.Search.HanSensitive
 	}
 
@@ -653,11 +651,11 @@ func setAppearance(c *gin.Context) {
 		util.StatusBarCfg = &util.StatusBar{}
 	}
 	if nil == model.Conf.Appearance.Notifications {
-		// 旧配置未迁移，按默认全部启用处理
+
 		model.Conf.Appearance.Notifications = util.NewNotifications()
 	}
 	util.NotificationsCfg = model.Conf.Appearance.Notifications
-	model.Conf.Lang = util.LangToBCP47(appearance.Lang) // 兼容历史下划线值，如 zh_CN → zh-CN
+	model.Conf.Lang = util.LangToBCP47(appearance.Lang)
 	util.Lang = model.Conf.Lang
 	model.Conf.Save()
 	model.InitAppearance()
@@ -731,7 +729,6 @@ func setTheme(c *gin.Context) {
 			return
 		}
 	}
-	// 没有 theme 时静默忽略 modes
 
 	if err := model.SetTheme(theme, modes, appearanceMode); err != nil {
 		ret.Code = -1

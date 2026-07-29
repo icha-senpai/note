@@ -40,14 +40,11 @@ func FindAllMatchedTargets(root string, targets []string) []string {
 	return targetsFromMatches(matches)
 }
 
-// FindAllMatches 遍历 root 下的文件，返回所有命中的结果（文件路径 + 命中目标）
-// targets 为空或 root 为空时返回 nil
 func FindAllMatches(root string, targets []string) []Match {
 	if root == "" || len(targets) == 0 {
 		return nil
 	}
 
-	// 构建基于首字节的模式索引，并计算最长模式长度
 	patternIndex := make(map[byte][][]byte)
 	var maxLen int
 	for _, t := range targets {
@@ -105,7 +102,6 @@ func FindAllMatches(root string, targets []string) []Match {
 	return matches
 }
 
-// scanFileForTargets 在文件中流式搜索所有目标（基于首字节索引），返回去重后的命中目标字符串列表
 func scanFileForTargets(path string, patternIndex map[byte][][]byte, maxLen int) []string {
 	f, err := os.Open(path)
 	if err != nil {
@@ -113,7 +109,6 @@ func scanFileForTargets(path string, patternIndex map[byte][][]byte, maxLen int)
 	}
 	defer f.Close()
 
-	// 构建字节位图，加速首字节检测
 	var bitmap [256]bool
 	for b := range patternIndex {
 		bitmap[b] = true
@@ -121,7 +116,7 @@ func scanFileForTargets(path string, patternIndex map[byte][][]byte, maxLen int)
 
 	found := make(map[string]struct{})
 	buf := make([]byte, 64<<10) // 64KB
-	// 保留上一次块末尾的重叠数据以支持跨块匹配
+
 	var tail []byte
 
 	for {
@@ -132,10 +127,9 @@ func scanFileForTargets(path string, patternIndex map[byte][][]byte, maxLen int)
 			copy(data, tail)
 			copy(data[len(tail):], buf[:n])
 
-			// 扫描 data，查找任意候选首字节位置
 			i := 0
 			for i < len(data) {
-				// 快速跳过非候选字节
+
 				for i < len(data) && !bitmap[data[i]] {
 					i++
 				}
@@ -143,10 +137,10 @@ func scanFileForTargets(path string, patternIndex map[byte][][]byte, maxLen int)
 					break
 				}
 				b := data[i]
-				// 对应首字节的所有模式进行校验
+
 				for _, pat := range patternIndex[b] {
 					pl := len(pat)
-					// 如果剩余字节不足以完全匹配，则交由下一轮（通过 tail 保证）
+
 					if i+pl <= len(data) {
 						if bytes.Equal(pat, data[i:i+pl]) {
 							found[string(pat)] = struct{}{}
@@ -156,7 +150,6 @@ func scanFileForTargets(path string, patternIndex map[byte][][]byte, maxLen int)
 				i++
 			}
 
-			// 保留最后 maxLen-1 字节作为下一块的 tail（避免超长内存分配）
 			if maxLen <= 1 {
 				tail = nil
 			} else {
@@ -171,7 +164,7 @@ func scanFileForTargets(path string, patternIndex map[byte][][]byte, maxLen int)
 			if err == io.EOF {
 				break
 			}
-			// 读取出错，返回已有结果
+
 			break
 		}
 	}
@@ -186,7 +179,6 @@ func scanFileForTargets(path string, patternIndex map[byte][][]byte, maxLen int)
 	return res
 }
 
-// pathsFromMatches 从 Match 列表中返回去重的路径切片（保留首次出现顺序）
 func pathsFromMatches(ms []Match) []string {
 	if len(ms) == 0 {
 		return nil
@@ -203,7 +195,6 @@ func pathsFromMatches(ms []Match) []string {
 	return paths
 }
 
-// targetsFromMatches 从 Match 列表中返回去重的目标切片（保留首次出现顺序）
 func targetsFromMatches(ms []Match) []string {
 	if len(ms) == 0 {
 		return nil

@@ -285,7 +285,7 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 			var openPromises []Promise
 
 			addOpenPromise := func(resolve, reject func(reason interface{}) error) {
-				// nil slice 也可以直接 append
+
 				openPromises = append(openPromises, Promise{Resolve: resolve, Reject: reject})
 			}
 

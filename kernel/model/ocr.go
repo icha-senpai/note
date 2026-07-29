@@ -37,7 +37,7 @@ func autoOCRAssets() {
 			p := strings.TrimPrefix(assetAbsPath, assetsPath)
 			p = "assets" + filepath.ToSlash(p)
 			util.SetAssetText(p, text)
-			if 7 <= i { // 一次任务中最多处理 7 张图片，防止长时间占用系统资源
+			if 7 <= i {
 				break
 			}
 		}
@@ -45,7 +45,6 @@ func autoOCRAssets() {
 
 	util.CleanNotExistAssetsTexts()
 
-	// 刷新 OCR 结果到数据库
 	util.NodeOCRQueueLock.Lock()
 	defer util.NodeOCRQueueLock.Unlock()
 	for _, id := range util.NodeOCRQueue {
@@ -55,19 +54,19 @@ func autoOCRAssets() {
 }
 
 func getUnOCRAssetsAbsPaths() (ret []string) {
-	// 只获取需要 OCR 的资源
+
 	ocrAssets := cache.FilterAssets(func(path string, asset *cache.Asset) bool {
 		return util.IsTesseractExtractable(asset.Path)
 	})
 
 	assetsPath := util.GetDataAssetsAbsPath()
 	for _, asset := range ocrAssets {
-		// 跳过已经存在 OCR 文本的资源
+
 		if util.ExistsAssetText(asset.Path) {
 			continue
 		}
 		absPath := filepath.Join(assetsPath, strings.TrimPrefix(asset.Path, "assets"))
-		// 加密笔记本的 asset 是密文，跳过 OCR（避免密文图片产出垃圾文本污染搜索索引）
+
 		if IsEncryptedAssetPath(absPath) {
 			continue
 		}

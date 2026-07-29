@@ -47,7 +47,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Box 笔记本。
 type Box struct {
 	ID           string `json:"id"`
 	Name         string `json:"name"`
@@ -61,8 +60,8 @@ type Box struct {
 	DueFlashcardCount int `json:"dueFlashcardCount"`
 	FlashcardCount    int `json:"flashcardCount"`
 
-	Encrypted bool `json:"encrypted"` // 是否为加密笔记本
-	Unlocked  bool `json:"unlocked"`  // 加密笔记本是否已解锁（DEK 在内存），非加密笔记本恒为 false
+	Encrypted bool `json:"encrypted"`
+	Unlocked  bool `json:"unlocked"`
 }
 
 func StatJob() {
@@ -80,7 +79,6 @@ func StatJob() {
 
 	logging.LogInfof("auto stat [trees=%d, blocks=%d, dataSize=%s, assetsSize=%s]", Conf.Stat.TreeCount, Conf.Stat.BlockCount, humanize.BytesCustomCeil(uint64(Conf.Stat.DataSize), 2), humanize.BytesCustomCeil(uint64(Conf.Stat.AssetsSize), 2))
 
-	// 桌面端检查磁盘可用空间 https://github.com/siyuan-note/siyuan/issues/6873
 	if util.ContainerStd != util.Container {
 		return
 	}
@@ -117,14 +115,14 @@ func ListNotebooks() (ret []*Box, err error) {
 		isExistConf := filelock.IsExist(boxConfPath)
 		if !isExistConf {
 			if !IsUserGuide(id) {
-				// conf.json 缺失时检查加密备份，确认是否为加密笔记本
+
 				backup, backupErr := readNotebookCryptBackup(id)
 				if backupErr != nil {
 					logging.LogErrorf("read notebook crypt backup [%s] failed: %s", boxDirPath, backupErr)
 					continue
 				}
 				if backup != nil {
-					// 从备份恢复 conf.json，避免加密笔记本被当作普通笔记本处理
+
 					boxConf.Encrypted = true
 					boxConf.BoxCrypt = backup
 					tmpBox := &Box{ID: id}
@@ -134,7 +132,7 @@ func ListNotebooks() (ret []*Box, err error) {
 					}
 					logging.LogWarnf("restored encrypted notebook conf from backup [%s]", boxDirPath)
 				} else {
-					// 数据同步时展开文档树操作可能导致数据丢失 https://github.com/siyuan-note/siyuan/issues/7129
+
 					logging.LogWarnf("found a corrupted box [%s]", boxDirPath)
 				}
 			} else {
@@ -148,7 +146,7 @@ func ListNotebooks() (ret []*Box, err error) {
 			}
 			if readErr = gulu.JSON.UnmarshalJSON(data, boxConf); nil != readErr {
 				logging.LogErrorf("parse box conf [%s] failed: %s", boxConfPath, readErr)
-				// 检查加密备份，有备份则保留损坏 conf 不删（避免标记为缺失后自动恢复旧数据）
+
 				backup, backupErr := readNotebookCryptBackup(id)
 				if backupErr == nil && backup != nil {
 					continue
@@ -159,7 +157,7 @@ func ListNotebooks() (ret []*Box, err error) {
 		}
 
 		icon := boxConf.Icon
-		if strings.Contains(icon, ".") { // 说明是自定义图标
+		if strings.Contains(icon, ".") {
 			// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
 			icon = util.FilterUploadEmojiFileName(icon)
 		}
@@ -272,7 +270,6 @@ func (box *Box) saveConf0(data []byte) error {
 	return nil
 }
 
-// validateBoxPath 校验 box 内相对路径，拒绝 .. 和绝对路径，确保最终路径在 <DataDir>/<boxID>/ 内。
 func (box *Box) validateBoxPath(p string) (string, error) {
 	return filesys.ValidateBoxRelativePath(box.ID, p)
 }
@@ -309,7 +306,7 @@ func (box *Box) Ls(p string) (ret []*FileInfo, totals int, err error) {
 			continue
 		}
 		if strings.HasSuffix(name, ".tmp") {
-			// 移除写入失败时产生的并且早于 30 分钟前的临时文件，近期创建的临时文件可能正在写入中
+
 			removePath := filepath.Join(util.DataDir, box.ID, p, name)
 			if info.ModTime().Before(time.Now().Add(-30 * time.Minute)) {
 				if removeErr := os.Remove(removePath); nil != removeErr {
@@ -431,7 +428,7 @@ func (box *Box) Remove(path string) error {
 }
 
 func (box *Box) ListFiles(path string) (ret []*FileInfo) {
-	// ListFiles 委托给 Ls，后者已有 validateBoxPath
+
 	fis, _, err := box.Ls(path)
 	if err != nil {
 		return
@@ -537,7 +534,7 @@ func moveTree(tree *parse.Tree) {
 			continue
 		}
 
-		subTree, err := filesys.LoadTree(box.ID, subFile.path, luteEngine) // LoadTree 会重新构造 HPath
+		subTree, err := filesys.LoadTree(box.ID, subFile.path, luteEngine)
 		if err != nil {
 			continue
 		}
@@ -572,7 +569,7 @@ func normalizeTree(tree *parse.Tree) (yfmRootID, yfmTitle, yfmUpdated string) {
 		}
 
 		if n.IsEmptyBlockIAL() {
-			// 空段落保留
+
 			p := &ast.Node{Type: ast.NodeParagraph}
 			p.KramdownIAL = parse.Tokens2IAL(n.Tokens)
 			p.ID = p.IALAttr("id")
@@ -616,14 +613,14 @@ func normalizeTree(tree *parse.Tree) (yfmRootID, yfmTitle, yfmUpdated string) {
 		}
 
 		if ast.NodeParagraph == n.Type && nil != n.FirstChild && ast.NodeTaskListItemMarker == n.FirstChild.Type {
-			// 踢掉任务列表的第一个子节点左侧空格
+
 			n.FirstChild.Next.Tokens = bytes.TrimLeft(n.FirstChild.Next.Tokens, " ")
-			// 调整 li.p.tlim 为 li.tlim.p
+
 			n.InsertBefore(n.FirstChild)
 		}
 
 		if ast.NodeLinkTitle == n.Type {
-			// 避免重复转义图片标题内容 Repeat the escaped content of the image title https://github.com/siyuan-note/siyuan/issues/11681
+
 			n.Tokens = html.UnescapeBytes(n.Tokens)
 		}
 

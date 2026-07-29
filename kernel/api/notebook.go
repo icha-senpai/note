@@ -366,8 +366,7 @@ func setNotebookConf(c *gin.Context) {
 	}
 
 	boxConf := box.GetConf()
-	// 深拷贝加密相关字段，防止反序列化请求体时被覆盖
-	// BoxCrypt 是指针，UnmarshalJSON 会修改同一指针对象，必须用 model 层辅助函数深拷贝
+
 	savedBoxCrypt := model.DeepCopyBoxEncryption(boxConf.BoxCrypt)
 	savedEncrypted := boxConf.Encrypted
 	if err = gulu.JSON.UnmarshalJSON(param, boxConf); err != nil {
@@ -418,7 +417,6 @@ func lsNotebooks(c *gin.Context) {
 
 	flashcard := false
 
-	// 兼容旧版接口，不能直接使用 util.JsonArg()
 	arg := map[string]any{}
 	if err := c.ShouldBindJSON(&arg); err == nil {
 		if arg["flashcard"] != nil {
@@ -441,11 +439,11 @@ func lsNotebooks(c *gin.Context) {
 			publishAccess = model.GetPublishAccess()
 			tempNotebooks := []*model.Box{}
 			for _, notebook := range notebooks {
-				// 筛除关闭的笔记本
+
 				if notebook.Closed {
 					continue
 				}
-				// 筛除发布不可见的笔记本
+
 				invisible := false
 				for _, item := range publishAccess {
 					if item.ID == notebook.ID {
@@ -483,8 +481,6 @@ func lsNotebooks(c *gin.Context) {
 	}
 }
 
-// enableEncryptedNotebooks 启用加密笔记本功能并设置主密码。
-// 重复启用返回错误，避免覆盖现有密钥参数。
 func enableEncryptedNotebooks(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -506,7 +502,6 @@ func enableEncryptedNotebooks(c *gin.Context) {
 	}
 }
 
-// disableEncryptedNotebooks 关闭加密笔记本功能。前置：没有加密笔记本存在。
 func disableEncryptedNotebooks(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -518,8 +513,6 @@ func disableEncryptedNotebooks(c *gin.Context) {
 	}
 }
 
-// createEncryptedNotebook 创建一个新的加密笔记本。前置：加密功能已启用。
-// 创建时需提供主密码（用于派生 KEK 包络 DEK）。创建成功后内核已原子完成挂载。
 func createEncryptedNotebook(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -544,7 +537,6 @@ func createEncryptedNotebook(c *gin.Context) {
 		return
 	}
 
-	// 创建时 DEK 已缓存 + 加密 db 已打开，此处直接挂载；失败则锁定回滚，避免 DEK 残留
 	existed, err := model.Mount(id)
 	if err != nil {
 		model.LockBox(id)
@@ -566,8 +558,6 @@ func createEncryptedNotebook(c *gin.Context) {
 	}
 }
 
-// unlockNotebook 用主密码派生 KEK 并解出指定加密笔记本的 DEK，缓存到内存。
-// 解锁后该笔记本即可被 Mount。每次调用跑一次 Argon2id（约 1 秒）。
 func unlockNotebook(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -608,8 +598,6 @@ func unlockNotebook(c *gin.Context) {
 	}
 }
 
-// unlockAndOpenNotebook 原子化解锁并挂载加密笔记本：UnlockBox 成功后立即 Mount，
-// Mount 失败则 LockBox 回滚（清除 DEK），避免 DEK 残留在内存但笔记本未挂载的不一致状态。
 func unlockAndOpenNotebook(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -649,7 +637,6 @@ func unlockAndOpenNotebook(c *gin.Context) {
 		return
 	}
 
-	// 解锁成功后立即挂载；失败则回滚锁定，清除 DEK 避免残留
 	msgId := util.PushMsg(model.Conf.Language(45), 1000*60*15)
 	defer util.PushClearMsg(msgId)
 	existed, err := model.Mount(notebook)
@@ -676,7 +663,6 @@ func unlockAndOpenNotebook(c *gin.Context) {
 	util.PushEvent(evt)
 }
 
-// lockNotebook 锁定指定加密笔记本：清除其 DEK 缓存并 Unmount。
 func lockNotebook(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -701,12 +687,9 @@ func lockNotebook(c *gin.Context) {
 		return
 	}
 
-	// Unmount 内部的 unmount0 会清 DEK + 关闭加密 db，无需单独 LockBox。
-	// 反过来若先 LockBox 会关闭 db，导致 Unmount 的 Unindex 操作无 db 可用。
 	model.Unmount(notebook)
 }
 
-// setNotebookCryptoAutoLock 设置加密笔记本自动锁定闲置分钟数。
 func setNotebookCryptoAutoLock(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -727,15 +710,11 @@ func setNotebookCryptoAutoLock(c *gin.Context) {
 	model.Conf.Save()
 }
 
-// touchEncryptedNotebooks 由前端真实用户交互或 headless 客户端显式保活调用，刷新已解锁加密笔记本的闲置计时。
 func touchEncryptedNotebooks(c *gin.Context) {
 	model.TouchUnlockedEncryptedBoxes()
 	c.JSON(http.StatusOK, gulu.Ret.NewResult())
 }
 
-// changeMasterPassword 修改加密笔记本的主密码。
-// 用旧密码校验后，用新密码派生新 KEK，重新加密 verifier 和所有加密笔记本的 WrappedDEK。
-// 必须在所有加密笔记本都已锁定（DEK 不在内存）的状态下调用。
 func changeMasterPassword(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -760,7 +739,6 @@ func changeMasterPassword(c *gin.Context) {
 	}
 }
 
-// getEncryptedNotebookStatus 返回加密笔记本功能的启用状态和各笔记本解锁信息。
 func getEncryptedNotebookStatus(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -770,8 +748,7 @@ func getEncryptedNotebookStatus(c *gin.Context) {
 	enabled := model.NotebookCryptoEnabled()
 	model.NotebookCryptoMuUnlock()
 	pendingMigration, migrationBoxes := model.MasterPasswordMigrationStatus()
-	// 历史目录中是否存在已删除加密笔记本的历史快照：其恢复依赖当前密钥备份，
-	// 存在时前端禁用入口应拦截（与 DisableEncryptedNotebook 的后端检查对齐）
+
 	hasHistoryDependency := model.HasEncryptedNotebookHistory()
 
 	boxes := make([]map[string]any, 0, len(boxIDs))
@@ -798,8 +775,6 @@ func getEncryptedNotebookStatus(c *gin.Context) {
 	}
 }
 
-// exportNotebookCryptoBackup 导出密钥备份文件到 export 目录供下载。
-// 备份文件不含主密码（salt 不保密、verifier 是密文），用户主动保存作为同步之外的独立恢复途径。
 func exportNotebookCryptoBackup(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -815,8 +790,6 @@ func exportNotebookCryptoBackup(c *gin.Context) {
 	}
 }
 
-// importNotebookCryptoBackup 导入密钥备份文件，恢复加密配置。
-// 用于新设备/重装后不依赖同步、手动恢复。本机已启用时拒绝（避免覆盖孤立数据）。
 func importNotebookCryptoBackup(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)

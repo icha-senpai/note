@@ -222,31 +222,23 @@ func firstLine(text string) string {
 	return text
 }
 
-// InstallSkillResult 记录一次安装落地的 skill 列表
 type InstallSkillResult struct {
 	Names        []string `json:"names"`
 	Descriptions []string `json:"descriptions"`
 }
 
-// skill 下载体上限（与 web_fetch 的文件下载上限一致）
 const maxSkillDownloadBytes = 10 * 1024 * 1024
 
-// ownerRepoPattern 匹配 owner/repo 简写，如 Tencent/WeChatReading
 var ownerRepoPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$`)
 
-// skillsAddPattern 从 "npx skills add owner/repo ..." 这类命令里提取 owner/repo
 var skillsAddPattern = regexp.MustCompile(`(?:^|\s)([A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*)(?:\s|$)`)
 
-// normalizedSkillSource 描述归一化后的下载源
 type normalizedSkillSource struct {
-	downloadURL string // 实际 GET 的地址
-	isZip       bool   // 是否按 zip 解压处理（codeload / release zip / Content-Type 判定为 zip）
-	branch      string // codeload 分支，空表示无需回退；main 失败回退 master
+	downloadURL string
+	isZip       bool
+	branch      string
 }
 
-// InstallSkill 从 GitHub 仓库或直链下载并安装 skill 到 SkillsDir()。
-// 支持的输入：owner/repo 简写、整条 "npx skills add owner/repo -g" 命令、
-// 完整 GitHub 仓库/子目录/commit URL、raw SKILL.md 直链、release zip 直链。
 func InstallSkill(rawURL string) (*InstallSkillResult, error) {
 	rawURL = strings.TrimSpace(rawURL)
 	if rawURL == "" {
@@ -263,7 +255,6 @@ func InstallSkill(rawURL string) (*InstallSkillResult, error) {
 		return nil, err
 	}
 
-	// 按内容类型或来源判定处理方式
 	isZip := src.isZip || strings.HasPrefix(contentType, "application/zip") ||
 		strings.HasPrefix(contentType, "application/x-zip-compressed")
 
@@ -271,7 +262,6 @@ func InstallSkill(rawURL string) (*InstallSkillResult, error) {
 		return installFromZip(data)
 	}
 
-	// 文本：当作单个 SKILL.md
 	if strings.HasPrefix(contentType, "text/") || strings.HasPrefix(strings.TrimSpace(string(data)), "---") {
 		return installFromSingleSkillMD(data)
 	}
@@ -279,23 +269,19 @@ func InstallSkill(rawURL string) (*InstallSkillResult, error) {
 	return nil, fmt.Errorf("unsupported skill source (content-type: %s); expected a zip archive or a SKILL.md text file", contentType)
 }
 
-// normalizeSkillURL 把各种输入归一化为下载源
 func normalizeSkillURL(raw string) (normalizedSkillSource, error) {
 	raw = strings.TrimSpace(raw)
 
-	// 1. 整条 "npx skills add owner/repo ..." 命令：提取 owner/repo
 	if strings.Contains(raw, "skills add") || strings.Contains(raw, "skills@") {
 		if m := skillsAddPattern.FindStringSubmatch(raw); len(m) == 2 {
 			return codeloadSource(m[1], "main"), nil
 		}
 	}
 
-	// 2. owner/repo 简写（无 scheme、无点、单个 /）
 	if !strings.Contains(raw, "://") && !strings.Contains(raw, "//") && ownerRepoPattern.MatchString(raw) {
 		return codeloadSource(raw, "main"), nil
 	}
 
-	// 3. 带 scheme 的 URL
 	u, err := url.Parse(raw)
 	if err != nil || u.Scheme == "" || u.Host == "" {
 		return normalizedSkillSource{}, fmt.Errorf("unrecognized skill source: %s", raw)
@@ -305,15 +291,14 @@ func normalizeSkillURL(raw string) (normalizedSkillSource, error) {
 	case "github.com":
 		return normalizeGitHubURL(u)
 	case "raw.githubusercontent.com":
-		// 直接 GET 单个 SKILL.md（或其它文本文件）
+
 		return normalizedSkillSource{downloadURL: u.String()}, nil
 	default:
-		// 其它直链（release zip、自建站点等）：直接 GET，是否 zip 交由 Content-Type 判定
+
 		return normalizedSkillSource{downloadURL: u.String()}, nil
 	}
 }
 
-// codeloadSource 构造 codeload zip 下载源，branch 用于 main→master 回退
 func codeloadSource(ownerRepo, branch string) normalizedSkillSource {
 	return normalizedSkillSource{
 		downloadURL: "https://codeload.github.com/" + ownerRepo + "/zip/refs/heads/" + branch,
@@ -322,12 +307,11 @@ func codeloadSource(ownerRepo, branch string) normalizedSkillSource {
 	}
 }
 
-// normalizeGitHubURL 处理 github.com 的各种路径形态
 func normalizeGitHubURL(u *url.URL) (normalizedSkillSource, error) {
-	// /owner/repo/tree/<branch> 或 /owner/repo/tree/<branch>/<path>
+
 	// /owner/repo/commit/<sha>
 	// /owner/repo/releases/download/<tag>/<asset>
-	// /owner/repo（默认分支）
+
 	parts := strings.Split(strings.Trim(u.Path, "/"), "/")
 	if len(parts) < 2 {
 		return normalizedSkillSource{}, fmt.Errorf("invalid github URL: %s", u.String())
@@ -337,15 +321,14 @@ func normalizeGitHubURL(u *url.URL) (normalizedSkillSource, error) {
 	// releases/download/<tag>/<asset>
 	if len(parts) >= 6 && parts[2] == "releases" && parts[3] == "download" {
 		asset := parts[5]
-		// 是否 zip 交由 Content-Type 最终判定，这里仅按 asset 后缀预判
+
 		return normalizedSkillSource{downloadURL: u.String(), isZip: strings.HasSuffix(asset, ".zip")}, nil
 	}
 
-	// tree/<branch>[/path] 或 blob/<branch>/...
 	if len(parts) >= 4 && (parts[2] == "tree" || parts[2] == "blob") {
 		branch := parts[3]
 		if parts[2] == "blob" {
-			// blob 指向单个文件，走 raw
+
 			rawPath := strings.Join(parts[4:], "/")
 			return normalizedSkillSource{
 				downloadURL: "https://raw.githubusercontent.com/" + ownerRepo + "/" + branch + "/" + rawPath,
@@ -363,11 +346,9 @@ func normalizeGitHubURL(u *url.URL) (normalizedSkillSource, error) {
 		}, nil
 	}
 
-	// 纯仓库地址：默认 main，失败回退 master
 	return codeloadSource(ownerRepo, "main"), nil
 }
 
-// downloadSkillSource 下载 skill 源，返回字节、Content-Type
 func downloadSkillSource(src normalizedSkillSource) (data []byte, contentType string, err error) {
 	u, perr := url.Parse(src.downloadURL)
 	if perr != nil || u.Host == "" {
@@ -382,7 +363,6 @@ func downloadSkillSource(src normalizedSkillSource) (data []byte, contentType st
 		return data, contentType, nil
 	}
 
-	// codeload main 分支 404 时回退 master
 	if src.isZip && src.branch == "main" {
 		ownerRepo := strings.TrimPrefix(strings.TrimPrefix(src.downloadURL, "https://codeload.github.com/"), "http://codeload.github.com/")
 		ownerRepo = strings.TrimSuffix(ownerRepo, "/zip/refs/heads/main")
@@ -396,7 +376,6 @@ func downloadSkillSource(src normalizedSkillSource) (data []byte, contentType st
 	return nil, "", err
 }
 
-// fetchBytes 执行带大小限制的 GET
 func fetchBytes(rawURL string) (data []byte, contentType string, err error) {
 	resp, err := httpclient.NewBrowserRequest().Get(rawURL)
 	if err != nil {
@@ -419,7 +398,6 @@ func fetchBytes(rawURL string) (data []byte, contentType string, err error) {
 	return body, contentType, nil
 }
 
-// installFromZip 解压 zip 并安装其中的 skill
 func installFromZip(data []byte) (*InstallSkillResult, error) {
 	tmpRoot := filepath.Join(TempDir, "ai", "skill-install", gulu.Rand.String(7))
 	if err := os.MkdirAll(tmpRoot, 0755); err != nil {
@@ -435,7 +413,7 @@ func installFromZip(data []byte) (*InstallSkillResult, error) {
 	if err := os.MkdirAll(unzipDir, 0755); err != nil {
 		return nil, err
 	}
-	// gulu.Zip.Unzip 已内置 zip-slip 路径穿越防护
+
 	if err := gulu.Zip.Unzip(zipPath, unzipDir); err != nil {
 		return nil, errors.New("unzip failed: " + err.Error())
 	}
@@ -447,13 +425,6 @@ func installFromZip(data []byte) (*InstallSkillResult, error) {
 	return installSkillDirs(skillDirs, unzipDir)
 }
 
-// findSkillDirs 在解压根下查找含 SKILL.md 的 skill 目录，返回相对 root 的路径。
-// 递归下钻以兼容任意包裹层（codeload 会把仓库内容包在 <repo-name>/ 下），
-// 但一旦某个目录被认定为 skill（直接含 SKILL.md）就停止下钻，避免误入 skill 内部的
-// references/scripts 等子目录。识别的结构：
-//   - SKILL.md 直接在 root（无包裹）
-//   - <wrap>/SKILL.md（单层或多层包裹的单 skill）
-//   - <wrap>/skills/<name>/SKILL.md（集合仓库，wrap 可有可无）
 func findSkillDirs(root string) []string {
 	if gulu.File.IsExist(filepath.Join(root, "SKILL.md")) {
 		return []string{"."}
@@ -471,26 +442,25 @@ func findSkillDirsRecursive(dir, root string) []string {
 		if !e.IsDir() {
 			continue
 		}
-		// 跳过点目录与 VCS 元数据，避免无意义下钻
+
 		name := e.Name()
 		if name == ".git" || name == ".github" || name == ".idea" || name == "node_modules" {
 			continue
 		}
 		sub := filepath.Join(dir, name)
 		if gulu.File.IsExist(filepath.Join(sub, "SKILL.md")) {
-			// 该目录是一个 skill，记录相对路径并停止下钻
+
 			if rel, rerr := filepath.Rel(root, sub); rerr == nil {
 				result = append(result, rel)
 			}
 		} else {
-			// 继续下钻处理包裹层 / skills/ 容器
+
 			result = append(result, findSkillDirsRecursive(sub, root)...)
 		}
 	}
 	return result
 }
 
-// installSkillDirs 把若干相对 root 的 skill 目录落地到 SkillsDir()
 func installSkillDirs(relDirs []string, root string) (*InstallSkillResult, error) {
 	result := &InstallSkillResult{}
 	for _, rel := range relDirs {
@@ -507,8 +477,7 @@ func installSkillDirs(relDirs []string, root string) (*InstallSkillResult, error
 		fm, body := parseSkillFrontmatter(string(b))
 		name := fm["name"]
 		if name == "" {
-			// frontmatter 缺 name 字段：根目录场景无法用目录名兜底（root 是临时目录），
-			// 直接跳过；子目录场景用目录名兜底
+
 			if rel == "." {
 				logging.LogWarnf("skip SKILL.md at archive root without 'name' frontmatter")
 				continue
@@ -524,7 +493,7 @@ func installSkillDirs(relDirs []string, root string) (*InstallSkillResult, error
 		if err := os.MkdirAll(SkillsDir(), 0755); err != nil {
 			return nil, err
 		}
-		// 覆盖式安装：先清旧目录
+
 		if gulu.File.IsExist(destDir) {
 			os.RemoveAll(destDir)
 		}
@@ -544,7 +513,6 @@ func installSkillDirs(relDirs []string, root string) (*InstallSkillResult, error
 	return result, nil
 }
 
-// installFromSingleSkillMD 把单个 SKILL.md 文本内容落地为一个 skill
 func installFromSingleSkillMD(data []byte) (*InstallSkillResult, error) {
 	content := string(data)
 	fm, body := parseSkillFrontmatter(content)
