@@ -784,8 +784,6 @@
 	"multiSelect": "ריבוי בחירות",
 	"commandEmpty": "No command yet",
 	"commandPanel": "פנל פקודות",
-	"cloudRegionNorthAmerica": "Scribli (מרכז נתונים בצפון אמריקה)",
-	"cloudRegionChina": "מרכז נתונים בסין היבשתית",
 	"currentKernel": "ליבת נוכחית",
 	"otherOnlineKernels": "ליבות מקוונות אחרות",
 	"syncPerception": "תחושה סינכרונית",
@@ -804,7 +802,7 @@
 	"color": "צבע",
 	"confirmPassword": "אני כבר זוכר את הסיסמה",
 	"passwordNoMatch": "הסיסמאות שהזנת לא תואמות",
-	"cloudConfigTip": "אנא הגדר ב[הגדרות - חשבון וסנכרון - ספק שירות אחסון בענן]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "האם אתה בטוח שברצונך להסיר את ${name}?<br>ההסרה עלולה למחוק את כל ההגדרות והנתונים הקשורים, אנא היזהר בהחלטתך!",
 	"scrollGetMore": "גלול למעלה ולמטה כדי לטעון יותר",
 	"flashcardNewCard": "חדש",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "מזג תתי-מסמכים",
 	"removeAssetsFolder": "הסר תיקיית נכסים",
 	"upload": "העלה",
-	"reminderTip": "זמן ההזכרה לא יכול להיות פחות מהזמן הנוכחי",
-	"wechatTip": "הבלוק של התוכן יישלח לענן בטקסט גלוי, וידחף דרך הודעת תבנית WeChat MP כאשר הוא יפוג",
 	"notEmpty": "זמן ההזכרה לא יכול להיות ריק",
 	"experimentalFeature": "(⚗️ תכונה זו בשלב ניסי)",
-	"wechatReminder": "הזכרה ב-WeChat",
-	"notifyTime": "זמן התראה",
 	"docName": "שם המסמך",
 	"bootSyncFailed": "נכשל לסנכרן נתונים בעת ההפעלה",
 	"use": "שימוש",
@@ -2168,3 +2162,5 @@
 		"343": "התחלה חדשה"
 	}
 }
+
+

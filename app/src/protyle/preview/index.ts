@@ -11,10 +11,8 @@ import {getSearch, isMobile} from "../../util/functions";
 /// #if !BROWSER
 import {shell} from "electron";
 /// #endif
-/// #if !MOBILE
 import {openAsset, openBy} from "../../editor/util";
 import {getAllModels} from "../../layout/getAll";
-/// #endif
 import {fetchPost} from "../../util/fetch";
 import {processRender} from "../util/processCode";
 import {highlightRender} from "../render/highlightRender";
@@ -96,7 +94,6 @@ export class Preview {
                     event.stopPropagation();
                     event.preventDefault();
                     if (isLocalPath(linkAddress)) {
-                        /// #if !MOBILE
                         if (isOnlyMeta(event)) {
                             openBy(linkAddress, "folder");
                         } else if (event.shiftKey) {
@@ -104,7 +101,6 @@ export class Preview {
                         } else if (Constants.SCRIBLI_ASSETS_EXTS.includes(pathPosix().extname((linkAddress).split("?")[0]))) {
                             openAsset(protyle.app, linkAddress.split("?page")[0], parseInt(getSearch("page", linkAddress)));
                         }
-                        /// #endif
                     } else {
                         if (processScribliUri(protyle.app, linkAddress)) {
                             break;
@@ -158,7 +154,6 @@ export class Preview {
                     item.classList.remove("selected");
                 });
                 nodeElement.classList.add("selected");
-                /// #if !MOBILE
                 if (protyle.model) {
                     getAllModels().outline.forEach(item => {
                         if (item.blockId === protyle.block.rootID) {
@@ -166,9 +161,6 @@ export class Preview {
                         }
                     });
                 }
-                /// #else
-                window.scribli.mobile.docks.outline?.setCurrentByPreview(nodeElement);
-                /// #endif
                 const diagramElement = getDiagramBlock(nodeElement);
                 if (diagramElement) {
                     previewDiagram(diagramElement);

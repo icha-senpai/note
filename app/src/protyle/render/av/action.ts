@@ -39,7 +39,6 @@ import {escapeHtml} from "../../../util/escape";
 import {editGalleryItem, openGalleryItemMenu} from "./gallery/util";
 import {clearSelect} from "../../util/clear";
 import {removeCompressURL} from "../../../util/image";
-import {callMobileAppShowKeyboard} from "../../../mobile/util/mobileAppUtil";
 import {createAttributeViewItem, openNewItemTemplateMenu} from "./newItemTemplate";
 import {openDatabaseRowByData} from "./openDatabaseRow";
 
@@ -85,12 +84,8 @@ const openDatabaseRowMore = (protyle: IProtyle, target: HTMLElement) => {
             hintRef(textElement.textContent.trim(), protyle, "av");
         },
     });
-    /// #if MOBILE
-    menu.fullscreen("bottom");
-    /// #else
     const rect = target.getBoundingClientRect();
     menu.open({x: rect.left, y: rect.bottom, h: rect.height});
-    /// #endif
 };
 
 let foldTimeout: number;
@@ -399,14 +394,7 @@ export const avClick = (protyle: IProtyle, event: MouseEvent & { target: HTMLEle
             if (viewsElement) {
                 viewsElement.classList.add("av__views--show");
             }
-            if (window.JSAndroid && window.JSAndroid.showKeyboard || window.JSHarmony && window.JSHarmony.showKeyboard) {
-                callMobileAppShowKeyboard();
-                setTimeout(() => {
-                    searchElement.focus();
-                }, Constants.TIMEOUT_TRANSITION);
-            } else {
-                searchElement.focus();
-            }
+            searchElement.focus();
             event.preventDefault();
             event.stopPropagation();
             return true;
@@ -456,7 +444,6 @@ export const avContextmenu = (protyle: IProtyle, rowElement: HTMLElement, positi
     const keyCellElement = rowElements[0].querySelector('.av__cell[data-dtype="block"]') as HTMLElement;
     const ids = Array.from(rowElements).map(item => item.querySelector('[data-dtype="block"] .av__celltext').getAttribute("data-id"));
     if (rowElements.length === 1 && keyCellElement.getAttribute("data-detached") !== "true") {
-        /// #if !MOBILE
         const blockId = ids[0];
         const openSubmenus = openEditorTab(protyle.app, [blockId], undefined, undefined, true);
         openSubmenus.push({id: "separator_3", type: "separator"});
@@ -476,7 +463,6 @@ export const avContextmenu = (protyle: IProtyle, rowElement: HTMLElement, positi
             icon: "iconOpen",
             submenu: openSubmenus,
         });
-        /// #endif
     }
     let hasBlock = false;
     rowElements.forEach((item) => {

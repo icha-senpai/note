@@ -12,10 +12,8 @@ import {hasClosestBlock, hasTopClosestByClassName} from "../util/hasClosest";
 import {isMobile} from "../../util/functions";
 import {zoomOut} from "../../menus/protyle";
 import {getEditorRange} from "../util/selection";
-/// #if !MOBILE
 import {openFileById} from "../../editor/util";
 import {saveLayout} from "../../layout/util";
-/// #endif
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -26,7 +24,7 @@ import {Menu} from "../../plugin/Menu";
 import {getNoContainerElement} from "../wysiwyg/getBlock";
 import {openTitleMenu} from "../header/openTitleMenu";
 import {emitOpenMenu} from "../../plugin/EventBus";
-import {isInAndroid, isInHarmony, isIPad, isMac, updateHotkeyTip} from "../util/compatibility";
+import {isIPad, isMac, updateHotkeyTip} from "../util/compatibility";
 import {isEncryptedBox} from "../../util/pathName";
 import {resize} from "../util/resize";
 import {listIndent, listOutdent} from "../wysiwyg/list";
@@ -43,7 +41,7 @@ export class Breadcrumb {
         element.className = "protyle-breadcrumb";
         let padHTML = "";
         /// #if BROWSER && !MOBILE
-        if (isIPad() || isInAndroid() || isInHarmony()) {
+        if (isIPad()) {
             padHTML = `<button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.scribli.languages.undo}" data-type="undo"><svg><use xlink:href="#iconUndo"></use></svg></button>
 <button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.scribli.languages.redo}" data-type="redo"><svg><use xlink:href="#iconRedo"></use></svg></button>
 <button class="block__icon fn__flex-center ariaLabel" disabled aria-label="${window.scribli.languages.outdent}" data-type="outdent"><svg><use xlink:href="#iconOutdent"></use></svg></button>
@@ -67,7 +65,6 @@ ${padHTML}
                 const id = target.getAttribute("data-node-id");
                 const type = target.getAttribute("data-type");
                 if (id) {
-                    /// #if !MOBILE
                     if (protyle.options.render.breadcrumbDocName && window.scribli.ctrlIsPressed) {
                         openFileById({
                             app: protyle.app,
@@ -77,7 +74,6 @@ ${padHTML}
                     } else {
                         zoomOut({protyle, id});
                     }
-                    /// #endif
                     event.preventDefault();
                     break;
                 } else if (type === "mobile-menu") {
@@ -179,7 +175,6 @@ ${padHTML}
                 target = target.parentElement;
             }
         });
-        /// #if !MOBILE
         element.addEventListener("mouseleave", () => {
             protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--hl").forEach(item => {
                 item.classList.remove("protyle-wysiwyg--hl");
@@ -188,7 +183,6 @@ ${padHTML}
         this.element.addEventListener("mousewheel", (event: WheelEvent) => {
             this.element.scrollLeft = this.element.scrollLeft + event.deltaY;
         }, {passive: true});
-        /// #endif
     }
 
     private startRecord(protyle: IProtyle) {
@@ -282,23 +276,6 @@ ${padHTML}
                 } else {
                     uploadHTML += ">";
                 }
-                if (isInAndroid()) {
-                    const imageUploadMenu = new MenuItem({
-                        id: "insertImage",
-                        icon: "iconImage",
-                        label: `${window.scribli.languages.insertImage}<input class="b3-form__upload" type="file" multiple="multiple" accept="image/*,application/x-scribli-image-picker">`,
-                    }).element;
-                    imageUploadMenu.querySelector("input").addEventListener("change", (event: InputEvent & {
-                        target: HTMLInputElement
-                    }) => {
-                        if (event.target.files.length === 0) {
-                            return;
-                        }
-                        uploadFiles(protyle, event.target.files, event.target);
-                        window.scribli.menus.menu.remove();
-                    });
-                    window.scribli.menus.menu.append(imageUploadMenu);
-                }
                 const uploadMenu = new MenuItem({
                     id: "insertAsset",
                     icon: "iconDownload",
@@ -314,62 +291,60 @@ ${padHTML}
                     window.scribli.menus.menu.remove();
                 });
                 window.scribli.menus.menu.append(uploadMenu);
-                if (!isInAndroid() && !isInHarmony()) {
-                    window.scribli.menus.menu.append(new MenuItem({
-                        id: this.mediaRecorder?.isRecording ? "endRecord" : "startRecord",
-                        current: this.mediaRecorder && this.mediaRecorder.isRecording,
-                        icon: "iconRecord",
-                        label: this.mediaRecorder?.isRecording ? window.scribli.languages.endRecord : window.scribli.languages.startRecord,
-                        click: async () => {
-                            /// #if !BROWSER
-                            if (window.scribli.config.system.os === "darwin") {
-                                const status = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {cmd: "getMicrophone"});
-                                if (["denied", "restricted", "unknown"].includes(status)) {
-                                    showMessage(window.scribli.languages.microphoneDenied);
+                window.scribli.menus.menu.append(new MenuItem({
+                    id: this.mediaRecorder?.isRecording ? "endRecord" : "startRecord",
+                    current: this.mediaRecorder && this.mediaRecorder.isRecording,
+                    icon: "iconRecord",
+                    label: this.mediaRecorder?.isRecording ? window.scribli.languages.endRecord : window.scribli.languages.startRecord,
+                    click: async () => {
+                        /// #if !BROWSER
+                        if (window.scribli.config.system.os === "darwin") {
+                            const status = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {cmd: "getMicrophone"});
+                            if (["denied", "restricted", "unknown"].includes(status)) {
+                                showMessage(window.scribli.languages.microphoneDenied);
+                                return;
+                            } else if (status === "not-determined") {
+                                const isAccess = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {cmd: "askMicrophone"});
+                                if (!isAccess) {
+                                    showMessage(window.scribli.languages.microphoneNotAccess);
                                     return;
-                                } else if (status === "not-determined") {
-                                    const isAccess = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {cmd: "askMicrophone"});
-                                    if (!isAccess) {
-                                        showMessage(window.scribli.languages.microphoneNotAccess);
-                                        return;
-                                    }
                                 }
                             }
-                            /// #endif
-
-                            if (!this.mediaRecorder) {
-                                navigator.mediaDevices.getUserMedia({audio: true}).then((mediaStream: MediaStream) => {
-                                    this.mediaRecorder = new RecordMedia(mediaStream);
-                                    this.mediaRecorder.recorder.onaudioprocess = (e: AudioProcessingEvent) => {
-                                        // Do nothing if not recording:
-                                        if (!this.mediaRecorder.isRecording) {
-                                            return;
-                                        }
-                                        // Copy the data from the input buffers;
-                                        const left = e.inputBuffer.getChannelData(0);
-                                        const right = e.inputBuffer.getChannelData(1);
-                                        this.mediaRecorder.cloneChannelData(left, right);
-                                    };
-                                    this.startRecord(protyle);
-                                }).catch(() => {
-                                    showMessage(window.scribli.languages["record-tip"]);
-                                });
-                                return;
-                            }
-
-                            if (this.mediaRecorder.isRecording) {
-                                this.mediaRecorder.stopRecording();
-                                hideMessage(this.messageId);
-                                const file: File = new File([this.mediaRecorder.buildWavFileBlob()],
-                                    `record${(new Date()).getTime()}.wav`, {type: "video/webm"});
-                                uploadFiles(protyle, [file]);
-                            } else {
-                                hideMessage(this.messageId);
-                                this.startRecord(protyle);
-                            }
                         }
-                    }).element);
-                }
+                        /// #endif
+
+                        if (!this.mediaRecorder) {
+                            navigator.mediaDevices.getUserMedia({audio: true}).then((mediaStream: MediaStream) => {
+                                this.mediaRecorder = new RecordMedia(mediaStream);
+                                this.mediaRecorder.recorder.onaudioprocess = (e: AudioProcessingEvent) => {
+                                    // Do nothing if not recording:
+                                    if (!this.mediaRecorder.isRecording) {
+                                        return;
+                                    }
+                                    // Copy the data from the input buffers;
+                                    const left = e.inputBuffer.getChannelData(0);
+                                    const right = e.inputBuffer.getChannelData(1);
+                                    this.mediaRecorder.cloneChannelData(left, right);
+                                };
+                                this.startRecord(protyle);
+                            }).catch(() => {
+                                showMessage(window.scribli.languages["record-tip"]);
+                            });
+                            return;
+                        }
+
+                        if (this.mediaRecorder.isRecording) {
+                            this.mediaRecorder.stopRecording();
+                            hideMessage(this.messageId);
+                            const file: File = new File([this.mediaRecorder.buildWavFileBlob()],
+                                `record${(new Date()).getTime()}.wav`, {type: "video/webm"});
+                            uploadFiles(protyle, [file]);
+                        } else {
+                            hideMessage(this.messageId);
+                            this.startRecord(protyle);
+                        }
+                    }
+                }).element);
             }
             if (!protyle.disabled) {
                 window.scribli.menus.menu.append(new MenuItem({
@@ -428,7 +403,6 @@ ${padHTML}
                     }
                 }).element);
             }
-            /// #if !MOBILE
             window.scribli.menus.menu.append(new MenuItem({
                 id: "fullscreen",
                 icon: protyle.element.className.includes("fullscreen") ? "iconFullscreenExit" : "iconFullscreen",
@@ -439,7 +413,6 @@ ${padHTML}
                     resize(protyle);
                 }
             }).element);
-            /// #endif
             window.scribli.menus.menu.append(new MenuItem({
                 id: "editMode",
                 icon: "iconEdit",
@@ -453,9 +426,7 @@ ${padHTML}
                     click: () => {
                         setEditMode(protyle, "wysiwyg");
                         reloadProtyle(protyle, true);
-                        /// #if !MOBILE
                         saveLayout();
-                        /// #endif
                     }
                 }, {
                     id: "preview",
@@ -466,9 +437,7 @@ ${padHTML}
                     click: () => {
                         setEditMode(protyle, "preview");
                         window.scribli.menus.menu.remove();
-                        /// #if !MOBILE
                         saveLayout();
-                        /// #endif
                     }
                 }]
             }).element);
@@ -504,7 +473,6 @@ ${padHTML}
                     }]
                 }).element);
             }
-            /// #if !MOBILE
             if (!protyle.disabled) {
                 const isCustomFullWidth = protyle.wysiwyg.element.getAttribute(Constants.CUSTOM_SY_FULLWIDTH);
                 window.scribli.menus.menu.append(new MenuItem({
@@ -548,7 +516,6 @@ ${padHTML}
                     }]
                 }).element);
             }
-            /// #endif
             if (protyle?.app?.plugins) {
                 emitOpenMenu({
                     plugins: protyle.app.plugins,
@@ -568,11 +535,7 @@ ${padHTML}
                 // 不能换行，否则移动端间距过大
                 label: `<div class="fn__flex">${window.scribli.languages.runeCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.runeCount}</div><div class="fn__flex">${window.scribli.languages.wordCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.wordCount}</div><div class="fn__flex">${window.scribli.languages.linkCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.linkCount}</div><div class="fn__flex">${window.scribli.languages.imgCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.imageCount}</div><div class="fn__flex">${window.scribli.languages.refCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.refCount}</div><div class="fn__flex">${window.scribli.languages.blockCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.blockCount}</div>`,
             }).element);
-            /// #if MOBILE
-            window.scribli.menus.menu.fullscreen();
-            /// #else
             window.scribli.menus.menu.popup(position);
-            /// #endif
             const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
             window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
         });
@@ -582,7 +545,6 @@ ${padHTML}
         if (protyle.element.getAttribute("disabled-forever") === "true") {
             return;
         }
-        /// #if !MOBILE
         let range: Range;
         let blockElement: Element;
         if (nodeElement &&
@@ -656,7 +618,6 @@ ${padHTML}
             this.element.innerHTML = html;
             improveBreadcrumbAppearance(this.element.parentElement);
         });
-        /// #endif
     }
 
     public hide() {

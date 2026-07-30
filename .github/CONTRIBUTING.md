@@ -20,7 +20,7 @@ Enter the app folder and execute:
 
 Note: Electron 42 no longer downloads its binary automatically during `pnpm install`. Run `pnpm run install:electron` to fetch the binary before `pnpm run start`.
 
-Note: `pnpm run start` launches the Electron shell, which starts the packaged Scribli kernel from `app/kernel`. If the kernel is missing, run the repository build script for your platform first.
+Note: `pnpm run start` launches the Electron shell, which starts the packaged Scribli kernel from `app/kernel`. If the kernel is missing, run the Windows build script first.
 
 ## Kernel
 
@@ -28,60 +28,16 @@ Note: `pnpm run start` launches the Electron shell, which starts the packaged Sc
 2. Open CGO support, that is, configure the environment variable `CGO_ENABLED=1`
 3. On Windows, add the directory reported by `go env GOBIN` to `PATH`; if it is empty, add the `bin` subdirectory of `go env GOPATH`
 
-### Desktop
+### Windows Desktop
 
 * `cd kernel`
-* Windows:
-  * `go install github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest`
-  * `goversioninfo -platform-specific=true -icon=resource/icon.ico -manifest=resource/goversioninfo.exe.manifest`
-  * `go build -tags "fts5 sqlcipher" -o "../app/kernel/Scribli-Kernel.exe"`
-* Linux/macOS: `go build -tags "fts5 sqlcipher" -o "../app/kernel/Scribli-Kernel"`
+* `go install github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest`
+* `goversioninfo -platform-specific=true -icon=resource/icon.ico -manifest=resource/goversioninfo.exe.manifest`
+* `go build -tags "fts5 sqlcipher" -o "../app/kernel/Scribli-Kernel.exe"`
 * `cd ../app/kernel`
-* Windows: `./Scribli-Kernel.exe serve --mode=dev`
-* Linux/macOS: `./Scribli-Kernel serve --mode=dev`
+* `./Scribli-Kernel.exe serve --mode=dev`
 
-### iOS
-
-* `cd kernel`
-* `gomobile bind -tags "fts5 sqlcipher" -ldflags '-s -w' -v -o ./ios/iosk.xcframework -target=ios ./mobile/`
-* Native iOS packaging is not part of the Scribli release pipeline yet.
-
-### Android
-
-* `cd kernel`
-* `set JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8`
-* `gomobile bind -tags "fts5 sqlcipher" -ldflags "-s -w"  -v -o kernel.aar -target android/arm64 -androidapi 26 ./mobile/`
-* Native Android packaging is not part of the Scribli release pipeline yet.
-
-### Harmony
-
-Only support compilation under Linux, need to install Harmony SDK, and need to modify Go source code.
-
-* `cd kernel/harmony`
-* `./build.sh` (`./build-win.sh` for Windows Emulator)
-* Native Harmony packaging is not part of the Scribli release pipeline yet.
-
-Modify Go source code:
-
-1. go/src/runtime/vim tls_arm64.s
-
-   Change the ending `DATA runtime·tls_g+0(SB)/8, $16` to `DATA runtime·tls_g+0(SB)/8, $-144`
-
-2. go/src/runtime/cgo/gcc_android.c
-
-   Clear the inittls function
-
-   ```c
-   inittls(void **tlsg, void **tlsbase)
-   {
-     return;
-   }
-   ```
-
-3. go/src/net/cgo_resold.go
-   `C.size_t(len(b))` to `C.socklen_t(len(b))`
-
-Native Harmony packaging needs a Scribli-owned guide before it is supported.
+Native mobile, macOS, and Linux build/package targets have been removed from this repository.
 
 ## Issue workflow
 

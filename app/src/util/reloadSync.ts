@@ -1,7 +1,5 @@
 import type {App} from "../index";
 import {hideMessage} from "../dialog/message";
-import {hideElements} from "../protyle/ui/hideElements";
-import {setEmpty} from "../mobile/util/setEmpty";
 import {fetchPost} from "./fetch";
 import {Constants} from "../constants";
 import {getDocDisplayName, isEncryptedBox, setNoteBook} from "./pathName";
@@ -22,41 +20,6 @@ export const reloadSync = (
     if (hideMsg) {
         hideMessage();
     }
-    /// #if MOBILE
-    if (window.scribli.mobile.popEditor && window.scribli.mobile.popEditor.protyle) {
-        if (data.removeRootIDs.includes(window.scribli.mobile.popEditor.protyle.block.rootID)) {
-            hideElements(["dialog"]);
-        } else {
-            window.scribli.mobile.popEditor.reload(false, updateReadonly);
-        }
-    }
-    if (document.getElementById("empty").classList.contains("fn__none") &&
-        window.scribli.mobile.editor && window.scribli.mobile.editor.protyle) {
-        if (data.removeRootIDs.includes(window.scribli.mobile.editor.protyle.block.rootID)) {
-            setEmpty(app);
-        } else {
-            window.scribli.mobile.editor.reload(false, updateReadonly);
-            const docInfoParam: IObject = {
-                id: window.scribli.mobile.editor.protyle.block.rootID
-            };
-            if (isEncryptedBox(window.scribli.mobile.editor.protyle.notebookId)) {
-                docInfoParam.notebook = window.scribli.mobile.editor.protyle.notebookId;
-            }
-            fetchPost("/api/block/getDocInfo", docInfoParam, (response) => {
-                setTitle(response.data.name);
-                window.scribli.mobile.editor.protyle.title.setTitle(response.data.name, response.data.ial[Constants.CUSTOM_SY_TITLE_EMPTY] === "true");
-            });
-            // 同步刷新移动端大纲，避免大纲与重载后的编辑器数据不一致
-            const outline = window.scribli.mobile.docks.outline;
-            if (outline) {
-                outline.reload();
-            }
-        }
-    }
-    setNoteBook(() => {
-        window.scribli.mobile.docks.file.init(false);
-    });
-    /// #else
     const allModels = getAllModels();
     const updateTitle = (rootID: string, tab: Tab, protyle?: IProtyle) => {
         const docInfoParam: IObject = {
@@ -161,5 +124,4 @@ export const reloadSync = (
             item.update();
         }
     });
-    /// #endif
 };

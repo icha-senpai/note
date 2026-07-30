@@ -9,7 +9,6 @@ import {hasClosestByClassName, isInEmbedBlock} from "../../protyle/util/hasClose
 import {hideTooltip} from "../../dialog/tooltip";
 import {hideAllElements} from "../../protyle/ui/hideElements";
 import {dragOverScroll, stopScrollAnimation} from "./dragover";
-import {setWebViewFocusable} from "../../mobile/util/mobileAppUtil";
 import {cancelManualTouch, initTouchDragBridge, isLastPointerMouse} from "../../util/touchDragBridge";
 import {isWindow} from "../../util/functions";
 import {getDockByType} from "../../layout/tabUtil";
@@ -211,7 +210,6 @@ export const initWindowEvent = (app: App) => {
         window.scribli.altIsPressed = false;
         document.body.classList.remove("body--shift-pressed");
         /// #if BROWSER
-        setWebViewFocusable();
         /// #endif
     });
 

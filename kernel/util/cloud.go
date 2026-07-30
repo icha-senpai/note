@@ -16,8 +16,6 @@
 
 package util
 
-var CurrentCloudRegion = 1
-
 func OfficialServicesUnavailable() bool {
 	return OfficialServicesDisabled || OfflineMode
 }
@@ -28,65 +26,3 @@ func OfficialServicesError() error {
 	}
 	return ErrOfficialServicesDisabled
 }
-
-func IsChinaCloud() bool {
-	return 0 == CurrentCloudRegion
-}
-
-func GetCloudServer() string {
-	if 0 == CurrentCloudRegion {
-		return chinaServer
-	}
-	return northAmericaServer
-}
-
-func GetCloudWebSocketServer() string {
-	if 0 == CurrentCloudRegion {
-		return chinaWebSocketServer
-	}
-	return northAmericaWebSocketServer
-}
-
-func GetCloudSyncServer() string {
-	if 0 == CurrentCloudRegion {
-		return chinaSyncServer
-	}
-	return northAmericaSyncServer
-}
-
-func GetCloudAssetsServer() string {
-	if 0 == CurrentCloudRegion {
-		return chinaCloudAssetsServer
-	}
-	return northAmericaCloudAssetsServer
-}
-
-func GetCloudAccountServer() string {
-	if 0 == CurrentCloudRegion {
-		return chinaAccountServer
-	}
-	return northAmericaAccountServer
-}
-
-func GetCloudForumAssetsServer() string {
-	if 0 == CurrentCloudRegion {
-		return chinaForumAssetsServer
-	}
-	return northAmericaForumAssetsServer
-}
-
-const (
-	chinaServer            = ""
-	chinaWebSocketServer   = ""
-	chinaSyncServer        = ""
-	chinaCloudAssetsServer = ""
-	chinaAccountServer     = ""
-	chinaForumAssetsServer = ""
-
-	northAmericaServer            = ""
-	northAmericaWebSocketServer   = ""
-	northAmericaSyncServer        = ""
-	northAmericaCloudAssetsServer = ""
-	northAmericaAccountServer     = ""
-	northAmericaForumAssetsServer = ""
-)

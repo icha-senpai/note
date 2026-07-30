@@ -25,16 +25,13 @@ import {
 import {fetchPost} from "../util/fetch";
 import {getDocDisplayName, isEncryptedBox} from "../util/pathName";
 import {initMirror, refreshUndoButtons, syncMirrorFromBroadcast} from "./undo/globalUndo";
-/// #if !MOBILE
 import {updatePanelByEditor} from "../editor/util";
 import {setPanelFocus} from "../layout/util";
-/// #endif
 import {Title} from "./header/Title";
 import {Background} from "./header/Background";
 import {disabledProtyle, enableProtyle, onGet, setReadonlyByConfig} from "./util/onGet";
 import {reloadProtyle} from "./util/reload";
 import {renderBacklink} from "./wysiwyg/renderBacklink";
-import {setEmpty} from "../mobile/util/setEmpty";
 import {resize} from "./util/resize";
 import {getDocByScroll} from "./scroll/saveScroll";
 import {App} from "../index";
@@ -44,9 +41,7 @@ import {focusBlock, getEditorRange} from "./util/selection";
 import {hasClosestBlock} from "./util/hasClosest";
 import {setStorageVal} from "./util/compatibility";
 import {merge} from "./util/merge";
-/// #if !MOBILE
 import {getAllModels} from "../layout/getAll";
-/// #endif
 import {isSupportCSSHL} from "./render/searchMarkRender";
 import {renderAVAttribute} from "./render/av/blockAttr";
 import {setFoldById, zoomOut} from "../menus/protyle";
@@ -141,7 +136,6 @@ export class Protyle {
                         case "reload":
                             if (data.data === this.protyle.block.rootID) {
                                 reloadProtyle(this.protyle, false);
-                                /// #if !MOBILE
                                 getAllModels().outline.forEach(item => {
                                     if (item.blockId === data.data) {
                                         const outlineParam: IObject = {
@@ -156,7 +150,6 @@ export class Protyle {
                                         });
                                     }
                                 });
-                                /// #endif
                             }
                             break;
                         case "refreshAttributeView":
@@ -167,14 +160,12 @@ export class Protyle {
                             if (this.protyle.databaseAttributePanel?.hasDatabase(data.data.id)) {
                                 this.protyle.databaseAttributePanel.refresh();
                             }
-                            /// #if !MOBILE
                             getAllModels().custom.forEach((item) => {
                                 if (item.type === "scribli-database-row" && (item.data.avID === data.data.id ||
                                     item.element.querySelector(`[data-av-id="${data.data.id}"]`))) {
                                     item.update?.();
                                 }
                             });
-                            /// #endif
                             break;
                         case "addLoading":
                             if (data.data === this.protyle.block.rootID) {
@@ -208,7 +199,6 @@ export class Protyle {
                                 } else {
                                     reloadProtyle(this.protyle, false);
                                 }
-                                /// #if !MOBILE
                                 if (data.cmd === "heading2doc") {
                                     // 文档标题互转后，需更新大纲
                                     updatePanelByEditor({
@@ -219,7 +209,6 @@ export class Protyle {
                                         resize: false
                                     });
                                 }
-                                /// #endif
                             }
                             break;
                         case "rename":
@@ -265,24 +254,16 @@ export class Protyle {
                         case "closeBox":
                         case "removeBox":
                             if (this.protyle.notebookId === data.data.box) {
-                                /// #if MOBILE
-                                setEmpty(app);
-                                /// #else
                                 if (this.protyle.model) {
                                     this.protyle.model.parent.parent.removeTab(this.protyle.model.parent.id);
                                 }
-                                /// #endif
                             }
                             break;
                         case "removeDoc":
                             if (data.data.ids.includes(this.protyle.block.rootID)) {
-                                /// #if MOBILE
-                                setEmpty(app);
-                                /// #else
                                 if (this.protyle.model) {
                                     this.protyle.model.parent.parent.removeTab(this.protyle.model.parent.id);
                                 }
-                                /// #endif
                                 delete window.scribli.storage[Constants.LOCAL_FILEPOSITION][this.protyle.block.rootID];
                                 setStorageVal(Constants.LOCAL_FILEPOSITION, window.scribli.storage[Constants.LOCAL_FILEPOSITION]);
                             }
@@ -342,7 +323,6 @@ export class Protyle {
         data.data[0].doOperations.find((item: IOperation) => {
             if (this.protyle.options.backlinkData && ["delete", "move"].includes(item.action)) {
                 // 只对特定情况刷新，否则展开、编辑等操作刷新会频繁
-                /// #if !MOBILE
                 if (2 == data.data[0].doOperations.length && "insert" === data.data[0].doOperations[0].action && "delete" === data.data[0].doOperations[1].action) {
                     // 从反链面板复制块到正文粘贴时不再自动刷新反链面板
                     // The list in the backlink panel no longer collapses automatically 
@@ -355,7 +335,6 @@ export class Protyle {
                         return true;
                     }
                 });
-                /// #endif
                 return true;
             } else {
                 if (item.action === "delete") {
@@ -436,7 +415,6 @@ export class Protyle {
             initMirror(this.protyle.block.rootID);
         }
         if (this.protyle.model) {
-            /// #if !MOBILE
             if (mergedOptions.action?.includes(Constants.CB_GET_FOCUS) || mergedOptions.action?.includes(Constants.CB_GET_OPENNEW)) {
                 setPanelFocus(this.protyle.model.element.parentElement.parentElement);
             }
@@ -447,13 +425,11 @@ export class Protyle {
                 reload: false,
                 resize: false
             });
-            /// #endif
         }
         resize(this.protyle);   // 需等待 fullwidth 获取后设定完毕再重新计算 padding 和元素
         // 需等待 getDoc 完成后再执行，否则在无页签的时候 updatePanelByEditor 会执行2次
         // 只能用 focusin，否则点击表格无法执行
         this.protyle.wysiwyg.element.addEventListener("focusin", () => {
-            /// #if !MOBILE
             if (this.protyle && this.protyle.model) {
                 let needUpdate = true;
                 if (this.protyle.model.element.parentElement.parentElement.classList.contains("layout__wnd--active") && this.protyle.model.headElement.classList.contains("item--focus")) {
@@ -479,7 +455,6 @@ export class Protyle {
                     item.classList.remove("layout__wnd--active");
                 });
             }
-            /// #endif
         });
         // 需等渲染完后再回调，用于定位搜索字段 
         if (mergedOptions.after) {

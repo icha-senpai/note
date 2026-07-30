@@ -33,7 +33,6 @@ declare namespace Config {
          * - `0`: Chinese mainland
          * - `1`: North America
          */
-        cloudRegion: number;
         editor: IEditor;
         export: IExport;
         fileTree: IFileTree;

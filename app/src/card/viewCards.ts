@@ -54,9 +54,6 @@ export const viewCards = (app: App, deckID: string, title: string, deckType: "Tr
             destroyCallback() {
                 if (edit) {
                     edit.destroy();
-                    if (window.scribli.mobile) {
-                        window.scribli.mobile.popEditor = null;
-                    }
                 }
             },
             resizeCallback(type: string) {
@@ -77,9 +74,6 @@ export const viewCards = (app: App, deckID: string, title: string, deckType: "Tr
                 },
                 typewriterMode: false
             });
-            if (window.scribli.mobile) {
-                window.scribli.mobile.popEditor = edit;
-            }
             dialog.editors = {
                 card: edit
             };

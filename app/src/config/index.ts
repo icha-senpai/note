@@ -1,19 +1,14 @@
-/// #if MOBILE
-import {popMenu} from "../mobile/menu";
-/// #else
 import {initSettingSearch, switchSettingTab} from "./search/dialog";
 import {bindSettingSaveDelegation} from "./setting/save";
 import {Dialog} from "../dialog";
 import {Constants} from "../constants";
 import {focusByRange} from "../protyle/util/selection";
-/// #endif
 import {getSettingTabDefs, settingTabToMenuId} from "./setting/tabs";
 import {clearAccessTabElement} from "./tabs/accessRuntime";
 import {clearSyncTabElement} from "./tabs/syncRuntime";
 import type {TSettingTab} from "./setting/tabs";
 import type {App} from "../index";
 
-/// #if !MOBILE
 const openSettingDialog = (app: App, initialTab: TSettingTab = "editor") => {
     window.scribli.dialogs.find((item) => item.element.querySelector(".config__tab-container"))?.destroy();
     let range: Range;
@@ -71,17 +66,7 @@ const openSettingDialog = (app: App, initialTab: TSettingTab = "editor") => {
     switchSettingTab(dialog.element, app, initialTab);
     return dialog;
 };
-/// #endif
 
 export const openSetting = (app: App, tab?: TSettingTab) => {
-    /// #if MOBILE
-    popMenu();
-    if (tab) {
-        window.setTimeout(() => {
-            document.getElementById(settingTabToMenuId(tab))?.dispatchEvent(new MouseEvent("click", {bubbles: true}));
-        }, 200);
-    }
-    /// #else
     return openSettingDialog(app, tab);
-    /// #endif
 };

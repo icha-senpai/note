@@ -1,12 +1,6 @@
 import {newDailyNote} from "../../../util/mount";
 import {openHistory} from "../../../history/history";
 import {Editor} from "../../../editor";
-/// #if MOBILE
-import {openDock} from "../../../mobile/dock/util";
-import {popMenu} from "../../../mobile/menu";
-import {popSearch} from "../../../mobile/menu/search";
-import {getRecentDocs} from "../../../mobile/menu/getRecentDocs";
-/// #else
 import {openNewWindow} from "../../../window/openNewWindow";
 import {openBacklink, openGraph, openOutline, selectOpenTab, toggleDockBar} from "../../../layout/dock/util";
 import {openGlobalSearch} from "../../../search/util";
@@ -27,7 +21,6 @@ import {
 } from "../../../layout/tabUtil";
 import {openSetting} from "../../../config";
 import {Tab} from "../../../layout/Tab";
-/// #endif
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -45,31 +38,6 @@ import {fetchPost} from "../../../util/fetch";
 import {setStorageVal} from "../../../protyle/util/compatibility";
 
 export const globalCommand = (command: string, app: App) => {
-    /// #if MOBILE
-    switch (command) {
-        case "fileTree":
-            openDock("file");
-            return true;
-        case "outline":
-        case "bookmark":
-        case "tag":
-        case "inbox":
-            openDock(command);
-            return true;
-        case "backlinks":
-            openDock("backlink");
-            return true;
-        case "mainMenu":
-            popMenu();
-            return true;
-        case "globalSearch":
-            popSearch(app);
-            return true;
-        case "recentDocs":
-            getRecentDocs(app);
-            return true;
-    }
-    /// #else
     switch (command) {
         case "fileTree":
             getDockByType("file").toggleModel("file");
@@ -428,8 +396,6 @@ export const globalCommand = (command: string, app: App) => {
         }
         return true;
     }
-    /// #endif
-
     switch (command) {
         case "dailyNote":
             newDailyNote(app);

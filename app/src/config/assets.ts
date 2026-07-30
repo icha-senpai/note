@@ -3,10 +3,8 @@ import {confirmDialog} from "../dialog/confirmDialog";
 import {isBrowser, isMobile} from "../util/functions";
 import {hasClosestByClassName} from "../protyle/util/hasClosest";
 import {fetchPost} from "../util/fetch";
-/// #if !MOBILE
 import {getAllModels} from "../layout/getAll";
 import * as path from "path";
-/// #endif
 import {openBy} from "../editor/util";
 import {renderAssetsPreview} from "../asset/renderAssets";
 import {writeText} from "../protyle/util/compatibility";
@@ -17,11 +15,7 @@ import {App} from "../index";
 import {disabledProtyle, onGet} from "../protyle/util/onGet";
 import {removeLoading} from "../protyle/ui/initUI";
 import {switchSettingPanelSubTab} from "./setting/mount";
-/// #if MOBILE
-import {openMobileFileById} from "../mobile/editor";
-/// #else
 import {BlockPanel} from "../block/Panel";
-/// #endif
 
 /** 资源 Tab 侧栏 / 全局搜索索引文案 */
 export const collectAssetsTabSearchStrings = (): string[] => [
@@ -137,13 +131,11 @@ const assets = {
                 if (target.id === "removeAll") {
                     confirmDialog(window.scribli.languages.deleteOpConfirm, `${window.scribli.languages.clearAll}`, () => {
                         fetchPost("/api/asset/removeUnusedAssets", {}, response => {
-                            /// #if !MOBILE
                             getAllModels().asset.forEach(item => {
                                 if (response.data.paths.includes(item.path)) {
                                     item.parent.close();
                                 }
                             });
-                            /// #endif
                             assetsListElement.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
                             assetsListElement.nextElementSibling.innerHTML = "";
                         });
@@ -212,16 +204,12 @@ const assets = {
                 } else if (type === "openFloat") {
                     const blockIDs = JSON.parse(target.getAttribute("data-id")) as string[];
                     if (blockIDs.length > 0) {
-                        /// #if MOBILE
-                        openMobileFileById(app, blockIDs[0], [Constants.CB_GET_HL, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL]);
-                        /// #else
                         window.scribli.blockPanels.push(new BlockPanel({
                             app,
                             isBacklink: false,
                             targetElement: target,
                             refDefs: blockIDs.map(refID => ({refID})),
                         }));
-                        /// #endif
                     }
                     event.preventDefault();
                     event.stopPropagation();
@@ -280,13 +268,11 @@ const assets = {
                             fetchPost("/api/asset/removeUnusedAsset", {
                                 path: liElement.getAttribute("data-item"),
                             }, response => {
-                                /// #if !MOBILE
                                 getAllModels().asset.forEach(item => {
                                     if (response.data.path === item.path) {
                                         item.parent.parent.removeTab(item.parent.id);
                                     }
                                 });
-                                /// #endif
                                 if (liElement.parentElement.querySelectorAll("li").length === 1) {
                                     liElement.parentElement.innerHTML = `<li class="b3-list--empty">${window.scribli.languages.emptyContent}</li>`;
                                 } else {

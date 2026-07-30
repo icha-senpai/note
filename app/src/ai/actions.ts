@@ -206,12 +206,6 @@ export const AIActions = (elements: Element[], protyle: IProtyle) => {
     </div>
 </div>`,
         bind(element) {
-            /// #if MOBILE
-            element.setAttribute("style", "height: 100%;padding: 0 16px;");
-            element.querySelectorAll(".b3-menu__separator").forEach(item => {
-                item.remove();
-            });
-            /// #endif
             const listElement = element.querySelector(".b3-list");
             const inputElement = element.querySelector("input");
             inputElement.addEventListener("keydown", (event: KeyboardEvent) => {
@@ -290,9 +284,6 @@ export const AIActions = (elements: Element[], protyle: IProtyle) => {
         }
     });
     menu.element.querySelector(".b3-menu__items").setAttribute("style", "overflow: initial");
-    /// #if MOBILE
-    menu.fullscreen();
-    /// #else
     const rect = elements[elements.length - 1].getBoundingClientRect();
     menu.open({
         x: rect.left,
@@ -300,5 +291,4 @@ export const AIActions = (elements: Element[], protyle: IProtyle) => {
         h: rect.height,
     });
     menu.element.querySelector("input").focus();
-    /// #endif
 };

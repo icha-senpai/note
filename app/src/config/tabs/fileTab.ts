@@ -8,9 +8,7 @@ import {controlNumber, controlSelect, controlString} from "../setting/control";
 import {genConfigItemName} from "../render/fragments";
 import {genButtonHtml, genNumberInputHtml} from "../render/render";
 import {setNoteBook} from "../../util/pathName";
-/// #if !MOBILE
 import {getAllModels} from "../../layout/getAll";
-/// #endif
 
 const isMobileKernelContainer = () =>
     ["android", "ios", "harmony"].includes(window.scribli.config.system.container);
@@ -32,7 +30,6 @@ const genNotebookSavePathHtml = (
     </div>
 </div>`;
 
-/// #if !MOBILE
 const registerFileTreeBehaviorGroup = (tab: SettingTabBuilder) => {
     const group = tab.group("behavior", window.scribli.languages.configGroupBehavior);
 
@@ -73,7 +70,6 @@ const registerFileTreeBehaviorGroup = (tab: SettingTabBuilder) => {
         desc: window.scribli.languages.fileTree10,
     });
 };
-/// #endif
 
 const registerFileNewDocumentGroup = (tab: SettingTabBuilder) => {
     const group = tab.group("newDocument", window.scribli.languages.configGroupNewDocument);
@@ -272,11 +268,7 @@ const registerFileOthersGroup = (tab: SettingTabBuilder) => {
         desc: window.scribli.languages.boxDocEnabledTip,
         save: (value) => fileConfigApi.patch("boxDocEnabled", value, () => {
             setNoteBook(() => {
-                /// #if MOBILE
-                window.scribli.mobile.docks.file?.init(false);
-                /// #else
                 getAllModels().files.forEach((files) => files.init(false));
-                /// #endif
             });
         }),
     });
@@ -289,9 +281,7 @@ const registerFileOthersGroup = (tab: SettingTabBuilder) => {
 };
 
 export const registerFileTab = (tab: SettingTabBuilder) => {
-    /// #if !MOBILE
     registerFileTreeBehaviorGroup(tab);
-    /// #endif
     registerFileNewDocumentGroup(tab);
     registerFileManagementGroup(tab);
     registerFileOthersGroup(tab);

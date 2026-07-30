@@ -42,6 +42,7 @@ yarn.lock
 # musl toolchain
 muslbin/
 .tools/
+.tmp-scribli-home/AppData/
 
 # Workflows
 **/__pycache__

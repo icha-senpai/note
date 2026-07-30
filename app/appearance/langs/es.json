@@ -784,8 +784,6 @@
 	"multiSelect": "Selección múltiple",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Paleta de comandos",
-	"cloudRegionNorthAmerica": "Scribli (Centro de datos de América del Norte)",
-	"cloudRegionChina": "Centro de datos de China continental",
 	"currentKernel": "Núcleo actual",
 	"otherOnlineKernels": "Otros núcleos en línea",
 	"syncPerception": "Percepción de sincronización",
@@ -804,7 +802,7 @@
 	"color": "Color",
 	"confirmPassword": "He guardado la contraseña",
 	"passwordNoMatch": "Las contraseñas ingresadas dos veces no coinciden",
-	"cloudConfigTip": "Configure en [Configuración - Cuenta y Sincronización - Proveedor de servicios de almacenamiento en la nube]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "¿Está seguro de que desea desinstalar ${name}?<br>La desinstalación puede eliminar todas las configuraciones y datos relacionados, por favor, decida con precaución!",
 	"scrollGetMore": "Desplácese hacia arriba y hacia abajo para cargar más",
 	"flashcardNewCard": "Nueva Tarjeta",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Fusionar subdocumentos",
 	"removeAssetsFolder": "Eliminar directorio de recursos",
 	"upload": "Subir",
-	"reminderTip": "La hora del recordatorio no puede ser inferior a la hora actual",
-	"wechatTip": "El bloque de contenido se enviará a la nube en texto claro, y se empujará a través del mensaje de plantilla de WeChat MP cuando caduque",
 	"notEmpty": "La hora del recordatorio no puede estar vacía",
 	"experimentalFeature": "(⚗️ Esta característica está en fase experimental)",
-	"wechatReminder": "Recordatorio de WeChat",
-	"notifyTime": "Tiempo de notificación",
 	"docName": "Nombre del documento",
 	"bootSyncFailed": "Fallo en la sincronización de datos al inicio",
 	"use": "Utilice",
@@ -2168,3 +2162,5 @@
 		"343": "Un nuevo comienzo"
 	}
 }
+
+

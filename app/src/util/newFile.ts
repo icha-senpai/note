@@ -1,17 +1,14 @@
 import {showMessage} from "../dialog/message";
 import {hasTopClosestByTag} from "../protyle/util/hasClosest";
-/// #if !MOBILE
 import {Files} from "../layout/dock/Files";
 import {Editor} from "../editor";
 import {openFileById} from "../editor/util";
 import {getActiveTab, getDockByType} from "../layout/tabUtil";
-/// #endif
 import {fetchPost} from "./fetch";
 import {getDisplayName, getOpenNotebookCount, pathPosix} from "./pathName";
 import {Constants} from "../constants";
 import {replaceFileName, validateName} from "../editor/rename";
 import {hideElements} from "../protyle/ui/hideElements";
-import {openMobileFileById} from "../mobile/editor";
 import {App} from "../index";
 import {NewDocTargetByHPath, NewDocTargetSubDoc, getNewDocTargetFromSavePath, getNewDocTargetFromTree} from "./parseNewDocTarget";
 
@@ -153,7 +150,6 @@ function getNewFilePath(): Pick<NewDocRequest, "notebookId" | "currentPath" | "h
     let notebookId = "";
     let currentPath = "";
     let hasFocusTarget = false;
-    /// #if !MOBILE
     const tab = getActiveTab(false);
     if (tab?.model instanceof Editor) {
         notebookId = tab.model.editor.protyle.notebookId;
@@ -174,13 +170,6 @@ function getNewFilePath(): Pick<NewDocRequest, "notebookId" | "currentPath" | "h
             }
         }
     }
-    /// #else
-    if (window.scribli.mobile.editor && document.getElementById("empty").classList.contains("fn__none")) {
-        notebookId = window.scribli.mobile.editor.protyle.notebookId;
-        currentPath = window.scribli.mobile.editor.protyle.path;
-        hasFocusTarget = true;
-    }
-    /// #endif
     if (!notebookId) {
         const openNotebook = window.scribli.notebooks.find(item => !item.closed);
         if (openNotebook) {
@@ -289,15 +278,11 @@ function openCreatedDoc(app: App, id: string, onCreated?: (id: string, title: st
     if (onCreated) {
         onCreated(id, title || "");
     }
-    /// #if !MOBILE
     openFileById({
         app,
         id,
         action: [Constants.CB_GET_CONTEXT, Constants.CB_GET_OPENNEW]
     });
-    /// #else
-    openMobileFileById(app, id, [Constants.CB_GET_CONTEXT, Constants.CB_GET_OPENNEW]);
-    /// #endif
 }
 
 /**

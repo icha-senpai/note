@@ -14,9 +14,7 @@ import {Constants} from "../../constants";
 import {matchHotKey} from "../util/hotKey";
 import {isMac, readText} from "../util/compatibility";
 import * as dayjs from "dayjs";
-/// #if !MOBILE
 import {openFileById} from "../../editor/util";
-/// #endif
 import {getDocDisplayName, isEncryptedBox} from "../../util/pathName";
 import {getContenteditableElement, getNoContainerElement} from "../wysiwyg/getBlock";
 import {commonHotkey} from "../wysiwyg/commonHotkey";
@@ -123,13 +121,11 @@ export class Title {
                 if (matchHotKey(window.scribli.config.keymap.general.enterBack.custom, event)) {
                     const ids = protyle.path.split("/");
                     if (ids.length > 2) {
-                        /// #if !MOBILE
                         openFileById({
                             app: protyle.app,
                             id: ids[ids.length - 2],
                             action: [Constants.CB_GET_FOCUS, Constants.CB_GET_SCROLL]
                         });
-                        /// #endif
                     }
                     event.preventDefault();
                     event.stopPropagation();
@@ -353,22 +349,9 @@ export class Title {
     }
 
     public setTitle(title: string, empty = false) {
-        /// #if MOBILE
-        if (this.editElement) {
-            if (nbsp2space(title) !== nbsp2space(this.editElement.textContent)) {
-                this.editElement.textContent = empty ? "" : title;
-            }
-        } else {
-            const inputElement = document.getElementById("toolbarName") as HTMLInputElement;
-            if (nbsp2space(title) !== nbsp2space(inputElement.value)) {
-                inputElement.value = empty ? "" : title;
-            }
-        }
-        /// #else
         if (nbsp2space(title) !== nbsp2space(this.editElement.textContent)) {
             this.editElement.textContent = empty ? "" : title;
         }
-        /// #endif
     }
 
     public render(protyle: IProtyle, response: IWebSocketData) {

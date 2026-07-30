@@ -3,12 +3,9 @@ import {isScribliUriProtocol, parseScribliUriInfo} from "./pathName";
 import {ipcRenderer} from "electron";
 /// #endif
 import {Constants} from "../constants";
-/// #if !MOBILE
 import {openFile, openFileById} from "../editor/util";
-/// #endif
 import {fetchPost} from "./fetch";
 import {checkFold} from "./noRelyPCFunction";
-import {openMobileFileById} from "../mobile/editor";
 
 import type {App} from "../index";
 import {activateQueuedAVLocate, queueAVLocateRequest} from "../protyle/render/av/locate";
@@ -28,7 +25,6 @@ const processScribliUriBlocks = (app: App, uriObj: URL): boolean => {
         fetchPost("/api/block/checkBlockExist", { id }, existResponse => {
             if (existResponse.data) {
                 checkFold(id, (zoomIn) => {
-                    /// #if !MOBILE
                     openFileById({
                         app,
                         id,
@@ -42,11 +38,6 @@ const processScribliUriBlocks = (app: App, uriObj: URL): boolean => {
                             }
                         },
                     });
-                    /// #else
-                    openMobileFileById(app, id, blockInfo.avItemID ? [Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL] :
-                        ((zoomIn || focus) ? [Constants.CB_GET_FOCUS, Constants.CB_GET_HL, Constants.CB_GET_ALL] : [Constants.CB_GET_HL, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL]),
-                    undefined, undefined, blockInfo.avItemID ? (protyle) => activateQueuedAVLocate(protyle, id) : undefined);
-                    /// #endif
                 });
                 /// #if !BROWSER
                 ipcRenderer.send(Constants.SCRIBLI_CMD, "show");
@@ -92,7 +83,6 @@ const processScribliUriPlugins = (app: App, uriObj: URL): boolean => {
             return false;
         }
         // scribli://plugins/plugin-samplecustom_tab?title=自定义页签&icon=iconFace&data={"text": "This is the custom plugin tab I opened via protocol."}
-        /// #if !MOBILE
         // 
         const data = (() => {
             try {
@@ -115,7 +105,6 @@ const processScribliUriPlugins = (app: App, uriObj: URL): boolean => {
                 id: pluginNameOrTabType
             },
         });
-        /// #endif
     }
     return true;
 };

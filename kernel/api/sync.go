@@ -28,11 +28,11 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/dejavu/cloud"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 func importSyncProviderWebDAV(c *gin.Context) {
@@ -168,7 +168,7 @@ func exportSyncProviderWebDAV(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
 
-	name := "siyuan-webdav-" + time.Now().Format("20060102150405") + ".json"
+	name := "scribli-webdav-" + time.Now().Format("20060102150405") + ".json"
 	tmpDir := filepath.Join(util.TempDir, "export")
 	if err := os.MkdirAll(tmpDir, 0755); err != nil {
 		logging.LogErrorf("export WebDAV provider failed: %s", err)
@@ -361,7 +361,7 @@ func exportSyncProviderS3(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
 
-	name := "siyuan-s3-" + time.Now().Format("20060102150405") + ".json"
+	name := "scribli-s3-" + time.Now().Format("20060102150405") + ".json"
 	tmpDir := filepath.Join(util.TempDir, "export")
 	if err := os.MkdirAll(tmpDir, 0755); err != nil {
 		logging.LogErrorf("export S3 provider failed: %s", err)

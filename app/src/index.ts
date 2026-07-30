@@ -32,14 +32,13 @@ import {
 } from "./dialog/processSystem";
 import {initMessage, showMessage} from "./dialog/message";
 import {getAllModels, getAllTabs} from "./layout/getAll";
-import {getLocalStorage, isChromeBrowser, isInMobileApp} from "./protyle/util/compatibility";
+import {getLocalStorage, isChromeBrowser} from "./protyle/util/compatibility";
 import {isBrowser} from "./util/functions";
 import {checkPublishServiceClosed} from "./util/processMessage";
 import {hideAllElements} from "./protyle/ui/hideElements";
 import {loadPlugins, reloadPlugin} from "./plugin/loader";
 import "./assets/scss/base.scss";
 import {reloadEmoji} from "./emoji";
-import {processIOSPurchaseResponse} from "./util/iOSPurchase";
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -217,7 +216,7 @@ export class App {
                             openFileById({app: this, id: data.data.id, action: [Constants.CB_GET_FOCUS]});
                             break;
                         case "exit":
-                            if (isBrowser() && !isInMobileApp()) {
+                            if (isBrowser()) {
                                 window.location.href = "about:blank";
                             }
                             break;
@@ -265,7 +264,7 @@ export class App {
                             setTitle("", true);
                             initMessage();
                             /// #if BROWSER && !MOBILE
-                            if (!isInMobileApp() && !window.scribli.config.readonly && !window.scribli.isPublish && !isChromeBrowser()
+                            if (!window.scribli.config.readonly && !window.scribli.isPublish && !isChromeBrowser()
                                 && window.scribli.config.appearance.notifications?.browserCompatibility !== false) {
                                 showMessage(window.scribli.languages.useChrome, 0, "error");
                             }
@@ -311,19 +310,6 @@ window.openFileByURL = (openURL) => {
 };
 
 /// #if BROWSER
-window.showKeyboardToolbar = () => {
-    // 防止 Pad 端报错
-};
-window.processIOSPurchaseResponse = processIOSPurchaseResponse;
-// 移动端容器（Android/鸿蒙）启用桌面模式时，原生壳默认禁用 WebView 自身键盘行为、等待 JS 调用
-// showKeyboard 弹键盘，而桌面 bundle 不会调用它，导致键盘无法弹出。这里把键盘控制权交还给
-// WebView 自身管理（与平板走桌面 bundle 时的行为一致）
-// On-screen keyboard pops up when using desktop mode on HarmonyOS and Android 
-if (window.JSAndroid?.setWebViewFocusable) {
-    window.JSAndroid.setWebViewFocusable(true);
-} else if (window.JSHarmony?.setWebViewFocusable) {
-    window.JSHarmony.setWebViewFocusable(true);
-}
 /// #else
 ipcRenderer.send(Constants.SCRIBLI_READY_TO_SHOW);
 /// #endif

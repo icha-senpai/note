@@ -784,8 +784,6 @@
 	"multiSelect": "Мультивибір",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Палітра команд",
-	"cloudRegionNorthAmerica": "Scribli (дата-центр Північна Америка)",
-	"cloudRegionChina": "дата-центр материковий Китай",
 	"currentKernel": "Поточне ядро",
 	"otherOnlineKernels": "Інші онлайн-ядра",
 	"syncPerception": "Сприйняття синхронізації",
@@ -804,7 +802,7 @@
 	"color": "Колір",
 	"confirmPassword": "Я вже запам'ятав пароль",
 	"passwordNoMatch": "Введені двічі паролі не збігаються",
-	"cloudConfigTip": "Налаштуйте це в [Налаштування - Обліковий запис і синхронізація - Провайдер хмарного сховища]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Справді видалити ${name}?<br>Видалення може прибрати всі пов'язані налаштування й дані; дійте обережно!",
 	"scrollGetMore": "Прокручуйте вгору й вниз, щоб завантажити більше",
 	"flashcardNewCard": "Нова",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Об'єднати піддокументи",
 	"removeAssetsFolder": "Видалити каталог ресурсів",
 	"upload": "Завантажити",
-	"reminderTip": "Час нагадування не може бути меншим за поточний",
-	"wechatTip": "Блок вмісту буде надіслано в хмару у відкритому вигляді та надіслано через шаблонне повідомлення WeChat MP після настання часу",
 	"notEmpty": "Час нагадування не може бути порожнім",
 	"experimentalFeature": "(⚗️ Ця функція перебуває на експериментальній стадії)",
-	"wechatReminder": "Нагадування WeChat",
-	"notifyTime": "Час сповіщення",
 	"docName": "Назва документа",
 	"bootSyncFailed": "Не вдалося синхронізувати дані під час запуску",
 	"use": "Використати",
@@ -2168,3 +2162,5 @@
 		"343": "Новий початок"
 	}
 }
+
+

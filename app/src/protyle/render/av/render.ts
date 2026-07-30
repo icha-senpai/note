@@ -9,7 +9,6 @@ import {getRowHTML, stickyRow, updateHeader} from "./row";
 import {getCalcValue} from "./calc";
 import {renderAVAttribute} from "./blockAttr";
 import {escapeAriaLabel, escapeAttr, escapeHtml} from "../../../util/escape";
-import {isInMobileApp} from "../../util/compatibility";
 import {isMobile} from "../../../util/functions";
 import {renderGallery} from "./gallery/render";
 import {getFieldsByData, getViewIcon} from "./view";
@@ -415,7 +414,7 @@ export const avRender = async (element: Element, protyle: IProtyle, cb?: (data: 
         if (e.getAttribute("data-render") === "true" || hasClosestByClassName(e, "av__gallery-content")) {
             continue;
         }
-        if (isMobile() || isInMobileApp()) {
+        if (isMobile()) {
             e.classList.add("av--touch");
         }
         const renderToken = beginAVRender(e);

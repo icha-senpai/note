@@ -15,11 +15,7 @@ import {openLink} from "../../../editor/openLink";
 import {previewImages} from "../../../protyle/preview/image";
 import {getDiagramBlock, previewDiagram} from "../../../protyle/preview/diagram";
 import {removeCompressURL} from "../../../util/image";
-/// #if !MOBILE
 import {openGlobalSearch} from "../../../search/util";
-/// #else
-import {popSearch} from "../../../mobile/menu/search";
-/// #endif
 
 import type {App} from "../../../index";
 
@@ -357,19 +353,7 @@ export const postRender = (container: HTMLElement, app?: App): void => {
         if (tag && container.contains(tag)) {
             event.preventDefault();
             event.stopPropagation();
-            /// #if !MOBILE
             openGlobalSearch(app, `#${tag.textContent}#`, true, {method: 0});
-            /// #else
-            popSearch(app, {
-                hasReplace: false,
-                method: 0,
-                hPath: "",
-                idPath: [],
-                k: `#${tag.textContent}#`,
-                r: "",
-                page: 1,
-            });
-            /// #endif
             return;
         }
         const link = target.closest('[data-type~="a"][data-href], a[href]') as HTMLElement;

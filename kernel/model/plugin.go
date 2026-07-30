@@ -24,12 +24,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/kernel/extensions"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/sync/singleflight"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 // Petal represents a plugin's management status.
@@ -134,13 +134,7 @@ func IsPetalsEnabled() bool {
 		return false
 	}
 
-	if !Conf.Extensions.Trust {
-
-		if util.Container == util.ContainerStd || util.Container == util.ContainerDocker {
-			return false
-		}
-	}
-	return true
+	return Conf.Extensions.Trust
 }
 
 func LoadPetals(frontend string, isPublish bool) (ret []*Petal) {

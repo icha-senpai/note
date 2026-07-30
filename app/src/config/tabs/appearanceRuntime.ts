@@ -1,10 +1,6 @@
-/// #if MOBILE
-import {saveScroll} from "../../protyle/scroll/saveScroll";
-/// #else
 import {adjustDockPadding} from "../../layout/dock/util";
 import {exportLayout} from "../../layout/util";
 import {syncHideToolbarLayout, updateBarModeIcon} from "../../layout/topBar";
-/// #endif
 import {fetchPost} from "../../util/fetch";
 import {loadAssets} from "../../util/assets";
 import {remountOpenSettingTab} from "../setting/mount";
@@ -24,27 +20,14 @@ export const saveThemeMode = (value: number) => {
     });
 };
 
-/// #if MOBILE
-const reloadUI = async () => {
-    if (window.scribli.mobile.editor) {
-        await saveScroll(window.scribli.mobile.editor.protyle);
-    }
-    window.location.reload();
-};
-/// #endif
-
 const applyAppearanceConfig = async (data: Config.IAppearance) => {
     if (data.lang !== window.scribli.config.appearance.lang) {
-        /// #if MOBILE
-        void reloadUI();
-        /// #else
         void exportLayout({
             cb() {
                 window.location.reload();
             },
             errorExit: false,
         });
-        /// #endif
         return;
     }
 
@@ -64,16 +47,12 @@ const applyAppearanceConfig = async (data: Config.IAppearance) => {
                     console.error("destroyTheme error: " + e);
                 }
             } else {
-                /// #if MOBILE
-                void reloadUI();
-                /// #else
                 void exportLayout({
                     errorExit: false,
                     cb() {
                         window.location.reload();
                     },
                 });
-                /// #endif
                 return;
             }
         }
@@ -83,7 +62,6 @@ const applyAppearanceConfig = async (data: Config.IAppearance) => {
     window.scribli.config.appearance = data;
 
     document.getElementById("status")?.classList.toggle("fn__none", data.hideStatusBar);
-    /// #if !MOBILE
     if (data.hideStatusBar !== prevAppearance.hideStatusBar) {
         adjustDockPadding();
     }
@@ -91,12 +69,9 @@ const applyAppearanceConfig = async (data: Config.IAppearance) => {
         syncHideToolbarLayout();
     }
     updateBarModeIcon();
-    /// #endif
 
     loadAssets(data);
-    /// #if !MOBILE
     void remountOpenSettingTab("appearance");
-    /// #endif
 };
 
 /** 外观 Tab 命名空间：设置面板注册项 save */

@@ -752,7 +752,6 @@ export const focusBlock = (element: Element, parentElement?: HTMLElement, toStar
             range.collapse(true);
             setRange = true;
         } else if (type === "NodeAttributeView") {
-            /// #if !MOBILE
             const cursorElement = element.querySelector(".av__cursor");
             if (cursorElement) {
                 range.setStart(cursorElement.firstChild, 0);
@@ -761,9 +760,6 @@ export const focusBlock = (element: Element, parentElement?: HTMLElement, toStar
                 element.setAttribute("data-need-focus", "true");
                 return false;
             }
-            /// #else
-            return false;
-            /// #endif
         }
         if (setRange) {
             focusByRange(range);

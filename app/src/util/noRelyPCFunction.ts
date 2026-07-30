@@ -2,10 +2,8 @@ import {Dialog} from "../dialog";
 import {fetchPost} from "./fetch";
 import {isMobile} from "./functions";
 import {Constants} from "../constants";
-/// #if !MOBILE
 import {getDockByType} from "../layout/tabUtil";
 import {Tag} from "../layout/dock/Tag";
-/// #endif
 import {upDownHint} from "./upDownHint";
 import {escapeHtml} from "./escape";
 import {hasClosestByClassName} from "../protyle/util/hasClosest";
@@ -58,12 +56,8 @@ export const renameTag = (labelName: string) => {
     btnsElement[1].addEventListener("click", () => {
         fetchPost("/api/tag/renameTag", {oldLabel: labelName, newLabel: inputElement.value}, () => {
             dialog.destroy();
-            /// #if MOBILE
-            window.scribli.mobile.docks.tag.update();
-            /// #else
             const dockTag = getDockByType("tag");
             (dockTag.data.tag as Tag).update();
-            /// #endif
         });
     });
     const inputElement = dialog.element.querySelector("input");

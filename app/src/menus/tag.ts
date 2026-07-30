@@ -27,12 +27,8 @@ export const openTagMenu = (element: HTMLElement, event: MouseEvent, labelName: 
         click: () => {
             confirmDialog(window.scribli.languages.deleteOpConfirm, `${window.scribli.languages.confirmDelete} <b>${escapeHtml(labelName)}</b>?`, () => {
                 fetchPost("/api/tag/removeTag", {label: labelName}, () => {
-                    /// #if MOBILE
-                    window.scribli.mobile.docks.tag.update();
-                    /// #else
                     const dockTag = getDockByType("tag");
                     (dockTag.data.tag as Tag).update();
-                    /// #endif
                 });
             }, undefined, true);
         }

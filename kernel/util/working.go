@@ -420,14 +420,7 @@ func ReadWorkspacePaths() (ret []string, err error) {
 	}
 
 	var tmp []string
-	workspaceBaseDir := filepath.Dir(HomeDir)
 	for _, d := range ret {
-		if ContainerIOS == Container && strings.Contains(d, "/Documents/") {
-
-			d = d[strings.Index(d, "/Documents/")+len("/Documents/"):]
-			d = filepath.Join(workspaceBaseDir, d)
-		}
-
 		d = strings.TrimRight(d, " \t\n")
 		d = filepath.Clean(d)
 		if gulu.File.IsDir(d) {
@@ -473,23 +466,20 @@ var (
 	AccessAuthCode string
 	Lang           = ""
 
-	Container        string // docker, android, ios, harmony, std
+	Container        string // docker, std
 	ISMicrosoftStore bool
 )
 
 const (
-	ContainerStd     = "std"
-	ContainerDocker  = "docker"
-	ContainerAndroid = "android"
-	ContainerIOS     = "ios"
-	ContainerHarmony = "harmony"
+	ContainerStd    = "std"
+	ContainerDocker = "docker"
 
 	LocalHost = "127.0.0.1"
 	FixedPort = "6806"
 )
 
 func IsMobileContainer() bool {
-	return ContainerAndroid == Container || ContainerIOS == Container || ContainerHarmony == Container
+	return false
 }
 
 func initPathDir() {

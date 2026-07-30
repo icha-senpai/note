@@ -54,20 +54,15 @@ import {ipcRenderer} from "electron";
 /// #endif
 import {getEnableHTML, removeEmbed} from "./removeEmbed";
 import {keydown} from "./keydown";
-import {openMobileFileById} from "../../mobile/editor";
 import {removeBlock} from "./remove";
 import {highlightRender} from "../render/highlightRender";
 import {openAttr} from "../../menus/commonMenuItem";
 import {blockRender} from "../render/blockRender";
-/// #if !MOBILE
 import {getAllModels} from "../../layout/getAll";
 import {pushBack} from "../../util/backForward";
 import {openFileById} from "../../editor/util";
 import {openGlobalSearch} from "../../search/util";
-/// #else
-import {popSearch} from "../../mobile/menu/search";
-/// #endif
-import {copyPlainText, encodeBase64, isInIOS, isMac, isOnlyMeta, readClipboard} from "../util/compatibility";
+import {copyPlainText, encodeBase64, isMac, isOnlyMeta, readClipboard} from "../util/compatibility";
 import {MenuItem} from "../../menus/Menu";
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
 import {onGet} from "../util/onGet";
@@ -76,7 +71,6 @@ import {countBlockWord, countSelectWord} from "../../layout/status";
 import {showMessage} from "../../dialog/message";
 import {getBacklinkHeadingMore, loadBreadcrumb} from "./renderBacklink";
 import {removeSearchMark} from "../toolbar/util";
-import {activeBlur} from "../../mobile/util/keyboardToolbar";
 import {commonClick} from "./commonClick";
 import {avClick, avContextmenu, updateAVName} from "../render/av/action";
 import {selectRow, stickyRow, updateHeader} from "../render/av/row";
@@ -273,7 +267,6 @@ export class WYSIWYG {
             }
             nodeElement = tempElement;
         }
-        /// #if !MOBILE
         if (protyle.model) {
             getAllModels().outline.forEach(item => {
                 if (item.blockId === protyle.block.rootID) {
@@ -281,11 +274,6 @@ export class WYSIWYG {
                 }
             });
         }
-        /// #else
-        if (protyle.disabled) {
-            protyle.toolbar.range = getEditorRange(nodeElement);
-        }
-        /// #endif
     }
 
     private emojiToMd(element: HTMLElement) {
@@ -2490,11 +2478,7 @@ export class WYSIWYG {
                     focusSideBlock(embedElement);
                 }
                 protyle.gutter.renderMenu(protyle, embedElement);
-                /// #if MOBILE
-                window.scribli.menus.menu.fullscreen();
-                /// #else
                 window.scribli.menus.menu.popup({x, y});
-                /// #endif
                 return false;
             }
 
@@ -2662,11 +2646,7 @@ export class WYSIWYG {
                 if (protyle.gutter) {
                     protyle.gutter.renderMenu(protyle, nodeElement);
                 }
-                /// #if MOBILE
-                window.scribli.menus.menu.fullscreen();
-                /// #else
                 window.scribli.menus.menu.popup({x, y});
-                /// #endif
                 protyle.toolbar?.element.classList.add("fn__none");
             }
         });
@@ -3039,7 +3019,6 @@ export class WYSIWYG {
                 event.preventDefault();
             }
         });
-        let mobileBlur = false;
         this.element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
             if (protyle.toolbar.isMultiSelectMode()) {
                 event.preventDefault();
@@ -3060,7 +3039,6 @@ export class WYSIWYG {
             const backlinkBreadcrumbItemElement = hasClosestByClassName(event.target, "protyle-breadcrumb__item");
             if (backlinkBreadcrumbItemElement) {
                 const breadcrumbId = backlinkBreadcrumbItemElement.getAttribute("data-id");
-                /// #if !MOBILE
                 if (breadcrumbId) {
                     if (ctrlIsPressed && !event.shiftKey && !event.altKey) {
                         checkFold(breadcrumbId, (zoomIn) => {
@@ -3078,11 +3056,6 @@ export class WYSIWYG {
                     // 引用标题时的更多加载
                     getBacklinkHeadingMore(backlinkBreadcrumbItemElement);
                 }
-                /// #else
-                if (breadcrumbId) {
-                    loadBreadcrumb(protyle, backlinkBreadcrumbItemElement);
-                }
-                /// #endif
                 event.stopPropagation();
                 return;
             }
@@ -3158,11 +3131,6 @@ export class WYSIWYG {
                         if (!isRoot) {
                             action.push(Constants.CB_GET_HL);
                         }
-                        /// #if MOBILE
-                        mobileBlur = true;
-                        activeBlur();
-                        openMobileFileById(protyle.app, refBlockId, zoomIn ? [Constants.CB_GET_ALL] : [Constants.CB_GET_HL, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL], "start");
-                        /// #else
                         if (event.shiftKey) {
                             openFileById({
                                 app: protyle.app,
@@ -3200,9 +3168,7 @@ export class WYSIWYG {
                                 scrollPosition: "start"
                             });
                         }
-                        /// #endif
                     });
-                    /// #if !MOBILE
                     if (protyle.model) {
                         // 打开双链需记录到后退中 
                         let blockElement: HTMLElement | false;
@@ -3215,29 +3181,9 @@ export class WYSIWYG {
                             pushBack(protyle, getEditorRange(this.element), blockElement);
                         }
                     }
-                    /// #endif
                     return;
                 }
             }
-            /// #if MOBILE
-            // 
-            const virtualRefElement = hasClosestByAttribute(event.target, "data-type", "virtual-block-ref");
-            if (virtualRefElement && range.toString() === "") {
-                event.stopPropagation();
-                event.preventDefault();
-                fetchPost("/api/block/getBlockDefIDsByRefText", {
-                    anchor: virtualRefElement.textContent,
-                }, (response) => {
-                    checkFold(response.data.refDefs[0].refID, (zoomIn) => {
-                        mobileBlur = true;
-                        activeBlur();
-                        openMobileFileById(protyle.app, response.data.refDefs[0].refID, zoomIn ? [Constants.CB_GET_ALL] : [Constants.CB_GET_HL, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL]);
-                    });
-                });
-                return;
-            }
-            /// #endif
-
             const fileElement = hasClosestByAttribute(event.target, "data-type", "file-annotation-ref");
             if (fileElement && range.toString() === "") {
                 event.stopPropagation();
@@ -3280,20 +3226,8 @@ export class WYSIWYG {
 
             const tagElement = hasClosestByAttribute(event.target, "data-type", "tag");
             if (tagElement && !event.altKey && !event.shiftKey && range.toString() === "") {
-                /// #if !MOBILE
                 openGlobalSearch(protyle.app, `#${tagElement.textContent}#`, !ctrlIsPressed, {method: 0});
                 hideElements(["dialog"]);
-                /// #else
-                popSearch(protyle.app, {
-                    hasReplace: false,
-                    method: 0,
-                    hPath: "",
-                    idPath: [],
-                    k: `#${tagElement.textContent}#`,
-                    r: "",
-                    page: 1,
-                });
-                /// #endif
                 return;
             }
 
@@ -3308,7 +3242,6 @@ export class WYSIWYG {
                             showMessage(response.msg);
                         } else {
                             reloadProtyle(protyle, true);
-                            /// #if !MOBILE
                             getAllModels().outline.forEach(item => {
                                 if (item.blockId === protyle.block.rootID) {
                                     const outlineParam: IObject = {
@@ -3323,7 +3256,6 @@ export class WYSIWYG {
                                     });
                                 }
                             });
-                            /// #endif
                         }
                     });
                     event.stopPropagation();
@@ -3336,11 +3268,6 @@ export class WYSIWYG {
                 if (event.shiftKey || event.altKey || ctrlIsPressed) {
                     const embedId = embedItemElement.getAttribute("data-id");
                     checkFold(embedId, (zoomIn, action) => {
-                        /// #if MOBILE
-                        mobileBlur = true;
-                        activeBlur();
-                        openMobileFileById(protyle.app, embedId, zoomIn ? [Constants.CB_GET_ALL] : [Constants.CB_GET_HL, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL]);
-                        /// #else
                         if (event.shiftKey) {
                             openFileById({
                                 app: protyle.app,
@@ -3366,7 +3293,6 @@ export class WYSIWYG {
                                 keepCursor: true,
                             });
                         }
-                        /// #endif
                     });
                     // 
                     if (!ctrlIsPressed) {
@@ -3395,16 +3321,12 @@ export class WYSIWYG {
             const openFloatElement = hasClosestByAttribute(event.target, "data-action", "openFloat");
             if (openFloatElement) {
                 const id = openFloatElement.getAttribute("data-id");
-                /// #if MOBILE
-                openMobileFileById(protyle.app, id, [Constants.CB_GET_HL, Constants.CB_GET_CONTEXT, Constants.CB_GET_ROOTSCROLL]);
-                /// #else
                 window.scribli.blockPanels.push(new BlockPanel({
                     app: protyle.app,
                     isBacklink: false,
                     targetElement: openFloatElement,
                     refDefs: [{refID: id}]
                 }));
-                /// #endif
                 event.stopPropagation();
                 event.preventDefault();
                 return;
@@ -3413,16 +3335,12 @@ export class WYSIWYG {
             const menuElement = hasClosestByClassName(event.target, "protyle-action__menu");
             if (menuElement) {
                 protyle.gutter.renderMenu(protyle, menuElement.parentElement.parentElement);
-                /// #if MOBILE
-                window.scribli.menus.menu.fullscreen();
-                /// #else
                 const rect = menuElement.getBoundingClientRect();
                 window.scribli.menus.menu.popup({
                     x: rect.left,
                     y: rect.top,
                     isLeft: true
                 });
-                /// #endif
                 event.stopPropagation();
                 event.preventDefault();
                 return;
@@ -3673,28 +3591,23 @@ export class WYSIWYG {
                     newRange.collapse(false);
                     focusByRange(newRange);
                 }
-                /// #if !MOBILE
                 if (newRange.toString().replace(Constants.ZWSP, "") !== "") {
                     protyle.toolbar.render(protyle, newRange);
                 } else {
                     // 
                     protyle.toolbar.range = newRange;
                 }
-                /// #endif
                 if (!protyle.wysiwyg.element.querySelector(".protyle-wysiwyg--select")) {
                     countSelectWord(newRange, protyle.block.rootID);
                 }
-                if (getSelection().rangeCount === 0 && !mobileBlur) {
+                if (getSelection().rangeCount === 0) {
                     // 
                     // 
                     // 
                     focusByRange(newRange);
                 }
-                /// #if !MOBILE
                 pushBack(protyle, newRange);
-                /// #endif
-                mobileBlur = false;
-            }, (isMobile() || isInIOS()) ? 520 : 0); // Android/iPad 双击慢了出不来
+            }, isMobile() ? 520 : 0);
 
             protyle.hint.enableExtend = false;
 

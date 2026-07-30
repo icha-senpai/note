@@ -22,16 +22,16 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/filesys"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
 func checkBlockRef(c *gin.Context) {
@@ -297,26 +297,6 @@ func getHeadingLevelTransaction(c *gin.Context) {
 	}
 
 	ret.Data = transaction
-}
-
-func setBlockReminder(c *gin.Context) {
-	ret := gulu.Ret.NewResult()
-	defer c.JSON(http.StatusOK, ret)
-
-	arg, ok := util.JsonArg(c, ret)
-	if !ok {
-		return
-	}
-
-	id := arg["id"].(string)
-	timed := arg["timed"].(string) // yyyyMMddHHmmss
-	err := model.SetBlockReminder(id, timed)
-	if err != nil {
-		ret.Code = -1
-		ret.Msg = err.Error()
-		ret.Data = map[string]any{"closeTimeout": 7000}
-		return
-	}
 }
 
 func getUnfoldedParentID(c *gin.Context) {

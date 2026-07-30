@@ -11,8 +11,6 @@ import {escapeAttr, escapeHtml} from "../util/escape";
 import {isMobile} from "../util/functions";
 import {showDiff} from "./diff";
 import {saveExportFile, setStorageVal} from "../protyle/util/compatibility";
-import {openModel} from "../mobile/menu/model";
-import {closeModel} from "../mobile/util/closePanel";
 import {App} from "../index";
 import {resizeSide} from "./resizeSide";
 import {isSupportCSSHL, searchMarkRender} from "../protyle/render/searchMarkRender";
@@ -115,37 +113,6 @@ const renderRepoItem = (response: IWebSocketData, element: Element, type: string
         return;
     }
     let actionHTML = "";
-    /// #if MOBILE
-    if (type === "getRepoTagSnapshots") {
-        actionHTML = `<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="rollback">
-    <svg><use xlink:href="#iconUndo"></use></svg>
-    <span class="fn__space"></span>
-    ${window.scribli.languages.rollback}
-</span>
-<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="removeRepoTagSnapshot">
-    <svg><use xlink:href="#iconTrashcan"></use></svg>
-    <span class="fn__space"></span>
-    ${window.scribli.languages.remove}
-</span>
-<span class="fn__flex-1"></span>`;
-    } else if (type === "getRepoSnapshots") {
-        actionHTML = `<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="genTag">
-    <svg><use xlink:href="#iconTag"></use></svg>
-    <span class="fn__space"></span>
-    ${window.scribli.languages.tagSnapshot}
-</span>
-<span class="fn__flex-1"></span>
-<span class="b3-list-item__action" data-type="rollback">
-    <svg><use xlink:href="#iconUndo"></use></svg>
-    <span class="fn__space"></span>
-    ${window.scribli.languages.rollback}
-</span>
-<span class="fn__flex-1"></span>`;
-    }
-    /// #else
     if (type === "getRepoTagSnapshots") {
         actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.scribli.languages.rollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>
 <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="removeRepoTagSnapshot" aria-label="${window.scribli.languages.remove}"><svg><use xlink:href="#iconTrashcan"></use></svg></span>`;
@@ -153,7 +120,6 @@ const renderRepoItem = (response: IWebSocketData, element: Element, type: string
         actionHTML = `<span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="genTag" aria-label="${window.scribli.languages.tagSnapshot}"><svg><use xlink:href="#iconTag"></use></svg></span>
 <span class="b3-list-item__action b3-tooltips b3-tooltips__w" data-type="rollback" aria-label="${window.scribli.languages.rollback}"><svg><use xlink:href="#iconUndo"></use></svg></span>`;
     }
-    /// #endif
     let repoHTML = "";
     const isPhone = isMobile();
     const selectId: { id: string, time: string }[] = ["getRepoTagSnapshots", "getRepoSnapshots"].includes(type) ?
@@ -195,27 +161,10 @@ ${window.scribli.languages.fileCount} ${item.count}<span class="fn__space"></spa
 </div>
 ${statHTML}`;
         const hasSelected = selectId.find(subItem => subItem.id === item.id);
-        /// #if MOBILE
-        repoHTML += `<li class="b3-list-item${hasSelected ? " b3-list-item--focus" : ""}" data-type="repoitem" data-id="${item.id}" data-tag="${item.tag}">
-<div class="fn__flex-1">
-    ${infoHTML}
-    <div class="fn__flex" style="height: 26px" data-type="repoitem"" data-id="${item.id}" data-tag="${item.tag}">
-        ${actionHTML}
-        <span class="b3-list-item__action" data-type="more">
-            <svg><use xlink:href="#iconMore"></use></svg>
-            <span class="fn__space"></span>
-            ${window.scribli.languages.more}
-        </span>
-        <span class="fn__flex-1"></span>
-    </div>
-</div>
-</li>`;
-        /// #else
         repoHTML += `<li class="b3-list-item b3-list-item--hide-action${hasSelected ? " b3-list-item--focus" : ""}" data-type="repoitem" data-id="${item.id}" data-tag="${item.tag}">
 <div class="fn__flex-1">${infoHTML}</div>
 ${actionHTML}
 </li>`;
-        /// #endif
     });
     element.lastElementChild.innerHTML = `${repoHTML}`;
 };
@@ -235,35 +184,6 @@ const renderRepoSearchResult = (response: IWebSocketData, element: Element) => {
         hSize: string,
         updated: number
     }) => {
-        /// #if MOBILE
-        html += `<li class="b3-list-item" data-type="searchFileItem" data-id="${item.fileID}" data-snapshot="${item.indexID}" data-created="${item.updated}">
-    <div class="fn__flex-1">
-        <div style="padding-top:8px" class="b3-list-item__text">${escapeHtml(item.title)}</div>
-        <div class="b3-list-item__meta">
-            ${item.hSize}
-            <span class="fn__space"></span>
-            ${dayjs(item.updated).format("YYYY-MM-DD HH:mm:ss")}
-        </div>
-        <div class="fn__flex" style="height: 26px">
-            <span class="fn__flex-1"></span>
-            <span class="b3-list-item__action" data-type="view">
-                <svg><use xlink:href="#iconEye"></use></svg>
-                <span class="fn__space"></span>${window.scribli.languages.cardPreview}
-            </span>
-            <span class="fn__space"></span>
-            <span class="b3-list-item__action" data-type="saveAs">
-                <svg><use xlink:href="#iconDownload"></use></svg>
-                <span class="fn__space"></span>${window.scribli.languages.saveAs}
-            </span>
-            <span class="fn__space"></span>
-            <span class="b3-list-item__action" data-type="rollback">
-                <svg><use xlink:href="#iconUndo"></use></svg>
-                <span class="fn__space"></span> ${window.scribli.languages.rollback}
-            </span>
-        </div>
-    </div>
-</li>`;
-        /// #else
         html += `<li class="b3-list-item b3-list-item--hide-action" data-type="searchFileItem" data-id="${item.fileID}" data-snapshot="${item.indexID}" data-created="${item.updated}">
     <div class="fn__flex-1">
         <span class="b3-list-item__text">${escapeHtml(item.title)}</span>
@@ -285,7 +205,6 @@ const renderRepoSearchResult = (response: IWebSocketData, element: Element) => {
         <svg><use xlink:href="#iconUndo"></use></svg>
     </span>
 </li>`;
-        /// #endif
     });
     element.lastElementChild.innerHTML = html;
 };
@@ -526,38 +445,23 @@ export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc") 
     </div>
 </div>`;
 
-    if (isMobile()) {
-        openModel({
-            html: contentHTML,
-            icon: "iconHistory",
-            title: window.scribli.languages.dataHistory,
-            bindEvent(element) {
-                element.firstElementChild.setAttribute("style", "background-color:var(--b3-theme-background);height:100%");
-                bindEvent(app, element.firstElementChild);
-                if (tab !== "doc") {
-                    element.firstElementChild.querySelector(`.layout-tab-bar [data-type="${tab}"]`)?.dispatchEvent(new MouseEvent("click", {bubbles: true}));
-                }
-            }
-        });
-    } else {
-        const dialog = new Dialog({
-            content: contentHTML,
-            width: "90vw",
-            height: "80vh",
-            containerClassName: "b3-dialog__container--theme",
-            destroyCallback() {
-                historyEditor = undefined;
-            }
-        });
-        dialog.element.setAttribute("data-key", Constants.DIALOG_HISTORY);
-        bindEvent(app, dialog.element, dialog);
-        if (tab !== "doc") {
-            dialog.element.querySelector(`.layout-tab-bar [data-type="${tab}"]`)?.dispatchEvent(new MouseEvent("click", {bubbles: true}));
-        } else {
-            dialog.element.querySelector("input").focus();
+    const dialog = new Dialog({
+        content: contentHTML,
+        width: "90vw",
+        height: "80vh",
+        containerClassName: "b3-dialog__container--theme",
+        destroyCallback() {
+            historyEditor = undefined;
         }
-        resizeSide(dialog.element.querySelector(".history__resize"), dialog.element.querySelector(".history__side"), "sideWidth");
+    });
+    dialog.element.setAttribute("data-key", Constants.DIALOG_HISTORY);
+    bindEvent(app, dialog.element, dialog);
+    if (tab !== "doc") {
+        dialog.element.querySelector(`.layout-tab-bar [data-type="${tab}"]`)?.dispatchEvent(new MouseEvent("click", {bubbles: true}));
+    } else {
+        dialog.element.querySelector("input").focus();
     }
+    resizeSide(dialog.element.querySelector(".history__resize"), dialog.element.querySelector(".history__side"), "sideWidth");
 };
 
 const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
@@ -1046,9 +950,6 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                 fetchPost("/api/history/reindexHistory");
                 if (dialog) {
                     dialog.destroy();
-                } else {
-                    closeModel();
-                    historyEditor = undefined;
                 }
                 event.stopPropagation();
                 event.preventDefault();

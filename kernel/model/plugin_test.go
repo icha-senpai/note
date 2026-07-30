@@ -36,17 +36,10 @@ func TestIsPetalsEnabled(t *testing.T) {
 	Conf.Extensions.PetalDisabled = false
 	Conf.Extensions.Trust = false
 
-	for _, container := range []string{util.ContainerAndroid, util.ContainerIOS, util.ContainerHarmony} {
-		util.Container = container
-		if !IsPetalsEnabled() {
-			t.Fatalf("petals should be enabled on mobile container [%s] without extension trust", container)
-		}
-	}
-
 	for _, container := range []string{util.ContainerStd, util.ContainerDocker} {
 		util.Container = container
 		if IsPetalsEnabled() {
-			t.Fatalf("petals should be disabled on container [%s] without extension trust", container)
+			t.Fatalf("petals should be disabled without extension trust on container [%s]", container)
 		}
 	}
 

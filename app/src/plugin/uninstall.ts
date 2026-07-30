@@ -1,10 +1,8 @@
 import {App} from "../index";
 import {Plugin} from "./index";
-/// #if !MOBILE
 import {getAllModels} from "../layout/getAll";
 import {resizeTopBar} from "../layout/util";
 import {setTabPosition} from "../layout/tabUtil";
-/// #endif
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -36,7 +34,6 @@ export const uninstall = (app: App, name: string, isReload: boolean) => {
                 setStorageVal(Constants.LOCAL_PLUGIN_DOCKS, window.scribli.storage[Constants.LOCAL_PLUGIN_DOCKS]);
             }
             // rm tab
-            /// #if !MOBILE
             const modelsKeys = Object.keys(plugin.models);
             getAllModels().custom.forEach(custom => {
                 if (modelsKeys.includes(custom.type)) {
@@ -49,7 +46,6 @@ export const uninstall = (app: App, name: string, isReload: boolean) => {
                     }
                 }
             });
-            /// #endif
             // rm topBar
             for (let i = 0; i < plugin.topBarIcons.length; i++) {
                 const item = plugin.topBarIcons[i];
@@ -59,7 +55,6 @@ export const uninstall = (app: App, name: string, isReload: boolean) => {
             }
             // rm agent actions
             plugin.agentActions.forEach(name => unregisterAction(name));
-            /// #if !MOBILE
             // rm statusBar
             plugin.statusBarIcons.forEach(item => {
                 item.remove();
@@ -77,7 +72,6 @@ export const uninstall = (app: App, name: string, isReload: boolean) => {
             });
             resizeTopBar();
             setTabPosition(true);
-            /// #endif
             // rm listen
             Array.from(document.childNodes).find(item => {
                 if (item.nodeType === 8 && item.textContent === name) {
@@ -87,12 +81,6 @@ export const uninstall = (app: App, name: string, isReload: boolean) => {
             });
             // rm plugin
             app.plugins.splice(index, 1);
-            /// #if MOBILE
-            // 移动端卸载插件后，若无任何插件 dock 则隐藏插件入口图标
-            if (app.plugins.every(p => Object.keys(p.docks).length === 0)) {
-                document.querySelector('#sidebar [data-type="sidebar-plugin-tab"]')?.classList.add("fn__none");
-            }
-            /// #endif
             // rm icons
             document.querySelector(`svg[data-name="${plugin.name}"]`)?.remove();
             // rm protyle toolbar

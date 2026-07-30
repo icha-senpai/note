@@ -370,16 +370,12 @@ export const editAssetItem = (options: {
         window.scribli.menus.menu.append(new MenuItem(writeAssetToClipboard(decodeURI(linkAddress))).element);
     }
     const rect = options.rect;
-    /// #if MOBILE
-    menu.fullscreen();
-    /// #else
     menu.open({
         x: rect.right,
         y: rect.top,
         w: rect.width,
         h: rect.height,
     });
-    /// #endif
     const textElements = menu.element.querySelectorAll("textarea");
     textElements[0].value = decodeURI(linkAddress);
     textElements[0].focus();

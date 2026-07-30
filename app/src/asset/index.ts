@@ -5,12 +5,10 @@ import {setPanelFocus} from "../layout/util";
 /// #if !BROWSER
 import {setModelsHash} from "../window/setHeader";
 /// #endif
-/// #if !MOBILE
 // @ts-ignore
 import {webViewerLoad} from "./pdf/viewer";
 // @ts-ignore
 import {onPageNumberChanged} from "./pdf/app";
-/// #endif
 import {fetchPost} from "../util/fetch";
 import {setStorageVal, updateHotkeyTip} from "../protyle/util/compatibility";
 import {App} from "../index";
@@ -77,7 +75,6 @@ export class Asset extends Model {
             return;
         }
         this.pdfId = pdfId;
-        /// #if !MOBILE
         if (typeof pdfId === "string") {
             this.getPdfId(() => {
                 if (this.pdfPage) {
@@ -89,7 +86,6 @@ export class Asset extends Model {
         if (typeof pdfId === "number" && !isNaN(pdfId)) {
             onPageNumberChanged({value: this.pdfId, pdfInstance: this.pdfObject});
         }
-        /// #endif
     }
 
     private render(isInit = true) {
@@ -103,7 +99,6 @@ export class Asset extends Model {
         } else if (Constants.SCRIBLI_ASSETS_VIDEO.includes(type)) {
             this.element.innerHTML = `<div class="asset"><video controls="controls" src="${src}"></video></div>`;
         } else if (type === ".pdf") {
-            /// #if !MOBILE
             if (!isInit) {
                 this.pdfObject.close();
             }
@@ -535,7 +530,6 @@ export class Asset extends Model {
                 setModelsHash();
                 /// #endif
             }, Constants.TIMEOUT_LOAD);
-            /// #endif
         }
     }
 }

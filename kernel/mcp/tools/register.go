@@ -46,7 +46,7 @@ func LookupTool(name string) *Tool {
 		}
 	}
 
-	if prefix := "siyuan_"; strings.HasPrefix(lower, prefix) {
+	if prefix := "scribli_"; strings.HasPrefix(lower, prefix) {
 		base := strings.TrimPrefix(lower, prefix)
 		for k, v := range Registry {
 			if strings.ToLower(k) == base {

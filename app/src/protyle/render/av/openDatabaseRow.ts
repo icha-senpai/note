@@ -1,13 +1,6 @@
-/// #if MOBILE
-import {openMobileFileById} from "../../../mobile/editor";
-import {Dialog} from "../../../dialog";
-import {renderAVAttribute} from "./blockAttr";
-import {Constants} from "../../../constants";
-/// #else
 import {openFile, openFileById} from "../../../editor/util";
 import {Editor} from "../../../editor";
 import {getAllTabs} from "../../../layout/getAll";
-/// #endif
 
 export interface IDatabaseRowOpenData {
     avID: string;
@@ -20,37 +13,6 @@ export interface IDatabaseRowOpenData {
     isDetached: boolean;
 }
 
-/// #if MOBILE
-const closeMobileDatabaseRow = () => {
-    for (let i = window.scribli.dialogs.length - 1; i >= 0; i--) {
-        if (window.scribli.dialogs[i].element.querySelector(".protyle-db-row--mobile")) {
-            window.scribli.dialogs[i].destroy();
-            break;
-        }
-    }
-};
-
-const openMobileDetachedDatabaseRow = (protyle: IProtyle, data: IDatabaseRowOpenData, title: string) => {
-    closeMobileDatabaseRow();
-    const dialog = new Dialog({
-        content: `<div class="protyle-db-row protyle-db-row--mobile">
-    <div class="protyle-db-row__title"><svg><use xlink:href="#iconDatabase"></use></svg><span></span></div>
-    <div class="custom-attr protyle-db-row__body"></div>
-</div>`,
-        width: "100vw",
-        height: "100dvh",
-        containerClassName: "b3-dialog__container--database-row",
-        disableAnimation: true,
-    });
-    const rowElement = dialog.element.querySelector<HTMLElement>(".protyle-db-row");
-    rowElement.querySelector(".protyle-db-row__title span").textContent = title;
-    renderAVAttribute(rowElement.querySelector<HTMLElement>(".protyle-db-row__body"), data.itemID, protyle, undefined, {
-        avID: data.avID,
-        itemID: data.itemID,
-        valueID: data.valueID,
-    });
-};
-/// #else
 const showDatabaseRowPreview = (model: Editor, blockID: string) => {
     if (!model?.editor?.protyle) {
         return;
@@ -78,27 +40,9 @@ const getDatabaseRowPreviewTab = (blockID: string) => {
         }
     });
 };
-/// #endif
 
 export const openDatabaseRowByData = (protyle: IProtyle, data: IDatabaseRowOpenData) => {
     const title = data.title || window.scribli.languages.untitled;
-    /// #if MOBILE
-    if (data.isDetached) {
-        openMobileDetachedDatabaseRow(protyle, data, title);
-        return;
-    }
-    if (!data.boundBlockID) {
-        return;
-    }
-    closeMobileDatabaseRow();
-    window.scribli.menus.menu.remove();
-    openMobileFileById(protyle.app, data.boundBlockID, [Constants.CB_GET_ALL, Constants.CB_GET_FOCUS],
-        undefined, undefined, (editorProtyle) => {
-            editorProtyle.element.dataset.databaseRowId = data.boundBlockID;
-            editorProtyle.databaseAttributePanel?.expand();
-            editorProtyle.contentElement.scrollTop = 0;
-        }, true);
-    /// #else
     if (data.isDetached) {
         if (!data.databaseBlockID) {
             return;
@@ -147,5 +91,4 @@ export const openDatabaseRowByData = (protyle: IProtyle, data: IDatabaseRowOpenD
             showDatabaseRowPreview(model, data.boundBlockID);
         },
     });
-    /// #endif
 };

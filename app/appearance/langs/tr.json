@@ -784,8 +784,6 @@
 	"multiSelect": "Çoklu seçim",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Komut Paleti",
-	"cloudRegionNorthAmerica": "Scribli (Kuzey Amerika veri merkezi)",
-	"cloudRegionChina": "Çin ana kara veri merkezi",
 	"currentKernel": "Geçerli çekirdek",
 	"otherOnlineKernels": "Diğer çevrimiçi çekirdekler",
 	"syncPerception": "Senkron algılama",
@@ -804,7 +802,7 @@
 	"color": "Renk",
 	"confirmPassword": "Şifreyi zaten hatırladım",
 	"passwordNoMatch": "Girilen şifreler eşleşmiyor",
-	"cloudConfigTip": "Lütfen [Ayarlar - Hesap ve Senkronizasyon - Bulut depolama sağlayıcısı] kısmından yapılandır",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "${name} kaldırmak istediğine emin misin?<br>Kaldırma işlemi tüm ilgili ayarları ve verileri kaldırabilir, lütfen dikkatli olun!",
 	"scrollGetMore": "Daha fazla yüklemek için yukarı veya aşağı kaydır",
 	"flashcardNewCard": "Yeni",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Alt belgeleri birleştir",
 	"removeAssetsFolder": "Varlıklar klasörünü kaldır",
 	"upload": "Yükle",
-	"reminderTip": "Hatırlatma zamanı şu andan önce olamaz",
-	"wechatTip": "İçerik bloğu şifrelenmeden buluta gönderilir ve süresi dolduğunda WeChat bildirim mesajı olarak iletilir",
 	"notEmpty": "Hatırlatma zamanı boş olamaz",
 	"experimentalFeature": "(⚗️ Bu özellik deneme aşamasındadır)",
-	"wechatReminder": "WeChat hatırlatıcısı",
-	"notifyTime": "Bildirim zamanı",
 	"docName": "Belge adı",
 	"bootSyncFailed": "Başlangıçta veri senkronizasyonu başarısız oldu",
 	"use": "Kullan",
@@ -2168,3 +2162,5 @@
 		"343": "Yeni Bir Başlangıç"
 	}
 }
+
+

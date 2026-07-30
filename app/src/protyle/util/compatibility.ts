@@ -120,27 +120,6 @@ export const saveExportFile = async (uri: string, msgId?: string) => {
     }
     /// #else
     try {
-        if (isInAndroid()) {
-            window.JSAndroid.saveExportFile(uri);
-            if (msgId) {
-                hideMessage(msgId);
-            }
-            return;
-        }
-        if (isInIOS()) {
-            window.webkit.messageHandlers.saveExportFile.postMessage(uri);
-            if (msgId) {
-                hideMessage(msgId);
-            }
-            return;
-        }
-        if (isInHarmony()) {
-            window.JSHarmony.saveExportFile(uri);
-            if (msgId) {
-                hideMessage(msgId);
-            }
-            return;
-        }
         const openUrl = new URL(uri, `${location.origin}/`);
         openUrl.searchParams.set("download", "true");
         window.open(openUrl.href);
@@ -157,11 +136,6 @@ export const saveExportFile = async (uri: string, msgId?: string) => {
 };
 
 export const readText = () => {
-    if (isInAndroid()) {
-        return window.JSAndroid.readClipboard();
-    } else if (isInHarmony()) {
-        return window.JSHarmony.readClipboard();
-    }
     if (typeof navigator.clipboard === "undefined") {
         alert(window.scribli.languages.clipboardPermissionDenied);
         return "";
@@ -199,28 +173,6 @@ export const getLocalFiles = async () => {
 
 export const readClipboard = async () => {
     const text: IClipboardData = {textPlain: "", textHTML: "", scribliHTML: ""};
-    if (isInAndroid()) {
-        text.textPlain = window.JSAndroid.readClipboard();
-        text.textHTML = window.JSAndroid.readHTMLClipboard();
-        const textObj = getTextScribliFromTextHTML(text.textHTML);
-        text.textHTML = textObj.textHtml;
-        text.scribliHTML = textObj.textScribli;
-        if (!text.scribliHTML) {
-            text.scribliHTML = window.JSAndroid.readScribliHTMLClipboard?.() || "";
-        }
-        return text;
-    }
-    if (isInHarmony()) {
-        text.textPlain = window.JSHarmony.readClipboard();
-        text.textHTML = window.JSHarmony.readHTMLClipboard();
-        const textObj = getTextScribliFromTextHTML(text.textHTML);
-        text.textHTML = textObj.textHtml;
-        text.scribliHTML = textObj.textScribli;
-        if (!text.scribliHTML) {
-            text.scribliHTML = window.JSHarmony.readScribliHTMLClipboard?.() || "";
-        }
-        return text;
-    }
     if (typeof navigator.clipboard === "undefined") {
         alert(window.scribli.languages.clipboardPermissionDenied);
         return text;
@@ -266,39 +218,18 @@ export const writeText = (text: string) => {
         range = getSelection().getRangeAt(0).cloneRange();
     }
     try {
-        // navigator.clipboard.writeText 抛出异常不进入 catch，这里需要先处理移动端复制
-        if (isInAndroid()) {
-            window.JSAndroid.writeClipboard(text);
-            return;
-        }
-        if (isInHarmony()) {
-            window.JSHarmony.writeClipboard(text);
-            return;
-        }
-        if (isInIOS()) {
-            window.webkit.messageHandlers.setClipboard.postMessage(text);
-            return;
-        }
         navigator.clipboard.writeText(text);
     } catch (e) {
-        if (isInIOS()) {
-            window.webkit.messageHandlers.setClipboard.postMessage(text);
-        } else if (isInAndroid()) {
-            window.JSAndroid.writeClipboard(text);
-        } else if (isInHarmony()) {
-            window.JSHarmony.writeClipboard(text);
-        } else {
-            const textElement = document.createElement("textarea");
-            textElement.value = text;
-            textElement.style.position = "fixed";  //avoid scrolling to bottom
-            document.body.appendChild(textElement);
-            textElement.focus();
-            textElement.select();
-            document.execCommand("copy");
-            document.body.removeChild(textElement);
-            if (range) {
-                focusByRange(range);
-            }
+        const textElement = document.createElement("textarea");
+        textElement.value = text;
+        textElement.style.position = "fixed";  //avoid scrolling to bottom
+        document.body.appendChild(textElement);
+        textElement.focus();
+        textElement.select();
+        document.execCommand("copy");
+        document.body.removeChild(textElement);
+        if (range) {
+            focusByRange(range);
         }
     }
 };
@@ -377,36 +308,8 @@ export const isWin11 = async () => {
     return false;
 };
 
-export const getScreenWidth = () => {
-    if (isInAndroid()) {
-        return window.JSAndroid.getScreenWidthPx();
-    } else if (isInHarmony()) {
-        return window.JSHarmony.getScreenWidthPx();
-    }
-    return window.outerWidth;
-};
-
 export const isWindows = () => {
     return navigator.platform.toUpperCase().indexOf("WIN") > -1;
-};
-
-export const isInAndroid = () => {
-    return window.scribli.config.system.container === "android" && window.JSAndroid;
-};
-
-export const isInIOS = () => {
-    return window.scribli.config.system.container === "ios" && window.webkit?.messageHandlers;
-};
-
-export const isInMobileApp = () => {
-    if (isInAndroid() || isInHarmony() || isInIOS()) {
-        return true;
-    }
-    return false;
-};
-
-export const isInHarmony = () => {
-    return window.scribli.config.system.container === "harmony" && window.JSHarmony;
 };
 
 export const isInEdge = () => {
@@ -632,12 +535,8 @@ export const initWindowOpenOverride = (app: App, openExternal?: (url: string) =>
     const originalOpen = window.open;
     window.open = function (url?: string | URL, target?: string, features?: string): WindowProxy | null {
         const urlStr = typeof url === "string" ? url : (url ? String(url) : "");
-        if (isScribliUriProtocol(urlStr) && (!isBrowser() || isInMobileApp() || target !== "_blank")) {
+        if (isScribliUriProtocol(urlStr) && (!isBrowser() || target !== "_blank")) {
             void import("../../util/uri").then(({processScribliUri}) => processScribliUri(app, urlStr));
-            return null;
-        }
-        if (isInMobileApp() && urlStr && openExternal) {
-            openExternal(urlStr);
             return null;
         }
         // 浏览器可通过 window.open("scribli://blocks/20221031001313-rk7sd0e", "_blank") 打开本地客户端

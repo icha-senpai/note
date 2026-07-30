@@ -784,8 +784,6 @@
 	"multiSelect": "Mehrfachauswahl",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Befehls-Palette",
-	"cloudRegionNorthAmerica": "Scribli (Nordamerika-Datenzentrum)",
-	"cloudRegionChina": "Datenzentrum Festland-China",
 	"currentKernel": "Aktueller Kern",
 	"otherOnlineKernels": "Andere Online-Kerne",
 	"syncPerception": "Sync-Wahrnehmung",
@@ -804,7 +802,7 @@
 	"color": "Farbe",
 	"confirmPassword": "Ich habe das Passwort bereits gemerkt",
 	"passwordNoMatch": "Die zweimal eingegebenen Passwörter stimmen nicht überein",
-	"cloudConfigTip": "Bitte in [Einstellungen - Konto & Synchronisierung - Cloud-Speicherdienstanbieter] konfigurieren",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Möchten Sie ${name} wirklich deinstallieren?<br>Die Deinstallation kann alle zugehörigen Einstellungen und Daten entfernen. Bitte entscheiden Sie vorsichtig!",
 	"scrollGetMore": "Scrollen Sie nach oben und unten, um mehr zu laden",
 	"flashcardNewCard": "Neu",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Unterdokumente zusammenführen",
 	"removeAssetsFolder": "Assets-Verzeichnis entfernen",
 	"upload": "Hochladen",
-	"reminderTip": "Die Erinnerungszeit kann nicht kleiner sein als die aktuelle Zeit",
-	"wechatTip": "Der Inhaltsblock wird im Klartext an die Cloud gesendet und bei Ablauf über die WeChat MP-Vorlagenmeldung gepusht.",
 	"notEmpty": "Die Erinnerungszeit darf nicht leer sein",
 	"experimentalFeature": "(⚗️ Diese Funktion befindet sich im experimentellen Stadium)",
-	"wechatReminder": "WeChat-Erinnerung",
-	"notifyTime": "Benachrichtungszeit",
 	"docName": "Dokumentname",
 	"bootSyncFailed": "Daten konnten beim Start nicht synchronisiert werden.",
 	"use": "Nutzen",
@@ -2168,3 +2162,5 @@
 		"343": "Ein neuer Anfang"
 	}
 }
+
+

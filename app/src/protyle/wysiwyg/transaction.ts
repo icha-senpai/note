@@ -18,16 +18,13 @@ import {highlightRender} from "../render/highlightRender";
 import {hasClosestBlock, hasClosestByAttribute, hasTopClosestByAttribute, isInEmbedBlock} from "../util/hasClosest";
 import {zoomOut} from "../../menus/protyle";
 import {disabledProtyle, enableProtyle, onGet} from "../util/onGet";
-/// #if !MOBILE
 import {getAllModels} from "../../layout/getAll";
-/// #endif
 import {avRender, refreshAV} from "../render/av/render";
 import {removeFoldHeading} from "../util/heading";
 import {cancelSB, genEmptyElement, genSBElement, refreshSbResize} from "../../block/util";
 import {hideElements} from "../ui/hideElements";
 import {reloadProtyle} from "../util/reload";
 import {countBlockWord} from "../../layout/status";
-import {hasFeatureAccess} from "../../util/featureAccess";
 import {resize} from "../util/resize";
 import {processClonePHElement} from "../render/util";
 import {scrollCenter} from "../../util/highlightById";
@@ -98,13 +95,6 @@ const promiseTransaction = (options: {
     const protyle = options.protyle;
     // 受影响的嵌入块需推迟到事务提交后再渲染，否则其查询请求会早于写入到达内核而拿到旧数据
     const pendingEmbedElements = new Set<Element>();
-    /// #if MOBILE
-    if (((0 !== window.scribli.config.sync.provider && hasFeatureAccess()) ||
-            (0 === window.scribli.config.sync.provider && hasFeatureAccess())) &&
-        window.scribli.config.repo.key && window.scribli.config.sync.enabled) {
-        document.getElementById("toolbarSync").classList.remove("fn__none");
-    }
-    /// #endif
     let range: Range;
     if (getSelection().rangeCount > 0) {
         range = getSelection().getRangeAt(0);
@@ -772,9 +762,6 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                 if (data.new.icon !== data.old.icon ||
                     data.new["title-img"] !== data.old["title-img"] ||
                     data.new.tags !== data.old.tags && protyle.background) {
-                    /// #if MOBILE
-                    protyle = window.scribli.mobile.editor.protyle;
-                    /// #endif
                     protyle.background.ial.icon = data.new.icon;
                     protyle.background.ial.tags = data.new.tags;
                     protyle.background.ial["title-img"] = data.new["title-img"];
@@ -837,7 +824,6 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
             if (operation.context?.ignoreProcess === "true") {
                 return;
             }
-            /// #if !MOBILE
             if (updateElements.length === 0) {
                 // 打开两个相同的文档 A、A1，从 A 拖拽块 B 到 A1，在后续 ws 处理中，无法获取到拖拽出去的 B
                 getAllModels().editor.forEach(editor => {
@@ -856,7 +842,6 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                     }
                 });
             }
-            /// #endif
             // 折叠标题移动到横向超级块的第一个块上后撤销
             if (updateElements.length === 0) {
                 const tempEl = document.createElement("div");

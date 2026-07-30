@@ -2,16 +2,12 @@ import {App} from "../index";
 import {EventBus} from "./EventBus";
 import {fetchPost} from "../util/fetch";
 import {isMobile, isWindow} from "../util/functions";
-/// #if !MOBILE
 import {Custom} from "../layout/dock/Custom";
 import {getAllEditor, getAllModels} from "../layout/getAll";
 import {Tab} from "../layout/Tab";
 import {resizeTopBar, setPanelFocus} from "../layout/util";
 import {getDockByType, setTabPosition} from "../layout/tabUtil";
 import {clearOBG} from "../layout/dock/util";
-///#else
-import {MobileCustom} from "../mobile/dock/MobileCustom";
-/// #endif
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -57,18 +53,12 @@ export class Plugin {
     // so they can be unregistered on uninstall.
     public agentActions: string[] = [];
     public models: {
-        /// #if !MOBILE
         [key: string]: (options: { tab: Tab, data: any }) => Custom
-        /// #endif
     } = {};
     public docks: {
         [key: string]: {
             config: IPluginDockTab,
-            /// #if !MOBILE
             model: (options: { tab: Tab }) => Custom
-            /// #else
-            mobileModel: (element: Element) => MobileCustom
-            /// #endif
         }
     } = {};
     private protyleOptionsValue: IProtyleOptions;
@@ -259,11 +249,9 @@ export class Plugin {
             document.querySelector("#" + (iconElement.getAttribute("data-location") === "right" ? "barPlugins" : "drag"))?.before(iconElement);
         }
         this.topBarIcons.push(iconElement);
-        /// #if !MOBILE
         if (!isWindow()) {
             setTabPosition(true);
         }
-        /// #endif
         return iconElement;
     }
 
@@ -271,7 +259,6 @@ export class Plugin {
         element: HTMLElement,
         position?: "right" | "left",
     }) {
-        /// #if !MOBILE
         options.element.setAttribute("data-location", options.position || "right");
         this.statusBarIcons.push(options.element);
         const statusElement = document.getElementById("status");
@@ -283,7 +270,6 @@ export class Plugin {
             }
         }
         return options.element;
-        /// #endif
     }
 
     public openSetting() {
@@ -373,13 +359,11 @@ export class Plugin {
         modelKeys.forEach(item => {
             tabs[item.replace(this.name, "")] = [];
         });
-        /// #if !MOBILE
         getAllModels().custom.find(item => {
             if (modelKeys.includes(item.type)) {
                 tabs[item.type.replace(this.name, "")].push(item);
             }
         });
-        /// #endif
         return tabs;
     }
 
@@ -391,7 +375,6 @@ export class Plugin {
         update?: () => void,
         init: () => void
     }) {
-        /// #if !MOBILE
         const type2 = this.name + options.type;
         this.models[type2] = (arg: { data: any, tab: Tab }) => {
             const customObj = new Custom({
@@ -412,7 +395,6 @@ export class Plugin {
             return customObj;
         };
         return this.models[type2];
-        /// #endif
     }
 
     // Register a frontend action that the AI agent can discover and invoke. The action is exposed
@@ -464,19 +446,6 @@ export class Plugin {
         }
         this.docks[type2] = {
             config: options.config,
-            /// #if MOBILE
-            mobileModel: (element) => {
-                const customObj = new MobileCustom({
-                    element,
-                    type: type2,
-                    data: options.data,
-                    init: options.init,
-                    update: options.update,
-                    destroy: options.destroy,
-                });
-                return customObj;
-            },
-            /// #else
             model: (arg: { tab: Tab }) => {
                 const customObj = new Custom({
                     app: this.app,
@@ -497,7 +466,6 @@ export class Plugin {
                 customObj.element.classList.add("sy__" + type2, "dockPanel");
                 return customObj;
             }
-            /// #endif
         };
         if (!window.scribli.config.keymap.plugin) {
             window.scribli.config.keymap.plugin = {};

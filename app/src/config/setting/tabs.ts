@@ -9,13 +9,8 @@ import {appearanceConfigApi} from "../tabs/appearanceRuntime";
 import {mountSyncTabExtras, patchSyncConfig} from "../tabs/syncRuntime";
 import {mountAccessTab} from "../tabs/accessRuntime";
 import {collectAssetsTabSearchStrings, mountAssetsTab} from "../assets";
-/// #if !MOBILE
 import {collectKeymapTabSearchStrings, mountKeymapTab} from "../tabs/keymapUi";
-/// #endif
 import {isHuawei} from "../../protyle/util/compatibility";
-/// #if MOBILE
-import {isDisabledFeature} from "../../protyle/util/compatibility";
-/// #endif
 import {SettingBuilder, type SettingTab} from "./builder";
 import {registerEditorTab} from "../tabs/editorTab";
 import {registerFileTab} from "../tabs/fileTab";
@@ -61,9 +56,6 @@ const settingTabs = {
         icon: "iconSparkles",
         title: () => window.scribli.languages.ai,
         defaultSave: aiConfigApi.patch,
-        /// #if MOBILE
-        hidden: () => isHuawei() || isDisabledFeature("ai"),
-        /// #endif
     }, registerAiTab),
     secretsVariables: setting.tab({
         id: "secretsVariables",
@@ -90,7 +82,6 @@ const settingTabs = {
         title: () => window.scribli.languages.search,
         defaultSave: searchConfigApi.patch,
     }, registerSearchTab),
-    /// #if !MOBILE
     keymap: setting.panel({
         id: "keymap",
         icon: "iconKeymap",
@@ -98,7 +89,6 @@ const settingTabs = {
         searchStrings: collectKeymapTabSearchStrings,
         mount: mountKeymapTab,
     }),
-    /// #endif
     sync: setting.tab({
         id: "sync",
         icon: "iconCloud",

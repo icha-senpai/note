@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
@@ -71,12 +71,7 @@ func ShortPathForBootingDisplay(p string) string {
 var LocalIPs []string
 
 func GetServerAddrs() (ret []string) {
-	if ContainerAndroid != Container && ContainerHarmony != Container {
-		ret = GetPrivateIPv4s()
-	} else {
-
-		ret = LocalIPs
-	}
+	ret = GetPrivateIPv4s()
 
 	ret = append(ret, LocalHost)
 	ret = gulu.Str.RemoveDuplicatedElem(ret)

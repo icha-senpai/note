@@ -140,7 +140,6 @@ export const unRefMoreMenu = (target: Element, element: Element, edit: Protyle) 
         return;
     }
     const localData = window.scribli.storage[Constants.LOCAL_SEARCHUNREF];
-    /// #if !MOBILE
     menu.addItem({
         icon: "iconLayout",
         label: window.scribli.languages.layout,
@@ -181,7 +180,6 @@ export const unRefMoreMenu = (target: Element, element: Element, edit: Protyle) 
             }
         }]
     });
-    /// #endif
     menu.addItem({
         icon: "iconRefresh",
         label: window.scribli.languages.refresh,
@@ -192,10 +190,6 @@ export const unRefMoreMenu = (target: Element, element: Element, edit: Protyle) 
             getUnRefList(element, edit);
         },
     });
-    /// #if MOBILE
-    menu.fullscreen();
-    /// #else
     const rect = target.getBoundingClientRect();
     menu.open({x: rect.right, y: rect.bottom, isLeft: true});
-    /// #endif
 };

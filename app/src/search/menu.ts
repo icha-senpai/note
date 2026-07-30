@@ -7,7 +7,6 @@ import {fetchPost} from "../util/fetch";
 import {escapeHtml} from "../util/escape";
 import {setStorageVal} from "../protyle/util/compatibility";
 import {confirmDialog} from "../dialog/confirmDialog";
-import {goUnRef, updateSearchResult} from "../mobile/menu/search";
 import {getDefaultSubType} from "./getDefault";
 
 export const filterMenu = (config: Config.IUILayoutTabSearchConfig, cb: () => void) => {
@@ -527,87 +526,6 @@ export const moreMenu = async (config: Config.IUILayoutTabSearchConfig,
     }
     window.scribli.menus.menu.remove();
     window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_SEARCH_MORE);
-    /// #if MOBILE
-    window.scribli.menus.menu.append(new MenuItem({
-        iconHTML: "",
-        label: window.scribli.languages.listInvalidRefBlocks,
-        click() {
-            goUnRef();
-        }
-    }).element);
-    window.scribli.menus.menu.append(new MenuItem({type: "separator"}).element);
-    window.scribli.menus.menu.append(new MenuItem({
-        iconHTML: "",
-        label: window.scribli.languages.searchType,
-        click() {
-            filterMenu(config, () => {
-                updateSearchResult(config, element, true);
-            });
-        }
-    }).element);
-    window.scribli.menus.menu.append(new MenuItem({
-        iconHTML: "",
-        label: window.scribli.languages.replaceType,
-        click() {
-            replaceFilterMenu(config);
-        }
-    }).element);
-    const searchMethodSubmenu = [{
-        icon: "iconExact",
-        label: window.scribli.languages.keyword,
-        current: config.method === 0,
-        click() {
-            config.method = 0;
-            config.page = 1;
-            updateSearchResult(config, element, true);
-        }
-    }, {
-        icon: "iconQuote",
-        label: window.scribli.languages.querySyntax,
-        current: config.method === 1,
-        click() {
-            config.method = 1;
-            config.page = 1;
-            updateSearchResult(config, element, true);
-        }
-    }, {
-        icon: "iconDatabase",
-        label: "SQL",
-        current: config.method === 2,
-        click() {
-            config.method = 2;
-            config.page = 1;
-            updateSearchResult(config, element, true);
-        }
-    }, {
-        icon: "iconRegex",
-        label: window.scribli.languages.regex,
-        current: config.method === 3,
-        click() {
-            config.method = 3;
-            config.page = 1;
-            updateSearchResult(config, element, true);
-        }
-    }];
-    if (window.scribli.config.ai.embedding.enabled) {
-        searchMethodSubmenu.push({
-            icon: "iconSparkles",
-            label: window.scribli.languages.semanticSearch,
-            current: config.method === 4,
-            click() {
-                config.method = 4;
-                config.page = 1;
-                updateSearchResult(config, element, true);
-            }
-        });
-    }
-    window.scribli.menus.menu.append(new MenuItem({
-        iconHTML: "",
-        label: window.scribli.languages.searchMethod,
-        type: "submenu",
-        submenu: searchMethodSubmenu
-    }).element);
-    /// #endif
     const sortMenu = [{
         iconHTML: "",
         label: window.scribli.languages.type,
@@ -760,11 +678,6 @@ export const initCriteriaMenu = (element: HTMLElement, data: Config.IUILayoutTab
             }
             html += `<div data-type="set-criteria" class="${isSame ? "b3-chip--current " : ""}b3-chip b3-chip--middle b3-chip--pointer">${escapeHtml(item.name)}<svg class="b3-chip__close" data-type="remove-criteria"><use xlink:href="#iconClose"></use></svg></div>`;
         });
-        /// #if MOBILE
-        element.innerHTML = `<div class="b3-chips${html ? "" : " fn__none"}">
-    ${html}
-</div>`;
-        /// #else
         element.innerHTML = `<div class="b3-chips${html ? "" : " fn__none"}">
     ${html}
 </div>
@@ -773,7 +686,6 @@ export const initCriteriaMenu = (element: HTMLElement, data: Config.IUILayoutTab
 <span class="fn__space"></span>
 <button data-type="removeCriterion" aria-label="${window.scribli.languages.useCriterion}" class="ariaLabel b3-button b3-button--small b3-button--outline fn__flex-center fn__flex-shrink" data-position="9south">${window.scribli.languages.removeCriterion}</button>
 <span class="fn__space"></span>`;
-        /// #endif
     });
 };
 

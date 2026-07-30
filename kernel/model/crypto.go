@@ -32,8 +32,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/filesys"
@@ -41,10 +39,12 @@ import (
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
-var kekVerifierMagic = []byte("siyuan-enc-v1")
+var kekVerifierMagic = []byte("scribli-enc-v1")
 
 const boxEncryptionSpec = 1
 
@@ -1396,25 +1396,25 @@ func DecryptFile(boxID, relativePath string, dek, ciphertext []byte) ([]byte, er
 }
 
 func EncryptAsset(boxID, diskName string, dek, plaintext []byte) ([]byte, error) {
-	assetKey := util.DeriveSubKey(dek, "siyuan/asset")
+	assetKey := util.DeriveSubKey(dek, "scribli/asset")
 	aad := "scribli:v1:asset:" + boxID + ":assets/" + diskName
 	return util.EncryptWithAAD(assetKey, plaintext, []byte(aad))
 }
 
 func DecryptAsset(boxID, diskName string, dek, ciphertext []byte) ([]byte, error) {
-	assetKey := util.DeriveSubKey(dek, "siyuan/asset")
+	assetKey := util.DeriveSubKey(dek, "scribli/asset")
 	aad := "scribli:v1:asset:" + boxID + ":assets/" + diskName
 	return util.DecryptWithAAD(assetKey, ciphertext, []byte(aad))
 }
 
 func EncryptAssetNameMapping(boxID string, dek, plaintext []byte) ([]byte, error) {
-	assetKey := util.DeriveSubKey(dek, "siyuan/asset")
+	assetKey := util.DeriveSubKey(dek, "scribli/asset")
 	aad := "scribli:v1:asset-names:" + boxID
 	return util.EncryptWithAAD(assetKey, plaintext, []byte(aad))
 }
 
 func DecryptAssetNameMapping(boxID string, dek, ciphertext []byte) ([]byte, error) {
-	assetKey := util.DeriveSubKey(dek, "siyuan/asset")
+	assetKey := util.DeriveSubKey(dek, "scribli/asset")
 	aad := "scribli:v1:asset-names:" + boxID
 	return util.DecryptWithAAD(assetKey, ciphertext, []byte(aad))
 }

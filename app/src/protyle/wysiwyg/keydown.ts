@@ -50,9 +50,7 @@ import {addSubList, listIndent, listOutdent, toggleTaskListItem} from "./list";
 import {newFileContentBySelect, rename, replaceFileName} from "../../editor/rename";
 import {cancelSB, insertEmptyBlock, jumpToParent} from "../../block/util";
 import {isEncryptedBox, isLocalPath} from "../../util/pathName";
-/// #if !MOBILE
 import {openBy, openFileById} from "../../editor/util";
-/// #endif
 import {alignImgCenter, alignImgLeft, commonHotkey, downSelect, getStartEndElement, upSelect} from "./commonHotkey";
 import {fileAnnotationRefMenu, inlineMathMenu, linkMenu, refMenu, tagMenu} from "../../menus/protyle";
 import {foldBlocksRecursively, getFoldBlock, setFold} from "../util/blockFold";
@@ -1152,11 +1150,9 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        /// #if !MOBILE
         if (commonHotkey(protyle, event, nodeElement)) {
             return true;
         }
-        /// #endif
 
         if (matchHotKey(window.scribli.config.keymap.editor.general.copyText.custom, event)) {
             // 用于标识复制文本 *
@@ -1900,7 +1896,6 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
 
-        /// #if !MOBILE
         const refElement = hasClosestByAttribute(range.startContainer, "data-type", "block-ref");
         if (refElement) {
             const id = refElement.getAttribute("data-id");
@@ -1982,7 +1977,6 @@ export const keydown = (protyle: IProtyle, editorElement: HTMLElement) => {
                 return true;
             }
         }
-        /// #endif
 
         if (matchHotKey("⇧⌘V", event)) {
             event.returnValue = false;

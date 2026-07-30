@@ -1,14 +1,10 @@
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
 import {MenuItem} from "../../menus/Menu";
-import {copySubMenu, exportMd, movePathToMenu, openFileAttr, openFileWechatNotify,} from "../../menus/commonMenuItem";
+import {copySubMenu, exportMd, movePathToMenu, openFileAttr} from "../../menus/commonMenuItem";
 import {deleteFile} from "../../editor/deleteFile";
 import {encodeBase64, updateHotkeyTip} from "../util/compatibility";
-/// #if !MOBILE
 import {openBacklink, openGraph, openOutline} from "../../layout/dock/util";
 import * as path from "path";
-/// #else
-import {openMobileFileById} from "../../mobile/editor";
-/// #endif
 import {Constants} from "../../constants";
 import {openCardByData} from "../../card/openCard";
 import {viewCards} from "../../card/viewCards";
@@ -17,7 +13,6 @@ import {makeCard, quickMakeCard} from "../../card/makeCard";
 import {emitOpenMenu} from "../../plugin/EventBus";
 import * as dayjs from "dayjs";
 import {hideTooltip} from "../../dialog/tooltip";
-import {popSearch} from "../../mobile/menu/search";
 import {openSearch} from "../../search/spread";
 import {openDocHistory} from "../../history/doc";
 import {openNewWindowById} from "../../window/openNewWindow";
@@ -111,7 +106,6 @@ export const openTitleMenu = (protyle: IProtyle, position: IPosition, from: stri
                 }).element);
             }
         }
-        /// #if !MOBILE
         window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
         window.scribli.menus.menu.append(new MenuItem({
             id: "outline",
@@ -157,7 +151,6 @@ export const openTitleMenu = (protyle: IProtyle, position: IPosition, from: stri
                 });
             }
         }).element);
-        /// #endif
         window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
         window.scribli.menus.menu.append(new MenuItem({
             id: "attr",
@@ -169,16 +162,6 @@ export const openTitleMenu = (protyle: IProtyle, position: IPosition, from: stri
             }
         }).element);
         if (!window.scribli.config.readonly) {
-            if (window.scribli.config.cloudRegion === 0) {
-                window.scribli.menus.menu.append(new MenuItem({
-                    id: "wechatReminder",
-                    label: window.scribli.languages.wechatReminder,
-                    icon: "iconMp",
-                    click() {
-                        openFileWechatNotify(protyle);
-                    }
-                }).element);
-            }
             const isCardMade = !!response.data.ial[Constants.CUSTOM_RIFF_DECKS];
             if (!isEncryptedBox(protyle.notebookId)) {
             const riffCardMenu: IMenu[] = [{
@@ -243,25 +226,12 @@ export const openTitleMenu = (protyle: IProtyle, position: IPosition, from: stri
             accelerator: window.scribli.config.keymap.general.search.custom,
             async click() {
                 const searchPath = isBoxDoc ? "" : getDisplayName(protyle.path, false, true);
-                /// #if MOBILE
-                const pathResponse = isBoxDoc ? undefined : await fetchSyncPost("/api/filetree/getHPathByPath", {
-                        notebook: protyle.notebookId,
-                        path: searchPath + ".sy"
-                    });
-                popSearch(protyle.app, {
-                    hasReplace: false,
-                    hPath: isBoxDoc ? getNotebookName(protyle.notebookId) : pathPosix().join(getNotebookName(protyle.notebookId), pathResponse.data),
-                    idPath: [isBoxDoc ? protyle.notebookId : pathPosix().join(protyle.notebookId, searchPath)],
-                    page: 1,
-                });
-                /// #else
                 openSearch({
                     app: protyle.app,
                     hotkey: Constants.DIALOG_SEARCH,
                     notebookId: protyle.notebookId,
                     searchPath
                 });
-                /// #endif
             }
         }).element);
         if (!protyle.disabled) {
@@ -274,15 +244,11 @@ export const openTitleMenu = (protyle: IProtyle, position: IPosition, from: stri
                 label: window.scribli.languages.openBy,
                 icon: "iconOpen",
                 click() {
-                    /// #if !MOBILE
                     openFileById({
                         app: protyle.app,
                         id: protyle.block.id,
                         action: protyle.block.rootID !== protyle.block.id ? [Constants.CB_GET_ALL, Constants.CB_GET_FOCUS] : [Constants.CB_GET_CONTEXT],
                     });
-                    /// #else
-                    openMobileFileById(protyle.app, protyle.block.id, protyle.block.rootID !== protyle.block.id ? [Constants.CB_GET_ALL] : [Constants.CB_GET_CONTEXT]);
-                    /// #endif
                 }
             }).element);
         }
@@ -340,10 +306,6 @@ export const openTitleMenu = (protyle: IProtyle, position: IPosition, from: stri
             // 不能换行，否则移动端间距过大
             label: `${window.scribli.languages.modifiedAt} ${dayjs(response.data.ial.updated).format("YYYY-MM-DD HH:mm:ss")}<br>${window.scribli.languages.createdAt} ${dayjs(response.data.ial.id.substr(0, 14)).format("YYYY-MM-DD HH:mm:ss")}`
         }).element);
-        /// #if MOBILE
-        window.scribli.menus.menu.fullscreen();
-        /// #else
         window.scribli.menus.menu.popup(position);
-        /// #endif
     });
 };

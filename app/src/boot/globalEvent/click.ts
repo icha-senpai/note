@@ -1,6 +1,4 @@
-/// #if !MOBILE
 import {getAllModels} from "../../layout/getAll";
-/// #endif
 import {hasClosestByAttribute, hasClosestByClassName, hasTopClosestByClassName} from "../../protyle/util/hasClosest";
 import {hideAllElements} from "../../protyle/ui/hideElements";
 import {isWindow} from "../../util/functions";
@@ -50,7 +48,6 @@ export const globalClick = (event: MouseEvent) => {
         return;
     }
 
-    /// #if !MOBILE
     // dock float 时，点击空白处，隐藏 dock。场景：文档树上重命名后
     if (!isWindow() && window.scribli.layout.leftDock &&
         !hasClosestByClassName(target, "b3-dialog--open", true) &&
@@ -102,5 +99,4 @@ export const globalClick = (event: MouseEvent) => {
     ) {
         currentPDFViewerObject.findBar.close();
     }
-    /// #endif
 };

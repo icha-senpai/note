@@ -1,10 +1,8 @@
 import {Dialog} from "../dialog";
 import {fetchPost} from "../util/fetch";
-import {isMobile} from "../util/functions";
 import {escapeHtml} from "../util/escape";
 import {writeText} from "../protyle/util/compatibility";
 import {showMessage} from "../dialog/message";
-import {openModel} from "../mobile/menu/model";
 import {Constants} from "../constants";
 
 declare interface INotebookConf {
@@ -82,24 +80,13 @@ export const onGetnotebookconf = (data: INotebookConf) => {
     <div class="fn__hr"></div>
     <input class="b3-text-field fn__flex-center fn__block" id="dailyNoteTemplatePath" value="${data.conf.dailyNoteTemplatePath}">
 </div></div>`;
-    if (isMobile()) {
-        openModel({
-            title: titleHTML,
-            icon: "iconSettings",
-            html: `<div>${contentHTML}</div>`,
-            bindEvent() {
-                bindSettingEvent(document.querySelector("#model"), data);
-            }
-        });
-    } else {
-        const dialog = new Dialog({
-            width: "80vw",
-            title: titleHTML,
-            content: contentHTML
-        });
-        dialog.element.setAttribute("data-key", Constants.DIALOG_NOTEBOOKCONF);
-        bindSettingEvent(dialog.element, data);
-    }
+    const dialog = new Dialog({
+        width: "80vw",
+        title: titleHTML,
+        content: contentHTML
+    });
+    dialog.element.setAttribute("data-key", Constants.DIALOG_NOTEBOOKCONF);
+    bindSettingEvent(dialog.element, data);
 };
 
 const bindSettingEvent = (contentElement: Element, data: INotebookConf) => {

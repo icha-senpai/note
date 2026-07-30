@@ -8,8 +8,7 @@ export const registerServiceWorker = (
     },
 ) => {
     /// #if BROWSER
-    if (window.webkit?.messageHandlers || window.JSAndroid || window.JSHarmony ||
-        !("serviceWorker" in window.navigator)
+    if (!("serviceWorker" in window.navigator)
         || !("caches" in window)
         || !("fetch" in window)
         || navigator.serviceWorker == null

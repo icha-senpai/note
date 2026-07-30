@@ -7,10 +7,8 @@ import {Constants} from "../constants";
 /// #if !BROWSER
 import {openNewWindowById} from "../window/openNewWindow";
 /// #endif
-/// #if !MOBILE
 import {moveResize} from "../dialog/moveResize";
 import {openFileById} from "../editor/util";
-/// #endif
 import {fetchPost} from "../util/fetch";
 import {showMessage} from "../dialog/message";
 import {App} from "../index";
@@ -144,14 +142,12 @@ export class BlockPanel {
                 target = target.parentElement;
             }
         });
-        /// #if !MOBILE
         moveResize(this.element, () => {
             const pinElement = this.element.firstElementChild.querySelector('[data-type="pin"]');
             pinElement.setAttribute("aria-label", window.scribli.languages.unpin);
             pinElement.querySelector("use").setAttribute("xlink:href", "#iconUnpin");
             this.element.setAttribute("data-pin", "true");
         });
-        /// #endif
         this.render();
     }
 

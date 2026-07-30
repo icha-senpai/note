@@ -784,8 +784,6 @@
 	"multiSelect": "Multi-select",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Command Palette",
-	"cloudRegionNorthAmerica": "Scribli (North America data center)",
-	"cloudRegionChina": "Mainland China data center",
 	"currentKernel": "Current kernel",
 	"otherOnlineKernels": "Other online kernels",
 	"syncPerception": "Sync perception",
@@ -804,7 +802,7 @@
 	"color": "Color",
 	"confirmPassword": "I have already remembered the password",
 	"passwordNoMatch": "The passwords entered twice do not match",
-	"cloudConfigTip": "Please configure in [Settings - Account & Sync - Cloud storage service provider]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Are you sure you want to uninstall ${name}?<br>Uninstalling may remove all related settings and data; please proceed with caution!",
 	"scrollGetMore": "Scroll up and down to load more",
 	"flashcardNewCard": "New",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Merge subdocuments",
 	"removeAssetsFolder": "Remove assets directory",
 	"upload": "Upload",
-	"reminderTip": "The reminder time cannot be less than the current time",
-	"wechatTip": "The content block will be sent to the cloud in clear text, and pushed through the WeChat MP template message when it expires",
 	"notEmpty": "The reminder time cannot be empty",
 	"experimentalFeature": "(⚗️ This feature is in the experimental stage)",
-	"wechatReminder": "WeChat Reminder",
-	"notifyTime": "Notify Time",
 	"docName": "Doc Name",
 	"bootSyncFailed": "Failed to synchronize data at startup",
 	"use": "Use",
@@ -2168,3 +2162,5 @@
 		"343": "A Fresh Start"
 	}
 }
+
+

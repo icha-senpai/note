@@ -1,10 +1,8 @@
 import {Constants} from "../constants";
 import {fetchPost} from "../util/fetch";
-/// #if !MOBILE
 import {exportLayout} from "../layout/util";
 import {getDockByType} from "../layout/tabUtil";
 import {Files} from "../layout/dock/Files";
-/// #endif
 import {getAllEditor} from "../layout/getAll";
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
@@ -14,11 +12,10 @@ import {Dialog} from "./index";
 import {isMobile} from "../util/functions";
 import {confirmDialog} from "./confirmDialog";
 import {escapeHtml} from "../util/escape";
-import {hasFeatureAccess} from "../util/featureAccess";
 import {hideAllElements} from "../protyle/ui/hideElements";
 import {App} from "../index";
 import {saveScroll} from "../protyle/scroll/saveScroll";
-import {isInAndroid, isInHarmony, isInIOS, setStorageVal} from "../protyle/util/compatibility";
+import {setStorageVal} from "../protyle/util/compatibility";
 import {Plugin} from "../plugin";
 
 export const setRefDynamicText = (data: {
@@ -85,11 +82,7 @@ export const setDefRefCount = (data: {
     });
 
     let liElement;
-    /// #if MOBILE
-    liElement = window.scribli.mobile.docks.file.element.querySelector(`li[data-node-id="${data.rootID}"]`);
-    /// #else
     liElement = (getDockByType("file")?.data["file"] as Files)?.element.querySelector(`li[data-node-id="${data.rootID}"]`);
-    /// #endif
     if (liElement) {
         const counterElement = liElement.querySelector(".counter");
         if (counterElement) {
@@ -111,40 +104,20 @@ export const lockScreen = async (app: App) => {
     app.plugins.forEach(item => {
         item.eventBus.emit("lock-screen");
     });
-    /// #if !MOBILE
     exportLayout({
         errorExit: false,
         cb() {
             fetchPost("/api/system/logoutAuth");
         }
     });
-    /// #else
-    if (window.scribli.mobile.editor) {
-        await saveScroll(window.scribli.mobile.editor.protyle);
-        fetchPost("/api/system/logoutAuth");
-    }
-    /// #endif
 
 };
 
-// forceQuit 用于内核已断连、无法走 /api/system/exit 的场景：绕过内核 HTTP，直接通知宿主（Electron 主进程 /
-// 移动端原生容器）退出。浏览器/Docker 等纯 Web 环境无宿主可调，只能关闭当前页。
+// forceQuit is used when the kernel is disconnected and /api/system/exit cannot run.
 export const forceQuit = () => {
     /// #if !BROWSER
     ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
     /// #else
-    if (isInAndroid()) {
-        window.JSAndroid.exit();
-        return;
-    }
-    if (isInIOS()) {
-        window.webkit.messageHandlers.exit.postMessage("");
-        return;
-    }
-    if (isInHarmony()) {
-        window.JSHarmony.exit();
-        return;
-    }
     window.close();
     /// #endif
 };
@@ -170,29 +143,12 @@ const installNewVersion = (installPkgPath: string, setCurrentWorkspace: boolean)
         force: true,
         setCurrentWorkspace,
         execInstallPkg: 1,
-    }, () => {
-        if (isInAndroid()) {
-            window.JSAndroid.exit();
-            return;
-        }
-        if (isInIOS()) {
-            window.webkit.messageHandlers.exit.postMessage("");
-            return;
-        }
-        if (isInHarmony()) {
-            window.JSHarmony.exit();
-        }
     });
     /// #endif
 };
 
 export const exitScribli = async (setCurrentWorkspace = true) => {
     hideAllElements(["util"]);
-    /// #if MOBILE
-    if (window.scribli.mobile.editor) {
-        await saveScroll(window.scribli.mobile.editor.protyle);
-    }
-    /// #endif
     fetchPost("/api/system/exit", {force: false, setCurrentWorkspace}, (response) => {
         if (response.code === 1) { // 同步执行失败
             const msgId = showMessage(response.msg, response.data.closeTimeout, "error");
@@ -206,19 +162,6 @@ export const exitScribli = async (setCurrentWorkspace = true) => {
                     fetchPost("/api/system/exit", {force: true, setCurrentWorkspace}, () => {
                         /// #if !BROWSER
                         ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
-                        /// #else
-                        if (isInAndroid()) {
-                            window.JSAndroid.exit();
-                            return;
-                        }
-                        if (isInIOS()) {
-                            window.webkit.messageHandlers.exit.postMessage("");
-                            return;
-                        }
-                        if (isInHarmony()) {
-                            window.JSHarmony.exit();
-                            return;
-                        }
                         /// #endif
                     });
                 });
@@ -248,20 +191,6 @@ export const exitScribli = async (setCurrentWorkspace = true) => {
         } else { // 正常退出
             /// #if !BROWSER
             ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
-            /// #else
-            if (isInAndroid()) {
-                window.JSAndroid.exit();
-                return;
-            }
-            if (isInIOS()) {
-                window.webkit.messageHandlers.exit.postMessage("");
-                return;
-            }
-
-            if (isInHarmony()) {
-                window.JSHarmony.exit();
-                return;
-            }
             /// #endif
         }
     });
@@ -288,14 +217,10 @@ export const transactionError = (msg?: string) => {
     dialog.element.setAttribute("data-key", Constants.DIALOG_STATEEXCEPTED);
     const btnsElement = dialog.element.querySelectorAll(".b3-button");
     btnsElement[0].addEventListener("click", () => {
-        /// #if MOBILE
-        exitScribli();
-        /// #else
         exportLayout({
             errorExit: true,
             cb: exitScribli
         });
-        /// #endif
     });
     btnsElement[1].addEventListener("click", () => {
         refreshFileTree();
@@ -411,34 +336,6 @@ export const processSync = (data?: IWebSocketData, plugins?: Plugin[]) => {
     if (data?.code === 1) {
         window.dispatchEvent(new CustomEvent("scribli-sync-success"));
     }
-    /// #if MOBILE
-    const menuSyncUseElement = document.querySelector("#menuSyncNow use");
-    const barSyncUseElement = document.querySelector("#toolbarSync use");
-    if (!data) {
-        if (!window.scribli.config.sync.enabled || (0 === window.scribli.config.sync.provider && !hasFeatureAccess())) {
-            menuSyncUseElement?.setAttribute("xlink:href", "#iconCloudOff");
-            barSyncUseElement.setAttribute("xlink:href", "#iconCloudOff");
-        } else {
-            menuSyncUseElement?.setAttribute("xlink:href", "#iconCloudSucc");
-            barSyncUseElement.setAttribute("xlink:href", "#iconCloudSucc");
-        }
-        return;
-    }
-    menuSyncUseElement?.parentElement.classList.remove("fn__rotate");
-    barSyncUseElement.parentElement.classList.remove("fn__rotate");
-    if (data.code === 0) {  // syncing
-        menuSyncUseElement?.parentElement.classList.add("fn__rotate");
-        barSyncUseElement.parentElement.classList.add("fn__rotate");
-        menuSyncUseElement?.setAttribute("xlink:href", "#iconRefresh");
-        barSyncUseElement.setAttribute("xlink:href", "#iconRefresh");
-    } else if (data.code === 2) {    // error
-        menuSyncUseElement?.setAttribute("xlink:href", "#iconCloudError");
-        barSyncUseElement.setAttribute("xlink:href", "#iconCloudError");
-    } else if (data.code === 1) {   // success
-        menuSyncUseElement?.setAttribute("xlink:href", "#iconCloudSucc");
-        barSyncUseElement.setAttribute("xlink:href", "#iconCloudSucc");
-    }
-    /// #else
     const iconElement = document.querySelector("#barSync");
     if (!iconElement) {
         return;
@@ -446,7 +343,7 @@ export const processSync = (data?: IWebSocketData, plugins?: Plugin[]) => {
     const useElement = iconElement.querySelector("use");
     if (!data) {
         iconElement.classList.remove("toolbar__item--active");
-        if (!window.scribli.config.sync.enabled || (0 === window.scribli.config.sync.provider && !hasFeatureAccess())) {
+        if (!window.scribli.config.sync.enabled || window.scribli.config.sync.provider === 0) {
             useElement.setAttribute("xlink:href", "#iconCloudOff");
         } else {
             useElement.setAttribute("xlink:href", "#iconCloudSucc");
@@ -465,7 +362,6 @@ export const processSync = (data?: IWebSocketData, plugins?: Plugin[]) => {
         iconElement.classList.remove("toolbar__item--active");
         useElement.setAttribute("xlink:href", "#iconCloudSucc");
     }
-    /// #endif
     plugins.forEach((item) => {
         if (data.code === 0) {
             item.eventBus.emit("sync-start", data);

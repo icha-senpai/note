@@ -16,9 +16,7 @@ export const setEditMode = (protyle: IProtyle, type: TEditorMode) => {
             protyle.breadcrumb.toggleExit(true);
         }
         protyle.preview.render(protyle);
-        /// #if !MOBILE
         updateOutline(getAllModels(), protyle, true);
-        /// #endif
     } else if (type === "wysiwyg") {
         if (!protyle.contentElement.classList.contains("fn__none")) {
             return;
@@ -32,9 +30,7 @@ export const setEditMode = (protyle: IProtyle, type: TEditorMode) => {
             protyle.breadcrumb?.element.classList.remove("fn__none");
             protyle.breadcrumb.toggleExit(!protyle.block.showAll);
         }
-        /// #if !MOBILE
         updateOutline(getAllModels(), protyle, true);
-        /// #endif
         resize(protyle);
     }
     hideElements(["gutterOnly", "toolbar", "select", "hint", "util"], protyle);

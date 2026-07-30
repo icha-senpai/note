@@ -86,7 +86,7 @@ var rootCmd = &cobra.Command{
 		util.Mode = "prod"
 		util.InitWorkspace(workspacePath, util.WorkingDir)
 
-		logging.SetLogPath(filepath.Join(util.TempDir, "siyuan-cli.log"))
+		logging.SetLogPath(filepath.Join(util.TempDir, "scribli-cli.log"))
 		logging.SetLogToStdout(false)
 
 		effectiveLevel := logLevel

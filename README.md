@@ -8,11 +8,11 @@
 
 Scribli is a local-first desktop knowledge workspace for writing, linking, outlining, querying, exporting, and maintaining long-lived personal notes. It is based on SiYuan, keeps the inherited AGPL-3.0 license, and is being reshaped into a self-contained application that does not depend on official upstream hosted services.
 
-This repository contains the Scribli desktop/web frontend, Go kernel, and selected local Go dependency forks under `third_party/forks`. The application stores user data in a local workspace first. Optional sync is controlled by the user and points only at user-configured S3, WebDAV, or local-folder storage.
+This repository contains the Scribli Windows desktop frontend, Go kernel, and selected local Go dependency forks under `third_party/forks`. The application stores user data in a local workspace first. Optional sync is controlled by the user and points only at user-configured S3, WebDAV, or local-folder storage.
 
 ## Project Status
 
-Scribli is a fork in active cleanup. The main desktop path builds and packages, but this repository still contains inherited architecture, file names, internal identifiers, comments, generated assets, and upstream source history. Upstream copyright notices in inherited source files must stay intact.
+Scribli is a fork in active cleanup. The Windows desktop path builds and packages, but this repository still contains inherited architecture, file names, internal identifiers, comments, generated assets, and upstream source history. Upstream copyright notices in inherited source files must stay intact.
 
 ## Core Features
 
@@ -85,6 +85,7 @@ Scribli intentionally removes or disables inherited behavior tied to official up
 - Upstream release checks and runtime auto-update install flow.
 - Build-time Electron mirror forcing and upstream publishing workflows.
 - Upstream Docker, AUR, and GitHub release publishing from this repository.
+- Native mobile, macOS, and Linux build/package targets.
 
 ## Installation
 
@@ -150,7 +151,7 @@ cd C:\Users\(user)\Documents\GitHub\note\app
 pnpm run dist
 ```
 
-The dist scripts use `--publish=never`, and `electron-builder*.yml` sets `publish: null`. Publishing remains disabled until Scribli has its own release pipeline.
+The dist script uses `--publish=never`, and `electron-builder.yml` sets `publish: null`. Publishing remains disabled until Scribli has its own release pipeline.
 
 If the packaged app cannot find the kernel, build or copy the Scribli kernel binary into `app\kernel` using the repository's current build scripts before running the packaging command.
 
@@ -192,7 +193,7 @@ This fork changes application identity, disables official upstream cloud/account
 
 - Some internal package names, source paths, generated artifacts, and compatibility names may still contain inherited upstream identifiers.
 - Internal naming cleanup is gradual; see `docs/INTERNAL-NAMING.md` for which legacy names are preserved for compatibility.
-- Mobile packaging is not currently a Scribli-owned release path.
+- Scribli is currently maintained as a Windows desktop application only; mobile, macOS, and Linux packaging have been removed from this repository.
 - Docker publishing is disabled.
 - Runtime updates are disabled.
 - Official cloud, account, subscription, payment, and marketplace services are intentionally unavailable.

@@ -4,11 +4,9 @@ import {hideMessage, showMessage} from "../dialog/message";
 import {Dialog} from "../dialog";
 import {fetchGet, fetchPost, fetchSyncPost} from "../util/fetch";
 import {getBackend, getFrontend} from "../util/functions";
-/// #if !MOBILE
 import {openFile, openFileById} from "../editor/util";
 import {openNewWindow, openNewWindowById} from "../window/openNewWindow";
 import {Tab} from "../layout/Tab";
-/// #endif
 import {saveExportFile, updateHotkeyTip} from "../protyle/util/compatibility";
 import * as platformUtils from "./platformUtils";
 import {App} from "../index";
@@ -16,35 +14,22 @@ import {Constants} from "../constants";
 import {Setting} from "./Setting";
 import {Menu} from "./Menu";
 import {Protyle} from "../protyle";
-import {openMobileFileById} from "../mobile/editor";
 import {exitScribli, lockScreen} from "../dialog/processSystem";
 import {Model} from "../layout/Model";
-/// #if !MOBILE
 import {getActiveTab, getDockByType} from "../layout/tabUtil";
 import {getAllModels, getAllTabs} from "../layout/getAll";
 import {exportLayout} from "../layout/util";
-/// #endif
 import {getAllEditor} from "../layout/getAll";
 import {openSetting} from "../config";
 import {openAttr, openFileAttr} from "../menus/commonMenuItem";
 import {globalCommand} from "../boot/globalEvent/command/global";
-import {saveScroll} from "../protyle/scroll/saveScroll";
 import {hasClosestByClassName} from "../protyle/util/hasClosest";
-import type {MobileFiles} from "../mobile/dock/MobileFiles";
 import type {Files} from "../layout/dock/Files";
 import {ProtyleMethod} from "./ProtyleMethod";
 import {openEmojiPanel} from "../emoji";
 
 let openTab;
 let openWindow;
-/// #if MOBILE
-openTab = () => {
-    // TODO: Mobile
-};
-openWindow = () => {
-    // TODO: Mobile
-};
-/// #else
 openWindow = (options: {
     position?: IPosition,
     height?: number,
@@ -193,14 +178,9 @@ openTab = (options: {
     }
 
 };
-/// #endif
 
 const getModelByDockType = (type: TDock | string) => {
-    /// #if MOBILE
-    return window.scribli.mobile.docks[type];
-    /// #else
     return getDockByType(type).data[type];
-    /// #endif
 };
 
 const openAttributePanel = (options: {
@@ -217,23 +197,11 @@ const openAttributePanel = (options: {
 };
 
 const saveLayout = (cb: () => void) => {
-    /// #if MOBILE
-    if (window.scribli.mobile.editor) {
-        const result = saveScroll(window.scribli.mobile.editor.protyle);
-        if (cb && result instanceof Promise) {
-            result.then(() => {
-                cb();
-            });
-        }
-    }
-    /// #else
     exportLayout({cb, errorExit: false});
-    /// #endif
 };
 
 const getActiveEditor = (wndActive = true) => {
     let editor;
-    /// #if !MOBILE
     const range = getSelection().rangeCount > 0 ? getSelection().getRangeAt(0) : null;
     const allEditor = getAllEditor();
     if (range) {
@@ -271,12 +239,6 @@ const getActiveEditor = (wndActive = true) => {
             }
         });
     }
-    /// #else
-    editor = window.scribli.mobile.popEditor || window.scribli.mobile.editor;
-    if (editor?.protyle.element.classList.contains("fn__none")) {
-        return undefined;
-    }
-    /// #endif
     return editor;
 };
 
@@ -293,7 +255,7 @@ export const expandDocTree = async (options: {
     });
     let liElement: HTMLElement;
     let notebookId = options.id;
-    const file = getModelByDockType("file") as MobileFiles | Files;
+    const file = getModelByDockType("file") as Files;
     if (typeof options.isSetCurrent === "undefined") {
         options.isSetCurrent = true;
     }
@@ -352,7 +314,6 @@ export const API = {
     getModelByDockType,
     openTab,
     openWindow,
-    openMobileFileById,
     lockScreen,
     exitScribli,
     Protyle,
@@ -363,11 +324,9 @@ export const API = {
     Setting,
     getAllEditor,
     saveExportFile,
-    /// #if !MOBILE
     getActiveTab,
     getAllModels,
     getAllTabs,
-    /// #endif
     getActiveEditor,
     platformUtils,
     openSetting,

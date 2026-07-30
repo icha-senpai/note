@@ -784,8 +784,6 @@
 	"multiSelect": "Multi-selezione",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Tavolo dei comandi",
-	"cloudRegionNorthAmerica": "Scribli (data center del Nord America)",
-	"cloudRegionChina": "data center della Cina continentale",
 	"currentKernel": "Kernel corrente",
 	"otherOnlineKernels": "Altri kernel online",
 	"syncPerception": "Sincronizza percezione",
@@ -804,7 +802,7 @@
 	"color": "Colore",
 	"confirmPassword": "Ho già memorizzato la password",
 	"passwordNoMatch": "Le password inserite non coincidono",
-	"cloudConfigTip": "Configura in [Impostazioni - Account e Sincronizzazione - Provider di servizio di archiviazione cloud]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Sei sicuro di voler disinstallare ${name}?<br>La disinstallazione potrebbe rimuovere tutte le impostazioni e i dati correlati, procedi con cautela!",
 	"scrollGetMore": "Scorri su e giù per caricare di più",
 	"flashcardNewCard": "Nuova",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Unisci sotto-documenti",
 	"removeAssetsFolder": "Rimuovi directory asset",
 	"upload": "Carica",
-	"reminderTip": "L'ora del promemoria non può essere inferiore all'ora corrente",
-	"wechatTip": "Il blocco di contenuto verrà inviato al cloud in chiaro e verrà inviato tramite messaggio modello di WeChat MP quando scadrà",
 	"notEmpty": "L'ora del promemoria non può essere vuota",
 	"experimentalFeature": "(⚗️ Questa funzione è in fase sperimentale)",
-	"wechatReminder": "Promemoria WeChat",
-	"notifyTime": "Ora di notifica",
 	"docName": "Nome documento",
 	"bootSyncFailed": "Sincronizzazione dei dati fallita all'avvio",
 	"use": "Usa",
@@ -2168,3 +2162,5 @@
 		"343": "Un nuovo inizio"
 	}
 }
+
+

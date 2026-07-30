@@ -784,8 +784,6 @@
 	"multiSelect": "Seleção múltipla",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Paleta de Comandos",
-	"cloudRegionNorthAmerica": "Scribli (Centro de dados América do Norte)",
-	"cloudRegionChina": "Centro de dados China Continental",
 	"currentKernel": "Kernel atual",
 	"otherOnlineKernels": "Outros kernels online",
 	"syncPerception": "Percepção de sincronização",
@@ -804,7 +802,7 @@
 	"color": "Cor",
 	"confirmPassword": "Eu já lembrei a senha",
 	"passwordNoMatch": "As senhas inseridas não coincidem",
-	"cloudConfigTip": "Por favor, configure em [Configurações - Conta e Sincronização - Provedor de serviço de armazenamento em nuvem]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Tem certeza de que deseja desinstalar ${name}?<br>A desinstalação pode remover todas as configurações e dados relacionados, por favor, decida com cautela!",
 	"scrollGetMore": "Role para cima e para baixo para carregar mais",
 	"flashcardNewCard": "Novo",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Mesclar subdocumentos",
 	"removeAssetsFolder": "Remover diretório de ativos",
 	"upload": "Enviar",
-	"reminderTip": "O horário do lembrete não pode ser menor que o horário atual",
-	"wechatTip": "O bloco de conteúdo será enviado para a nuvem em texto claro e enviado através da mensagem de modelo MP do WeChat quando expirar",
 	"notEmpty": "O horário do lembrete não pode estar vazio",
 	"experimentalFeature": "(⚗️ Este recurso está em fase experimental)",
-	"wechatReminder": "Lembrete WeChat",
-	"notifyTime": "Hora de Notificação",
 	"docName": "Nome do Documento",
 	"bootSyncFailed": "Falha ao sincronizar dados na inicialização",
 	"use": "Usar",
@@ -2168,3 +2162,5 @@
 		"343": "Um novo começo"
 	}
 }
+
+

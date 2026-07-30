@@ -1,7 +1,6 @@
 import {showMessage} from "../../dialog/message";
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
 import {saveExportFile} from "../../protyle/util/compatibility";
-import {hasFeatureAccess} from "../../util/featureAccess";
 
 /** 按当前配置刷新同步 Tab 可见性与动态面板（供 syncRuntime 调用） */
 export const refreshSyncTabPanels = (root: Element) => {
@@ -16,7 +15,7 @@ export const refreshSyncModeRelatedItems = (root: Element) => {
 };
 
 const setSyncConfigItemVisible = (root: Element) => {
-    const visible = window.scribli.config.sync.provider !== 0 && hasFeatureAccess();
+    const visible = window.scribli.config.sync.provider !== 0;
     [
         "sync.enabled",
         "sync.generateConflictDoc",
@@ -72,18 +71,20 @@ const isThirdPartySyncProviderDef = (def: SyncProviderDef): def is SyncThirdPart
 
 const genThirdPartyUnavailableIntro = (): string => {
     return `<div>
-    ${window.scribli.languages.cloudConfigTip}
+    ${window.scribli.languages.syncProviderConfigTip}
 </div>`;
 };
+
+const isProviderConfigAllowed = () => true;
 
 const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
     0: {
         isProviderConfigAllowed: () => false,
-        genIntro: () => `<div class="b3-label b3-label--inner">${window.scribli.languages.cloudConfigTip}</div>`,
-        genUnavailableIntro: () => `<div class="b3-label b3-label--inner">${window.scribli.languages.cloudConfigTip}</div>`,
+        genIntro: () => `<div class="b3-label b3-label--inner">${window.scribli.languages.syncProviderConfigTip}</div>`,
+        genUnavailableIntro: () => `<div class="b3-label b3-label--inner">${window.scribli.languages.syncProviderConfigTip}</div>`,
     },
     2: {
-        isProviderConfigAllowed: hasFeatureAccess,
+        isProviderConfigAllowed,
         configKey: "s3",
         api: "/api/sync/setSyncProviderS3",
         getConfig: () => window.scribli.config.sync.s3,
@@ -112,7 +113,7 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
         ],
     },
     3: {
-        isProviderConfigAllowed: hasFeatureAccess,
+        isProviderConfigAllowed,
         configKey: "webdav",
         api: "/api/sync/setSyncProviderWebDAV",
         getConfig: () => window.scribli.config.sync.webdav,
@@ -135,7 +136,7 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
         ],
     },
     4: {
-        isProviderConfigAllowed: hasFeatureAccess,
+        isProviderConfigAllowed,
         configKey: "local",
         api: "/api/sync/setSyncProviderLocal",
         getConfig: () => window.scribli.config.sync.local,
@@ -161,7 +162,7 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
 const buildProviderConfigKeywords = (): string[] => {
     return [
         // 服务不可用 / 本地等提示
-        window.scribli.languages.cloudConfigTip,
+        window.scribli.languages.syncProviderConfigTip,
         window.scribli.languages.mobileNotSupport,
         // S3 / WebDAV / 本地第三方
         window.scribli.languages.syncThirdPartyProviderS3Intro,

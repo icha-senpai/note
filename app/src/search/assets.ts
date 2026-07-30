@@ -2,16 +2,13 @@ import {Constants} from "../constants";
 import {fetchPost} from "../util/fetch";
 import {escapeAriaLabel} from "../util/escape";
 import {setStorageVal, updateHotkeyTip} from "../protyle/util/compatibility";
-/// #if !MOBILE
 import {genQueryHTML} from "./util";
-/// #endif
 import {MenuItem} from "../menus/Menu";
 import {Dialog} from "../dialog";
 import {addClearButton} from "../util/addClearButton";
 import {saveAssetKeyList} from "./toggleHistory";
 
 export const openSearchAsset = (element: HTMLElement, isStick: boolean) => {
-    /// #if !MOBILE
     window.scribli.menus.menu.remove();
     element.previousElementSibling.classList.add("fn__none");
     element.classList.remove("fn__none");
@@ -26,7 +23,6 @@ export const openSearchAsset = (element: HTMLElement, isStick: boolean) => {
     let enterTip = "";
     /// #if !BROWSER
     enterTip = `<kbd>${window.scribli.languages.enterKey}/${window.scribli.languages.doubleClick}</kbd> ${window.scribli.languages.showInFolder}`;
-    /// #endif
     element.innerHTML = `<div class="block__icons">
     <span data-type="assetPrevious" class="block__icon block__icon--show ariaLabel" data-position="9south" disabled="disabled" aria-label="${window.scribli.languages.previousLabel}"><svg><use xlink:href='#iconLeft'></use></svg></span>
     <span class="fn__space"></span>
@@ -295,12 +291,8 @@ export const assetMethodMenu = (target: HTMLElement, cb: () => void) => {
             cb();
         }
     }).element);
-    /// #if MOBILE
-    window.scribli.menus.menu.fullscreen();
-    /// #else
     const rect = target.getBoundingClientRect();
     window.scribli.menus.menu.popup({x: rect.right, y: rect.bottom, isLeft: true});
-    /// #endif
 };
 
 const filterTypesHTML = (types: IObject) => {
@@ -394,7 +386,6 @@ export const assetMoreMenu = (target: Element, element: Element, cb: () => void)
         type: "submenu",
         submenu: sortMenu,
     }).element);
-    /// #if !MOBILE
     window.scribli.menus.menu.append(new MenuItem({
         iconHTML: "",
         label: window.scribli.languages.layout,
@@ -435,7 +426,6 @@ export const assetMoreMenu = (target: Element, element: Element, cb: () => void)
             }
         }]
     }).element);
-    /// #endif
     window.scribli.menus.menu.append(new MenuItem({
         iconHTML: "",
         label: window.scribli.languages.rebuildAssetContentIndex,
@@ -448,10 +438,6 @@ export const assetMoreMenu = (target: Element, element: Element, cb: () => void)
             });
         },
     }).element);
-    /// #if MOBILE
-    window.scribli.menus.menu.fullscreen();
-    /// #else
     const rect = target.getBoundingClientRect();
     window.scribli.menus.menu.popup({x: rect.right, y: rect.bottom, isLeft: true});
-    /// #endif
 };

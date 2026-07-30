@@ -27,10 +27,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
@@ -216,38 +216,6 @@ func removeWorkspaceDirPhysically(c *gin.Context) {
 type Workspace struct {
 	Path   string `json:"path"`
 	Closed bool   `json:"closed"`
-}
-
-func getMobileWorkspaces(c *gin.Context) {
-	ret := gulu.Ret.NewResult()
-	defer c.JSON(http.StatusOK, ret)
-
-	if !util.IsMobileContainer() {
-		return
-	}
-
-	root := filepath.Dir(util.WorkspaceDir)
-	dirs, err := os.ReadDir(root)
-	if err != nil {
-		logging.LogErrorf("read dir [%s] failed: %s", root, err)
-		ret.Code = -1
-		ret.Msg = err.Error()
-		return
-	}
-
-	ret.Data = []string{}
-	var paths []string
-	for _, dir := range dirs {
-		if dir.IsDir() {
-			absPath := filepath.Join(root, dir.Name())
-			if isInvalidWorkspacePath(absPath) {
-				continue
-			}
-
-			paths = append(paths, absPath)
-		}
-	}
-	ret.Data = paths
 }
 
 func getWorkspaces(c *gin.Context) {

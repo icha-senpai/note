@@ -784,8 +784,6 @@
 	"multiSelect": "多选",
 	"commandEmpty": "No command yet",
 	"commandPanel": "命令面板",
-	"cloudRegionNorthAmerica": "Scribli（北美数据中心）",
-	"cloudRegionChina": "中国大陆数据中心",
 	"currentKernel": "当前内核",
 	"otherOnlineKernels": "其他联机内核",
 	"syncPerception": "同步感知",
@@ -804,7 +802,7 @@
 	"color": "颜色",
 	"confirmPassword": "我已经牢记密码了",
 	"passwordNoMatch": "两次输入的密码不一致",
-	"cloudConfigTip": "请在 [设置 - 账号与同步 - 云端存储服务提供商] 中进行配置",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "确定卸载 ${name} ？<br>卸载可能会删除所有相关配置和数据，请谨慎决定！",
 	"scrollGetMore": "上下滚动即可加载更多内容",
 	"flashcardNewCard": "新卡",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "合并子文档",
 	"removeAssetsFolder": "移除 assets 目录",
 	"upload": "上传",
-	"reminderTip": "提醒时间不能小于当前时间",
-	"wechatTip": "该内容块将以明文形式发送到云端，到期时通过微信公众号模板消息进行推送",
 	"notEmpty": "提醒时间不能为空",
 	"experimentalFeature": "（⚗️ 该特性正处于试验阶段）",
-	"wechatReminder": "微信提醒",
-	"notifyTime": "提醒时间",
 	"docName": "文档名",
 	"bootSyncFailed": "启动时同步数据失败",
 	"use": "使用",
@@ -2168,3 +2162,5 @@
 		"343": "全新的开始"
 	}
 }
+
+

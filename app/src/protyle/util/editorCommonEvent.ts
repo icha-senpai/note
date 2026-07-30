@@ -30,12 +30,9 @@ import {transaction, turnsIntoOneTransaction} from "../wysiwyg/transaction";
 import {updateListOrder} from "../wysiwyg/list";
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
 import {onGet} from "./onGet";
-/// #if !MOBILE
 import {getAllEditor} from "../../layout/getAll";
 import {updatePanelByEditor} from "../../editor/util";
-/// #endif
 import {blockRender} from "../render/blockRender";
-/// #else
 import {uploadFiles, uploadLocalFiles} from "../upload";
 import {insertHTML} from "./insertHTML";
 import {isBrowser} from "../../util/functions";
@@ -121,14 +118,12 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
             if (!srcParentID) {
                 // 顶层块：父是 .protyle-wysiwyg 容器（无 data-node-id）。
                 let srcRootID = "";
-                /// #if !MOBILE
                 // 通过 getAllEditor 反查 item 所属的源 protyle，取其 block.rootID。
                 const sourceEditor = getAllEditor().find(editor =>
                     editor.protyle.wysiwyg.element === parentBlock);
                 if (sourceEditor?.protyle?.block?.rootID) {
                     srcRootID = sourceEditor.protyle.block.rootID;
                 }
-                /// #endif
                 if (srcRootID) {
                     srcParentID = srcRootID;
                 } else {
@@ -288,7 +283,6 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
                         doOperations.push(sbData.doOperations[0], sbData.doOperations[1]);
                         undoOperations.push(sbData.undoOperations[1], sbData.undoOperations[0]);
                     } else {
-                        /// #if !MOBILE
                         const allEditor = getAllEditor();
                         for (let i = 0; i < allEditor.length; i++) {
                             if (allEditor[i].protyle.element.contains(topSourceParentElement)) {
@@ -299,7 +293,6 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
                                 break;
                             }
                         }
-                        /// #endif
                     }
                 }
             } else if (oldSourceParentElement.classList.contains("sb") && getSbChildBlockCount(oldSourceParentElement) === 1) {
@@ -309,7 +302,6 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
                     doOperations.push(sbData.doOperations[0], sbData.doOperations[1]);
                     undoOperations.push(sbData.undoOperations[1], sbData.undoOperations[0]);
                 } else {
-                    /// #if !MOBILE
                     const allEditor = getAllEditor();
                     for (let i = 0; i < allEditor.length; i++) {
                         if (allEditor[i].protyle.element.contains(oldSourceParentElement)) {
@@ -320,10 +312,8 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
                             break;
                         }
                     }
-                    /// #endif
                 }
             } else if (oldSourceParentElement.classList.contains("protyle-wysiwyg") && oldSourceParentElement.childElementCount === 0) {
-                /// #if !MOBILE
                 // 拖拽后，根文档原内容为空
                 getAllEditor().find(item => {
                     if (item.protyle.element.contains(oldSourceParentElement)) {
@@ -345,7 +335,6 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
                         return true;
                     }
                 });
-                /// #endif
             }
         }
 
@@ -1525,7 +1514,6 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                     }
                     fetchPost("/api/filetree/getDoc", getDocParam, getResponse => {
                         onGet({data: getResponse, protyle});
-                        /// #if !MOBILE
                         // 文档标题互转后，需更新大纲
                         updatePanelByEditor({
                             protyle,
@@ -1534,7 +1522,6 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                             reload: true,
                             resize: false,
                         });
-                        /// #endif
                         // 文档标题互转后，编辑区会跳转到开头 
                         setTimeout(() => {
                             protyle.contentElement.scrollTop = scrollTop;

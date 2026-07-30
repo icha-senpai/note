@@ -8,7 +8,7 @@ import {showMessage} from "../../dialog/message";
 /// #if !BROWSER
 import {shell} from "electron";
 /// #endif
-import {isInMobileApp, saveExportFile} from "../../protyle/util/compatibility";
+import {saveExportFile} from "../../protyle/util/compatibility";
 import {openByMobile} from "../../editor/openLink";
 import {genConfigItemMainHtml} from "../render/fragments";
 import {renderPublishAuthAccounts, savePublish, sendAccessSetting, updatePublishConfig} from "./accessRuntime";
@@ -47,7 +47,7 @@ const confirmWeakPassword = (password: string, confirm: () => void) => {
 
 const registerAccessAuthGroup = (tab: SettingTabBuilder) => {
     const group = tab.group("authentication", window.scribli.languages.authentication);
-    const onWeb = isBrowser() && !isInMobileApp();
+    const onWeb = isBrowser();
 
     if (!window.scribli.config.readonly && !onWeb) {
         group.button({
@@ -122,7 +122,7 @@ const bindApiTokenInput = (root: HTMLElement) => {
 };
 
 const registerAccessServerGroup = (tab: SettingTabBuilder) => {
-    const hideOnWeb = isBrowser() && !isInMobileApp();
+    const hideOnWeb = isBrowser();
     if (hideOnWeb) {
         return;
     }

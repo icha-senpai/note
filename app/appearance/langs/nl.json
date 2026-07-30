@@ -784,8 +784,6 @@
 	"multiSelect": "Meervoudig selecteren",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Opdrachtenpalet",
-	"cloudRegionNorthAmerica": "Scribli (Noord-Amerika)",
-	"cloudRegionChina": "China",
 	"currentKernel": "Huidige kernel",
 	"otherOnlineKernels": "Andere online kernels",
 	"syncPerception": "Sync-perceptie",
@@ -804,7 +802,7 @@
 	"color": "Kleur",
 	"confirmPassword": "Ik heb het wachtwoord onthouden",
 	"passwordNoMatch": "Wachtwoorden komen niet overeen",
-	"cloudConfigTip": "Configureer in [Instellingen - Account en synchronisatie - Cloudopslagprovider]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Weet u zeker dat u ${name} wilt verwijderen?<br>Verwijderen kan alle gerelateerde instellingen en gegevens wissen; ga voorzichtig te werk!",
 	"scrollGetMore": "Scroll om meer te laden",
 	"flashcardNewCard": "Nieuw",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Subdocumenten samenvoegen",
 	"removeAssetsFolder": "Assets-map verwijderen",
 	"upload": "Uploaden",
-	"reminderTip": "Herinneringstijd niet voor huidige tijd",
-	"wechatTip": "Het inhoudsblok wordt in platte tekst naar de cloud verzonden en bij het verstrijken via een WeChat MP-sjabloonbericht gepusht",
 	"notEmpty": "Herinneringstijd mag niet leeg zijn",
 	"experimentalFeature": "(⚗️ Deze functie bevindt zich in de experimentele fase)",
-	"wechatReminder": "WeChat-herinnering",
-	"notifyTime": "Meldtijd",
 	"docName": "Docnaam",
 	"bootSyncFailed": "Sync bij opstarten mislukt",
 	"use": "Gebruiken",
@@ -2168,3 +2162,5 @@
 		"343": "Een nieuw begin"
 	}
 }
+
+

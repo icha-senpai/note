@@ -6,13 +6,10 @@ import {Constants} from "../constants";
 import {onGet} from "../protyle/util/onGet";
 import {hasClosestByAttribute, hasClosestByClassName} from "../protyle/util/hasClosest";
 import {hideElements} from "../protyle/ui/hideElements";
-import {hasFeatureAccess} from "../util/featureAccess";
 import {fullscreen} from "../protyle/breadcrumb/action";
 import {MenuItem} from "../menus/Menu";
 import {escapeHtml} from "../util/escape";
-/// #if !MOBILE
 import {openFile} from "../editor/util";
-/// #endif
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -58,16 +55,6 @@ export const genCardHTML = (options: {
     isTab: boolean
 }) => {
     let iconsHTML: string;
-    /// #if MOBILE
-    iconsHTML = `<div class="toolbar toolbar--border">
-    <svg class="toolbar__icon"><use xlink:href="#iconRiffCard"></use></svg>
-    <span class="fn__flex-1 fn__flex-center toolbar__text">${window.scribli.languages.riffCard}</span>
-    <div data-type="count" class="${options.cardsData.cards.length === 0 ? "fn__none" : "fn__flex"}">${genCardCount(options.cardsData)}</span></div>
-    <svg class="toolbar__icon" data-id="${options.id || ""}" data-cardtype="${options.cardType}" data-type="filter"><use xlink:href="#iconFilter"></use></svg>
-    <svg class="toolbar__icon" data-type="more"><use xlink:href="#iconMore"></use></svg>
-    <svg class="toolbar__icon" data-type="close"><use xlink:href="#iconCloseRound"></use></svg>
-</div>`;
-    /// #else
     iconsHTML = `<div class="block__icons">
         ${options.isTab ? '<div class="fn__flex-1"></div>' : `<div class="block__logo block__logo--icon">
             <svg class="block__logoicon"><use xlink:href="#iconRiffCard"></use></svg>${window.scribli.languages.riffCard}
@@ -91,7 +78,6 @@ export const genCardHTML = (options: {
             <svg><use xlink:href="#iconOpen"></use></svg>
         </div>
     </div>`;
-    /// #endif
     return `<div class="card__main">
     ${iconsHTML}
     <div class="card__block fn__flex-1 ${options.cardsData.cards.length === 0 ? "fn__none" : ""}" data-type="render"></div>
@@ -266,9 +252,6 @@ export const bindCardEvent = async (options: {
         },
         typewriterMode: false
     });
-    if (window.scribli.mobile) {
-        window.scribli.mobile.popEditor = editor;
-    }
     if (options.cardsData.cards.length > 0) {
         getEditor(options.cardsData.cards[index].blockID, editor.protyle, options.element, options.cardsData.cards[index]);
     }
@@ -485,18 +468,13 @@ export const bindCardEvent = async (options: {
     <div>${dayjs(currentCard.lastReview).format("YYYY-MM-DD")}</div>
 </div>`,
                 });
-                /// #if MOBILE
-                menu.fullscreen();
-                /// #else
                 const rect = moreElement.getBoundingClientRect();
                 menu.open({
                     x: rect.left,
                     y: rect.bottom
                 });
-                /// #endif
                 return;
             }
-            /// #if !MOBILE
             const sticktabElement = hasClosestByAttribute(target, "data-type", "sticktab");
             if (sticktabElement) {
                 const stickMenu = new Menu();
@@ -586,7 +564,6 @@ export const bindCardEvent = async (options: {
                 event.preventDefault();
                 return;
             }
-            /// #endif
             const closeElement = hasClosestByAttribute(target, "data-type", "close");
             if (closeElement) {
                 if (options.dialog) {
@@ -719,14 +696,6 @@ export const bindCardEvent = async (options: {
                 rating: parseInt(type),
                 reviewedCards: options.cardsData.cards
             }, () => {
-                /// #if MOBILE
-                if (type !== "-3" &&
-                    ((0 !== window.scribli.config.sync.provider && hasFeatureAccess()) ||
-                        (0 === window.scribli.config.sync.provider && hasFeatureAccess())) &&
-                    window.scribli.config.repo.key && window.scribli.config.sync.enabled) {
-                    document.getElementById("toolbarSync").classList.remove("fn__none");
-                }
-                /// #endif
                 index++;
                 if (index > options.cardsData.cards.length - 1) {
                     const currentCardType = filterElement.getAttribute("data-cardtype");
@@ -819,9 +788,6 @@ export const openCardByData = async (app: App, cardsData: ICardData, cardType: T
         destroyCallback() {
             if (editor) {
                 editor.destroy();
-                if (window.scribli.mobile) {
-                    window.scribli.mobile.popEditor = null;
-                }
             }
             if (lastRange) {
                 focusByRange(lastRange);
@@ -848,14 +814,12 @@ export const openCardByData = async (app: App, cardsData: ICardData, cardType: T
     dialog.editors = {
         card: editor
     };
-    /// #if !MOBILE
     const focusElement = dialog.element.querySelector(".block__icons button.block__icon") as HTMLElement;
     focusElement.focus();
     const range = document.createRange();
     range.selectNodeContents(focusElement);
     range.collapse();
     focusByRange(range);
-    /// #endif
     updateCardHV();
 };
 

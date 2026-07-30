@@ -784,8 +784,6 @@
 	"multiSelect": "Multi-sélection",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Palette de commandes",
-	"cloudRegionNorthAmerica": "Scribli (Centre de données d'Amérique du Nord)",
-	"cloudRegionChina": "Centre de données de Chine continentale",
 	"currentKernel": "Noyau actuel",
 	"otherOnlineKernels": "Autres noyaux en ligne",
 	"syncPerception": "Perception de la synchronisation",
@@ -804,7 +802,7 @@
 	"color": "Couleur",
 	"confirmPassword": "J'ai déjà retenu le mot de passe",
 	"passwordNoMatch": "Les mots de passe saisis deux fois ne correspondent pas",
-	"cloudConfigTip": "Veuillez configurer dans [Paramètres - Compte et Synchronisation - Fournisseur de services de stockage en nuage]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Êtes-vous sûr de vouloir désinstaller ${name} ?<br>La désinstallation peut supprimer toutes les configurations et données associées, veuillez décider prudemment !",
 	"scrollGetMore": "Faites défiler de haut en bas pour en charger plus",
 	"flashcardNewCard": "Nouvelle carte",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Fusionner les sous-documents",
 	"removeAssetsFolder": "Supprimer le répertoire des actifs",
 	"upload": "Télécharger",
-	"reminderTip": "L'heure de rappel ne peut pas être antérieure à l'heure actuelle",
-	"wechatTip": "Le bloc de contenu sera envoyé au cloud en texte clair et transmis au message du modèle de compte officiel WeChat à son expiration.",
 	"notEmpty": "L'heure de rappel ne peut pas être vide",
 	"experimentalFeature": "(⚗️ Cette fonctionnalité est au stade expérimental)",
-	"wechatReminder": "Wechat Rappel",
-	"notifyTime": "Notifier l'heure",
 	"docName": "Nom du document",
 	"bootSyncFailed": "Impossible de synchroniser les données au démarrage",
 	"use": "Utiliser",
@@ -2168,3 +2162,5 @@
 		"343": "Un nouveau départ"
 	}
 }
+
+

@@ -1,8 +1,4 @@
-import {
-    isInMobileApp,
-    setStorageVal,
-    updateHotkeyTip
-} from "../protyle/util/compatibility";
+import {setStorageVal, updateHotkeyTip} from "../protyle/util/compatibility";
 import {exitScribli, processSync} from "../dialog/processSystem";
 import {goBack, goForward} from "../util/backForward";
 import {syncGuide} from "../sync/syncGuide";
@@ -18,7 +14,6 @@ import {ipcRenderer, webFrame} from "electron";
 import {Constants} from "../constants";
 import {isBrowser, isWindow, setToolbarLeftMac} from "../util/functions";
 import {fetchPost} from "../util/fetch";
-import {hasFeatureAccess} from "../util/featureAccess";
 import * as dayjs from "dayjs";
 import {exportLayout, resizeTopBar} from "./util";
 import {setTabPosition} from "./tabUtil";
@@ -98,7 +93,7 @@ export const initBar = (app: App) => {
 <div id="barMode" class="toolbar__item ariaLabel${window.scribli.config.readonly ? " fn__none" : ""}" aria-label="${window.scribli.languages.appearanceMode}">
     <svg><use xlink:href="#icon${window.scribli.config.appearance.modeOS ? "Mode" : (window.scribli.config.appearance.mode === 0 ? "Light" : "Dark")}"></use></svg>
 </div>
-<div id="barExit" class="ft__error toolbar__item ariaLabel${isInMobileApp() ? "" : " fn__none"}" aria-label="${window.scribli.languages.safeQuit}">
+<div id="barExit" class="ft__error toolbar__item ariaLabel fn__none" aria-label="${window.scribli.languages.safeQuit}">
     <svg><use xlink:href="#iconQuit"></use></svg>
 </div>
 <div id="barMore" class="toolbar__item ariaLabel" aria-label="${window.scribli.languages.more}">
@@ -284,7 +279,7 @@ export const initBar = (app: App) => {
         event.preventDefault();
         fetchPost("/api/sync/getSyncInfo", {}, (response) => {
             let html = "";
-            if (!window.scribli.config.sync.enabled || (0 === window.scribli.config.sync.provider && !hasFeatureAccess())) {
+            if (!window.scribli.config.sync.enabled || window.scribli.config.sync.provider === 0) {
                 html = response.data.stat;
             } else {
                 html = window.scribli.languages._kernel[82].replace("%s", dayjs(response.data.synced).format("YYYY-MM-DD HH:mm")) + "<br>";

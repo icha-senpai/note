@@ -784,8 +784,6 @@
 	"multiSelect": "Wielokrotny wybór",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Paleta poleceń",
-	"cloudRegionNorthAmerica": "Scribli (centra danych w Ameryce Północnej)",
-	"cloudRegionChina": "chińskie centrum danych",
 	"currentKernel": "Aktualny rdzeń",
 	"otherOnlineKernels": "Inne online rdzenie",
 	"syncPerception": "Percepcja synchronizacji",
@@ -804,7 +802,7 @@
 	"color": "Kolor",
 	"confirmPassword": "Zapamiętałem już hasło",
 	"passwordNoMatch": "Wprowadzone dwa hasła się nie zgadzają",
-	"cloudConfigTip": "Proszę skonfigurować w [Ustawienia - Konto i Synchronizacja - Dostawca usługi pamięci w chmurze]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Czy na pewno chcesz odinstalować ${name}?<br>Odinstalowanie może usunąć wszystkie powiązane ustawienia i dane, podejmij decyzję ostrożnie!",
 	"scrollGetMore": "Przewiń w górę i w dół, aby załadować więcej",
 	"flashcardNewCard": "Nowa",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Scal poddokumenty",
 	"removeAssetsFolder": "Usuń katalog zasobów",
 	"upload": "Prześlij",
-	"reminderTip": "Czas przypomnienia nie może być krótszy niż aktualny czas",
-	"wechatTip": "Blok treści zostanie wysłany do chmury w postaci czystego tekstu i przesyłany przez szablon wiadomości MP WeChat po wygaśnięciu",
 	"notEmpty": "Czas przypomnienia nie może być pusty",
 	"experimentalFeature": "(⚗️ Ta funkcja jest na etapie eksperymentalnym)",
-	"wechatReminder": "Przypomnienie WeChat",
-	"notifyTime": "Czas powiadomienia",
 	"docName": "Nazwa dokumentu",
 	"bootSyncFailed": "Nie udało się zsynchronizować danych podczas uruchamiania",
 	"use": "Używaj",
@@ -2168,3 +2162,5 @@
 		"343": "Nowy początek"
 	}
 }
+
+

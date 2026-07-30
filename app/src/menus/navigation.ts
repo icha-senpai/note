@@ -9,19 +9,12 @@ import {showMessage} from "../dialog/message";
 import {confirmDialog} from "../dialog/confirmDialog";
 import {fetchPost, fetchSyncPost} from "../util/fetch";
 import {onGetnotebookconf} from "./onGetnotebookconf";
-/// #if !MOBILE
 import {openSearch} from "../search/spread";
-/// #else
-import {closePanel} from "../mobile/util/closePanel";
-import {popSearch} from "../mobile/menu/search";
-/// #endif
 import {Constants} from "../constants";
 import {newFileInTree} from "../util/newFile";
 import {hasClosestByTag, hasTopClosestByTag} from "../protyle/util/hasClosest";
 import {deleteFiles} from "../editor/deleteFile";
-/// #if !MOBILE
 import {openFileById} from "../editor/util";
-/// #endif
 import {getDockByType} from "../layout/tabUtil";
 import {Files} from "../layout/dock/Files";
 import {openCardByData} from "../card/openCard";
@@ -223,7 +216,6 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
     window.scribli.menus.menu.element.setAttribute("data-from", Constants.MENU_FROM_DOC_TREE_MORE_NOTEBOOK);
     const notebookId = liElement.parentElement.getAttribute("data-url");
     const name = getNotebookName(notebookId);
-    /// #if !MOBILE
     const boxDocID = liElement.getAttribute("data-node-id");
     if (boxDocID && window.scribli.config.fileTree.parentDocClickExpand &&
         Number(liElement.getAttribute("data-count")) > 0) {
@@ -240,7 +232,6 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             }
         }).element);
     }
-    /// #endif
     if (!window.scribli.config.readonly) {
         window.scribli.menus.menu.append(new MenuItem({
             id: "changeIcon",
@@ -287,11 +278,7 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             }, () => {
                 liElement.parentElement.setAttribute("data-sortmode", sort.toString());
                 let files;
-                /// #if MOBILE
-                files = window.scribli.mobile.docks.file;
-                /// #else
                 files = (getDockByType("file").data["file"] as Files);
-                /// #endif
                 const toggleElement = liElement.querySelector(".b3-list-item__arrow--open");
                 if (toggleElement) {
                     toggleElement.classList.remove("b3-list-item__arrow--open");
@@ -324,9 +311,6 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
                     fetchPost("/api/riff/getNotebookRiffDueCards", {notebook: notebookId}, (response) => {
                         openCardByData(app, response.data, "notebook", notebookId, name);
                     });
-                    /// #if MOBILE
-                    closePanel();
-                    /// #endif
                 }
             }, {
                 id: "manage",
@@ -334,9 +318,6 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
                 label: window.scribli.languages.manage,
                 click: () => {
                     viewCards(app, notebookId, name, "Notebook");
-                    /// #if MOBILE
-                    closePanel();
-                    /// #endif
                 }
             }],
         }).element);
@@ -347,20 +328,11 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
         accelerator: window.scribli.config.keymap.general.search.custom,
         icon: "iconSearch",
         click() {
-            /// #if MOBILE
-            popSearch(app, {
-                hasReplace: false,
-                hPath: getNotebookName(notebookId),
-                idPath: [notebookId],
-                page: 1,
-            });
-            /// #else
             openSearch({
                 app,
                 hotkey: Constants.DIALOG_SEARCH,
                 notebookId,
             });
-            /// #endif
         }
     }).element);
     if (!window.scribli.config.readonly) {
@@ -370,20 +342,11 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
             accelerator: window.scribli.config.keymap.general.replace.custom,
             icon: "iconReplace",
             click() {
-                /// #if MOBILE
-                popSearch(app, {
-                    hasReplace: true,
-                    hPath: getNotebookName(notebookId),
-                    idPath: [notebookId],
-                    page: 1,
-                });
-                /// #else
                 openSearch({
                     app,
                     hotkey: Constants.DIALOG_REPLACE,
                     notebookId,
                 });
-                /// #endif
             }
         }).element);
     }
@@ -488,7 +451,6 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
     const id = liElement.getAttribute("data-node-id");
     let name = liElement.getAttribute("data-name");
     name = getDisplayName(name, false, true);
-    /// #if !MOBILE
     if (window.scribli.config.fileTree.parentDocClickExpand && Number(liElement.getAttribute("data-count")) > 0) {
         window.scribli.menus.menu.append(new MenuItem({
             id: "openDocument",
@@ -503,7 +465,6 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
             }
         }).element);
     }
-    /// #endif
     if (!window.scribli.config.readonly) {
         const topElement = hasTopClosestByTag(liElement, "UL");
         if (window.scribli.config.fileTree.sort === 6 || (topElement && topElement.dataset.sortmode === "6")) {
@@ -615,9 +576,6 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
                     fetchPost("/api/riff/getTreeRiffDueCards", {rootID: id}, (response) => {
                         openCardByData(app, response.data, "doc", id, name);
                     });
-                    /// #if MOBILE
-                    closePanel();
-                    /// #endif
                 }
             }, {
                 id: "manage",
@@ -629,9 +587,6 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
                     }, (response) => {
                         viewCards(app, id, pathPosix().join(getNotebookName(notebookId), response.data), "Tree");
                     });
-                    /// #if MOBILE
-                    closePanel();
-                    /// #endif
                 }
             }, {
                 id: "quickMakeCard",
@@ -682,25 +637,12 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
             accelerator: window.scribli.config.keymap.general.search.custom,
             async click() {
                 const searchPath = getDisplayName(pathString, false, true);
-                /// #if MOBILE
-                const response = await fetchSyncPost("/api/filetree/getHPathByPath", {
-                    notebook: notebookId,
-                    path: searchPath + ".sy"
-                });
-                popSearch(app, {
-                    hasReplace: false,
-                    hPath: pathPosix().join(getNotebookName(notebookId), response.data),
-                    idPath: [pathPosix().join(notebookId, searchPath)],
-                    page: 1,
-                });
-                /// #else
                 openSearch({
                     app,
                     hotkey: Constants.DIALOG_SEARCH,
                     notebookId,
                     searchPath
                 });
-                /// #endif
             }
         }).element);
         window.scribli.menus.menu.append(new MenuItem({
@@ -710,25 +652,12 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
             icon: "iconReplace",
             async click() {
                 const searchPath = getDisplayName(pathString, false, true);
-                /// #if MOBILE
-                const response = await fetchSyncPost("/api/filetree/getHPathByPath", {
-                    notebook: notebookId,
-                    path: searchPath + ".sy"
-                });
-                popSearch(app, {
-                    hasReplace: true,
-                    hPath: pathPosix().join(getNotebookName(notebookId), response.data),
-                    idPath: [pathPosix().join(notebookId, searchPath)],
-                    page: 1,
-                });
-                /// #else
                 openSearch({
                     app,
                     hotkey: Constants.DIALOG_REPLACE,
                     notebookId,
                     searchPath
                 });
-                /// #endif
             }
         }).element);
         window.scribli.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
@@ -767,11 +696,7 @@ export const genImportMenu = (notebookId: string, pathString: string) => {
     }
     const reloadDocTree = () => {
         let files;
-        /// #if MOBILE
-        files = window.scribli.mobile.docks.file;
-        /// #else
         files = (getDockByType("file").data["file"] as Files);
-        /// #endif
         const liElement = files.element.querySelector(`[data-path="${pathString}"]`);
         liElement.querySelector(".b3-list-item__toggle").classList.remove("fn__hidden");
         files.getLeaf(liElement, notebookId, true);

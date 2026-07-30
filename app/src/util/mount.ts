@@ -7,7 +7,6 @@ import {getOpenNotebookCount} from "./pathName";
 import {replaceFileName, validateName} from "../editor/rename";
 import {setStorageVal} from "../protyle/util/compatibility";
 import {openFileById} from "../editor/util";
-import {openMobileFileById} from "../mobile/editor";
 import {App} from "../index";
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
@@ -19,11 +18,7 @@ export const fetchNewDailyNote = (app: App, notebook: string) => {
         notebook,
         app: Constants.SCRIBLI_APPID,
     }, (response) => {
-        /// #if MOBILE
-        openMobileFileById(app, response.data.id, [Constants.CB_GET_SCROLL, Constants.CB_GET_FOCUS]);
-        /// #else
         openFileById({app, id: response.data.id, action: [Constants.CB_GET_SCROLL, Constants.CB_GET_FOCUS]});
-        /// #endif
     });
 };
 

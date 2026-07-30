@@ -4,10 +4,8 @@ import {useShell} from "../../util/pathName";
 /// #endif
 import type {SettingTabBuilder} from "../setting/builder";
 import {Constants} from "../../constants";
-/// #if !MOBILE
 import {resetLayout} from "../../layout/util";
 import {updateHotkeyTip} from "../../protyle/util/compatibility";
-/// #endif
 import {desktopModeCookie} from "../../util/cookie";
 import {isMobile, objEquals} from "../../util/functions";
 import {exitScribli} from "../../dialog/processSystem";
@@ -63,13 +61,11 @@ const registerAppearanceContentGroup = (tab: SettingTabBuilder) => {
         step: 1,
         save: (value) => editorConfigApi.patch("editor.fontSize", value),
     });
-    /// #if !MOBILE
     group.switch("editor.fontSizeScrollZoom", {
         title: window.scribli.languages.fontSizeScrollZoom,
         desc: window.scribli.languages.fontSizeScrollZoomTip,
         save: (value) => editorConfigApi.patch("editor.fontSizeScrollZoom", value),
     });
-    /// #endif
     group.switch("editor.fullWidth", {
         title: window.scribli.languages.fullWidth,
         desc: window.scribli.languages.fullWidthTip,
@@ -330,7 +326,6 @@ const registerAppearanceInterfaceGroup = (tab: SettingTabBuilder) => {
 const registerAppearanceControlsGroup = (tab: SettingTabBuilder) => {
     const group = tab.group("controls", window.scribli.languages.configGroupControls);
 
-    /// #if !MOBILE
     group.select("editor.floatWindowMode", {
         title: window.scribli.languages.floatWindowMode,
         desc: window.scribli.languages.floatWindowModeTip,
@@ -362,7 +357,6 @@ const registerAppearanceControlsGroup = (tab: SettingTabBuilder) => {
         title: window.scribli.languages.appearance19,
         desc: window.scribli.languages.appearance20,
     });
-    /// #endif
     group.stack({
         key: "statusBar",
         keywords: [
@@ -447,7 +441,6 @@ const registerAppearanceControlsGroup = (tab: SettingTabBuilder) => {
             });
         },
     });
-    /// #if !MOBILE
     group.button({
         id: "resetLayout",
         title: window.scribli.languages.resetLayout,
@@ -464,10 +457,8 @@ const registerAppearanceControlsGroup = (tab: SettingTabBuilder) => {
             });
         },
     });
-    /// #endif
 };
 
-/// #if !MOBILE
 const bindFloatWindowModeVisibility = (root: HTMLElement) => {
     const fwModeEl = root.querySelector<HTMLSelectElement>(`#${CSS.escape("editor.floatWindowMode")}`);
     const delayRow = root.querySelector(`#${CSS.escape("editor.floatWindowDelay")}`)?.closest(".config-item");
@@ -481,7 +472,6 @@ const bindFloatWindowModeVisibility = (root: HTMLElement) => {
     fwModeEl.addEventListener("change", handleFloatWindowModeChange);
     handleFloatWindowModeChange();
 };
-/// #endif
 
 const STATUS_BAR_MSG_ITEMS: { key: keyof Config.IAppearanceStatusBar; taskKey: string }[] = [
     {key: "msgTaskDatabaseIndexCommitDisabled", taskKey: "task.database.index.commit"},

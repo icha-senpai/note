@@ -5,7 +5,6 @@
  *   1. Register a free API key at https://www.pexels.com/api/
  *   2. Set the environment variable: set PEXELS_API_KEY=your_key   (Windows cmd)
  *                                    $env:PEXELS_API_KEY="your_key" (PowerShell)
- *                                    export PEXELS_API_KEY=your_key  (Git Bash / Linux / macOS)
  *   3. Run: node scripts/download-covers.js
  *
  * Optional arguments:

@@ -5,17 +5,12 @@ import {updateHotkeyTip} from "../../../protyle/util/compatibility";
 import {isMobile} from "../../../util/functions";
 import {Constants} from "../../../constants";
 import {Editor} from "../../../editor";
-/// #if MOBILE
-import {getCurrentEditor} from "../../../mobile/editor";
-import {popSearch} from "../../../mobile/menu/search";
-/// #else
 import {getActiveTab, getDockByType} from "../../../layout/tabUtil";
 import {Custom} from "../../../layout/dock/Custom";
 import {getAllModels} from "../../../layout/getAll";
 import {Files} from "../../../layout/dock/Files";
 import {Search} from "../../../search";
 import {openSearch} from "../../../search/spread";
-/// #endif
 import {addEditorToDatabase, addFilesToDatabase} from "../../../protyle/render/av/addToDatabase";
 import {hasClosestBlock, hasClosestByClassName, hasTopClosestByTag} from "../../../protyle/util/hasClosest";
 import {onlyProtyleCommand} from "./protyle";
@@ -54,11 +49,6 @@ export const commandPanel = (app: App) => {
     let html = "";
     Object.keys(window.scribli.config.keymap.general).forEach((key) => {
         let keys;
-        /// #if MOBILE
-        keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "inbox", "backlinks",
-            "dataHistory", "editReadonly", "enter", "enterBack", "globalSearch", "lockScreen", "mainMenu", "move",
-            "newFile", "recentDocs", "replace", "riffCard", "search", "selectOpen1", "syncNow"];
-        /// #else
         keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "inbox", "backlinks",
             "graphView", "globalGraph", "closeAll", "closeLeft", "closeOthers", "closeRight", "closeTab",
             "closeUnmodified", "config", "dataHistory", "editReadonly", "enter", "enterBack", "globalSearch", "goBack",
@@ -69,7 +59,6 @@ export const commandPanel = (app: App) => {
             "tabToWindow", "stickSearch", "toggleDock", "unsplitAll", "unsplit", "recentClosed"];
         /// #if !BROWSER
         keys.push("toggleWin");
-        /// #endif
         /// #endif
         if (keys.includes(key)) {
             html += `<li class="b3-list-item" data-command="${key}">
@@ -189,12 +178,6 @@ export const execByCommand = async (options: {
     const isFileFocus = document.querySelector(".layout__tab--active")?.classList.contains("sy__file");
 
     let protyle = options.protyle;
-    /// #if MOBILE
-    if (!protyle) {
-        protyle = getCurrentEditor().protyle;
-        options.previousRange = protyle.toolbar.range;
-    }
-    /// #endif
     const range: Range = options.previousRange || (getSelection().rangeCount > 0 ? getSelection().getRangeAt(0) : document.createRange());
     let fileLiElements = options.fileLiElements;
     if (!isFileFocus && !protyle) {
@@ -300,25 +283,17 @@ export const execByCommand = async (options: {
         (isFileFocus && (!fileLiElements || fileLiElements.length === 0)) ||
         (isMobile() && !document.getElementById("empty").classList.contains("fn__none"))) {
         if (options.command === "replace") {
-            /// #if MOBILE
-            popSearch(options.app, {hasReplace: true, page: 1});
-            /// #else
             openSearch({
                 app: options.app,
                 hotkey: Constants.DIALOG_REPLACE,
                 key: range.toString()
             });
-            /// #endif
         } else if (options.command === "search") {
-            /// #if MOBILE
-            popSearch(options.app, {hasReplace: false, page: 1});
-            /// #else
             openSearch({
                 app: options.app,
                 hotkey: Constants.DIALOG_SEARCH,
                 key: range.toString()
             });
-            /// #endif
         }
         return;
     }
@@ -327,18 +302,6 @@ export const execByCommand = async (options: {
     switch (options.command) {
         case "replace":
             if (!isFileFocus) {
-                /// #if MOBILE
-                const response = await fetchSyncPost("/api/filetree/getHPathByPath", {
-                    notebook: protyle.notebookId,
-                    path: protyle.path.endsWith(".sy") ? protyle.path : protyle.path + ".sy"
-                });
-                popSearch(options.app, {
-                    page: 1,
-                    hasReplace: true,
-                    hPath: pathPosix().join(getNotebookName(protyle.notebookId), response.data),
-                    idPath: [pathPosix().join(protyle.notebookId, protyle.path)]
-                });
-                /// #else
                 openSearch({
                     app: options.app,
                     hotkey: Constants.DIALOG_REPLACE,
@@ -346,9 +309,7 @@ export const execByCommand = async (options: {
                     notebookId: protyle.notebookId,
                     searchPath: protyle.path
                 });
-                /// #endif
             } else {
-                /// #if !MOBILE
                 const topULElement = hasTopClosestByTag(fileLiElements[0], "UL");
                 if (!topULElement) {
                     return false;
@@ -370,23 +331,10 @@ export const execByCommand = async (options: {
                         notebookId: notebookId,
                     });
                 }
-                /// #endif
             }
             break;
         case "search":
             if (!isFileFocus) {
-                /// #if MOBILE
-                const response = await fetchSyncPost("/api/filetree/getHPathByPath", {
-                    notebook: protyle.notebookId,
-                    path: protyle.path.endsWith(".sy") ? protyle.path : protyle.path + ".sy"
-                });
-                popSearch(options.app, {
-                    page: 1,
-                    hasReplace: false,
-                    hPath: pathPosix().join(getNotebookName(protyle.notebookId), response.data),
-                    idPath: [pathPosix().join(protyle.notebookId, protyle.path)]
-                });
-                /// #else
                 openSearch({
                     app: options.app,
                     hotkey: Constants.DIALOG_SEARCH,
@@ -394,9 +342,7 @@ export const execByCommand = async (options: {
                     notebookId: protyle.notebookId,
                     searchPath: protyle.path
                 });
-                /// #endif
             } else {
-                /// #if !MOBILE
                 const topULElement = hasTopClosestByTag(fileLiElements[0], "UL");
                 if (!topULElement) {
                     return false;
@@ -418,7 +364,6 @@ export const execByCommand = async (options: {
                         notebookId: notebookId,
                     });
                 }
-                /// #endif
             }
             break;
         case "addToDatabase":

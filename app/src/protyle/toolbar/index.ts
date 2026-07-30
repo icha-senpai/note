@@ -51,7 +51,6 @@ import {confirmDialog} from "../../dialog/confirmDialog";
 import {paste, pasteAsPlainText, pasteEscaped} from "../util/paste";
 import {escapeHtml} from "../../util/escape";
 import {resizeSide} from "../../history/resizeSide";
-import {activeBlur} from "../../mobile/util/keyboardToolbar";
 
 const filterPluginToolbar = (toolbar: Array<string | IMenuItem>, lite: boolean) => {
     if (!lite) {
@@ -85,11 +84,7 @@ export class Toolbar {
         element.className = "protyle-toolbar fn__none";
         this.element = element;
         this.subElement = document.createElement("div");
-        /// #if MOBILE
-        this.subElement.className = "protyle-util fn__none protyle-util--mobile";
-        /// #else
         this.subElement.className = "protyle-util fn__none";
-        /// #endif
         this.toolbarHeight = 29;
         const inlineToolbarElement = document.querySelector('#keyboardToolbar .keyboard__action[data-type="inline-memo"]')?.parentElement;
         protyle.app.plugins.forEach(item => {
@@ -104,17 +99,6 @@ export class Toolbar {
                 if (window.scribli.config.keymap.plugin && window.scribli.config.keymap.plugin[item.name] && window.scribli.config.keymap.plugin[item.name][toolbarItem.name]) {
                     toolbarItem.hotkey = window.scribli.config.keymap.plugin[item.name][toolbarItem.name].custom;
                 }
-                /// #if MOBILE
-                if (inlineToolbarElement) {
-                    const itemElement = new ToolbarItem(protyle, toolbarItem).element;
-                    itemElement.className = "keyboard__action";
-                    const oldItemElement = inlineToolbarElement.querySelector(`[data-type="${toolbarItem.name}"]`);
-                    if (!oldItemElement) {
-                        inlineToolbarElement.insertAdjacentHTML("beforeend",
-                            `<button class="keyboard__action" data-type="${toolbarItem.name}"><svg><use xlink:href="#${toolbarItem.icon}"></use></svg></button>`);
-                    }
-                }
-                /// #endif
             });
             options.toolbar = toolbarKeyToMenu(pluginToolbar);
         });
@@ -1461,12 +1445,8 @@ export class Toolbar {
         });
         this.subElement.style.zIndex = (++window.scribli.zIndex).toString();
         this.subElement.classList.remove("fn__none");
-        /// #if !MOBILE
         const nodeRect = languageElements[0].getBoundingClientRect();
         setPosition(this.subElement, nodeRect.left, nodeRect.bottom, nodeRect.height);
-        /// #else
-        setPosition(this.subElement, 0, 0);
-        /// #endif
         this.element.classList.add("fn__none");
         inputElement.select();
     }
@@ -1511,7 +1491,9 @@ export class Toolbar {
         });
         setPosition(this.subElement, 8, 8);
         this.element.classList.add("fn__none");
-        activeBlur();
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
     }
 
     public showTpl(protyle: IProtyle, nodeElement: HTMLElement, range: Range) {
@@ -1606,13 +1588,9 @@ export class Toolbar {
 
                 if (!previewPath) {
                     previewPath = response.data.templates[0]?.path;
-                    /// #if !MOBILE
                     const rangePosition = getSelectionPosition(nodeElement, range);
                     setPosition(this.subElement, rangePosition.left, rangePosition.top + 18, this.LINE_HEIGHT);
                     (this.subElement.firstElementChild as HTMLElement).style.maxHeight = Math.min(window.innerHeight * 0.8, window.innerHeight - this.subElement.getBoundingClientRect().top) - 16 + "px";
-                    /// #else
-                    setPosition(this.subElement, 0, 0);
-                    /// #endif
                 } else if (response.data.templates[0]?.path === previewPath) {
                     return;
                 } else {
@@ -1739,12 +1717,8 @@ export class Toolbar {
                 });
                 listElement.innerHTML = searchHTML;
                 if (init) {
-                    /// #if !MOBILE
                     const rangePosition = getSelectionPosition(nodeElement, range);
                     setPosition(this.subElement, rangePosition.left, rangePosition.top + 18, this.LINE_HEIGHT);
-                    /// #else
-                    setPosition(this.subElement, 0, 0);
-                    /// #endif
                 }
             });
         };
@@ -1869,10 +1843,6 @@ export class Toolbar {
 
     public isMultiSelectMode() {
         let result = false;
-        /// #if MOBILE
-        result = !this.subElement.classList.contains("fn__none") &&
-            !!this.subElement.querySelector('[data-type="exitMultiSelectMode"]');
-        /// #endif
         return result;
     }
 

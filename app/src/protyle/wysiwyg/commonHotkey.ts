@@ -110,7 +110,6 @@ export const commonHotkey = (protyle: IProtyle, event: KeyboardEvent, nodeElemen
         event.stopPropagation();
         return true;
     }
-    /// #if !MOBILE
     let matchCommand = false;
     protyle.app.plugins.find(item => {
         item.commands.find(command => {
@@ -127,7 +126,6 @@ export const commonHotkey = (protyle: IProtyle, event: KeyboardEvent, nodeElemen
     if (matchCommand) {
         return true;
     }
-    /// #endif
 };
 
 export const upSelect = (options: {

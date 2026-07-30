@@ -5,11 +5,7 @@ import {mountHelp} from "../util/mount";
 import {syncGuide} from "../sync/syncGuide";
 import {setNoteBook} from "../util/pathName";
 import type {App} from "../index";
-/// #if MOBILE
-import {openMobileFileById} from "../mobile/editor";
-/// #else
 import {openFileById} from "../editor/util";
-/// #endif
 
 export const ensureOnboarding = async () => {
     const onboarding = window.scribli.config.onboarding;
@@ -34,16 +30,11 @@ const shouldShowOnboarding = () => {
 };
 
 let pendingSyncHandler: (() => void) | undefined;
-let mobileKeyboardHandler: EventListener | undefined;
 
 const dismissOnboarding = () => {
     if (pendingSyncHandler) {
         window.removeEventListener("scribli-sync-success", pendingSyncHandler);
         pendingSyncHandler = undefined;
-    }
-    if (mobileKeyboardHandler) {
-        window.removeEventListener("scribli-mobile-keyboard-change", mobileKeyboardHandler);
-        mobileKeyboardHandler = undefined;
     }
     const onboardingElement = document.querySelector(".onboarding");
     onboardingElement?.parentElement?.classList.remove("onboarding-container");
@@ -110,24 +101,15 @@ const renderOnboarding = (app: App) => {
         }
     });
     let containerElement = document.body;
-    /// #if !MOBILE
     const editorContainerElement = document.querySelector(".layout__center") as HTMLElement;
     if (editorContainerElement) {
         containerElement = editorContainerElement;
         containerElement.classList.add("onboarding-container");
         element.classList.add("onboarding--editor");
     }
-    /// #endif
     containerElement.append(element);
-    /// #if MOBILE
-    mobileKeyboardHandler = (event: Event) => {
-        element.classList.toggle("onboarding--keyboard", (event as CustomEvent<boolean>).detail);
-    };
-    window.addEventListener("scribli-mobile-keyboard-change", mobileKeyboardHandler);
-    /// #endif
 };
 
-/// #if !MOBILE
 export const openDesktopOnboarding = (app: App) => {
     if (!shouldShowOnboarding()) {
         return;
@@ -141,27 +123,11 @@ export const openDesktopOnboarding = (app: App) => {
         renderOnboarding(app);
     });
 };
-/// #endif
-
-/// #if MOBILE
-export const openMobileOnboarding = (app: App) => {
-    if (!shouldShowOnboarding()) {
-        return false;
-    }
-    renderOnboarding(app);
-    openMobileFileById(app, window.scribli.config.onboarding.documentID, [Constants.CB_GET_CONTEXT]);
-    return true;
-};
-/// #endif
 
 export const activateOnboarding = async (app: App, onboarding: Config.IConf["onboarding"]) => {
     window.scribli.config.onboarding = onboarding;
     await ensureOnboarding();
     setNoteBook(() => {
-        /// #if MOBILE
-        openMobileOnboarding(app);
-        /// #else
         openDesktopOnboarding(app);
-        /// #endif
     });
 };

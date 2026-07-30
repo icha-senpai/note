@@ -7,9 +7,7 @@ import {showMessage} from "../dialog/message";
 import {importObsidianVault} from "./importObsidian";
 import {saveExportFile, writeText} from "../protyle/util/compatibility";
 import {exitScribli} from "../dialog/processSystem";
-/// #if !MOBILE
 import {exportLayout} from "../layout/util";
-/// #endif
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 import * as path from "path";
@@ -267,11 +265,7 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
                 return;
             }
             showMessage(window.scribli.languages.imported);
-            /// #if MOBILE
-            void exitScribli();
-            /// #else
             void exportLayout({errorExit: true, cb: exitScribli});
-            /// #endif
         });
     });
     ["s3", "webdav"].forEach((provider) => {

@@ -784,8 +784,6 @@
 	"multiSelect": "Viacnásobný výber",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Paleta príkazov",
-	"cloudRegionNorthAmerica": "Scribli (Dátové centrum Severná Amerika)",
-	"cloudRegionChina": "Dátové centrum Čína",
 	"currentKernel": "Aktuálne jadro",
 	"otherOnlineKernels": "Iné online jadrá",
 	"syncPerception": "Vnímanie synchronizácie",
@@ -804,7 +802,7 @@
 	"color": "Farba",
 	"confirmPassword": "Heslo som si zapamätal",
 	"passwordNoMatch": "Heslá sa nezhodujú",
-	"cloudConfigTip": "Konfigurujte v [Nastavenia - Účet a Synchronizácia - Poskytovateľ cloudu]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Naozaj chcete odinštalovať ${name}?<br>Môžete prísť o všetky dáta pluginu!",
 	"scrollGetMore": "Posúvajte pre načítanie ďalších",
 	"flashcardNewCard": "Nové",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Zlúčiť poddokumenty",
 	"removeAssetsFolder": "Odstrániť adresár príloh",
 	"upload": "Nahrať",
-	"reminderTip": "Čas pripomienky nemôže byť v minulosti",
-	"wechatTip": "Obsah bude odoslaný cez WeChat po expirácii",
 	"notEmpty": "Čas pripomienky nesmie byť prázdny",
 	"experimentalFeature": "(⚗️ Experimentálna funkcia)",
-	"wechatReminder": "WeChat pripomienka",
-	"notifyTime": "Čas oznámenia",
 	"docName": "Názov dokumentu",
 	"bootSyncFailed": "Synchronizácia pri štarte zlyhala",
 	"use": "Použiť",
@@ -2168,3 +2162,5 @@
 		"343": "Nový začiatok"
 	}
 }
+
+

@@ -784,8 +784,6 @@
 	"multiSelect": "Pilih ganda",
 	"commandEmpty": "No command yet",
 	"commandPanel": "Palet Perintah",
-	"cloudRegionNorthAmerica": "Scribli (Pusat data Amerika Utara)",
-	"cloudRegionChina": "Pusat data Tiongkok Daratan",
 	"currentKernel": "Kernel saat ini",
 	"otherOnlineKernels": "Kernel online lainnya",
 	"syncPerception": "Persepsi sinkronisasi",
@@ -804,7 +802,7 @@
 	"color": "Warna",
 	"confirmPassword": "Saya sudah mengingat kata sandinya",
 	"passwordNoMatch": "Kata sandi yang dimasukkan dua kali tidak cocok",
-	"cloudConfigTip": "Harap konfigurasi di [Pengaturan - Akun & Sinkronisasi - Penyedia layanan penyimpanan cloud]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "Apakah Anda yakin ingin mencopot ${name}?<br>Mencopot mungkin akan menghapus semua pengaturan dan data terkait; harap berhati-hati!",
 	"scrollGetMore": "Gulir ke atas dan ke bawah untuk memuat lebih banyak",
 	"flashcardNewCard": "Baru",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "Gabungkan sub-dokumen",
 	"removeAssetsFolder": "Hapus direktori aset",
 	"upload": "Unggah",
-	"reminderTip": "Waktu pengingat tidak boleh kurang dari waktu saat ini",
-	"wechatTip": "Blok konten akan dikirim ke cloud dalam teks biasa, dan didorong melalui pesan template WeChat MP saat kedaluwarsa",
 	"notEmpty": "Waktu pengingat tidak boleh kosong",
 	"experimentalFeature": "(⚗️ Fitur ini dalam tahap eksperimental)",
-	"wechatReminder": "Pengingat WeChat",
-	"notifyTime": "Waktu Pemberitahuan",
 	"docName": "Nama Dokumen",
 	"bootSyncFailed": "Gagal menyinkronkan data saat startup",
 	"use": "Gunakan",
@@ -2168,3 +2162,5 @@
 		"343": "Awal yang Baru"
 	}
 }
+
+

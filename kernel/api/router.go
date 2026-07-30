@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
@@ -55,7 +55,6 @@ func ServeAPI(ginServer *gin.Engine) {
 	ginServer.Handle("POST", "/api/system/setNetworkProxy", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, setNetworkProxy)
 	ginServer.Handle("POST", "/api/system/setWorkspaceDir", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, setWorkspaceDir)
 	ginServer.Handle("POST", "/api/system/getWorkspaces", model.CheckAuth, getWorkspaces)
-	ginServer.Handle("POST", "/api/system/getMobileWorkspaces", model.CheckAuth, model.CheckAdminRole, getMobileWorkspaces)
 	ginServer.Handle("POST", "/api/system/checkWorkspaceDir", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, checkWorkspaceDir)
 	ginServer.Handle("POST", "/api/system/createWorkspaceDir", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, createWorkspaceDir)
 	ginServer.Handle("POST", "/api/system/removeWorkspaceDir", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, removeWorkspaceDir)
@@ -252,7 +251,6 @@ func ServeAPI(ginServer *gin.Engine) {
 	ginServer.Handle("POST", "/api/block/moveOutlineHeading", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, moveOutlineHeading)
 	ginServer.Handle("POST", "/api/block/foldBlock", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, foldBlock)
 	ginServer.Handle("POST", "/api/block/unfoldBlock", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, unfoldBlock)
-	ginServer.Handle("POST", "/api/block/setBlockReminder", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, setBlockReminder)
 	ginServer.Handle("POST", "/api/block/getHeadingLevelTransaction", model.CheckAuth, model.CheckAdminRole, getHeadingLevelTransaction)
 	ginServer.Handle("POST", "/api/block/getHeadingDeleteTransaction", model.CheckAuth, model.CheckAdminRole, getHeadingDeleteTransaction)
 	ginServer.Handle("POST", "/api/block/getHeadingInsertTransaction", model.CheckAuth, model.CheckAdminRole, getHeadingInsertTransaction)

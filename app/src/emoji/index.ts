@@ -1,10 +1,8 @@
 import {getRandom, isMobile} from "../util/functions";
 import {fetchPost} from "../util/fetch";
 import {Constants} from "../constants";
-/// #if !MOBILE
 import {Files} from "../layout/dock/Files";
 import {getDockByType} from "../layout/tabUtil";
-/// #endif
 import {getAllEditor, getAllModels} from "../layout/getAll";
 import {setNoteBook} from "../util/pathName";
 import {Dialog} from "../dialog";
@@ -709,20 +707,15 @@ export const openEmojiPanel = (
 };
 
 export const updateOutlineEmoji = (unicode: string, id: string) => {
-    /// #if !MOBILE
     getAllModels().outline.forEach(model => {
         if (model.blockId === id) {
             model.headerElement.nextElementSibling.firstElementChild.outerHTML = unicode2Emoji(unicode || window.scribli.storage[Constants.LOCAL_IMAGES].file, "b3-list-item__graphic", true);
         }
     });
-    /// #endif
 };
 
 export const updateFileTreeEmoji = (unicode: string, id: string, icon = "iconFile") => {
     let emojiElement;
-    /// #if MOBILE
-    emojiElement = document.querySelector(`#sidebar [data-type="sidebar-file"] [data-node-id="${id}"] .b3-list-item__icon`);
-    /// #else
     const dockFile = getDockByType("file");
     if (dockFile) {
         const files = dockFile.data.file as Files;
@@ -732,7 +725,6 @@ export const updateFileTreeEmoji = (unicode: string, id: string, icon = "iconFil
             emojiElement = files.element.querySelector(`[data-node-id="${id}"] .b3-list-item__icon`) || files.element.querySelector(`[data-url="${id}"] .b3-list-item__icon`) || files.closeElement.querySelector(`[data-url="${id}"] .b3-list-item__icon`);
         }
     }
-    /// #endif
     if (emojiElement) {
         emojiElement.innerHTML = unicode2Emoji(unicode || (icon === "iconFile" ? (emojiElement.previousElementSibling.classList.contains("fn__hidden") ? window.scribli.storage[Constants.LOCAL_IMAGES].file : window.scribli.storage[Constants.LOCAL_IMAGES].folder) : window.scribli.storage[Constants.LOCAL_IMAGES].note));
     }

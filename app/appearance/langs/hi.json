@@ -784,8 +784,6 @@
 	"multiSelect": "बहु-चयन",
 	"commandEmpty": "No command yet",
 	"commandPanel": "कमांड पैलेट",
-	"cloudRegionNorthAmerica": "लियूयुन (उत्तरी अमेरिका डेटा केंद्र)",
-	"cloudRegionChina": "मुख्यभूमि चीन डेटा केंद्र",
 	"currentKernel": "वर्तमान कर्नेल",
 	"otherOnlineKernels": "अन्य ऑनलाइन कर्नेल",
 	"syncPerception": "सिंक अनुभूति",
@@ -804,7 +802,7 @@
 	"color": "रंग",
 	"confirmPassword": "मुझे पासवर्ड याद आ गया है",
 	"passwordNoMatch": "दो बार दर्ज किए गए पासवर्ड मेल नहीं खाते",
-	"cloudConfigTip": "कृपया [सेटिंग्स - खाता और सिंक - क्लाउड स्टोरेज सेवा प्रदाता] में कॉन्फ़िगर करें",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "क्या आप वाकई ${name} अनइंस्टॉल करना चाहते हैं?<br>अनइंस्टॉल करने से सभी संबंधित सेटिंग्स और डेटा हट सकते हैं; कृपया सावधानी से आगे बढ़ें!",
 	"scrollGetMore": "अधिक लोड करने के लिए ऊपर और नीचे स्क्रॉल करें",
 	"flashcardNewCard": "नया",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "उप-दस्तावेज़ मर्ज करें",
 	"removeAssetsFolder": "एसेट निर्देशिका हटाएं",
 	"upload": "अपलोड करें",
-	"reminderTip": "अनुस्मारक समय वर्तमान समय से कम नहीं हो सकता",
-	"wechatTip": "सामग्री ब्लॉक क्लाउड पर स्पष्ट पाठ में भेजा जाएगा, और समाप्त होने पर WeChat MP टेम्पलेट संदेश के माध्यम से पुश किया जाएगा",
 	"notEmpty": "अनुस्मारक समय खाली नहीं हो सकता",
 	"experimentalFeature": "(⚗️ यह सुविधा प्रायोगिक चरण में है)",
-	"wechatReminder": "WeChat अनुस्मारक",
-	"notifyTime": "सूचना समय",
 	"docName": "दस्तावेज़ नाम",
 	"bootSyncFailed": "प्रारंभ पर डेटा सिंक्रोनाइज़ करने में विफल",
 	"use": "उपयोग करें",
@@ -2168,3 +2162,5 @@
 		"343": "एक नई शुरुआत"
 	}
 }
+
+

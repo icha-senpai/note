@@ -1,11 +1,9 @@
-/// #if !MOBILE
 import {getInstanceById, setPanelFocus} from "../layout/util";
 import {Tab} from "../layout/Tab";
 import {initSearchMenu} from "./search";
 import {initDockMenu} from "./dock";
 import {initFileMenu, initNavigationMenu} from "./navigation";
 import {initTabMenu} from "./tab";
-/// #endif
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -21,7 +19,6 @@ export class Menus {
 
     constructor(app: App) {
         this.menu = new Menu();
-        /// #if !MOBILE
         window.addEventListener("contextmenu", (event) => {
             if (event.shiftKey) {
                 return;
@@ -45,8 +42,10 @@ export class Menus {
                     pasteAsPlainText: window.scribli.languages.pasteAsPlainText,
                     selectAll: window.scribli.languages.selectAll,
                 });
-                /// #endif
                 event.stopPropagation();
+                /// #else
+                event.preventDefault();
+                /// #endif
             } else {
                 event.preventDefault();
             }
@@ -105,7 +104,6 @@ export class Menus {
                 target = target.parentElement;
             }
         }, false);
-        /// #endif
     }
 
     private getDir(target: HTMLElement) {

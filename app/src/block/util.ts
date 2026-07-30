@@ -15,7 +15,6 @@ import {hideElements} from "../protyle/ui/hideElements";
 import {blockRender} from "../protyle/render/blockRender";
 import {fetchPost, fetchSyncPost} from "../util/fetch";
 import {openFileById} from "../editor/util";
-import {openMobileFileById} from "../mobile/editor";
 import {mathRender} from "../protyle/render/mathRender";
 
 export const cancelSB = async (protyle: IProtyle, nodeElement: Element, range?: Range) => {
@@ -195,15 +194,11 @@ export const jumpToParent = (protyle: IProtyle, nodeElement: Element, type: "par
         if (!targetId) {
             return;
         }
-        /// #if !MOBILE
         openFileById({
             app: protyle.app,
             id: targetId,
             action: targetId !== protyle.block.rootID && protyle.block.showAll ? [Constants.CB_GET_ALL, Constants.CB_GET_FOCUS] : [Constants.CB_GET_FOCUS]
         });
-        /// #else
-        openMobileFileById(protyle.app, targetId, targetId !== protyle.block.rootID && protyle.block.showAll ? [Constants.CB_GET_ALL, Constants.CB_GET_FOCUS] : [Constants.CB_GET_FOCUS]);
-        /// #endif
     });
 };
 

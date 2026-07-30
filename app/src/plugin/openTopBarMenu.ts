@@ -1,9 +1,7 @@
 import {App} from "../index";
 import {Menu} from "./Menu";
 import {setStorageVal} from "../protyle/util/compatibility";
-/// #if !MOBILE
 import {setTabPosition} from "../layout/tabUtil";
-/// #endif
 import {Constants} from "../constants";
 
 export const openTopBarMenu = (app: App, target?: Element) => {
@@ -35,9 +33,7 @@ export const openTopBarMenu = (app: App, target?: Element) => {
                         item.classList.add("fn__none");
                     }
                     setStorageVal(Constants.LOCAL_PLUGINTOPUNPIN, window.scribli.storage[Constants.LOCAL_PLUGINTOPUNPIN]);
-                    /// #if !MOBILE
                     setTabPosition(true);
-                    /// #endif
                 }
             }];
             if (hasSetting) {

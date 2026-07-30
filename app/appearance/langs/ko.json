@@ -784,8 +784,6 @@
 	"multiSelect": "다중 선택",
 	"commandEmpty": "No command yet",
 	"commandPanel": "명령 팔레트",
-	"cloudRegionNorthAmerica": "Scribli (북미 데이터 센터)",
-	"cloudRegionChina": "중국 본토 데이터 센터",
 	"currentKernel": "현재 커널",
 	"otherOnlineKernels": "기타 온라인 커널",
 	"syncPerception": "동기화 인식",
@@ -804,7 +802,7 @@
 	"color": "색상",
 	"confirmPassword": "비밀번호를 이미 기억했습니다",
 	"passwordNoMatch": "두 번 입력한 비밀번호가 일치하지 않습니다",
-	"cloudConfigTip": "[설정 - 계정 및 동기화 - 클라우드 저장소 서비스 제공자]에서 구성하세요",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "정말로 ${name}을(를) 제거하시겠습니까?<br>제거하면 관련된 모든 구성 및 데이터가 삭제될 수 있습니다. 신중히 결정해주세요!",
 	"scrollGetMore": "위아래로 스크롤하여 더 불러오기",
 	"flashcardNewCard": "신규",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "하위 문서 병합",
 	"removeAssetsFolder": "assets 디렉토리 제거",
 	"upload": "업로드",
-	"reminderTip": "알림 시간은 현재 시간보다 빠를 수 없습니다",
-	"wechatTip": "콘텐츠 블록은 일반 텍스트로 클라우드로 전송되며 만료 시 WeChat MP 템플릿 메시지를 통해 푸시됩니다",
 	"notEmpty": "알림 시간은 비워둘 수 없습니다",
 	"experimentalFeature": "(⚗️ 이 기능은 실험 단계입니다)",
-	"wechatReminder": "WeChat 알림",
-	"notifyTime": "알림 시간",
 	"docName": "문서 이름",
 	"bootSyncFailed": "시작 시 데이터 동기화 실패",
 	"use": "사용",
@@ -2168,3 +2162,5 @@
 		"343": "새로운 시작"
 	}
 }
+
+

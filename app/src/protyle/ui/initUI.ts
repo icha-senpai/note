@@ -12,9 +12,7 @@ import {getContenteditableElement, getEmbedChildOperationContext, getLastBlock} 
 import {genEmptyElement, genHeadingElement} from "../../block/util";
 import {transaction} from "../wysiwyg/transaction";
 import {focusByRange} from "../util/selection";
-/// #if !MOBILE
 import {moveResize} from "../../dialog/moveResize";
-/// #endif
 import {
     hasClosestBlock,
     hasClosestByAttribute,
@@ -74,7 +72,6 @@ export const initUI = (protyle: IProtyle) => {
 
     protyle.element.appendChild(protyle.toolbar.element);
     protyle.element.appendChild(protyle.toolbar.subElement);
-    /// #if !MOBILE
     moveResize(protyle.toolbar.subElement, (type) => {
         const pinElement = protyle.toolbar.subElement.querySelector('.block__icons [data-type="pin"]');
         if (pinElement) {
@@ -86,7 +83,6 @@ export const initUI = (protyle: IProtyle) => {
             protyle.toolbar.subElementResizeCB();
         }
     });
-    /// #endif
 
     protyle.element.append(protyle.highlight.styleElement);
 
@@ -203,7 +199,6 @@ export const initUI = (protyle: IProtyle) => {
         }
     });
     let overAttr = false;
-    /// #if !MOBILE
     protyle.element.addEventListener("mouseover", (event: KeyboardEvent & {
         target: HTMLElement
     }) => {
@@ -290,7 +285,6 @@ export const initUI = (protyle: IProtyle) => {
             }
         }
     });
-    /// #endif
 };
 
 export const addLoading = (protyle: IProtyle, msg?: string) => {

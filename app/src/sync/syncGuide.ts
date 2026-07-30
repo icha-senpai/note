@@ -4,9 +4,7 @@ import {Dialog} from "../dialog";
 import {confirmDialog} from "../dialog/confirmDialog";
 import {isMobile} from "../util/functions";
 import {processSync} from "../dialog/processSystem";
-/// #if !MOBILE
 import {openSetting} from "../config";
-/// #endif
 import {App} from "../index";
 import {Constants} from "../constants";
 
@@ -92,33 +90,12 @@ export const renderSyncCloudList = (cloudListElement: Element, reload = false, c
         ${response.msg}
     </li>
     <li class="b3-list--empty">
-        ${window.scribli.languages.cloudConfigTip}
+        ${window.scribli.languages.syncProviderConfigTip}
     </li>
 </ul>`;
         } else {
             const syncListParts: string[] = ['<div class="fn__hr"></div><ul class="b3-list b3-list--background" style="overflow: auto;">'];
             response.data.syncDirs.forEach((item: { hSize: string, cloudName: string, updated: string }) => {
-                /// #if MOBILE
-                syncListParts.push(`<li data-type="selectCloud" data-name="${item.cloudName}" class="b3-list-item b3-list-item--two">
-    <div class="b3-list-item__first" data-name="${item.cloudName}">
-        <input type="radio" name="cloudName"${item.cloudName === response.data.checkedSyncDir ? " checked" : ""}/>
-        <span class="fn__space"></span>
-        <span>${item.cloudName}</span>
-        <span class="fn__flex-1 fn__space"></span>
-        <span data-type="removeCloud" class="b3-list-item__action">
-            <svg><use xlink:href="#iconTrashcan"></use></svg>
-        </span>
-    </div>
-    <div class="b3-list-item__meta fn__flex">
-        <span class="fn__space"></span>
-        <span class="fn__space"></span>
-        <span class="fn__space"></span>
-        <span>${item.hSize}</span>
-        <span class="fn__space"></span>
-        <span>${item.updated}</span>
-    </div>
-</li>`);
-                /// #else
                 syncListParts.push(`<li data-type="selectCloud" data-name="${item.cloudName}" class="b3-list-item b3-list-item--narrow b3-list-item--hide-action">
 <input type="radio" name="cloudName"${item.cloudName === response.data.checkedSyncDir ? " checked" : ""}/>
 <span class="fn__space"></span>
@@ -130,7 +107,6 @@ export const renderSyncCloudList = (cloudListElement: Element, reload = false, c
 <span data-type="removeCloud" class="b3-tooltips b3-tooltips__w b3-list-item__action${(window.scribli.config.sync.provider === 2 || window.scribli.config.sync.provider === 3) ? " fn__none":""}" aria-label="${window.scribli.languages.delete}">
     <svg><use xlink:href="#iconTrashcan"></use></svg>
 </span></li>`);
-                /// #endif
             });
             syncListParts.push("</ul>");
             if (![2, 3].includes(window.scribli.config.sync.provider)) {
@@ -155,12 +131,10 @@ export const syncGuide = (app?: App) => {
         return;
     }
     if (window.scribli.config.sync.provider === 0) {
-        /// #if !MOBILE
         if (app) {
             openSetting(app, "sync");
         }
-        /// #endif
-        showMessage(window.scribli.languages.cloudConfigTip);
+        showMessage(window.scribli.languages.syncProviderConfigTip);
         return;
     }
     if (!window.scribli.config.repo.key) {

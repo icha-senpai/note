@@ -27,35 +27,30 @@ import {transaction, updateTransaction} from "../protyle/wysiwyg/transaction";
 import {openMenu} from "./commonMenuItem";
 import {fetchPost, fetchSyncPost} from "../util/fetch";
 import {Constants} from "../constants";
-import {copyPlainText, readClipboard, setStorageVal, updateHotkeyTip, writeText} from "../protyle/util/compatibility";
+import {copyPlainText, readClipboard, updateHotkeyTip, writeText} from "../protyle/util/compatibility";
 import {onGet} from "../protyle/util/onGet";
 import {getAllModels} from "../layout/getAll";
 import {paste, pasteAsPlainText, pasteEscaped} from "../protyle/util/paste";
-/// #if !MOBILE
 import {openFileById, updateBacklinkGraph} from "../editor/util";
 import {openGlobalSearch} from "../search/util";
 import {openNewWindowById} from "../window/openNewWindow";
 import {openBacklink, openGraph} from "../layout/dock/util";
-/// #endif
 import {getSearch, isMobile} from "../util/functions";
 import * as dayjs from "dayjs";
 import {blockRender} from "../protyle/render/blockRender";
 import {renameAsset} from "../editor/rename";
 import {electronUndo} from "../protyle/undo";
-import {pushBack} from "../mobile/util/MobileBackFoward";
 import {copyPNGByLink, exportAsset, writeAssetToClipboard} from "./util";
 import {removeInlineType} from "../protyle/toolbar/util";
 import {alignImgCenter, alignImgLeft} from "../protyle/wysiwyg/commonHotkey";
 import {checkFold, genTagList, renameTag} from "../util/noRelyPCFunction";
 import {hideElements} from "../protyle/ui/hideElements";
 import {emitOpenMenu} from "../plugin/EventBus";
-import {openMobileFileById} from "../mobile/editor";
 import {renderAssetsPreview} from "../asset/renderAssets";
 import {upDownHint} from "../util/upDownHint";
 import {hintRenderAssets} from "../protyle/hint/extend";
 import {Menu} from "../plugin/Menu";
 import {getFirstBlock} from "../protyle/wysiwyg/getBlock";
-import {popSearch} from "../mobile/menu/search";
 import {showMessage} from "../dialog/message";
 import {img3115} from "../boot/compatibleVersion";
 import {hideTooltip} from "../dialog/tooltip";
@@ -83,11 +78,7 @@ const renderAssetList = (element: Element, k: string, position: IPosition, exts:
         } else {
             previewElement.innerHTML = window.scribli.languages.emptyContent;
         }
-        /// #if MOBILE
-        window.scribli.menus.menu.fullscreen();
-        /// #else
         window.scribli.menus.menu.popup(position);
-        /// #endif
         if (!k) {
             inputElement.select();
         }
@@ -310,16 +301,12 @@ export const fileAnnotationRefMenu = (protyle: IProtyle, refElement: HTMLElement
             separatorPosition: "top",
         });
     }
-    /// #if MOBILE
-    window.scribli.menus.menu.fullscreen();
-    /// #else
     const rect = refElement.getBoundingClientRect();
     window.scribli.menus.menu.popup({
         x: rect.left,
         y: rect.top + 26,
         h: 26
     });
-    /// #endif
     const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
     window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
     anchorElement.select();
@@ -376,7 +363,6 @@ export const refMenu = (protyle: IProtyle, element: HTMLElement) => {
             type: "separator"
         }).element);
     }
-    /// #if !MOBILE
     window.scribli.menus.menu.append(new MenuItem({
         id: "openBy",
         label: window.scribli.languages.openBy,
@@ -462,7 +448,6 @@ export const refMenu = (protyle: IProtyle, element: HTMLElement) => {
             openNewWindowById(refBlockId);
         }
     }).element);
-    /// #endif
     window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
     window.scribli.menus.menu.append(new MenuItem({
         id: "backlinks",
@@ -665,16 +650,12 @@ export const refMenu = (protyle: IProtyle, element: HTMLElement) => {
         });
     }
 
-    /// #if MOBILE
-    window.scribli.menus.menu.fullscreen();
-    /// #else
     const rect = element.getBoundingClientRect();
     window.scribli.menus.menu.popup({
         x: rect.left,
         y: rect.top + 26,
         h: 26
     });
-    /// #endif
     const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
     window.scribli.menus.menu.data = element;
     window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
@@ -699,9 +680,6 @@ export const contentMenu = (protyle: IProtyle, nodeElement: Element) => {
     const range = getEditorRange(nodeElement);
     window.scribli.menus.menu.remove();
     window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_INLINE_CONTEXT);
-    /// #if MOBILE
-    protyle.toolbar.showContent(protyle, range, nodeElement);
-    /// #else
     const oldHTML = nodeElement.outerHTML;
     const captionElement = hasClosestByTag(range.startContainer, "CAPTION");
     if (range.toString() !== "" || (range.cloneContents().childNodes[0] as HTMLElement)?.classList?.contains("emoji")) {
@@ -891,7 +869,6 @@ export const contentMenu = (protyle: IProtyle, nodeElement: Element) => {
             }).element);
         }
     }
-    /// #endif
     if (protyle?.app?.plugins) {
         emitOpenMenu({
             plugins: protyle.app.plugins,
@@ -910,15 +887,11 @@ export const enterBack = (protyle: IProtyle, id: string) => {
     if (!protyle.block.showAll) {
         const ids = protyle.path.split("/");
         if (ids.length > 2) {
-            /// #if MOBILE
-            openMobileFileById(protyle.app, ids[ids.length - 2], [Constants.CB_GET_FOCUS, Constants.CB_GET_SCROLL]);
-            /// #else
             openFileById({
                 app: protyle.app,
                 id: ids[ids.length - 2],
                 action: [Constants.CB_GET_FOCUS, Constants.CB_GET_SCROLL]
             });
-            /// #endif
         }
     } else {
         zoomOut({protyle, id: protyle.block.parent2ID, focusId: id});
@@ -961,15 +934,6 @@ export const zoomOut = (options: {
             focusBlock(focusElement);
             focusElement.scrollIntoView();
             return;
-        }
-    }
-    if (window.scribli.mobile?.editor) {
-        window.scribli.storage[Constants.LOCAL_DOCINFO] = {
-            id: options.id,
-        };
-        setStorageVal(Constants.LOCAL_DOCINFO, window.scribli.storage[Constants.LOCAL_DOCINFO]);
-        if (options.isPushBack) {
-            pushBack();
         }
     }
     const getDocParam: IObject = {
@@ -1066,7 +1030,6 @@ export const zoomOut = (options: {
                 options.protyle.wysiwyg.element.classList.remove("protyle-wysiwyg--animate");
             }, 365);
         }
-        /// #if !MOBILE
         if (options.protyle.model) {
             const allModels = getAllModels();
             allModels.outline.forEach(item => {
@@ -1076,7 +1039,6 @@ export const zoomOut = (options: {
             });
             updateBacklinkGraph(allModels, options.protyle);
         }
-        /// #endif
     });
 };
 
@@ -1436,11 +1398,7 @@ export const imgMenu = (protyle: IProtyle, range: Range, assetElement: HTMLEleme
             separatorPosition: "top",
         });
     }
-    /// #if MOBILE
-    window.scribli.menus.menu.fullscreen();
-    /// #else
     window.scribli.menus.menu.popup({x: position.clientX, y: position.clientY});
-    /// #endif
     const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
     window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
     if (!protyle.disabled) {
@@ -1712,16 +1670,12 @@ style="margin:4px 0;width: ${isMobile() ? "100%" : "360px"}" class="b3-text-fiel
             separatorPosition: "top",
         });
     }
-    /// #if MOBILE
-    window.scribli.menus.menu.fullscreen();
-    /// #else
     const rect = linkElement.getBoundingClientRect();
     window.scribli.menus.menu.popup({
         x: rect.left,
         y: rect.top + 26,
         h: 26
     });
-    /// #endif
 
     const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
     window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
@@ -1849,19 +1803,7 @@ export const tagMenu = (protyle: IProtyle, tagElement: HTMLElement) => {
         accelerator: window.scribli.languages.click,
         icon: "iconSearch",
         click() {
-            /// #if !MOBILE
             openGlobalSearch(protyle.app, `#${tagElement.textContent}#`, false, {method: 0});
-            /// #else
-            popSearch(protyle.app, {
-                hasReplace: false,
-                method: 0,
-                hPath: "",
-                idPath: [],
-                k: `#${tagElement.textContent}#`,
-                r: "",
-                page: 1,
-            });
-            /// #endif
         }
     }).element);
     window.scribli.menus.menu.append(new MenuItem({
@@ -1932,16 +1874,12 @@ export const tagMenu = (protyle: IProtyle, tagElement: HTMLElement) => {
         });
     }
 
-    /// #if MOBILE
-    window.scribli.menus.menu.fullscreen();
-    /// #else
     const rect = tagElement.getBoundingClientRect();
     window.scribli.menus.menu.popup({
         x: rect.left,
         y: rect.top + 26,
         h: 26
     });
-    /// #endif
     const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
     window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
     inputElement.select();

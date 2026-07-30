@@ -21,69 +21,18 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	"github.com/icha-senpai/note/third_party/forks/github/araddon/dateparse"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/filesys"
 	"github.com/icha-senpai/note/kernel/sql"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
-
-func SetBlockReminder(id, timed string) (err error) {
-	var timedMills int64
-	if "0" != timed {
-		t, e := dateparse.ParseIn(timed, time.Now().Location())
-		if nil != e {
-			return e
-		}
-		timedMills = t.UnixMilli()
-	}
-
-	FlushTxQueue()
-
-	attrs := sql.GetBlockAttrs(id)
-	tree, err := LoadTreeByBlockID(id)
-	if err != nil {
-		return
-	}
-
-	node := treenode.GetNodeInTree(tree, id)
-	if nil == node {
-		return fmt.Errorf(Conf.Language(15), id)
-	}
-
-	if ast.NodeDocument != node.Type && node.IsContainerBlock() {
-		node = treenode.FirstLeafBlock(node)
-	}
-
-	attrName := "custom-reminder-wechat"
-	if "0" == timed {
-		delete(attrs, attrName)
-		old := node.IALAttr(attrName)
-		oldTimedMills, e := dateparse.ParseIn(old, time.Now().Location())
-		if nil == e {
-			util.PushMsg(fmt.Sprintf(Conf.Language(109), oldTimedMills.Format("2006-01-02 15:04")), 3000)
-		}
-		node.RemoveIALAttr(attrName)
-	} else {
-		attrs[attrName] = timed
-		node.SetIALAttr(attrName, timed)
-		util.PushMsg(fmt.Sprintf(Conf.Language(101), time.UnixMilli(timedMills).Format("2006-01-02 15:04")), 5000)
-	}
-	if err = indexWriteTreeUpsertQueue(tree); err != nil {
-		return
-	}
-	IncSync()
-	cache.PutBlockIALInBox(id, tree.Box, attrs)
-	return
-}
 
 func BatchSetBlockAttrs(blockAttrs []map[string]any) (err error) {
 	if util.ReadOnly {

@@ -1600,13 +1600,6 @@ export class AgentChat extends Model {
     // 扫描全部编辑器，优先选择可见且包含选中块的编辑器，以匹配用户所指的“这里选中的块”。
     // 若未找到，则依次使用 DOM 选区所在编辑器和最近激活的页签。
     private captureEditorContext(): IEditorContext | undefined {
-        /// #if MOBILE
-        const mobEditor = window.scribli.mobile.editor || window.scribli.mobile.popEditor;
-        if (mobEditor?.protyle && !mobEditor.protyle.element.classList.contains("fn__none")) {
-            return this.readEditorContext(mobEditor);
-        }
-        return undefined;
-        /// #else
         const allEditor = getAllEditor();
         if (!allEditor || allEditor.length === 0) {
             return undefined;
@@ -1682,7 +1675,6 @@ export class AgentChat extends Model {
             return merged;
         }
         return ctx;
-        /// #endif
     }
 
     private getPluginActions() {

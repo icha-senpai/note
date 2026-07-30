@@ -11,7 +11,7 @@ import {getThemeMode, setInlineStyle} from "../../util/assets";
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
 import {Dialog} from "../../dialog";
 import {replaceLocalPath} from "../../editor/rename";
-import {getScreenWidth, isInMobileApp, saveExportFile, setStorageVal} from "../util/compatibility";
+import {saveExportFile, setStorageVal} from "../util/compatibility";
 import {getFrontend} from "../../util/functions";
 import {isEncryptedBox} from "../../util/pathName";
 
@@ -56,7 +56,7 @@ export const saveExport = (option: IExportOptions) => {
                     showMessage(window.scribli.languages._kernel[14].replace("%s", zipResponse.msg), 0, "error");
                     return;
                 }
-                // 与导出 .sy.zip/markdown.zip/图片一致，统一走 saveExportFile，以便移动端原生 App 调用 JSAndroid.saveExportFile 等接口保存到本地
+                // Use the shared export saver for zip, Markdown, and image exports.
                 saveExportFile(zipResponse.data.zip, msgId);
             });
         });
@@ -792,15 +792,8 @@ export const onExport = async (data: IWebSocketData, filePath: string, servePath
     if (!isDefault) {
         themeStyle = `<link rel="stylesheet" type="text/css" id="themeStyle" href="${servePath}appearance/themes/${themeName}/theme.css?${Constants.SCRIBLI_VERSION}"/>`;
     }
-    const screenWidth = getScreenWidth();
-    const isInMobile = isInMobileApp();
-    const mobileHtml = isInMobile ? {
-        js: `document.body.style.minWidth = "${screenWidth}px";`,
-        css: `@page { size: A4; margin: 10mm 0 10mm 0; background-color: var(--b3-theme-background); }
-.protyle-wysiwyg {padding: 0; margin: 0;}`
-    } : {js: "", css: ""};
     const html = `<!DOCTYPE html>
-<html lang="${window.scribli.config.appearance.lang}" data-theme-mode="${isInMobile ? "light" : getThemeMode()}" data-light-theme="${window.scribli.config.appearance.themeLight}" data-dark-theme="${window.scribli.config.appearance.themeDark}">
+<html lang="${window.scribli.config.appearance.lang}" data-theme-mode="${getThemeMode()}" data-light-theme="${window.scribli.config.appearance.themeLight}" data-dark-theme="${window.scribli.config.appearance.themeDark}">
 <head>
     <base href="${servePath}">
     <meta charset="utf-8">
@@ -818,7 +811,6 @@ export const onExport = async (data: IWebSocketData, filePath: string, servePath
         body {font-family: var(--b3-font-family);background-color: var(--b3-theme-background);color: var(--b3-theme-on-background)}
         ${await setInlineStyle(false, servePath)}
         ${await getPluginStyle()}
-        ${mobileHtml.css}
     </style>
     ${getSnippetCSS()}
 </head>
@@ -829,7 +821,6 @@ ${getIconScript(servePath)}
 <script src="${servePath}stage/build/export/protyle-method.js?v=${Constants.SCRIBLI_VERSION}"></script>
 <script src="${servePath}stage/protyle/js/lute/lute.min.js?v=${Constants.SCRIBLI_VERSION}"></script>  
 <script>
-    ${mobileHtml.js}
     window.scribli = {
       config: {
         appearance: { mode: ${mode}, codeBlockThemeDark: "${window.scribli.config.appearance.codeBlockThemeDark}", codeBlockThemeLight: "${window.scribli.config.appearance.codeBlockThemeLight}" },

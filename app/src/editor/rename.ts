@@ -8,9 +8,7 @@ import {getAssetName, getDisplayName, pathPosix, setNotebookName} from "../util/
 import {fetchPost} from "../util/fetch";
 import {Constants} from "../constants";
 import {showTooltip} from "../dialog/tooltip";
-/// #if !MOBILE
 import {getAllModels} from "../layout/getAll";
-/// #endif
 import {getAllEditor} from "../layout/getAll";
 
 export const validateName = (name: string, targetElement?: HTMLElement) => {
@@ -144,13 +142,11 @@ export const renameAsset = (assetPath: string) => {
         }
 
         fetchPost("/api/asset/renameAsset", {oldPath: assetPath, newName: inputElement.value}, (response) => {
-            /// #if !MOBILE
             getAllModels().asset.forEach(item => {
                 if (item.path === assetPath) {
                     item.update(response.data.newPath);
                 }
             });
-            /// #endif
             getAllEditor().forEach(item => {
                 item.reload(false);
             });

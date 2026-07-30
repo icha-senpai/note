@@ -8,7 +8,7 @@ Scribli must present itself as Scribli in public project surfaces and applicatio
 
 ## 1. Current Project Shape
 
-Scribli is a desktop knowledge workspace built from:
+Scribli is a Windows desktop knowledge workspace built from:
 
 | Path | Role |
 | --- | --- |
@@ -19,6 +19,8 @@ Scribli is a desktop knowledge workspace built from:
 | `scripts/` | Packaging and helper scripts |
 | `third_party/forks/` | Local Scribli-owned Go module forks used by the kernel |
 | `.github/` | Repository metadata and disabled publishing placeholders |
+
+Native mobile, macOS, and Linux build/package targets are intentionally removed from this repository.
 
 The main README is now the public Scribli surface. Keep it focused on Scribli's local-first behavior, user-controlled sync, AGPL-3.0 license, upstream attribution, and known limitations.
 
@@ -35,6 +37,7 @@ The main README is now the public Scribli surface. Keep it focused on Scribli's 
 7. Electron builder config must keep `publish: null`, and package scripts must keep `--publish=never` unless a Scribli-owned signed release process exists.
 8. Do not claim Scribli LLC unless that legal entity exists. Use `Scribli contributors` or another accurate author value.
 9. Phase out inherited upstream identifiers in favor of Scribli. Do not use blind global replacement; follow `docs/INTERNAL-NAMING.md`, classify each name, and migrate risky compatibility or stored-data surfaces with tests.
+10. Do not reintroduce native mobile, macOS, or Linux build/package targets unless Boss explicitly restarts those platforms as a separate project.
 
 ---
 
@@ -128,7 +131,7 @@ Do not call work verified if a build or test command failed because of a local c
 - `app/kernel/Scribli-Kernel*`
 - `*.syso`
 - `kernel/kernel.aar`
-- `app/pandoc/*`
+- `app/pandoc/pandoc-windows-amd64.zip`
 - downloaded dependency caches under `.tools/` or `app/node_modules/`
 
 Generated build outputs may change when running build/package commands, but do not manually edit them.

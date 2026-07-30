@@ -31,13 +31,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/github/denisbrodbeck/machineid"
 	"github.com/icha-senpai/note/third_party/forks/github/go-ole/go-ole"
 	"github.com/icha-senpai/note/third_party/forks/github/go-ole/go-ole/oleutil"
+	"github.com/icha-senpai/note/third_party/forks/github/jaypipes/ghw"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/httpclient"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/jaypipes/ghw"
 )
 
 var DisabledFeatures []string
@@ -82,8 +82,6 @@ func HookUILoaded() {
 }
 
 var IsExiting = atomic.Bool{}
-
-var MobileOSVer string
 
 const DatabaseVer = "202607031200"
 

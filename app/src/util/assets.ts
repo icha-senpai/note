@@ -1,16 +1,10 @@
 import {Constants} from "../constants";
 import {addScript} from "../protyle/util/addScript";
 import {addStyle} from "../protyle/util/addStyle";
-/// #if !MOBILE
 import {getAllModels} from "../layout/getAll";
 import {exportLayout} from "../layout/util";
-/// #endif
 import {fetchPost} from "./fetch";
 import {
-    isInAndroid,
-    isInHarmony,
-    isInIOS,
-    isInMobileApp,
     isIPad,
     isIPhone,
     isMac,
@@ -68,7 +62,6 @@ export const loadAssets = (data: Config.IAppearance) => {
     } else if (styleElement) {
         styleElement.remove();
     }
-    /// #if !MOBILE
     getAllModels().graph.forEach(item => {
         item.searchGraph(false);
     });
@@ -87,11 +80,9 @@ export const loadAssets = (data: Config.IAppearance) => {
             darkElement.classList.remove("toggled");
         }
     });
-    /// #endif
 
     /// #if BROWSER
-    if (!window.webkit?.messageHandlers && !window.JSAndroid && !window.JSHarmony &&
-        ("serviceWorker" in window.navigator) && ("caches" in window) && ("fetch" in window) && navigator.serviceWorker) {
+    if (("serviceWorker" in window.navigator) && ("caches" in window) && ("fetch" in window) && navigator.serviceWorker) {
         document.head.insertAdjacentHTML("afterbegin", `<meta name="theme-color" content="${getComputedStyle(document.body).getPropertyValue("--b3-body-background").trim()}">`);
     }
     /// #endif
@@ -151,10 +142,8 @@ export const initAssets = () => {
             loadingElement.remove();
         }, 160);
     }
-    updateMobileTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", event => {
         const OSTheme = event.matches ? "dark" : "light";
-        updateMobileTheme(OSTheme);
         if (!window.scribli.config.appearance.modeOS) {
             return;
         }
@@ -175,16 +164,12 @@ export const initAssets = () => {
                         console.error("destroyTheme error: " + e);
                     }
                 } else {
-                    /// #if !MOBILE
                     exportLayout({
                         cb() {
                             window.location.reload();
                         },
                         errorExit: false,
                     });
-                    /// #else
-                    window.location.reload();
-                    /// #endif
                     return;
                 }
             }
@@ -293,7 +278,6 @@ export const setInlineStyle = async (set = true, servePath = "../../../") => {
 };
 
 export const setMode = (modeElementValue: number) => {
-    /// #if !MOBILE
     let mode = modeElementValue;
     if (modeElementValue === 2) {
         if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -307,60 +291,6 @@ export const setMode = (modeElementValue: number) => {
         mode,
         modeOS: modeElementValue === 2,
     });
-    /// #endif
-};
-
-const padHex = (n: number) => (n | 256).toString(16).slice(1);
-
-const rgbaToHex = (rgba: string) => {
-    const rgb = rgba.replace(/\s/g, "").match(/^rgba?\((\d+),(\d+),(\d+)(?:,([^)]+))?\)$/i);
-    if (!rgb) {
-        return "";
-    }
-    const alpha = rgb[4] !== undefined ? parseFloat(rgb[4]) : 1;
-    if (alpha === 0) {
-        return "";
-    }
-    return "#" +
-        padHex(parseInt(rgb[1], 10)) +
-        padHex(parseInt(rgb[2], 10)) +
-        padHex(parseInt(rgb[3], 10)) +
-        padHex(Math.round(alpha * 255));
-};
-
-const cssVarToRgba = (varName: string) => {
-    const probe = document.createElement("div");
-    probe.style.display = "none";
-    probe.style.backgroundColor = `var(${varName})`;
-    document.documentElement.appendChild(probe);
-    const rgba = getComputedStyle(probe).backgroundColor;
-    probe.remove();
-    return rgba;
-};
-
-const updateMobileTheme = (OSTheme: string) => {
-    if (isInMobileApp()) {
-        setTimeout(() => {
-            let mode = window.scribli.config.appearance.mode;
-            if (window.scribli.config.appearance.modeOS) {
-                if (OSTheme === "dark") {
-                    mode = 1;
-                } else {
-                    mode = 0;
-                }
-            }
-            const fallback = mode === 0 ? "#ffffffff" : "#1e1e1eff";
-            const backgroundColor = rgbaToHex(cssVarToRgba("--b3-theme-background")) || fallback;
-            // 统一传 #RRGGBBAA：iOS 按 #RRGGBBAA 解析，Android / Harmony 将 #RRGGBBAA 转为 #AARRGGBB
-            if (isInIOS()) {
-                window.webkit.messageHandlers.changeStatusBar.postMessage(backgroundColor + " " + mode);
-            } else if (isInAndroid()) {
-                window.JSAndroid.changeStatusBarColor(backgroundColor, mode);
-            } else if (isInHarmony()) {
-                window.JSHarmony.changeStatusBarColor(backgroundColor, mode);
-            }
-        }, 500); // 移动端需要加载完才可以获取到颜色
-    }
 };
 
 export const getThemeMode = () => {

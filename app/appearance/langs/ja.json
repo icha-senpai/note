@@ -784,8 +784,6 @@
 	"multiSelect": "複数選択",
 	"commandEmpty": "No command yet",
 	"commandPanel": "コマンドパレット",
-	"cloudRegionNorthAmerica": "Scribli (北米データセンター)",
-	"cloudRegionChina": "中国本土データセンター",
 	"currentKernel": "現在のカーネル",
 	"otherOnlineKernels": "その他のオンラインカーネル",
 	"syncPerception": "リアルタイム同期",
@@ -804,7 +802,7 @@
 	"color": "色",
 	"confirmPassword": "パスワードはすでに覚えています",
 	"passwordNoMatch": "入力されたパスワードが一致しません",
-	"cloudConfigTip": "[設定 - アカウントと同期 - クラウドストレージサービスプロバイダー] で設定してください",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "本当に ${name} をアンインストールしますか？<br>アンインストールすると関連する設定やデータがすべて削除される可能性があります。慎重に判断してください！",
 	"scrollGetMore": "さらに読み込むには上下にスクロールしてください",
 	"flashcardNewCard": "新しいカード",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "サブドキュメントをマージ",
 	"removeAssetsFolder": "アセットディレクトリを削除",
 	"upload": "アップロード",
-	"reminderTip": "リマインダーの時間は現在時刻より前にできません",
-	"wechatTip": "コンテンツブロックは平文でクラウドに送信され、有効期限が切れると WeChat テンプレートメッセージを通じてプッシュされます",
 	"notEmpty": "リマインダーの時間は空にできません",
 	"experimentalFeature": "(⚗️ この機能は実験段階です)",
-	"wechatReminder": "WeChat リマインダー",
-	"notifyTime": "通知時刻",
 	"docName": "ドキュメントの名前",
 	"bootSyncFailed": "起動時のデータ同期に失敗しました",
 	"use": "使用する",
@@ -2168,3 +2162,5 @@
 		"343": "新しい始まり"
 	}
 }
+
+

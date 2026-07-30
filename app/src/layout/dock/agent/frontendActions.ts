@@ -45,7 +45,6 @@ export const unregisterAction = (name: string) => {
     actionRegistry.delete(name);
 };
 
-/// #if !MOBILE
 registerAction({
     name: "open_setting",
     handler: async (args, app) => {
@@ -135,4 +134,3 @@ registerAction({
         return {result: query ? `Opened search dialog with query "${query}".` : "Opened search dialog."};
     },
 });
-/// #endif

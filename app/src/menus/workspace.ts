@@ -7,7 +7,7 @@ import {getOpenNotebookCount, originalPath, pathPosix, useShell} from "../util/p
 import {fetchNewDailyNote, mountHelp, newDailyNote} from "../util/mount";
 import {fetchPost} from "../util/fetch";
 import {Constants} from "../constants";
-import {isInAndroid, isInHarmony, isInMobileApp, isIPad, setStorageVal, writeText} from "../protyle/util/compatibility";
+import {isIPad, setStorageVal, writeText} from "../protyle/util/compatibility";
 import {openCard} from "../card/openCard";
 import {openSetting} from "../config";
 import {getAllDocks} from "../layout/getAll";
@@ -251,10 +251,10 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                 label: `${window.scribli.languages.openBy}...`,
                 iconHTML: "",
                 click() {
-                    fetchPost("/api/system/getMobileWorkspaces", {}, (response) => {
+                    fetchPost("/api/system/getWorkspaces", {}, (response) => {
                         let selectHTML = "";
-                        response.data.forEach((item: string, index: number) => {
-                            selectHTML += `<option value="${item}"${index === 0 ? ' selected="selected"' : ""}>${pathPosix().basename(item)}</option>`;
+                        response.data.forEach((item: IWorkspace, index: number) => {
+                            selectHTML += `<option value="${item.path}"${index === 0 ? ' selected="selected"' : ""}>${pathPosix().basename(item.path)}</option>`;
                         });
                         const openWorkspaceDialog = new Dialog({
                             title: window.scribli.languages.openBy,
@@ -320,7 +320,7 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                 });
             });
             /// #endif
-            if (!isBrowser() || isInMobileApp()) {
+            if (!isBrowser()) {
                 window.scribli.menus.menu.append(new MenuItem({
                     id: "workspaceList",
                     label: window.scribli.languages.workspaceList,
@@ -566,7 +566,7 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
             }
         }).element);
         /// #endif
-        if (isIPad() || isInAndroid() || isInHarmony() || !isBrowser()) {
+        if (isIPad() || !isBrowser()) {
             window.scribli.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
             window.scribli.menus.menu.append(new MenuItem({
                 id: "safeQuit",

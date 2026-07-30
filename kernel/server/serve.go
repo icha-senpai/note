@@ -33,13 +33,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-webdav/caldav"
-	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-webdav/carddav"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/gzip"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sessions"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sessions/cookie"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/api"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/cmd"
@@ -48,10 +41,16 @@ import (
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/server/proxy"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/mssola/useragent"
+	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-webdav/caldav"
+	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-webdav/carddav"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/gzip"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sessions"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sessions/cookie"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/third_party/forks/github/olahol/melody"
 	"github.com/icha-senpai/note/third_party/forks/github/soheilhy/cmux"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 
 	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/net/webdav"
 )
@@ -489,29 +488,13 @@ func serveAppearance(ginServer *gin.Engine) {
 				}
 				c.Redirect(302, location.String())
 				return
-			} else if "false" == scribliDesktopMode.Value {
-				location.Path = "/stage/build/mobile/"
-				c.Redirect(302, location.String())
-				return
 			}
 		}
 
 		if strings.Contains(userAgentHeader, "Electron") {
 			location.Path = "/stage/build/app/"
-		} else if strings.Contains(userAgentHeader, "Pad") ||
-			(strings.ContainsAny(userAgentHeader, "Android") && !strings.Contains(userAgentHeader, "Mobile")) {
-			// Improve detecting Pad device, treat it as desktop device
-			location.Path = "/stage/build/desktop/"
 		} else {
-			if idx := strings.Index(userAgentHeader, "Mozilla/"); 0 < idx {
-				userAgentHeader = userAgentHeader[idx:]
-			}
-			ua := useragent.New(userAgentHeader)
-			if ua.Mobile() {
-				location.Path = "/stage/build/mobile/"
-			} else {
-				location.Path = "/stage/build/desktop/"
-			}
+			location.Path = "/stage/build/desktop/"
 		}
 
 		c.Redirect(302, location.String())

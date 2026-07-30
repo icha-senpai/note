@@ -7,8 +7,6 @@ import {fetchPost} from "../../util/fetch";
 import {getAllModels} from "../getAll";
 import {hasClosestBlock, hasClosestByClassName, hasTopClosestByClassName} from "../../protyle/util/hasClosest";
 import {
-    isInAndroid,
-    isInHarmony,
     setStorageVal,
     updateHotkeyAfterTip,
     writeText
@@ -1165,13 +1163,7 @@ export class Outline extends Model {
                     id,
                     removeFoldAttr: data.blockElement.getAttribute("fold") !== "1"
                 }, (response) => {
-                    if (isInAndroid()) {
-                        window.JSAndroid.writeHTMLClipboard(data.protyle.lute.BlockDOM2StdMd(response.data).trimEnd(), response.data + Constants.ZWSP);
-                    } else if (isInHarmony()) {
-                        window.JSHarmony.writeHTMLClipboard(data.protyle.lute.BlockDOM2StdMd(response.data).trimEnd(), response.data + Constants.ZWSP);
-                    } else {
-                        writeText(response.data + Constants.ZWSP);
-                    }
+                    writeText(response.data + Constants.ZWSP);
                 });
             }
         }).element);
@@ -1184,18 +1176,12 @@ export class Outline extends Model {
                 label: `${window.scribli.languages.cut} ${window.scribli.languages.headings1}`,
                 click: () => {
                     const data = this.getProtyleAndBlockElement(element);
-                    fetchPost("/api/block/getHeadingChildrenDOM", {
-                        id,
-                        removeFoldAttr: data.blockElement.getAttribute("fold") !== "1"
-                    }, (response) => {
-                        if (isInAndroid()) {
-                            window.JSAndroid.writeHTMLClipboard(data.protyle.lute.BlockDOM2StdMd(response.data).trimEnd(), response.data + Constants.ZWSP);
-                        } else if (isInHarmony()) {
-                            window.JSHarmony.writeHTMLClipboard(data.protyle.lute.BlockDOM2StdMd(response.data).trimEnd(), response.data + Constants.ZWSP);
-                        } else {
-                            writeText(response.data + Constants.ZWSP);
-                        }
-                        fetchPost("/api/block/getHeadingDeleteTransaction", {
+                fetchPost("/api/block/getHeadingChildrenDOM", {
+                    id,
+                    removeFoldAttr: data.blockElement.getAttribute("fold") !== "1"
+                }, (response) => {
+                    writeText(response.data + Constants.ZWSP);
+                    fetchPost("/api/block/getHeadingDeleteTransaction", {
                             id,
                         }, (deleteResponse) => {
                             deleteResponse.data.doOperations.forEach((operation: IOperation) => {

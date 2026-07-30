@@ -29,18 +29,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/sql"
 	"github.com/icha-senpai/note/kernel/task"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/eventbus"
-	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/mod/semver"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 var Conf *AppConf
@@ -75,7 +75,6 @@ type AppConf struct {
 	Publish        *conf.Publish        `json:"publish"`
 	Onboarding     *conf.Onboarding     `json:"onboarding"`
 	ShowChangelog  bool                 `json:"showChangelog"`
-	CloudRegion    int                  `json:"cloudRegion"`
 	Snippet        *conf.Snpt           `json:"snippet"`
 	DataIndexState int                  `json:"dataIndexState"`
 	CookieKey      string               `json:"cookieKey"`
@@ -87,9 +86,8 @@ type AppConf struct {
 
 func NewAppConf() *AppConf {
 	return &AppConf{
-		LogLevel:    "debug",
-		CloudRegion: 1,
-		m:           &sync.RWMutex{},
+		LogLevel: "debug",
+		m:        &sync.RWMutex{},
 	}
 }
 
@@ -290,8 +288,6 @@ func InitConf() {
 	if conf.MaxFileTreeRecentDocsListCount < Conf.FileTree.RecentDocsMaxListCount {
 		Conf.FileTree.RecentDocsMaxListCount = conf.MaxFileTreeRecentDocsListCount
 	}
-
-	util.CurrentCloudRegion = Conf.CloudRegion
 
 	if nil == Conf.Tag {
 		Conf.Tag = conf.NewTag()

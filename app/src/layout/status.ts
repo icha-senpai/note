@@ -1,4 +1,3 @@
-/// #if !MOBILE
 import {getDockByType} from "./tabUtil";
 import {toggleDockBar} from "./dock/util";
 import {hasClosestByClassName} from "../protyle/util/hasClosest";
@@ -7,13 +6,11 @@ import {mountHelp} from "../util/mount";
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
-/// #endif
 import {MenuItem} from "../menus/Menu";
 import {Constants} from "../constants";
 import {updateHotkeyTip} from "../protyle/util/compatibility";
 
 export const initStatus = (isWindow = false) => {
-    /// #if !MOBILE
     let barDockHTML = "";
     if (!isWindow) {
         barDockHTML = `<div id="barDock" class="toolbar__item ariaLabel${window.scribli.config.readonly || isWindow ? " fn__none" : ""}" aria-label="${window.scribli.languages.toggleDock} ${updateHotkeyTip(window.scribli.config.keymap.general.toggleDock.custom)}">
@@ -105,7 +102,6 @@ export const initStatus = (isWindow = false) => {
     if (window.scribli.config.appearance.hideStatusBar) {
         document.getElementById("status").classList.add("fn__none");
     }
-    /// #endif
 };
 
 let countTimeout: number;
@@ -149,16 +145,13 @@ const scheduleStatusStat = (rootID: string, content?: string, ids?: string[]) =>
 };
 
 export const countSelectWord = (range: Range, rootID?: string) => {
-    /// #if !MOBILE
     if (document.getElementById("status").classList.contains("fn__none")) {
         return;
     }
     scheduleStatusStat(rootID, range.toString());
-    /// #endif
 };
 
 export const countBlockWord = (ids: string[], rootID?: string, clearCache = false) => {
-    /// #if !MOBILE
     if (document.getElementById("status").classList.contains("fn__none")) {
         return;
     }
@@ -175,7 +168,6 @@ export const countBlockWord = (ids: string[], rootID?: string, clearCache = fals
         return;
     }
     scheduleStatusStat(rootID);
-    /// #endif
 };
 
 export const clearCounter = () => {

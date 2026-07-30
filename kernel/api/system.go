@@ -26,15 +26,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute"
-	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
 )
 
 func clearTempFiles(c *gin.Context) {
@@ -91,7 +91,7 @@ func getWorkspaceInfo(c *gin.Context) {
 
 	ret.Data = map[string]any{
 		"workspaceDir": util.WorkspaceDir,
-		"siyuanVer":    util.Ver,
+		"scribliVer":   util.Ver,
 	}
 }
 
@@ -302,7 +302,7 @@ func exportConf(c *gin.Context) {
 
 	logging.LogInfof("exporting conf...")
 
-	name := "siyuan-conf-" + time.Now().Format("20060102150405") + ".json"
+	name := "scribli-conf-" + time.Now().Format("20060102150405") + ".json"
 	tmpDir := filepath.Join(util.TempDir, "export")
 	if err := os.MkdirAll(tmpDir, 0755); err != nil {
 		logging.LogErrorf("export conf failed: %s", err)
@@ -357,7 +357,6 @@ func exportConf(c *gin.Context) {
 	clonedConf.Publish = nil
 	clonedConf.CookieKey = ""
 	clonedConf.MCPOAuth = ""
-	clonedConf.CloudRegion = 0
 	if nil != clonedConf.AI {
 		for _, provider := range clonedConf.AI.Providers {
 			if nil != provider {

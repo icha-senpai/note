@@ -25,8 +25,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
@@ -153,12 +153,6 @@ func InitPandoc() {
 		if "amd64" == runtime.GOARCH {
 			PandocBinPath = filepath.Join(tempPandocDir, "bin", "pandoc.exe")
 		}
-	} else if gulu.OS.IsDarwin() {
-		PandocBinPath = filepath.Join(tempPandocDir, "bin", "pandoc")
-	} else if gulu.OS.IsLinux() {
-		if "amd64" == runtime.GOARCH {
-			PandocBinPath = filepath.Join(tempPandocDir, "bin", "pandoc")
-		}
 	}
 	pandocVer := getPandocVer(PandocBinPath)
 	if "" != pandocVer {
@@ -171,18 +165,6 @@ func InitPandoc() {
 		if gulu.OS.IsWindows() {
 			if "amd64" == runtime.GOARCH {
 				pandocZip = filepath.Join(WorkingDir, "pandoc", "pandoc-windows-amd64.zip")
-			}
-		} else if gulu.OS.IsDarwin() {
-			if "amd64" == runtime.GOARCH {
-				pandocZip = filepath.Join(WorkingDir, "pandoc", "pandoc-darwin-amd64.zip")
-			} else if "arm64" == runtime.GOARCH {
-				pandocZip = filepath.Join(WorkingDir, "pandoc", "pandoc-darwin-arm64.zip")
-			}
-		} else if gulu.OS.IsLinux() {
-			if "amd64" == runtime.GOARCH {
-				pandocZip = filepath.Join(WorkingDir, "pandoc", "pandoc-linux-amd64.zip")
-			} else if "arm64" == runtime.GOARCH {
-				pandocZip = filepath.Join(WorkingDir, "pandoc", "pandoc-linux-arm64.zip")
 			}
 		}
 	}
@@ -198,9 +180,6 @@ func InitPandoc() {
 		return
 	}
 
-	if gulu.OS.IsDarwin() || gulu.OS.IsLinux() {
-		exec.Command("chmod", "+x", PandocBinPath).CombinedOutput()
-	}
 	pandocVer = getPandocVer(PandocBinPath)
 	logging.LogInfof("initialized built-in pandoc [ver=%s, bin=%s]", pandocVer, PandocBinPath)
 }

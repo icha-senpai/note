@@ -9,7 +9,7 @@ import {Constants} from "../constants";
 import {openNewWindowById} from "../window/openNewWindow";
 import {MenuItem} from "./Menu";
 import {App} from "../index";
-import {isInAndroid, saveExportFile, updateHotkeyTip} from "../protyle/util/compatibility";
+import {saveExportFile, updateHotkeyTip} from "../protyle/util/compatibility";
 import {checkFold} from "../util/noRelyPCFunction";
 import {showMessage} from "../dialog/message";
 import {Editor} from "../editor";
@@ -64,7 +64,6 @@ export const writeAssetToClipboard = (src: string) => {
 };
 
 export const openEditorTab = (app: App, ids: string[], notebookId?: string, pathString?: string, onlyGetMenus = false) => {
-    /// #if !MOBILE
     const openSubmenus: IMenu[] = [{
         id: "insertRight",
         icon: "iconLayoutRight",
@@ -158,7 +157,6 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
             openNewWindowById(ids);
         }
     });
-    /// #endif
     openSubmenus.push({id: "separator_1", type: "separator"});
     openSubmenus.push({
         id: "preview",
@@ -206,10 +204,6 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
 };
 
 export const copyPNGByLink = (link: string) => {
-    if (isInAndroid()) {
-        window.JSAndroid.writeImageClipboard(link);
-        return;
-    }
     // 通过 fetch 拿到 blob 后再写入剪贴板，避免跨域图片直接 drawImage 污染 canvas 导致 toBlob 失败
     // （浏览器访问 Docker 部署时常见，报错：Tainted canvases may not be exported）
     const writePNGBlob = (blob: Blob) => {

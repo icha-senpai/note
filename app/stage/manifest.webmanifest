@@ -39,18 +39,6 @@
                     "sizes": "512x512"
                 }
             ]
-        },
-        {
-            "name": "Scribli Mobile",
-            "description": "Mobile web side for Scribli",
-            "url": "/stage/build/mobile/",
-            "icons": [
-                {
-                    "src": "favicon.ico",
-                    "type": "image/png",
-                    "sizes": "512x512"
-                }
-            ]
         }
     ],
     "related_applications": [],

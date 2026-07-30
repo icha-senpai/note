@@ -1,7 +1,5 @@
 import {Constants} from "../constants";
-/// #if !MOBILE
 import type {Tab} from "./Tab";
-/// #endif
 import type {App} from "../index";
 import {kernelError} from "../util/kernelFault";
 import {processMessage} from "../util/processMessage";
@@ -20,12 +18,7 @@ export class Model {
 
     public parent:
 
-        /// #if !MOBILE
         Tab;
-    /// #else
-    // @ts-ignore
-    null;
-    /// #endif
     public app: App;
 
     constructor(options: {

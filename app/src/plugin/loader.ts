@@ -1,9 +1,7 @@
 import {fetchSyncPost} from "../util/fetch";
 import {App} from "../index";
 import {Plugin} from "./index";
-/// #if !MOBILE
 import {resizeTopBar, saveLayout} from "../layout/util";
-/// #endif
 import {API} from "./API";
 import {getFrontend, isMobile, isWindow} from "../util/functions";
 import {settingTabToMenuId} from "../config/setting/tabs";
@@ -168,7 +166,6 @@ export const afterLoadPlugin = (plugin: Plugin) => {
             }
         });
     }
-    /// #if !MOBILE
     plugin.statusBarIcons.forEach(element => {
         if (document.contains(element)) {
             return;
@@ -181,7 +178,6 @@ export const afterLoadPlugin = (plugin: Plugin) => {
         }
     });
     resizeTopBar();
-    /// #endif
     addPluginDock(plugin);
 };
 
@@ -199,12 +195,6 @@ export const afterLayoutReady = (app: App) => {
 };
 
 export const addPluginDock = (plugin: Plugin) => {
-    /// #if MOBILE
-    // 移动端只有存在插件 dock 时才显示插件入口图标
-    if (Object.keys(plugin.docks).length > 0) {
-        document.querySelector('#sidebar [data-type="sidebar-plugin-tab"]')?.classList.remove("fn__none");
-    }
-    /// #else
     if (isWindow() || !window.scribli.layout.leftDock) {
         return;
     }
@@ -259,7 +249,6 @@ export const addPluginDock = (plugin: Plugin) => {
             }], dock.config.position === "RightBottom" ? 1 : 0, dock.config.index);
         }
     });
-    /// #endif
 };
 
 export const reloadPlugin = async (app: App, data: {
@@ -299,7 +288,5 @@ export const reloadPlugin = async (app: App, data: {
             }
         }
     });
-    /// #if !MOBILE
     saveLayout();
-    /// #endif
 };

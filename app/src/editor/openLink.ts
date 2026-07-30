@@ -5,11 +5,8 @@ import {shell} from "electron";
 import {getSearch} from "../util/functions";
 import {Constants} from "../constants";
 import {processScribliUri} from "../util/uri";
-/// #if !MOBILE
 import {openAsset, openBy} from "./util";
-/// #endif
 import {showMessage} from "../dialog/message";
-import {isInIOS, isInAndroid, isInHarmony} from "../protyle/util/compatibility";
 import type {App} from "../index";
 
 export const openLink = (app: App, aLink: string, event?: MouseEvent, ctrlIsPressed = false) => {
@@ -28,9 +25,6 @@ export const openLink = (app: App, aLink: string, event?: MouseEvent, ctrlIsPres
     if (processScribliUri(app, linkAddress)) {
         return;
     }
-    /// #if MOBILE
-    openByMobile(linkAddress);
-    /// #else
     if (isLocalPath(linkAddress)) {
         if (Constants.SCRIBLI_ASSETS_EXTS.includes(pathPosix().extname(linkAddress)) &&
             (
@@ -81,7 +75,6 @@ export const openLink = (app: App, aLink: string, event?: MouseEvent, ctrlIsPres
         openByMobile(linkAddress);
         /// #endif
     }
-    /// #endif
 };
 
 export const openByMobile = (uri: string) => {
@@ -91,35 +84,5 @@ export const openByMobile = (uri: string) => {
     if (processScribliUri(window.scribli.ws.app, uri)) {
         return;
     }
-    if (isInIOS()) {
-        if (uri.startsWith("assets/")) {
-            // iOS 16.7 之前的版本，uri 需要 encodeURIComponent
-            // 保留 query 参数（如 ?box=<id>），只编码 path 部分
-            const pathAndQuery = uri.replace("assets/", "");
-            const queryIdx = pathAndQuery.indexOf("?");
-            let encodedPath = pathAndQuery;
-            let query = "";
-            if (queryIdx >= 0) {
-                encodedPath = pathAndQuery.substring(0, queryIdx);
-                query = pathAndQuery.substring(queryIdx);
-            }
-            window.webkit.messageHandlers.openLink.postMessage(location.origin + "/assets/" + encodeURIComponent(encodedPath) + query);
-        } else if (uri.startsWith("/")) {
-            // 导出 zip 返回的是已经 encode 过的，因此不能再 encode
-            window.webkit.messageHandlers.openLink.postMessage(location.origin + uri);
-        } else {
-            try {
-                new URL(uri);
-                window.webkit.messageHandlers.openLink.postMessage(uri);
-            } catch (e) {
-                window.webkit.messageHandlers.openLink.postMessage("https://" + uri);
-            }
-        }
-    } else if (isInAndroid()) {
-        window.JSAndroid.openExternal(uri);
-    } else if (isInHarmony()) {
-        window.JSHarmony.openExternal(uri);
-    } else {
-        window.open(uri);
-    }
+    window.open(uri);
 };

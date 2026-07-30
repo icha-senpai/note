@@ -11,11 +11,9 @@ import {getIconByType} from "../../editor/getIcon";
 import {enterBack, iframeMenu, tableMenu, videoMenu, zoomOut} from "../../menus/protyle";
 import {foldBlocksRecursively, setFold} from "../util/blockFold";
 import {MenuItem} from "../../menus/Menu";
-import {copySubMenu, openAttr, openFileAttr, openWechatNotify} from "../../menus/commonMenuItem";
+import {copySubMenu, openAttr, openFileAttr} from "../../menus/commonMenuItem";
 import {
     copyPlainText,
-    isInAndroid,
-    isInHarmony,
     isMac,
     isOnlyMeta,
     saveExportFile,
@@ -57,7 +55,6 @@ import {makeCard, quickMakeCard} from "../../card/makeCard";
 import {transferBlockRef} from "../../menus/block";
 import {isMobile} from "../../util/functions";
 import {AIActions} from "../../ai/actions";
-import {activeBlur, renderTextMenu, showKeyboardToolbarUtil} from "../../mobile/util/keyboardToolbar";
 import {hideTooltip} from "../../dialog/tooltip";
 import {appearanceMenu} from "../toolbar/Font";
 import {setPosition} from "../../util/setPosition";
@@ -67,11 +64,9 @@ import {avContextmenu, duplicateCompletely} from "../render/av/action";
 import {getPlainText} from "../util/paste";
 import {addEditorToDatabase} from "../render/av/addToDatabase";
 import {processClonePHElement} from "../render/util";
-/// #if !MOBILE
 import {openFileById} from "../../editor/util";
 import {getDockByType} from "../../layout/tabUtil";
 import * as path from "path";
-/// #endif
 import {showMessage} from "../../dialog/message";
 import {checkFold} from "../../util/noRelyPCFunction";
 import {clearSelect} from "../util/clear";
@@ -277,10 +272,8 @@ export class Gutter {
                             protyle.toolbar.range = getEditorRange(
                                 this.getNodeElement(protyle, activeBlockButton) || protyle.wysiwyg.element.firstElementChild);
                         }
-                        /// #if !MOBILE
                         window.scribli.menus.menu.popup({x: br.left, y: br.bottom, isLeft: true});
                         focusByRange(protyle.toolbar.range);
-                        /// #endif
                     }
                 }
                 return;
@@ -510,14 +503,10 @@ export class Gutter {
                     protyle.toolbar.range = getEditorRange(
                         this.getNodeElement(protyle, buttonElement) || protyle.wysiwyg.element.firstElementChild);
                 }
-                /// #if MOBILE
-                window.scribli.menus.menu.fullscreen();
-                /// #else
                 window.scribli.menus.menu.popup({x: gutterRect.left, y: gutterRect.bottom, isLeft: true});
                 const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
                 window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
                 focusByRange(protyle.toolbar.range);
-                /// #endif
             }
         });
         this.element.addEventListener("contextmenu", (event: MouseEvent) => {
@@ -551,14 +540,10 @@ export class Gutter {
                             this.getNodeElement(protyle, buttonElement) ||
                             protyle.wysiwyg.element.firstElementChild);
                     }
-                    /// #if MOBILE
-                    window.scribli.menus.menu.fullscreen();
-                    /// #else
                     window.scribli.menus.menu.popup({x: gutterRect.left, y: gutterRect.bottom, isLeft: true});
                     const popoverElement = hasTopClosestByClassName(protyle.element, "block__popover", true);
                     window.scribli.menus.menu.element.setAttribute("data-from", popoverElement ? popoverElement.dataset.level + "popover" : "app");
                     focusByRange(protyle.toolbar.range);
-                    /// #endif
                 }
             }
             event.preventDefault();
@@ -799,8 +784,10 @@ export class Gutter {
         toolbarElement.querySelector('.keyboard__action[data-type="done"] use').setAttribute("xlink:href", "#iconCloseRound");
         toolbarElement.classList.remove("fn__none");
         const oldScrollTop = protyle.contentElement.scrollTop + 333.5;  // toolbarElement.clientHeight
-        renderTextMenu(protyle, toolbarElement);
-        showKeyboardToolbarUtil(oldScrollTop);
+        protyle.toolbar.subElement.append(toolbarElement);
+        protyle.toolbar.subElement.style.zIndex = (++window.scribli.zIndex).toString();
+        protyle.toolbar.subElement.classList.remove("fn__none");
+        protyle.contentElement.scrollTop = oldScrollTop;
     }
 
     public renderMultipleMenu(protyle: IProtyle, selectsElement: Element[]) {
@@ -1073,7 +1060,6 @@ export class Gutter {
                     addEditorToDatabase(protyle, getEditorRange(selectsElement[0]));
                 }
             }).element);
-            /// #if !MOBILE
             // 加密笔记本中的块不暴露该菜单：避免把受保护内容引入智能体会话。
             if (!isEncryptedBox(protyle.notebookId)) {
                 window.scribli.menus.menu.append(new MenuItem({
@@ -1085,7 +1071,6 @@ export class Gutter {
                     }
                 }).element);
             }
-            /// #endif
             window.scribli.menus.menu.append(new MenuItem({
                 id: "delete",
                 label: window.scribli.languages.delete,
@@ -1104,9 +1089,6 @@ export class Gutter {
                 icon: "iconFont",
                 accelerator: window.scribli.config.keymap.editor.insert.appearance.custom,
                 click: () => {
-                    /// #if MOBILE
-                    this.showMobileAppearance(protyle);
-                    /// #else
                     protyle.toolbar.element.classList.add("fn__none");
                     protyle.toolbar.subElement.innerHTML = "";
                     protyle.toolbar.subElement.style.width = "";
@@ -1117,7 +1099,6 @@ export class Gutter {
                     protyle.toolbar.subElementCloseCB = undefined;
                     const position = selectsElement[0].getBoundingClientRect();
                     setPosition(protyle.toolbar.subElement, position.left, position.top);
-                    /// #endif
                 }
             }).element;
             window.scribli.menus.menu.append(appearanceElement);
@@ -1208,7 +1189,9 @@ export class Gutter {
         hideElements(["util", "toolbar", "hint"], protyle);
         window.scribli.menus.menu.remove();
         if (isMobile()) {
-            activeBlur();
+            if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+            }
         }
         const id = buttonElement.getAttribute("data-node-id");
         const nodeElement = this.getNodeElement(protyle, buttonElement);
@@ -1634,7 +1617,6 @@ export class Gutter {
         }
         this.appendAddToDatabaseMenu(protyle, nodeElement);
         if (!protyle.disabled) {
-            /// #if !MOBILE
             // 加密笔记本中的块不暴露该菜单：避免把受保护内容引入智能体会话。
             if (!isEncryptedBox(protyle.notebookId)) {
                 window.scribli.menus.menu.append(new MenuItem({
@@ -1646,7 +1628,6 @@ export class Gutter {
                     }
                 }).element);
             }
-            /// #endif
         }
         if (allowRemoval) {
             window.scribli.menus.menu.append(new MenuItem({
@@ -2047,16 +2028,8 @@ export class Gutter {
                         id,
                         removeFoldAttr: nodeElement.getAttribute("fold") !== "1"
                     }, (response) => {
-                        const textPlain = protyle.lute.BlockDOM2StdMd(response.data).trimEnd();
-                        const textHTML = protyle.lute.BlockDOM2HTML(response.data).trimEnd();
                         const scribliHTML = response.data + Constants.ZWSP;
-                        if (isInAndroid()) {
-                            window.JSAndroid.writeScribliHTMLClipboard?.(textPlain, textHTML, scribliHTML);
-                        } else if (isInHarmony()) {
-                            window.JSHarmony.writeScribliHTMLClipboard?.(textPlain, textHTML, scribliHTML);
-                        } else {
-                            writeText(scribliHTML);
-                        }
+                        writeText(scribliHTML);
                     });
                 }
             }).element);
@@ -2070,13 +2043,7 @@ export class Gutter {
                             id,
                             removeFoldAttr: nodeElement.getAttribute("fold") !== "1"
                         }, (response) => {
-                            if (isInAndroid()) {
-                                window.JSAndroid.writeHTMLClipboard(protyle.lute.BlockDOM2StdMd(response.data).trimEnd(), response.data + Constants.ZWSP);
-                            } else if (isInHarmony()) {
-                                window.JSHarmony.writeHTMLClipboard(protyle.lute.BlockDOM2StdMd(response.data).trimEnd(), response.data + Constants.ZWSP);
-                            } else {
-                                writeText(response.data + Constants.ZWSP);
-                            }
+                            writeText(response.data + Constants.ZWSP);
                             fetchPost("/api/block/getHeadingDeleteTransaction", {
                                 id,
                             }, (deleteResponse) => {
@@ -2162,7 +2129,6 @@ export class Gutter {
                 }
             }).element);
         } else {
-            /// #if !MOBILE
             window.scribli.menus.menu.append(new MenuItem({
                 id: "enter",
                 icon: "iconEnter",
@@ -2179,7 +2145,6 @@ export class Gutter {
                     });
                 }
             }).element);
-            /// #endif
         }
         if (allowStructuralMutation) {
             window.scribli.menus.menu.append(new MenuItem({
@@ -2269,9 +2234,6 @@ export class Gutter {
                 icon: "iconFont",
                 accelerator: window.scribli.config.keymap.editor.insert.appearance.custom,
                 click: () => {
-                    /// #if MOBILE
-                    this.showMobileAppearance(protyle);
-                    /// #else
                     protyle.toolbar.element.classList.add("fn__none");
                     protyle.toolbar.subElement.innerHTML = "";
                     protyle.toolbar.subElement.style.width = "";
@@ -2282,7 +2244,6 @@ export class Gutter {
                     protyle.toolbar.subElementCloseCB = undefined;
                     const position = nodeElement.getBoundingClientRect();
                     setPosition(protyle.toolbar.subElement, position.left, position.top);
-                    /// #endif
                 }
             }).element;
             window.scribli.menus.menu.append(appearanceElement);
@@ -2294,20 +2255,6 @@ export class Gutter {
             // this.genHeights([nodeElement], protyle);
         }
         window.scribli.menus.menu.append(new MenuItem({id: "separator_4", type: "separator"}).element);
-        if (window.scribli.config.cloudRegion === 0 &&
-            !["NodeThematicBreak", "NodeBlockQueryEmbed", "NodeIFrame", "NodeHTMLBlock", "NodeWidget", "NodeVideo", "NodeAudio"].includes(type) &&
-            getContenteditableElement(nodeElement)?.textContent.trim() !== "" &&
-            (type !== "NodeCodeBlock" || (type === "NodeCodeBlock" && !nodeElement.getAttribute("data-subtype")))) {
-            window.scribli.menus.menu.append(new MenuItem({
-                id: "wechatReminder",
-                icon: "iconMp",
-                label: window.scribli.languages.wechatReminder,
-                ignore: window.scribli.config.readonly,
-                click() {
-                    openWechatNotify(nodeElement);
-                }
-            }).element);
-        }
         if (type !== "NodeThematicBreak" && !window.scribli.config.readonly && !isEncryptedBox(protyle.notebookId)) {
             const isCardMade = nodeElement.hasAttribute(Constants.CUSTOM_RIFF_DECKS);
             window.scribli.menus.menu.append(new MenuItem({
@@ -3153,7 +3100,6 @@ interface AgentChatLike {
 
 // 将选中的块以 @ 引用形式追加到智能体会话发送框末尾，等价于拖拽块到发送框或在框内 @ 搜索选块。
 // 仅桌面端可用：智能体面板（dock）在移动端不存在。
-/// #if !MOBILE
 export const addBlockToAgent = async (blockIds: string[]) => {
     const ids = blockIds.filter(Boolean);
     if (ids.length === 0) {
@@ -3195,4 +3141,3 @@ export const addBlockToAgent = async (blockIds: string[]) => {
     }));
     agentChat.insertBlockMentions(mentions);
 };
-/// #endif

@@ -5,11 +5,7 @@ import {escapeHtml} from "../util/escape";
 import {hasClosestByClassName} from "../protyle/util/hasClosest";
 import {Protyle} from "../protyle";
 import {assetInputEvent} from "./assets";
-/// #if MOBILE
-import {updateSearchResult} from "../mobile/menu/search";
-/// #else
 import {inputEvent} from "./util";
-/// #endif
 
 export const toggleReplaceHistory = (replaceInputElement: HTMLInputElement) => {
     const list = window.scribli.storage[Constants.LOCAL_SEARCHKEYS];
@@ -124,11 +120,7 @@ export const toggleSearchHistory = (searchElement: Element, config: Config.IUILa
                         } else {
                             searchInputElement.value = element.textContent;
                             config.page = 1;
-                            /// #if MOBILE
-                            updateSearchResult(config, searchElement, true);
-                            /// #else
                             inputEvent(searchElement, config, edit, true);
-                            /// #endif
                             window.scribli.menus.menu.remove();
                         }
                         itemEvent.preventDefault();

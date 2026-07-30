@@ -94,7 +94,6 @@ type TEventBus = "ws-main" | "sync-start" | "sync-end" | "sync-fail" |
     "switch-protyle" | "switch-protyle-mode" |
     "destroy-protyle" |
     "lock-screen" |
-    "mobile-keyboard-show" | "mobile-keyboard-hide" |
     "code-language-update" | "code-language-change" |
     "kernel-plugin-state-change"
 type TAVView = "table" | "gallery" | "kanban"
@@ -250,76 +249,11 @@ interface Window {
         encode(options: string): string,
     };
     pdfjsLib: any;
-    webkit: {
-        nativeCallbacks: { [key: string]: (id: number) => void },
-        messageHandlers: {
-            saveExportFile: { postMessage: (url: string) => void }
-            openLink: { postMessage: (url: string) => void }
-            startKernelFast: { postMessage: (url: string) => void }
-            changeStatusBar: { postMessage: (url: string) => void }
-            setClipboard: { postMessage: (url: string) => void }
-            print: { postMessage: (html: string) => void }
-            exit: { postMessage: (text: string) => void }
-            sendNotification: {
-                postMessage: (options: {
-                    title: string,
-                    body: string,
-                    delay: number,
-                    callback: string
-                }) => number
-            }
-            cancelNotification: { postMessage: (id: number) => void }
-        }
-    };
     htmlToImage: {
         toCanvas: (element: Element, options?: IHtmlToImageOptions) => Promise<HTMLCanvasElement>
         toBlob: (element: Element, options?: IHtmlToImageOptions) => Promise<Blob>
     };
     scribli: IScribli;
-    JSAndroid: {
-        returnDesktop(): void
-        openExternal(url: string): void
-        exportByDefault(url: string): void
-        saveExportFile(url: string): void
-        changeStatusBarColor(color: string, mode: number): void
-        writeClipboard(text: string): void
-        writeHTMLClipboard(text: string, html: string): void
-        writeScribliHTMLClipboard?(text: string, html: string, scribliHTML: string): void
-        writeImageClipboard(uri: string): void
-        readClipboard(): string
-        readHTMLClipboard(): string
-        readScribliHTMLClipboard?(): string
-        getBlockURL(): string
-        hideKeyboard(): void
-        showKeyboard(): void
-        print(title: string, html: string): void
-        getScreenWidthPx(): number
-        exit(): void
-        setWebViewFocusable(enable: boolean): void
-        sendNotification(channel: string, title: string, body: string, delayInSeconds: number): number
-        cancelNotification(id: number): void
-    };
-    JSHarmony: {
-        showKeyboard(): void
-        hideKeyboard(): void
-        openExternal(url: string): void
-        exportByDefault(url: string): void
-        saveExportFile(url: string): void
-        changeStatusBarColor(color: string, mode: number): void
-        writeClipboard(text: string): void
-        writeHTMLClipboard(text: string, html: string): void
-        writeScribliHTMLClipboard?(text: string, html: string, scribliHTML: string): void
-        readClipboard(): string
-        readHTMLClipboard(): string
-        readScribliHTMLClipboard?(): string
-        returnDesktop(): void
-        print(title: string, html: string): void
-        getScreenWidthPx(): number
-        exit(): void
-        setWebViewFocusable(enable: boolean): void
-        sendNotification(channel: string, title: string, body: string, delayInSeconds: number): number
-        cancelNotification(id: number): void
-    };
 
     Protyle: import("../protyle/method").default;
 
@@ -330,12 +264,6 @@ interface Window {
     showMessage(message: string, timeout: number, type: string, messageId?: string): void;
 
     reconnectWebSocket(): void;
-
-    showKeyboardToolbar(): void;
-
-    processIOSPurchaseResponse(code: number): void;
-
-    hideKeyboardToolbar(): void;
 
     openFileByURL(URL: string): boolean;
 
@@ -543,30 +471,6 @@ interface IScribli {
     notebooks?: INotebook[],
     emojis?: IEmoji[],
     backStack?: IBackStack[],
-    mobile?: {
-        touchRange?: Range
-        size: {
-            isLandscape?: boolean,
-            landscape?: {
-                height1: number,
-                height2: number,    // 键盘弹起时的高度
-            }, // 横屏
-            portrait?: {
-                height1: number,
-                height2: number,
-            }
-        }
-        editor?: import("../protyle").Protyle
-        popEditor?: import("../protyle").Protyle
-        docks?: {
-            outline: import("../mobile/dock/MobileOutline").MobileOutline | null,
-            file: import("../mobile/dock/MobileFiles").MobileFiles | null,
-            bookmark: import("../mobile/dock/MobileBookmarks").MobileBookmarks | null,
-            tag: import("../mobile/dock/MobileTags").MobileTags | null,
-            backlink: import("../mobile/dock/MobileBacklinks").MobileBacklinks | null,
-            inbox: import("../layout/dock/Inbox").Inbox | null,
-        } & { [key: string]: import("../layout/Model").Model | any };
-    },
     dragElement?: HTMLElement,
     dragTitle?: string,
     currentDragOverTabHeadersElement?: HTMLElement

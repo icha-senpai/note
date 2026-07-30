@@ -60,7 +60,6 @@ export abstract class Constants {
     public static readonly SCRIBLI_SHOW_WINDOW: string = "scribli-show-window";
 
     // custom
-    public static readonly CUSTOM_REMINDER_WECHAT: string = "custom-reminder-wechat";
     public static readonly CUSTOM_RIFF_DECKS: string = "custom-riff-decks";
     public static readonly CUSTOM_SY_READONLY: string = "custom-sy-readonly";
     public static readonly CUSTOM_SY_FULLWIDTH: string = "custom-sy-fullwidth";
@@ -225,7 +224,6 @@ export abstract class Constants {
     public static readonly DIALOG_SYNCCHOOSEDIR = "dialog-syncchoosedir"; // 选择云端同步目录
     public static readonly DIALOG_SYNCCHOOSEDIRECTION = "dialog-syncchoosedirection"; // 选择云端同步方向
     public static readonly DIALOG_TRANSFERBLOCKREF = "dialog-transferblockref"; // 转移引用
-    public static readonly DIALOG_WECHATREMINDER = "dialog-wechatreminder"; // 微信提醒
     public static readonly DIALOG_PASSWORD = "dialog-password"; // 导入同步密钥
     public static readonly DIALOG_SETPASSWORD = "dialog-setpassword"; // 设置同步密钥
     public static readonly DIALOG_BOOTSYNCFAILED = "dialog-bootsyncfailed"; // 启动时同步数据失败

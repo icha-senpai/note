@@ -9,8 +9,6 @@ import {Constants} from "../constants";
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
-/// #if !MOBILE
-/// #endif
 import {showMessage} from "../dialog/message";
 import {isOnlyMeta, isWindows, setStorageVal, updateHotkeyTip} from "../protyle/util/compatibility";
 import {matchHotKey} from "../protyle/util/hotKey";
@@ -86,14 +84,6 @@ export const parseUriInfo = (): IScribliUriBlockInfo => {
     const searchParams = new URLSearchParams(window.location.search);
     if (searchParams.has("url")) {
         const dataInfo = parseScribliUriInfo(searchParams.get("url"));
-        if (dataInfo != null) {
-            window.scribli.editorIsFullscreen = dataInfo.fullscreen;
-            return dataInfo;
-        }
-    }
-
-    if (window.JSAndroid) {
-        const dataInfo = parseScribliUriInfo(window.JSAndroid.getBlockURL());
         if (dataInfo != null) {
             window.scribli.editorIsFullscreen = dataInfo.fullscreen;
             return dataInfo;
@@ -296,9 +286,7 @@ export const movePathTo = (options: {
 
     const inputElement = dialog.element.querySelector(".b3-text-field") as HTMLInputElement;
     inputElement.value = window.scribli.storage[Constants.LOCAL_MOVE_PATH].k;
-    /// #if !MOBILE
     inputElement.select();
-    /// #endif
     const inputEvent = (event?: InputEvent) => {
         if (event && event.isComposing) {
             return;
@@ -657,9 +645,7 @@ export const movePathTo = (options: {
             }
             target = target.parentElement;
         }
-        /// #if !MOBILE
         inputElement.focus();
-        /// #endif
     });
 };
 

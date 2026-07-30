@@ -784,8 +784,6 @@
 	"multiSelect": "เลือกหลายรายการ",
 	"commandEmpty": "No command yet",
 	"commandPanel": "แผงคำสั่ง",
-	"cloudRegionNorthAmerica": "Scribli (อเมริกาเหนือ)",
-	"cloudRegionChina": "จีนแผ่นดินใหญ่",
 	"currentKernel": "เคอร์เนลปัจจุบัน",
 	"otherOnlineKernels": "เคอร์เนลออนไลน์อื่น",
 	"syncPerception": "การรับรู้ซิงค์",
@@ -804,7 +802,7 @@
 	"color": "สี",
 	"confirmPassword": "ฉันจำรหัสผ่านได้แล้ว",
 	"passwordNoMatch": "รหัสผ่านสองครั้งไม่ตรงกัน",
-	"cloudConfigTip": "กำหนดค่าใน [ตั้งค่า - บัญชีและซิงค์ - ผู้ให้บริการคลาวด์]",
+	"syncProviderConfigTip": "Configure a user-controlled sync provider in Settings - Sync",
 	"confirmUninstall": "แน่ใจหรือไม่ที่จะถอนการติดตั้ง ${name}?<br>การถอนการติดตั้งอาจลบการตั้งค่าและข้อมูลทั้งหมด โปรดดำเนินการด้วยความระมัดระวัง!",
 	"scrollGetMore": "เลื่อนโหลด",
 	"flashcardNewCard": "ใหม่",
@@ -1135,12 +1133,8 @@
 	"mergeSubdocs": "รวมเอกสารย่อย",
 	"removeAssetsFolder": "ลบไดเรกทอรี",
 	"upload": "อัปโหลด",
-	"reminderTip": "เวลาเตือนต้องไม่น้อยกว่าปัจจุบัน",
-	"wechatTip": "บล็อกเนื้อหานี้จะถูกส่งไปยังคลาวด์ในรูปแบบข้อความธรรมดา และแจ้งเตือนผ่านข้อความเทมเพลต WeChat MP เมื่อถึงกำหนด",
 	"notEmpty": "ต้องไม่ว่าง",
 	"experimentalFeature": "(⚗️ ฟีเจอร์นี้อยู่ในช่วงทดลอง)",
-	"wechatReminder": "เตือน WeChat",
-	"notifyTime": "เวลาแจ้ง",
 	"docName": "ชื่อเอกสาร",
 	"bootSyncFailed": "ซิงค์ข้อมูลเมื่อเริ่มต้นล้มเหลว",
 	"use": "ใช้",
@@ -2168,3 +2162,5 @@
 		"343": "การเริ่มต้นใหม่"
 	}
 }
+
+

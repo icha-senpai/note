@@ -72,9 +72,6 @@ export const exportImage = (id: string) => {
         const msgId = showMessage(window.scribli.languages.exporting, 0);
         const containerElement = exportDialog.element.querySelector(".b3-dialog__container") as HTMLElement;
         containerElement.style.height = "";
-        /// #if MOBILE
-        containerElement.style.width = "100vw";
-        /// #endif
         const contentElement = exportDialog.element.querySelector(".b3-dialog__content") as HTMLElement;
         contentElement.style.overflow = "hidden";
         setStorageVal(Constants.LOCAL_EXPORTIMG, window.scribli.storage[Constants.LOCAL_EXPORTIMG]);
