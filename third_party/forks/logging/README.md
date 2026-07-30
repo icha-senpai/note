@@ -1,3 +1,0 @@
-# Logging
-
-Logging for SiYuan.

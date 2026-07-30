@@ -29,22 +29,21 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/icha-senpai/note/third_party/forks/external/code.sajari.com/docconv"
-	"github.com/icha-senpai/note/third_party/forks/epub"
-	"github.com/icha-senpai/note/third_party/forks/go-humanize"
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/kernel/search"
 	"github.com/icha-senpai/note/kernel/sql"
 	"github.com/icha-senpai/note/kernel/task"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/epub"
 	"github.com/icha-senpai/note/third_party/forks/eventbus"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/github/klippa-app/go-pdfium"
 	"github.com/icha-senpai/note/third_party/forks/github/klippa-app/go-pdfium/requests"
 	"github.com/icha-senpai/note/third_party/forks/github/klippa-app/go-pdfium/webassembly"
 	"github.com/icha-senpai/note/third_party/forks/github/xuri/excelize/v2"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 type AssetContent struct {
@@ -623,14 +622,7 @@ func (parser *DocxAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 	}
 	defer os.RemoveAll(tmp)
 
-	f, err := os.Open(tmp)
-	if err != nil {
-		logging.LogErrorf("open [%s] failed: [%s]", tmp, err)
-		return
-	}
-	defer f.Close()
-
-	data, _, err := docconv.ConvertDocx(f)
+	data, err := extractDocxText(tmp)
 	if err != nil {
 		logging.LogErrorf("convert [%s] failed: [%s]", tmp, err)
 		return
@@ -661,14 +653,7 @@ func (parser *PptxAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 	}
 	defer os.RemoveAll(tmp)
 
-	f, err := os.Open(tmp)
-	if err != nil {
-		logging.LogErrorf("open [%s] failed: [%s]", tmp, err)
-		return
-	}
-	defer f.Close()
-
-	data, _, err := docconv.ConvertPptx(f)
+	data, err := extractPptxText(tmp)
 	if err != nil {
 		logging.LogErrorf("convert [%s] failed: [%s]", tmp, err)
 		return
