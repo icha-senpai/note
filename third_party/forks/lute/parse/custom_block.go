@@ -1,4 +1,4 @@
-// Copyright (c) 2019-present, b3log.org
+// Copyright (c) 2019-present, Scribli
 //
 // Lute is licensed under Mulan PSL v2.
 // You can use this software according to the terms and conditions of the Mulan PSL v2.
