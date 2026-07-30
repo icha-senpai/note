@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ func BootMobile(container, appDir, workspaceBaseDir, lang string) {
 		}
 	}
 
-	defaultWorkspaceDir := filepath.Join(workspaceBaseDir, "siyuan")
+	defaultWorkspaceDir := filepath.Join(workspaceBaseDir, "scribli")
 	if err := os.MkdirAll(defaultWorkspaceDir, 0755); err != nil && !os.IsExist(err) {
 		logging.LogErrorf("create default workspace folder [%s] failed: %s", defaultWorkspaceDir, err)
 		os.Exit(logging.ExitCodeInitWorkspaceErr)
@@ -89,12 +89,12 @@ func initWorkspaceDirMobile(workspaceBaseDir string) {
 			}
 			if oldConf && oldData && oldTemp {
 				for _, entry := range entries {
-					if "home" == entry.Name() || "siyuan" == entry.Name() {
+					if "home" == entry.Name() || "scribli" == entry.Name() {
 						continue
 					}
 
 					from := filepath.Join(workspaceBaseDir, entry.Name())
-					to := filepath.Join(workspaceBaseDir, "siyuan", entry.Name())
+					to := filepath.Join(workspaceBaseDir, "scribli", entry.Name())
 					if err = os.Rename(from, to); err != nil {
 						logging.LogErrorf("move workspace dir [%s] failed: %s", workspaceBaseDir, err)
 					} else {
@@ -110,7 +110,7 @@ func initWorkspaceDirMobile(workspaceBaseDir string) {
 
 	userHomeConfDir := filepath.Join(HomeDir, ".config", "scribli")
 	workspaceConf := filepath.Join(userHomeConfDir, "workspace.json")
-	defaultWorkspaceDir := filepath.Join(workspaceBaseDir, "siyuan")
+	defaultWorkspaceDir := filepath.Join(workspaceBaseDir, "scribli")
 
 	var workspacePaths []string
 	if !gulu.File.IsExist(workspaceConf) {

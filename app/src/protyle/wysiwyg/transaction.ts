@@ -161,7 +161,7 @@ const promiseTransaction = (options: {
                         // 正在编辑的块不能进行更新
                         item.removeAttribute(Constants.ATTRIBUTE_EDITING);
                     } else {
-                        // https://github.com/siyuan-note/siyuan/issues/14495
+                        // 
                         const newTempElement = allTempElement.content.querySelector(`[data-node-id="${item.getAttribute("data-id")}"]`);
                         if (newTempElement && !isInEmbedBlock(newTempElement)) {
                             updateHTML(item.querySelector("[data-node-id]"), newTempElement.outerHTML);
@@ -202,7 +202,7 @@ const promiseTransaction = (options: {
                         if (!isInEmbedBlock(item)) {
                             const topElement = hasTopClosestByAttribute(item, "data-node-id", null);
                             if (topElement && !topElement.contains(range.startContainer)) {
-                                // 当前操作块不再进行操作，否则光标丢失 https://github.com/siyuan-note/siyuan/issues/13946
+                                // 当前操作块不再进行操作，否则光标丢失 
                                 updateElements.push(item);
                             }
                         }
@@ -264,7 +264,7 @@ const promiseTransaction = (options: {
             }
             if (operation.action === "insert") {
                 // 块已被本地 DOM 操作插入时仍需同步其他普通副本，并跳过当前副本避免重复
-                // https://github.com/siyuan-note/siyuan/issues/17890
+                // 
                 const insertedElement = protyle.wysiwyg.element.querySelector(`[data-node-id="${operation.id}"]`);
                 const currentEmbedElement = insertedElement && isInEmbedBlock(insertedElement, false);
                 if (insertedElement) {
@@ -349,7 +349,7 @@ const promiseTransaction = (options: {
                         }
                     });
                 }
-                // https://github.com/siyuan-note/siyuan/issues/4420
+                // 
                 protyle.wysiwyg.element.querySelectorAll('[data-type="NodeHeading"]').forEach(item => {
                     if (item.lastElementChild.getAttribute("spin") === "1") {
                         item.lastElementChild.remove();
@@ -388,7 +388,7 @@ const promiseTransaction = (options: {
         });
         // 删除仅有的折叠标题后展开内容为空
         if (protyle.wysiwyg.element.childElementCount === 0 &&
-            // 聚焦时不需要新增块，否则会导致 https://github.com/siyuan-note/siyuan/issues/12326 第一点
+            // 聚焦时不需要新增块，否则会导致  第一点
             !protyle.block.showAll) {
             const newID = Lute.NewNodeID();
             const emptyElement = genEmptyElement(false, true, newID);
@@ -483,10 +483,10 @@ const deleteBlock = (updateElements: Element[], id: string, protyle: IProtyle, i
             sbParents.push(sbAncestor);
         }
         if (isUndo) {
-            // https://github.com/siyuan-note/siyuan/issues/13617
+            // 
             item.remove();
         } else {
-            // 需移除顶层，否则删除唯一的列表项后列表无法清除干净 https://github.com/siyuan-note/siyuan/issues/12326 第一点
+            // 需移除顶层，否则删除唯一的列表项后列表无法清除干净  第一点
             const topElement = getTopAloneElement(item);
             if (topElement) {
                 topElement.remove();
@@ -513,8 +513,8 @@ const updateBlock = (updateElements: Element[], protyle: IProtyle, operation: IO
         }
         // 表格的横向、纵向滚动均发生在首个子节点（contenteditable 容器，overflow:auto）上，
         // 更新块后需一并还原，否则固定表头长表格撤销/重做会跳回开头
-        // https://github.com/siyuan-note/siyuan/issues/3650 https://github.com/siyuan-note/siyuan/issues/18035
-        // https://github.com/siyuan-note/siyuan/issues/18235
+        //  
+        // 
         let tableScrollLeft: number;
         let tableScrollTop: number;
         let contentScrollTop: number;
@@ -669,7 +669,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
             return;
         }
         if (operation.action === "update") {
-            // 缩放后仅更新局部 https://github.com/siyuan-note/siyuan/issues/14326
+            // 缩放后仅更新局部 
             if (updateElements.length === 0) {
                 const newUpdateElement = protyle.wysiwyg.element.querySelector("[data-node-id]");
                 if (newUpdateElement) {
@@ -681,7 +681,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                         updateElements.push(newUpdateElement);
                         operation.data = newTempElement.outerHTML;
                         operation.id = newUpdateId;
-                        // https://github.com/siyuan-note/siyuan/issues/14326#issuecomment-2746140335
+                        // 
                         for (let i = 1; i < protyle.wysiwyg.element.childElementCount; i++) {
                             protyle.wysiwyg.element.childNodes[i].remove();
                             i--;
@@ -798,7 +798,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                 }
                 Object.keys(data.new).forEach(key => {
                     if ("id" === key) {
-                        // 设置属性以后不应该给块元素添加 id 属性 No longer add the `id` attribute to block elements after setting the attribute https://github.com/siyuan-note/siyuan/issues/15327
+                        // 设置属性以后不应该给块元素添加 id 属性 No longer add the `id` attribute to block elements after setting the attribute 
                         return;
                     }
 
@@ -848,7 +848,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                 });
             }
             if (updateElements.length === 0) {
-                // 页签拖入浮窗 https://github.com/siyuan-note/siyuan/issues/6647
+                // 页签拖入浮窗 
                 window.scribli.blockPanels.forEach((item) => {
                     const updateCloneElement = item.element.querySelector(`[data-node-id="${operation.id}"]`);
                     if (updateCloneElement) {
@@ -889,7 +889,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
             }
             let hasFind = false;
             // 移动前记录源块所在的超级块，移动后刷新其拖拽手柄（移出后手柄需清理）
-            // https://github.com/siyuan-note/siyuan/issues/9521
+            // 
             const originSbs: Element[] = [];
             updateElements.forEach(item => {
                 const sb = item.closest('[data-type="NodeSuperBlock"]');
@@ -920,7 +920,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                     protyle.wysiwyg.element.prepend(processClonePHElement(updateElements[0].cloneNode(true) as Element));
                     hasFind = true;
                 } else if (parentElement.length === 0 && protyle.options.backlinkData && isUndo && getSelection().rangeCount > 0) {
-                    // 反链面板删除超级块中的段落块后撤销再重做 https://github.com/siyuan-note/siyuan/issues/14496#issuecomment-2771372486
+                    // 反链面板删除超级块中的段落块后撤销再重做 
                     const topBlockElement = hasTopClosestByAttribute(getSelection().getRangeAt(0).startContainer, "data-node-id", null);
                     if (topBlockElement) {
                         topBlockElement.before(processClonePHElement(updateElements[0].cloneNode(true) as Element));
@@ -952,7 +952,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
             });
             if (isUndo && range) {
                 if (operation.data === "focus") {
-                    // 标记需要 focus，https://ld246.com/article/1650018446988/comment/1650081404993?r=Vanessa#comments
+                    // 标记需要 focus，
                     Array.from(protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.id}"]`)).find(item => {
                         if (!isInEmbedBlock(item)) {
                             focusBlock(item);
@@ -979,7 +979,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                 .filter(Boolean) as Element[];
             refreshSbs(...moveEls);
             // 块移出后刷新源超级块的手柄（originSb 在元素被移除前捕获，仅含移出侧的超级块）
-            // https://github.com/siyuan-note/siyuan/issues/9521
+            // 
             refreshSbs(...originSbs);
             return;
         }
@@ -991,7 +991,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
             if (operation.previousID) {
                 const previousElement = protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.previousID}"]`);
                 if (previousElement.length === 0 && isUndo && protyle.wysiwyg.element.childElementCount === 0) {
-                    // https://github.com/siyuan-note/siyuan/issues/15396 操作后撤销
+                    //  操作后撤销
                     protyle.wysiwyg.element.innerHTML = operation.data;
                     cursorElements.push(protyle.wysiwyg.element.firstElementChild);
                 } else if (previousElement.length === 0 && protyle.options.backlinkData && isUndo && getSelection().rangeCount > 0) {
@@ -1005,7 +1005,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                     previousElement.forEach(item => {
                         const embedElement = isInEmbedBlock(item, false);
                         if (embedElement) {
-                            // https://github.com/siyuan-note/siyuan/issues/5524
+                            // 
                             embedElement.removeAttribute("data-render");
                             blockRender(protyle, embedElement);
                         } else {
@@ -1018,7 +1018,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                 Array.from(protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.nextID}"]`)).forEach(item => {
                     const embedElement = isInEmbedBlock(item, false);
                     if (embedElement) {
-                        // https://github.com/siyuan-note/siyuan/issues/5524
+                        // 
                         embedElement.removeAttribute("data-render");
                         blockRender(protyle, embedElement);
                     } else {
@@ -1067,7 +1067,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                     });
                 }
             }
-            // https://github.com/siyuan-note/siyuan/issues/4420
+            // 
             protyle.wysiwyg.element.querySelectorAll('[data-type="NodeHeading"]').forEach(item => {
                 if (item.lastElementChild.getAttribute("spin") === "1") {
                     item.lastElementChild.remove();
@@ -1077,7 +1077,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
                 return;
             }
             cursorElements.forEach(item => {
-                // https://github.com/siyuan-note/siyuan/issues/16554
+                // 
                 item.querySelector(".protyle-attr--av")?.remove();
                 item.removeAttribute("custom-avs");
                 item.getAttributeNames().forEach(attr => {
@@ -1130,7 +1130,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
             "foldAttrViewGroup", "hideAttrViewAllGroups", "setAttrViewFitImage", "setAttrViewDisplayFieldName",
             "insertAttrViewBlock", "setAttrViewColDateFillSpecificTime", "setAttrViewFillColBackgroundColor", "setAttrViewUpdatedIncludeTime",
             "setAttrViewCreatedIncludeTime"].includes(operation.action)) {
-            // 撤销 transaction 会进行推送，需使用推送来进行刷新最新数据 https://github.com/siyuan-note/siyuan/issues/13607
+            // 撤销 transaction 会进行推送，需使用推送来进行刷新最新数据 
             if (!isUndo) {
                 refreshAV(protyle, operation);
             } else if (operation.action === "setAttrViewName") {
@@ -1168,7 +1168,7 @@ export const turnsIntoOneTransaction = async (options: {
     if (options.type === "BlocksMergeSuperBlock") {
         parentElement = genSBElement(options.level, id);
         // 回车生成竖排超级块时，将横向超级块子块的宽度迁移到新超级块，并清除子块宽度
-        // https://github.com/siyuan-note/siyuan/issues/9521
+        // 
         const firstChild = options.selectsElement[0] as HTMLElement;
         if (firstChild.style.width) {
             (parentElement as HTMLElement).style.width = firstChild.style.width;
@@ -1274,7 +1274,7 @@ export const turnsIntoOneTransaction = async (options: {
                 id,
             });
         }
-        // 超级块内嵌入块无面包屑，需重新渲染 https://github.com/siyuan-note/siyuan/issues/7574
+        // 超级块内嵌入块无面包屑，需重新渲染 
         if (item.getAttribute("data-type") === "NodeBlockQueryEmbed") {
             item.removeAttribute("data-render");
             blockRender(options.protyle, item);
@@ -1324,7 +1324,7 @@ export const turnsIntoTransaction = (options: {
     range?: Range,
     unfocus?: boolean,
 }) => {
-    // https://github.com/siyuan-note/siyuan/issues/14505
+    // 
     options.protyle.observerLoad?.disconnect();
     let selectsElement: Element[] = options.selectsElement;
     let range: Range;
@@ -1634,7 +1634,7 @@ export const transaction = (protyle: IProtyle, doOperations: IOperation[], undoO
         skipSync: options?.skipSync,
         callback: options?.callback,
     });
-    // 插入块后会导致高度变化，从而产生再次定位 https://github.com/siyuan-note/siyuan/issues/11798
+    // 插入块后会导致高度变化，从而产生再次定位 
     doOperations.find(item => {
         if (item.action === "insert") {
             protyle.observerLoad?.disconnect();
@@ -1665,7 +1665,7 @@ const processFold = (operation: IOperation, protyle: IProtyle) => {
                 removeUnfoldRepeatBlock(operation.retData, protyle);
                 item.insertAdjacentHTML("afterend", operation.retData);
                 if (operation.data === "remove") {
-                    // https://github.com/siyuan-note/siyuan/issues/2188
+                    // 
                     const selection = getSelection();
                     if (selection.rangeCount > 0 && item.contains(selection.getRangeAt(0).startContainer)) {
                         focusBlock(item.nextElementSibling, undefined, true);
@@ -1704,10 +1704,10 @@ const processFold = (operation: IOperation, protyle: IProtyle) => {
         });
         // 折叠移除子块后，刷新折叠标题所在超级块的拖拽手柄（子块数变化）
         refreshSbs(...Array.from(protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.id}"]`)));
-        // 折叠标题后未触发动态加载 https://github.com/siyuan-note/siyuan/issues/4168
+        // 折叠标题后未触发动态加载 
         if (protyle.wysiwyg.element.lastElementChild.getAttribute("data-eof") !== "2" &&
             !protyle.scroll.element.classList.contains("fn__none") &&
-            protyle.contentElement.scrollHeight - protyle.contentElement.scrollTop < protyle.contentElement.clientHeight * 2    // https://github.com/siyuan-note/siyuan/issues/7785
+            protyle.contentElement.scrollHeight - protyle.contentElement.scrollTop < protyle.contentElement.clientHeight * 2    // 
         ) {
             const getDocParam: IObject = {
                 id: protyle.wysiwyg.element.lastElementChild.getAttribute("data-node-id"),

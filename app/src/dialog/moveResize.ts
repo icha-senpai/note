@@ -6,7 +6,7 @@ import {getTopBarHeight} from "../layout/getTopBarHeight";
 
 export const moveResize = (element: HTMLElement, afterCB?: (type: string) => void) => {
     element.addEventListener("mousedown", (event: MouseEvent & { target: HTMLElement }) => {
-        // https://github.com/siyuan-note/siyuan/issues/8746
+        // 
         if (hasClosestByClassName(event.target, "protyle-util") && !element.classList.contains("protyle-util")) {
             return;
         }
@@ -125,7 +125,7 @@ export const moveResize = (element: HTMLElement, afterCB?: (type: string) => voi
                 return;
             }
             if (window.scribli.dragElement) {
-                // 反向链接拖拽 https://ld246.com/article/1632915506502
+                // 反向链接拖拽 
                 window.scribli.dragElement.style.opacity = "";
                 window.scribli.dragElement = undefined;
             }

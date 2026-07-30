@@ -6,7 +6,7 @@
 
 # Scribli
 
-Scribli is a local-first desktop knowledge workspace for writing, linking, outlining, querying, exporting, and maintaining long-lived personal notes. It is based on SiYuan, keeps the inherited AGPL-3.0 license, and is being reshaped into a self-contained application that does not depend on SiYuan, B3log, LiuYun, or LianDi hosted services.
+Scribli is a local-first desktop knowledge workspace for writing, linking, outlining, querying, exporting, and maintaining long-lived personal notes. It is based on SiYuan, keeps the inherited AGPL-3.0 license, and is being reshaped into a self-contained application that does not depend on official upstream hosted services.
 
 This repository contains the Scribli desktop/web frontend and Go kernel. The application stores user data in a local workspace first. Optional sync is controlled by the user and points only at user-configured S3, WebDAV, or local-folder storage.
 
@@ -20,7 +20,7 @@ Scribli is a fork in active cleanup. The main desktop path builds and packages, 
 - Block references, backlinks, outlines, and document navigation.
 - Attribute views and queryable local data.
 - Local assets, file attachments, and export support.
-- PDF, HTML, Word, Markdown, and asset-oriented export workflows inherited from SiYuan.
+- PDF, HTML, Word, Markdown, and asset-oriented export workflows inherited from the upstream project.
 - Local snapshots, repository history, manual backups, and restore workflows.
 - User-controlled sync through S3, WebDAV, or local-folder providers.
 - Optional local HTTP API, WebSocket UI channel, plugin system, AI provider configuration, and MCP support when enabled or configured by the user.
@@ -43,7 +43,7 @@ The workspace contains notebooks, documents, assets, local configuration, indexe
 
 ## Network Behavior
 
-A fresh Scribli workspace is intended to run without contacting official SiYuan, B3log, LiuYun, or LianDi services. Official cloud login, account checks, subscriptions, payments, marketplace/bazaar access, official update checks, official cloud snapshots, and official cloud quota/status calls have been removed or disabled.
+A fresh Scribli workspace is intended to run without contacting official upstream hosted services. Official cloud login, account checks, subscriptions, payments, marketplace/bazaar access, official update checks, official cloud snapshots, and official cloud quota/status calls have been removed or disabled.
 
 Scribli can still make network connections when the user configures or triggers local features that require them:
 
@@ -74,7 +74,7 @@ Do not place the active workspace inside a third-party cloud-drive folder such a
 
 Scribli intentionally removes or disables inherited behavior tied to official upstream services:
 
-- Official SiYuan cloud provider.
+- Official upstream cloud provider.
 - Official account login and account-dependent sync.
 - Cloud account storage statistics.
 - Official cloud snapshot upload and download.
@@ -180,19 +180,19 @@ Do not remove upstream copyright notices from inherited source files.
 
 ## Upstream Attribution
 
-Scribli is based on SiYuan by the SiYuan contributors and B3log/LianDi upstream maintainers. The original project provided the Go kernel, Electron/web frontend, editor architecture, data model, and much of the feature surface that Scribli inherits.
+Scribli is based on SiYuan by its contributors and upstream maintainers. The original project provided the Go kernel, Electron/web frontend, editor architecture, data model, and much of the feature surface that Scribli inherits.
 
-This fork changes application identity, disables official upstream cloud/account/commercial services, removes upstream publishing paths, and documents the project as Scribli. It is not an official SiYuan build and is not operated by B3log or LianDi.
+This fork changes application identity, disables official upstream cloud/account/commercial services, removes upstream publishing paths, and documents the project as Scribli. It is an independent build.
 
 ## Known Limitations
 
-- Some internal package names, source paths, generated artifacts, and compatibility names may still contain inherited SiYuan identifiers.
+- Some internal package names, source paths, generated artifacts, and compatibility names may still contain inherited upstream identifiers.
 - Internal naming cleanup is gradual; see `docs/INTERNAL-NAMING.md` for which legacy names are preserved for compatibility.
 - Mobile packaging is not currently a Scribli-owned release path.
 - Docker publishing is disabled.
 - Runtime updates are disabled.
 - Official cloud, account, subscription, payment, and marketplace services are intentionally unavailable.
-- Existing SiYuan workspaces may need careful backup and migration testing before day-to-day use with Scribli.
+- Existing upstream workspaces may need careful backup and migration testing before day-to-day use with Scribli.
 
 ## Contributing
 

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -302,7 +302,7 @@ func searchTemplate(c *gin.Context) {
 }
 
 func getEmbedBlock(c *gin.Context) {
-	// Query embed block supports executing JavaScript https://github.com/siyuan-note/siyuan/issues/9648
+	// Query embed block supports executing JavaScript
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
 

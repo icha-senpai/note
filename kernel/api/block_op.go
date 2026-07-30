@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -491,7 +491,7 @@ func moveBlock(c *gin.Context) {
 			return
 		}
 
-		// Check the validity of the API `moveBlock` parameter `previousID` https://github.com/siyuan-note/siyuan/issues/8007
+		// Check the validity of the API `moveBlock` parameter `previousID`
 		if bt := treenode.GetBlockTree(previousID); nil == bt || "d" == bt.Type {
 			ret.Code = -1
 			ret.Msg = "`previousID` can not be the ID of a document"

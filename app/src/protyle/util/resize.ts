@@ -73,7 +73,7 @@ export const resize = (protyle: IProtyle) => {
                 });
             }
         }
-        // 小于 MIN_ABS 也会导致换行 https://github.com/siyuan-note/siyuan/issues/13677
+        // 小于 MIN_ABS 也会导致换行 
         protyle.wysiwyg.element.querySelectorAll(".code-block .protyle-linenumber__rows").forEach((item: HTMLElement) => {
             if ((item.nextElementSibling as HTMLElement).style.wordBreak === "break-word") {
                 lineNumberRender(item.parentElement);

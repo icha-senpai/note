@@ -11,7 +11,7 @@ import {getSbChildBlockCount, getTopAloneElement} from "../wysiwyg/getBlock";
 export const setFold = (protyle: IProtyle, nodeElement: Element, isOpen?: boolean,
                         isRemove?: boolean, addLoading = true, getOperations = false) => {
     if (nodeElement.getAttribute("data-type") === "NodeListItem" && nodeElement.childElementCount < 4 &&
-        // 该情况需要强制展开 https://github.com/siyuan-note/siyuan/issues/12327
+        // 该情况需要强制展开 
         !isOpen) {
         // 没有子列表或多个块的列表项不进行折叠
         return {fold: -1};
@@ -25,7 +25,7 @@ export const setFold = (protyle: IProtyle, nodeElement: Element, isOpen?: boolea
             return {fold: -1};
         }
         nodeElement.removeAttribute("fold");
-        // https://github.com/siyuan-note/siyuan/issues/4411
+        // 
         nodeElement.querySelectorAll(".protyle-linenumber__rows").forEach((item: HTMLElement) => {
             lineNumberRender(item.parentElement);
         });
@@ -34,12 +34,12 @@ export const setFold = (protyle: IProtyle, nodeElement: Element, isOpen?: boolea
             return {fold: -1};
         }
         nodeElement.setAttribute("fold", "1");
-        // 光标在子列表中，再次 focus 段尾的时候不会变 https://ld246.com/article/1647099132461
+        // 光标在子列表中，再次 focus 段尾的时候不会变 
         if (getSelection().rangeCount > 0) {
             const range = getSelection().getRangeAt(0);
             const blockElement = hasClosestBlock(range.startContainer);
             if (blockElement && blockElement.getBoundingClientRect().width === 0) {
-                // https://github.com/siyuan-note/siyuan/issues/5833
+                // 
                 focusBlock(nodeElement, undefined, false);
             }
         }
@@ -89,7 +89,7 @@ export const setFold = (protyle: IProtyle, nodeElement: Element, isOpen?: boolea
     if (!getOperations) {
         transaction(protyle, doOperations, undoOperations);
     }
-    // 折叠后，防止滚动条滚动后调用 get 请求 https://github.com/siyuan-note/siyuan/issues/2248
+    // 折叠后，防止滚动条滚动后调用 get 请求 
     preventScroll(protyle);
     return {fold: !hasFold ? 1 : 0, undoOperations, doOperations};
 };

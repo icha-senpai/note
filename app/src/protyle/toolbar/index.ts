@@ -189,7 +189,7 @@ export class Toolbar {
             this.element.classList.add("fn__none");
             return;
         }
-        // https://github.com/siyuan-note/siyuan/issues/5157
+        // 
         let hasText = false;
         Array.from(range.cloneContents().childNodes).find(item => {
             // zwsp 不显示工具栏
@@ -208,7 +208,7 @@ export class Toolbar {
             this.element.classList.add("fn__none");
             return;
         }
-        // shift+方向键或三击选中，不同的块 https://github.com/siyuan-note/siyuan/issues/3891
+        // shift+方向键或三击选中，不同的块 
         const startElement = hasClosestBlock(range.startContainer);
         const endElement = hasClosestBlock(range.endContainer);
         if (startElement && endElement && startElement !== endElement) {
@@ -236,7 +236,7 @@ export class Toolbar {
                 return;
             }
         }
-        // 需放在 range 修改之后，否则 https://github.com/siyuan-note/siyuan/issues/4726
+        // 需放在 range 修改之后，否则 
         if (nodeElement.getAttribute("data-type") === "NodeCodeBlock") {
             this.element.classList.add("fn__none");
             return;
@@ -319,7 +319,7 @@ export class Toolbar {
         if (!endElement) {
             return;
         }
-        // 三击后还没有重新纠正 range 时使用快捷键标记会导致异常 https://github.com/siyuan-note/siyuan/issues/7068
+        // 三击后还没有重新纠正 range 时使用快捷键标记会导致异常 
         if (nodeElement !== endElement) {
             this.range = setLastNodeRange(getContenteditableElement(nodeElement), this.range, false);
         }
@@ -344,7 +344,7 @@ export class Toolbar {
         }
         const selectText = this.range.toString();
         let keepZWPS = false;
-        // ctrl+b/u/i  https://github.com/siyuan-note/siyuan/issues/14820
+        // ctrl+b/u/i  
         if (!selectText && this.range.startOffset === 1 && this.range.startContainer.textContent === Constants.ZWSP) {
             let newElement;
             if (this.range.startContainer.nodeType === 1) {
@@ -360,13 +360,13 @@ export class Toolbar {
             }
         }
         if (rangeTypes.length === 1) {
-            // https://github.com/siyuan-note/siyuan/issues/6501
-            // https://github.com/siyuan-note/siyuan/issues/12877
+            // 
+            // 
             if (["block-ref", "virtual-block-ref", "file-annotation-ref", "a", "inline-memo", "inline-math", "tag"].includes(rangeTypes[0]) && type === "clear") {
                 return;
             }
         }
-        // https://github.com/siyuan-note/siyuan/issues/14534
+        // 
         if (rangeTypes.includes("text") && type === "text" && textObj && this.range.startContainer.nodeType === 3 && this.range.startContainer === this.range.endContainer) {
             const selectParentElement = this.range.startContainer.parentElement;
             if (selectParentElement && hasSameTextStyle(null, selectParentElement, textObj)) {
@@ -387,13 +387,13 @@ export class Toolbar {
             const endNextSibling = hasNextSibling(this.range.endContainer);
             if ((
                     this.range.startOffset !== 0 ||
-                    // https://github.com/siyuan-note/siyuan/issues/14869
+                    // 
                     (this.range.startOffset === 0 && startPreviousSibling &&
                         (startPreviousSibling.nodeType === 3 || (startPreviousSibling as HTMLElement).tagName === "BR") &&
                         this.range.startContainer.previousSibling.parentElement === this.range.startContainer.parentElement)
                 ) && (
                     this.range.endOffset !== this.range.endContainer.textContent.length ||
-                    // https://github.com/siyuan-note/siyuan/issues/14869#issuecomment-2911553387
+                    // 
                     (
                         this.range.endOffset === this.range.endContainer.textContent.length && endNextSibling &&
                         (endNextSibling.nodeType === 3 || (endNextSibling as HTMLElement).tagName === "BR") &&
@@ -419,7 +419,7 @@ export class Toolbar {
             }
         }
         let isEndSpan = false;
-        // https://github.com/siyuan-note/siyuan/issues/7200
+        // 
         if (this.range.endOffset === this.range.endContainer.textContent.length &&
             !["DIV", "TD", "TH", "TR"].includes(this.range.endContainer.parentElement.tagName) &&
             !hasNextSibling(this.range.endContainer)) {
@@ -574,7 +574,7 @@ export class Toolbar {
                 const inlineElement = document.createElement("span");
                 rangeTypes.push(type);
 
-                // 遇到以下类型结尾不应继承 https://github.com/siyuan-note/siyuan/issues/7200
+                // 遇到以下类型结尾不应继承 
                 if (isEndSpan) {
                     let removeIndex = 0;
                     while (removeIndex < rangeTypes.length) {
@@ -584,7 +584,7 @@ export class Toolbar {
                             ++removeIndex;
                         }
                     }
-                    // https://github.com/siyuan-note/siyuan/issues/14421
+                    // 
                     if (rangeTypes.length === 0) {
                         rangeTypes.push(type);
                     }
@@ -595,8 +595,8 @@ export class Toolbar {
                 newNodes.push(inlineElement);
                 keepZWPS = true;
             } else {
-                // https://github.com/siyuan-note/siyuan/issues/7477
-                // https://github.com/siyuan-note/siyuan/issues/8825
+                // 
+                // 
                 if (type === "block-ref") {
                     while (contents.childNodes.length > 1) {
                         contents.childNodes[0].remove();
@@ -605,7 +605,7 @@ export class Toolbar {
                 contents.childNodes.forEach((item: HTMLElement) => {
                     let removeText = "";
                     if (item.nodeType === 3 && item.textContent) {
-                        // https://github.com/siyuan-note/siyuan/issues/14204
+                        // 
                         while (item.textContent.endsWith("\n")) {
                             item.textContent = item.textContent.substring(0, item.textContent.length - 1);
                             removeText += "\n";
@@ -640,7 +640,7 @@ export class Toolbar {
                         if (!types.includes("img")) {
                             types.push(type);
                         }
-                        // 上标和下标不能同时存在 https://github.com/siyuan-note/insider/issues/1049
+                        // 上标和下标不能同时存在 
                         if (type === "sub" && types.includes("sup")) {
                             types.find((item, index) => {
                                 if (item === "sup") {
@@ -690,7 +690,7 @@ export class Toolbar {
                                 }
                             });
                             if (item.querySelector(".katex")) {
-                                // 选中完整的数学公式才进行备注 https://github.com/siyuan-note/siyuan/issues/13667
+                                // 选中完整的数学公式才进行备注 
                                 item.textContent = item.getAttribute("data-content");
                             }
                         } else if (type === "inline-math" && types.includes("inline-memo")) {
@@ -782,7 +782,7 @@ export class Toolbar {
                             }
                         }
                         if (currentType.includes("inline-math")) {
-                            // 数学公式合并 data-content https://github.com/siyuan-note/siyuan/issues/6028
+                            // 数学公式合并 data-content 
                             currentNode.setAttribute("data-content", previousElement.getAttribute("data-content") + currentNode.getAttribute("data-content"));
                         } else if (currentType.includes("block-ref") && previousElement.getAttribute("data-id") === currentNode.getAttribute("data-id")) {
                             if (previousElement.dataset.subtype !== "d" || previousElement.dataset.subtype !== "d") {
@@ -790,9 +790,9 @@ export class Toolbar {
                                 currentNode.textContent = previousElement.textContent + currentNode.textContent;
                             }
                         } else {
-                            // 测试不存在 https://ld246.com/article/1664454663564 情况，故移除引用合并限制
-                            // 搜索结果引用被高亮隔断需进行合并 https://github.com/siyuan-note/siyuan/issues/7588
-                            // textContent：防止赋值后 \n 转换为 br 导致后续 this.range.setStart 报错；innerText：获取 br 的 \n， https://github.com/siyuan-note/siyuan/issues/15968
+                            // 测试不存在  情况，故移除引用合并限制
+                            // 搜索结果引用被高亮隔断需进行合并 
+                            // textContent：防止赋值后 \n 转换为 br 导致后续 this.range.setStart 报错；innerText：获取 br 的 \n， 
                             currentNode.textContent = previousElement.innerText + currentNode.innerText;
                             // 如果为备注时，合并备注内容
                             if (currentType.includes("inline-memo")) {
@@ -931,7 +931,7 @@ export class Toolbar {
         if (!nodeElement) {
             return;
         }
-        // https://github.com/siyuan-note/siyuan/issues/17814
+        // 
         nodeElement.setAttribute(Constants.ATTRIBUTE_EDITING, "true");
         hideElements(["hint", "select"], protyle);
         window.scribli.menus.menu.remove();
@@ -1185,7 +1185,7 @@ export class Toolbar {
         });
         textElement.addEventListener("keydown", (event: KeyboardEvent) => {
             event.stopPropagation();
-            // 阻止 ctrl+m 缩小窗口 https://github.com/siyuan-note/siyuan/issues/5541
+            // 阻止 ctrl+m 缩小窗口 
             if (matchHotKey(window.scribli.config.keymap.editor.insert["inline-math"].custom, event)) {
                 event.preventDefault();
                 return;
@@ -1197,7 +1197,7 @@ export class Toolbar {
                 this.subElement.querySelector('[data-type="pin"]').setAttribute("aria-label", window.scribli.languages.pin);
                 hideElements(["util"], protyle);
             } else if (event.key === "Tab") {
-                // https://github.com/siyuan-note/siyuan/issues/5270
+                // 
                 document.execCommand("insertText", false, "\t");
                 event.preventDefault();
             } else if (electronUndo(event)) {
@@ -1212,15 +1212,15 @@ export class Toolbar {
             if (types.includes("NodeHTMLBlock") && !noChange) {
                 let htmlText = textElement.value;
                 if (htmlText) {
-                    // 需移除首尾的空白字符与连续的换行 (空行) https://github.com/siyuan-note/siyuan/issues/7921
+                    // 需移除首尾的空白字符与连续的换行 (空行) 
                     htmlText = htmlText.trim().replace(/\n+/g, "\n");
-                    // 需一对 div 标签包裹，否则行内元素会解析错误 https://github.com/siyuan-note/siyuan/issues/6764
+                    // 需一对 div 标签包裹，否则行内元素会解析错误 
                     if (!(htmlText.startsWith("<div>") && htmlText.endsWith("</div>"))) {
                         htmlText = `<div>\n${htmlText}\n</div>`;
                     }
                 }
                 renderElement.querySelector("protyle-html").setAttribute("data-content", Lute.EscapeHTMLStr(htmlText));
-                // HTML 块中包含多个 <pre> 时只能保存第一个 https://github.com/siyuan-note/siyuan/issues/5732
+                // HTML 块中包含多个 <pre> 时只能保存第一个 
                 const tempElement = document.createElement("template");
                 tempElement.innerHTML = protyle.lute.SpinBlockDOM(nodeElement.outerHTML);
                 if (tempElement.content.childElementCount > 1) {
@@ -1235,7 +1235,7 @@ export class Toolbar {
                 }
                 inlineMemoElements.forEach((item, index) => {
                     if (!textElement.value) {
-                        // https://github.com/siyuan-note/insider/issues/1046
+                        // 
                         const currentTypes = item.getAttribute("data-type").split(" ");
                         if (currentTypes.length === 1 && currentTypes[0] === "inline-memo") {
                             item.outerHTML = item.innerHTML + (index === inlineMemoElements.length - 1 ? "<wbr>" : "");
@@ -1253,12 +1253,12 @@ export class Toolbar {
                             inlineLastNode = item;
                         }
                     } else if (item.nodeType !== 3) {
-                        // 行级备注自动移除换行  https://ld246.com/article/1664205917326
+                        // 行级备注自动移除换行  
                         item.setAttribute("data-inline-memo-content", window.DOMPurify.sanitize(textElement.value));
                     }
                 });
             } else if (types.includes("inline-math") && !noChange) {
-                // 行内数学公式不允许换行 https://github.com/siyuan-note/siyuan/issues/2187
+                // 行内数学公式不允许换行 
                 if (textElement.value) {
                     renderElement.setAttribute("data-content", Lute.EscapeHTMLStr(textElement.value));
                     renderElement.removeAttribute("data-render");
@@ -1282,7 +1282,7 @@ export class Toolbar {
             if (getSelection().rangeCount === 0 ||
                 // $$ 中间输入后再 ESC 光标无法定位
                 (getSelection().rangeCount > 0 && hasClosestByClassName(getSelection().getRangeAt(0).startContainer, "protyle-util"))
-            ) {  // https://ld246.com/article/1665306093005
+            ) {  // 
                 if (renderElement.tagName === "SPAN") {
                     if (inlineLastNode) {
                         if (inlineLastNode.parentElement) {

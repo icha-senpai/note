@@ -74,7 +74,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "b3log/scribli"
+									"TextMarkTextContent": "Scribli contributors/scribli"
 								}
 							]
 						}
@@ -103,7 +103,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://hub.docker.com/r/b3log/scribli",
+									"TextMarkAHref": " contributors/scribli",
 									"TextMarkTextContent": "镜像地址"
 								}
 							]
@@ -330,7 +330,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "docker run b3log/scribli"
+					"TextMarkTextContent": "docker run Scribli contributors/scribli"
 				},
 				{
 					"Type": "NodeText",
@@ -417,7 +417,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "docker run -d -v workspace_dir_host:workspace_dir_container -p 6806:6806 b3log/scribli --workspace=workspace_dir_container"
+					"TextMarkTextContent": "docker run -d -v workspace_dir_host:workspace_dir_container -p 6806:6806 Scribli contributors/scribli --workspace=workspace_dir_container"
 				},
 				{
 					"Type": "NodeText",
@@ -564,7 +564,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "docker run -d -v /scribli/workspace:/scribli/workspace -p 6806:6806 -u 1000:1000 b3log/scribli --workspace=/scribli/workspace/"
+					"TextMarkTextContent": "docker run -d -v /scribli/workspace:/scribli/workspace -p 6806:6806 -u 1000:1000 Scribli contributors/scribli --workspace=/scribli/workspace/"
 				},
 				{
 					"Type": "NodeText",
@@ -602,7 +602,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan"
+					"TextMarkTextContent": "Scribli"
 				},
 				{
 					"Type": "NodeText",

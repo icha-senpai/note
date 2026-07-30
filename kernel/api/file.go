@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -478,7 +478,7 @@ func getFile(c *gin.Context) {
 		return
 	}
 
-	// REF: https://github.com/siyuan-note/siyuan/issues/11364
+	// REF:
 	if !model.IsAdminRoleContext(c) {
 		if refuseToAccess(c, fileAbsPath, ret) {
 			return
@@ -544,7 +544,7 @@ func refuseToAccess(c *gin.Context, fileAbsPath string, ret *gulu.Result) bool {
 		return true
 	}
 
-	publishAccessPath := normalizeAndResolve(filepath.Join(util.DataDir, ".siyuan", "publishAccess.json"))
+	publishAccessPath := normalizeAndResolve(filepath.Join(util.DataDir, ".scribli", "publishAccess.json"))
 	if fileNorm == publishAccessPath {
 		ret.Code = http.StatusForbidden
 		ret.Msg = http.StatusText(http.StatusForbidden)
@@ -831,9 +831,9 @@ func putFile(c *gin.Context) {
 
 	fileExists := filelock.IsExist(fileAbsPath)
 	if !fileExists {
-		if !util.IsValidUploadFileName(filepath.Base(fileAbsPath)) { // Improve kernel API `/api/file/putFile` parameter validation https://github.com/siyuan-note/siyuan/issues/14658
+		if !util.IsValidUploadFileName(filepath.Base(fileAbsPath)) { // Improve kernel API `/api/file/putFile` parameter validation
 			ret.Code = http.StatusBadRequest
-			ret.Msg = "invalid file path. For details, please check https://github.com/siyuan-note/siyuan/issues/14658"
+			ret.Msg = "invalid file path. "
 			return
 		}
 	} else {

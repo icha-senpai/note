@@ -934,8 +934,8 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
         }
     } else if (src) {
         if (0 > src.indexOf(":")) {
-            // 使用 : 判断，不使用 :// 判断 Open external application protocol invalid https://github.com/siyuan-note/siyuan/issues/10075
-            // Support click to open hyperlinks like `www.foo.com` https://github.com/siyuan-note/siyuan/issues/9986
+            // 使用 : 判断，不使用 :// 判断 Open external application protocol invalid 
+            // Support click to open hyperlinks like `www.foo.com` 
             src = `https://${src}`;
         }
         /// #if !BROWSER

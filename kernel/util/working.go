@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -173,7 +173,7 @@ func BootWithFlags(workspacePath, wdPath, port, readOnly, accessAuthCode, lang, 
 			}
 
 			if interruptBoot {
-				// The access authorization code command line parameter must be set when deploying via Docker https://github.com/siyuan-note/siyuan/issues/9328
+				// The access authorization code command line parameter must be set when deploying via Docker
 				fmt.Printf("the access authorization code command line parameter (--accessAuthCode) must be set when deploying via Docker\n")
 				fmt.Printf("or you can set the SCRIBLI_ACCESS_AUTH_CODE env var")
 				os.Exit(logging.ExitCodeSecurityRisk)
@@ -307,7 +307,7 @@ func initWorkspaceDir(workspaceArg string) {
 			defaultWorkspaceDir = filepath.Join(userProfile, "Scribli")
 		}
 	} else if gulu.OS.IsDarwin() {
-		// Change the initial workspace path to ~/Library/Application Support/Scribli on macOS https://github.com/siyuan-note/siyuan/issues/17095
+		// Change the initial workspace path to ~/Library/Application Support/Scribli on macOS
 		defaultWorkspaceDir = filepath.Join(HomeDir, "Library", "Application Support", "Scribli")
 	}
 
@@ -535,7 +535,7 @@ func initPathDir() {
 		logging.LogFatalf(logging.ExitCodeInitWorkspaceErr, "create queue folder [%s] failed: %s", queueDir, err)
 	}
 
-	// Support directly access `data/public/*` contents via URL link https://github.com/siyuan-note/siyuan/issues/8593
+	// Support directly access `data/public/*` contents via URL link
 	public := filepath.Join(DataDir, "public")
 	if err := os.MkdirAll(public, 0755); err != nil && !os.IsExist(err) {
 		logging.LogFatalf(logging.ExitCodeInitWorkspaceErr, "create data public folder [%s] failed: %s", public, err)
@@ -544,8 +544,8 @@ func initPathDir() {
 
 func initMime() {
 
-	// https://github.com/siyuan-note/siyuan/issues/247
-	// https://github.com/siyuan-note/siyuan/issues/3813
+	//
+	//
 	mime.AddExtensionType(".css", "text/css")
 	mime.AddExtensionType(".js", "text/javascript")
 	mime.AddExtensionType(".mjs", "text/javascript")

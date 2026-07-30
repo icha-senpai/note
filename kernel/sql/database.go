@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -534,7 +534,7 @@ func refsFromTree(tree *parse.Tree) (refs []*Ref, fileAnnotationRefs []*FileAnno
 }
 
 func isRepeatedRef(refs []*Ref, ref *Ref) bool {
-	// Repeated references to the same block within a block only count as one reference https://github.com/siyuan-note/siyuan/issues/9670
+	// Repeated references to the same block within a block only count as one reference
 	for _, r := range refs {
 		if r.DefBlockID == ref.DefBlockID && r.BlockID == ref.BlockID {
 			return true
@@ -1813,7 +1813,7 @@ func OpenEncryptedDB(boxID string, dek []byte) (err error) {
 	}
 	dbPath := util.EncryptedDBPath(boxID)
 
-	contentKey := util.DeriveSubKey(dek, "siyuan/sqlcipher/content")
+	contentKey := util.DeriveSubKey(dek, "scribli/sqlcipher/content")
 
 	dsn := dbPath + "?_journal_mode=WAL&_synchronous=OFF&_mmap_size=4294967296&_secure_delete=OFF" +
 		"&_cache_size=-128000&_page_size=32768&_busy_timeout=7000&_ignore_check_constraints=ON" +

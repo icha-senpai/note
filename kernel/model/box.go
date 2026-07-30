@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -111,7 +111,7 @@ func ListNotebooks() (ret []*Box, err error) {
 
 		boxConf := conf.NewBoxConf()
 		boxDirPath := filepath.Join(util.DataDir, id)
-		boxConfPath := filepath.Join(boxDirPath, ".siyuan", "conf.json")
+		boxConfPath := filepath.Join(boxDirPath, ".scribli", "conf.json")
 		isExistConf := filelock.IsExist(boxConfPath)
 		if !isExistConf {
 			if !IsUserGuide(id) {
@@ -158,7 +158,7 @@ func ListNotebooks() (ret []*Box, err error) {
 
 		icon := boxConf.Icon
 		if strings.Contains(icon, ".") {
-			// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+			// XSS through emoji name
 			icon = util.FilterUploadEmojiFileName(icon)
 		}
 
@@ -174,7 +174,7 @@ func ListNotebooks() (ret []*Box, err error) {
 		}
 
 		if !isExistConf {
-			// Automatically create notebook conf.json if not found it https://github.com/siyuan-note/siyuan/issues/9647
+			// Automatically create notebook conf.json if not found it
 			if err := box.SaveConf(boxConf); err != nil {
 				logging.LogErrorf("save box conf [%s] failed: %s", boxDirPath, err)
 			}
@@ -214,7 +214,7 @@ func ListNotebooks() (ret []*Box, err error) {
 func (box *Box) GetConf() (ret *conf.BoxConf) {
 	ret = conf.NewBoxConf()
 
-	confPath := filepath.Join(util.DataDir, box.ID, ".siyuan/conf.json")
+	confPath := filepath.Join(util.DataDir, box.ID, ".scribli/conf.json")
 	if !filelock.IsExist(confPath) {
 		return
 	}
@@ -232,7 +232,7 @@ func (box *Box) GetConf() (ret *conf.BoxConf) {
 
 	icon := ret.Icon
 	if strings.Contains(icon, ".") {
-		// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+		// XSS through emoji name
 		icon = util.FilterUploadEmojiFileName(icon)
 		ret.Icon = icon
 	}
@@ -240,7 +240,7 @@ func (box *Box) GetConf() (ret *conf.BoxConf) {
 }
 
 func (box *Box) SaveConf(conf *conf.BoxConf) error {
-	confPath := filepath.Join(util.DataDir, box.ID, ".siyuan/conf.json")
+	confPath := filepath.Join(util.DataDir, box.ID, ".scribli/conf.json")
 	newData, err := gulu.JSON.MarshalIndentJSON(conf, "", "  ")
 	if err != nil {
 		return fmt.Errorf("marshal box conf [%s] failed: %w", confPath, err)
@@ -259,8 +259,8 @@ func (box *Box) SaveConf(conf *conf.BoxConf) error {
 }
 
 func (box *Box) saveConf0(data []byte) error {
-	confPath := filepath.Join(util.DataDir, box.ID, ".siyuan/conf.json")
-	if err := os.MkdirAll(filepath.Join(util.DataDir, box.ID, ".siyuan"), 0755); err != nil {
+	confPath := filepath.Join(util.DataDir, box.ID, ".scribli/conf.json")
+	if err := os.MkdirAll(filepath.Join(util.DataDir, box.ID, ".scribli"), 0755); err != nil {
 		return fmt.Errorf("mkdir box conf dir failed: %w", err)
 	}
 	if err := filelock.WriteFile(confPath, data); err != nil {
@@ -625,7 +625,7 @@ func normalizeTree(tree *parse.Tree) (yfmRootID, yfmTitle, yfmUpdated string) {
 		}
 
 		if ast.NodeYamlFrontMatterContent == n.Type {
-			// Parsing YAML Front Matter as document custom attributes when importing Markdown files https://github.com/siyuan-note/siyuan/issues/10878
+			// Parsing YAML Front Matter as document custom attributes when importing Markdown files
 			attrs := map[string]any{}
 			parseErr := yaml.Unmarshal(n.Tokens, &attrs)
 			if parseErr != nil {
@@ -634,7 +634,7 @@ func normalizeTree(tree *parse.Tree) (yfmRootID, yfmTitle, yfmUpdated string) {
 			}
 
 			for attrK, attrV := range attrs {
-				// Improve parsing of YAML Front Matter when importing Markdown https://github.com/siyuan-note/siyuan/issues/12962
+				// Improve parsing of YAML Front Matter when importing Markdown
 				if "title" == attrK {
 					yfmTitle = fmt.Sprint(attrV)
 					tree.Root.SetIALAttr("title", yfmTitle)
@@ -697,7 +697,7 @@ func normalizeTree(tree *parse.Tree) (yfmRootID, yfmTitle, yfmUpdated string) {
 				tree.Root.SetIALAttr("custom-"+attrK, fmt.Sprint(attrV))
 			}
 
-			// Import the YAML at the beginning of the Markdown as a code block https://github.com/siyuan-note/siyuan/issues/16488
+			// Import the YAML at the beginning of the Markdown as a code block
 			codeBlock := &ast.Node{Type: ast.NodeCodeBlock, ID: ast.NewNodeID()}
 			codeBlock.SetIALAttr("id", codeBlock.ID)
 			codeBlock.SetIALAttr("updated", codeBlock.ID[:14])
@@ -940,7 +940,7 @@ func SetBoxIcon(boxID, icon string) {
 
 func filterBoxIcon(icon string) string {
 	if strings.Contains(icon, ".") {
-		// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+		// XSS through emoji name
 		icon = util.FilterUploadEmojiFileName(icon)
 	}
 	return icon

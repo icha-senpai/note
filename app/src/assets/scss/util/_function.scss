@@ -11,7 +11,7 @@
 
   &__ellipsis {
     @include mixin.text-clamp(1);
-    display: block; // 长名称需要保持块级布局 https://github.com/siyuan-note/siyuan/issues/4782
+    display: block; // 长名称需要保持块级布局 
   }
 
   &__space {

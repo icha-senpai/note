@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -150,7 +150,7 @@ func executeTemplateField(tpl *template.Template, ial map[string]string, keyValu
 	for k, v := range ial {
 		dataModel[k] = v
 
-		// Database template column supports `created` and `updated` built-in variables https://github.com/siyuan-note/siyuan/issues/9364
+		// Database template column supports `created` and `updated` built-in variables
 		createdStr := ial["id"]
 		if "" != createdStr {
 			createdStr = createdStr[:len("20060102150405")]
@@ -257,10 +257,10 @@ func executeTemplateField(tpl *template.Template, ial map[string]string, keyValu
 			dataModel[keyValue.Key.Name] = v.String(true)
 		}
 
-		// Database template fields support access to the raw value https://github.com/siyuan-note/siyuan/issues/14903
+		// Database template fields support access to the raw value
 		dataModel[keyValue.Key.Name+"_raw"] = v
 
-		// Database template fields support access by ID https://github.com/siyuan-note/siyuan/issues/11237
+		// Database template fields support access by ID
 		dataModel["id_mod"].(map[string]any)[keyValue.Key.ID] = dataModel[keyValue.Key.Name]
 		dataModel["id_mod_raw"].(map[string]any)[keyValue.Key.ID] = v
 	}

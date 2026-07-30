@@ -103,7 +103,7 @@ class App {
             const copyElement = hasTopClosestByClassName(target, "protyle-action__copy");
             if (copyElement) {
                 let text = copyElement.parentElement.nextElementSibling.textContent.trimEnd();
-                text = nbsp2space(text); // Replace non-breaking spaces with normal spaces when copying https://github.com/siyuan-note/siyuan/issues/9382
+                text = nbsp2space(text); // Replace non-breaking spaces with normal spaces when copying 
                 writeText(text);
                 showMessage(window.scribli.languages.copied, 2000);
                 event.preventDefault();
@@ -117,7 +117,7 @@ class App {
             }
             if (canInput(target)) {
                 // 原生 App 通过桥接主动唤起键盘；移动端浏览器没有桥接，但点击可编辑区域后也会立刻触发 resize，
-                // 进而调用 activeBlur 关闭键盘（比如三星键盘 https://github.com/siyuan-note/siyuan/issues/18078），所以此处也需要上锁
+                // 进而调用 activeBlur 关闭键盘（比如三星键盘 ），所以此处也需要上锁
                 if (window.JSAndroid && window.JSAndroid.showKeyboard || window.JSHarmony && window.JSHarmony.showKeyboard) {
                     callMobileAppShowKeyboard();
                 } else {
@@ -129,11 +129,11 @@ class App {
             }
         });
         {
-            const __siyuan_original_focus = HTMLElement.prototype.focus;
+            const __scribli_original_focus = HTMLElement.prototype.focus;
             HTMLElement.prototype.focus = function (this: HTMLElement, ...args) {
                 try {
-                    if (typeof __siyuan_original_focus === "function") {
-                        __siyuan_original_focus.apply(this, args);
+                    if (typeof __scribli_original_focus === "function") {
+                        __scribli_original_focus.apply(this, args);
                     }
                 } catch (e) {
                     console.error("Error in focus event:", e);
@@ -213,7 +213,7 @@ class App {
             window.addEventListener("blur", () => {
                 setWebViewFocusable();
             });
-            // 移动端删除键 https://github.com/siyuan-note/siyuan/issues/9259
+            // 移动端删除键 
             window.addEventListener("keydown", (event) => {
                 mobileKeydown(scribliApp, event);
                 if (getSelection().rangeCount > 0) {
@@ -241,7 +241,7 @@ class App {
 const scribliApp = new App();
 
 initWindowOpenOverride(scribliApp, openByMobile);
-// https://github.com/siyuan-note/siyuan/issues/8441
+// 
 window.reconnectWebSocket = () => {
     // 后台唤醒时任一 socket 可能仍在 CONNECTING，调用 send 会抛 InvalidStateError，
     // 单独 try/catch 防止首个错误中断整个 ping 序列；下次 reconnectWebSocket 会再次尝试

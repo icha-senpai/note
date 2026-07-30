@@ -501,11 +501,11 @@ export class Gutter {
                 }
                 foldElement.classList.remove("protyle-wysiwyg--hl");
             } else if (event.shiftKey && !protyle.disabled && !isEncryptedBox(protyle.notebookId)) {
-                // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 https://github.com/siyuan-note/siyuan/issues/15075
+                // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 
                 openAttr(this.getNodeElement(protyle, buttonElement), "bookmark", protyle);
             } else if (!window.scribli.ctrlIsPressed && !window.scribli.altIsPressed && !window.scribli.shiftIsPressed) {
                 this.renderMenu(protyle, buttonElement);
-                // https://ld246.com/article/1648433751993
+                // 
                 if (!protyle.toolbar.range) {
                     protyle.toolbar.range = getEditorRange(
                         this.getNodeElement(protyle, buttonElement) || protyle.wysiwyg.element.firstElementChild);
@@ -708,7 +708,7 @@ export class Gutter {
             }
             window.clearTimeout(hidePlusTimeout);
         });
-        // https://github.com/siyuan-note/siyuan/issues/12751
+        // 
         this.element.addEventListener("mousewheel", (event) => {
             hideElements(["gutter"], protyle);
             event.stopPropagation();
@@ -717,7 +717,7 @@ export class Gutter {
 
     public isMatchNode(item: Element) {
         const itemRect = item.getBoundingClientRect();
-        // 原本为4，由于 https://github.com/siyuan-note/siyuan/issues/12166 改为 6
+        // 原本为4，由于  改为 6
         let gutterTop = this.element.getBoundingClientRect().top + 6;
         if (itemRect.height < Math.floor(window.scribli.config.editor.fontSize * 1.625) + 8) {
             gutterTop = gutterTop - (itemRect.height - this.element.clientHeight) / 2;
@@ -2652,7 +2652,7 @@ export class Gutter {
         }).element);
     }
 
-    // TODO https://github.com/siyuan-note/siyuan/issues/11055
+    // TODO 
     private genHeights(nodeElements: Element[], protyle: IProtyle) {
         const matchHeight = nodeElements.find(item => {
             if (!item.classList.contains("p") && !item.classList.contains("code-block") && !item.classList.contains("render-node")) {
@@ -2875,7 +2875,7 @@ export class Gutter {
     }
 
     public render(protyle: IProtyle, element: Element, target?: Element) {
-        // https://github.com/siyuan-note/siyuan/issues/4659
+        // 
         if (protyle.title && protyle.title.element.getAttribute("data-render") !== "true") {
             return;
         }
@@ -2943,7 +2943,7 @@ export class Gutter {
                         // 单独查询列表项时，渲染器生成的无 ID 列表包装节点不属于可操作边界。
                         topElement = embedContext.targetElement || nodeElement;
                     }
-                    // https://github.com/siyuan-note/siyuan/issues/17751 第二点
+                    //  第二点
                     if (topElement === nodeElement.parentElement && nodeElement.childElementCount > 3 &&
                         nodeElement.classList.contains("li")) {
                         topElement = nodeElement;
@@ -2954,7 +2954,7 @@ export class Gutter {
                         topElement = topElement.querySelector("[data-node-id]");
                     }
                     listItem = topElement.querySelector(".li") || topElement.querySelector(".list");
-                    // 嵌入块中有列表时块标显示位置错误 https://github.com/siyuan-note/siyuan/issues/6254
+                    // 嵌入块中有列表时块标显示位置错误 
                     if ((!embedContext && isInEmbedBlock(listItem)) || isInAVBlock(listItem) ||
                         hasClosestByClassName(nodeElement, "callout")) {
                         listItem = undefined;
@@ -3029,7 +3029,7 @@ data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold 
                     nodeElement.parentElement.classList.contains("callout-content")) {
                     // 前一个块存在时，只显示到当前层级
                     hideParent = true;
-                    // 由于折叠块的第二个子块在界面上不显示，因此移除块标 https://github.com/siyuan-note/siyuan/issues/14304
+                    // 由于折叠块的第二个子块在界面上不显示，因此移除块标 
                     if (parentElement && parentElement.getAttribute("fold") === "1") {
                         return;
                     }
@@ -3072,7 +3072,7 @@ data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold 
                 }
             });
         }
-        // 防止抖动 https://github.com/siyuan-note/siyuan/issues/4166
+        // 防止抖动 
         if (match && this.element.childElementCount > 0) {
             this.element.classList.remove("fn__none");
             return;

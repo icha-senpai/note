@@ -160,7 +160,7 @@ const renderPDF = async (id: string) => {
     const currentWindowId = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
         cmd: "getContentsId",
     });
-    // data-theme-mode="light" https://github.com/siyuan-note/siyuan/issues/7379
+    // data-theme-mode="light" 
     const html = `<!DOCTYPE html>
 <html lang="${window.scribli.config.appearance.lang}" data-theme-mode="light" data-light-theme="${window.scribli.config.appearance.themeLight}" data-dark-theme="${window.scribli.config.appearance.themeDark}">
 <head>
@@ -410,9 +410,9 @@ ${getIconScript(servePath)}
         width = width / parseFloat(document.querySelector("#scale").value);
         previewElement.style.width = width + "px";
         width = width - parseFloat(previewElement.style.paddingLeft) * 96 * 2;
-        // 为保持代码块宽度一致，全部都进行宽度设定 https://github.com/siyuan-note/siyuan/issues/7692 
+        // 为保持代码块宽度一致，全部都进行宽度设定  
         previewElement.querySelectorAll('.hljs').forEach((item) => {
-            // 强制换行 https://ld246.com/article/1679228783553
+            // 强制换行 
             item.parentElement.setAttribute("linewrap", "true");
             item.parentElement.style.width = "";
             item.parentElement.style.boxSizing = "border-box";
@@ -421,7 +421,7 @@ ${getIconScript(servePath)}
         })
         Protyle.highlightRender(previewElement, "${servePath}stage/protyle", document.querySelector("#scale").value);
         previewElement.querySelectorAll('[data-type="NodeMathBlock"]').forEach((item) => {
-            // 超级块内不能移除 width https://github.com/siyuan-note/siyuan/issues/14318
+            // 超级块内不能移除 width 
             item.removeAttribute('data-render');
         })
         previewElement.querySelectorAll('[data-type="NodeCodeBlock"][data-subtype="mermaid"] svg').forEach((item) => {
@@ -506,7 +506,7 @@ ${getIconScript(servePath)}
         Object.keys(data.attrs).forEach(key => {
             wysElement.setAttribute(key, data.attrs[key]);
         })
-        // https://github.com/siyuan-note/siyuan/issues/13669
+        // 
         wysElement.querySelectorAll('[data-node-id]').forEach((item) => {
             if (item.querySelector(".img")) {
                 item.insertAdjacentHTML("beforeend", "<hr style='margin:0;border:0'>");
@@ -553,7 +553,7 @@ ${getIconScript(servePath)}
                 if (target.tagName === "A") {
                     const linkAddress = target.getAttribute("href");
                     if (linkAddress.startsWith("#")) {
-                        // 导出预览模式点击块引转换后的脚注跳转不正确 https://github.com/siyuan-note/siyuan/issues/5700
+                        // 导出预览模式点击块引转换后的脚注跳转不正确 
                         const hash = linkAddress.substring(1);
                         previewElement.querySelector('[data-node-id="' + hash + '"], [id="' + hash + '"]').scrollIntoView();
                         event.stopPropagation();

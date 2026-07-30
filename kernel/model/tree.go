@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -372,7 +372,7 @@ func findUnindexedTreePathInAllBoxes(id string) (ret string) {
 			if !strings.HasSuffix(base, ".sy") {
 				continue
 			}
-			if strings.Contains(base, "/.siyuan/") {
+			if strings.Contains(base, "/.scribli/") {
 				continue
 			}
 			rootID := util.GetTreeID(p)

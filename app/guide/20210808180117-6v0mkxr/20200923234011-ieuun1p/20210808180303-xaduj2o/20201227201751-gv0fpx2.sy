@@ -19,7 +19,7 @@
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "Please refer to API Doc (github repo: siyuan-note/scribli)."
+					"Data": "Please refer to API Doc (github repo: Scribli-note/scribli)."
 				}
 			]
 		}

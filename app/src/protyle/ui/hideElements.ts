@@ -19,7 +19,7 @@ export const hideElements = (panels: string[], protyle?: IProtyle, focusHide = f
     if (protyle.gutter && panels.includes("gutter")) {
         protyle.gutter.element.classList.add("fn__none");
         protyle.gutter.element.innerHTML = "";
-        // https://ld246.com/article/1651935412480
+        // 
         protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--hl").forEach((item) => {
             item.classList.remove("protyle-wysiwyg--hl");
         });

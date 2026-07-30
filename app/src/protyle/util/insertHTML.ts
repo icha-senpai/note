@@ -368,7 +368,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         if (hasClosestByTag(range.startContainer, "TABLE")) {
             unSpinHTML = protyle.lute.BlockDOM2InlineBlockDOM(html);
         } else {
-            // https://github.com/siyuan-note/siyuan/issues/9411
+            // 
             isBlock = true;
         }
     }
@@ -408,7 +408,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     if (!isBlock &&
         (isNodeCodeBlock || protyle.toolbar.getCurrentType(range).includes("code"))) {
         range.deleteContents();
-        // 代码块需保持至少一个 \n https://github.com/siyuan-note/siyuan/pull/13271#issuecomment-2502672155
+        // 代码块需保持至少一个 \n 
         let codeBlockIsEmpty = false;
         if (isNodeCodeBlock && editableElement.textContent === "") {
             codeBlockIsEmpty = true;
@@ -417,7 +417,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         range.collapse(false);
         range.insertNode(document.createElement("wbr"));
         if (codeBlockIsEmpty) {
-            // 代码块为空添加的 \n 需放在最后 https://github.com/siyuan-note/siyuan/issues/15399
+            // 代码块为空添加的 \n 需放在最后 
             range.collapse(false);
             range.insertNode(document.createTextNode("\n"));
         }
@@ -440,15 +440,15 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     if (range.toString() !== "") {
         const inlineMathElement = hasClosestByAttribute(range.commonAncestorContainer, "data-type", "inline-math");
         if (inlineMathElement) {
-            // 表格内选中数学公式 https://ld246.com/article/1631708573504
+            // 表格内选中数学公式 
             inlineMathElement.remove();
         } else if (range.startContainer.nodeType === 3 && range.startContainer.parentElement.getAttribute("data-type")?.indexOf("block-ref") > -1) {
             // 选中 ref**bbb** 后 alt+[
             range.deleteContents();
-            // https://github.com/siyuan-note/siyuan/issues/14035
+            // 
             if (range.startContainer.nodeType !== 3 && (range.startContainer as Element).tagName === "SPAN" &&
                 range.startContainer.textContent === "") {
-                // ref 选中处理 https://ld246.com/article/1629214377537
+                // ref 选中处理 
                 (range.startContainer as HTMLElement).remove();
             }
         } else {
@@ -469,15 +469,15 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     }
     const tempElement = document.createElement("template");
 
-    // https://github.com/siyuan-note/siyuan/issues/14162 & https://github.com/siyuan-note/siyuan/issues/14965
+    //  & 
     if (/^\s*&gt;|\*|-|\+|\d*.|\[ \]|[x]/.test(html) &&
         editableElement.textContent.replace(Constants.ZWSP, "") !== "") {
         unSpinHTML = html;
     }
 
-    let innerHTML = unSpinHTML || // 在 table 中插入需要使用转换好的行内元素 https://github.com/siyuan-note/siyuan/issues/9358
+    let innerHTML = unSpinHTML || // 在 table 中插入需要使用转换好的行内元素 
         html;   // 空格会被 Spin 不再，需要使用原文
-    // 粘贴纯文本时会进行内部转义，这里需要进行反转义 https://github.com/siyuan-note/siyuan/issues/10620
+    // 粘贴纯文本时会进行内部转义，这里需要进行反转义 
     innerHTML = innerHTML.replace(/;;;lt;;;/g, "&lt;").replace(/;;;gt;;;/g, "&gt;");
     tempElement.innerHTML = innerHTML;
 
@@ -489,7 +489,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         tempElement.content.childElementCount === 1 &&
         tempElement.content.firstChild.nodeType !== 3 &&
         tempElement.content.firstElementChild.getAttribute("data-type") === "NodeHeading") {
-        // https://github.com/siyuan-note/siyuan/issues/14114
+        // 
         isBlock = false;
         block2text = true;
     }
@@ -506,8 +506,8 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             const spanElement = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer as HTMLElement;
             const splitElements: HTMLElement[] = [];
             if (spanElement.tagName === "SPAN" && spanElement === (range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer) &&
-                // 粘贴纯文本不需切割 https://ld246.com/article/1665556907936
-                // emoji 图片需要切割 https://github.com/siyuan-note/siyuan/issues/9370
+                // 粘贴纯文本不需切割 
+                // emoji 图片需要切割 
                 tempElement.content.querySelector("span, img")
             ) {
                 const afterElement = document.createElement("span");
@@ -531,7 +531,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
                     item.remove();
                 }
             });
-            // 相邻标签之间插入空格区隔，避免后续 SpinBlockDOM 解析时合并为一个标签 https://github.com/siyuan-note/siyuan/issues/18191
+            // 相邻标签之间插入空格区隔，避免后续 SpinBlockDOM 解析时合并为一个标签 
             fixAdjacentTags(getContenteditableElement(blockElement));
             protyle.wysiwyg.lastHTMLs[id] = oldHTML;
             input(protyle, blockElement as HTMLElement, range);
@@ -542,7 +542,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     const isFirstBlockInLi = hasClosestByClassName(blockElement, "li") &&
         blockElement.previousElementSibling?.classList.contains("protyle-action");
     const cursorLiElement = hasClosestByClassName(blockElement, "li");
-    // 粘贴列表到已有列表内时统一列表类型 https://github.com/siyuan-note/siyuan/issues/17890
+    // 粘贴列表到已有列表内时统一列表类型 
     if (cursorLiElement) {
         const targetSubtype = cursorLiElement.getAttribute("data-subtype");
         const firstChild = tempElement.content.firstElementChild;
@@ -580,7 +580,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     }
     let isListPaste = false;
     let keepEmptyBlock = false;
-    // 列表项不能单独进行粘贴 https://ld246.com/article/1628681120576/comment/1628681209731#comments
+    // 列表项不能单独进行粘贴 
     if (tempElement.content.children[0]?.getAttribute("data-type") === "NodeListItem") {
         isListPaste = true;
         if (cursorLiElement) {
@@ -598,7 +598,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         const hasRefCount = sourceList.querySelector(".protyle-attr--refcount");
         if (!hasRefCount) {
             isListPaste = true;
-            // 顶层空列表项粘贴列表块时拆开为同级列表项 https://github.com/siyuan-note/siyuan/issues/17890
+            // 顶层空列表项粘贴列表块时拆开为同级列表项 
             blockElement = cursorLiElement as HTMLElement;
             id = blockElement.getAttribute("data-node-id");
             oldHTML = blockElement.outerHTML;
@@ -612,7 +612,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
                 tempElement.content.appendChild(listElement.firstElementChild);
             }
         } else {
-            // 有 refcount 的列表直接作为子列表插入到空段落后，不拆开不清理 https://github.com/siyuan-note/siyuan/issues/17890
+            // 有 refcount 的列表直接作为子列表插入到空段落后，不拆开不清理 
             keepEmptyBlock = true;
         }
     }
@@ -624,7 +624,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             insertBefore = true;
         }
     }
-    // https://github.com/siyuan-note/siyuan/issues/15768
+    // 
     if (tempElement.content.firstChild.nodeType === 3 || (tempElement.content.firstChild.nodeType === 1 && tempElement.content.firstElementChild.tagName !== "DIV")) {
         tempElement.innerHTML = protyle.lute.SpinBlockDOM(tempElement.innerHTML);
     }
@@ -645,7 +645,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             });
         } else {
             if (item.classList.contains("li") && !blockElement.parentElement.classList.contains("list")) {
-                // https://github.com/siyuan-note/siyuan/issues/6534
+                // 
                 addId = Lute.NewNodeID();
                 const liElement = document.createElement("div");
                 liElement.setAttribute("data-subtype", item.getAttribute("data-subtype"));
@@ -697,7 +697,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         }
     });
     if (editableElement && editableElement.textContent === "" && blockElement.classList.contains("p") && !keepEmptyBlock) {
-        // 选中当前块所有内容粘贴再撤销会导致异常 https://ld246.com/article/1662542137636
+        // 选中当前块所有内容粘贴再撤销会导致异常 
         doOperation.find((item, index) => {
             if (item.id === id) {
                 doOperation.splice(index, 1);
@@ -708,7 +708,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             action: "delete",
             id
         });
-        // 选中当前块所有内容粘贴再撤销会导致异常 https://ld246.com/article/1662542137636
+        // 选中当前块所有内容粘贴再撤销会导致异常 
         undoOperation.find((item, index) => {
             if (item.id === id && item.action === "update") {
                 undoOperation.splice(index, 1);
@@ -725,7 +725,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         blockElement.remove();
     }
     if (lastElement) {
-        // https://github.com/siyuan-note/siyuan/issues/5591
+        // 
         focusBlock(lastElement, undefined, false);
     }
     protyle.wysiwyg.element.querySelectorAll("wbr").forEach(item => {
@@ -756,7 +756,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         });
         return;
     }
-    // 粘贴到空列表项（第一个段落为空）后删除空列表项 https://github.com/siyuan-note/siyuan/issues/17890
+    // 粘贴到空列表项（第一个段落为空）后删除空列表项 
     if (isListPaste && cursorLiElement && isFirstBlockInLi) {
         const editEl = getContenteditableElement(cursorLiElement);
         if (editEl && editEl.textContent.replace(Constants.ZWSP, "").trim() === "") {
@@ -792,7 +792,7 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             cursorLiElement.remove();
         }
     }
-    // 粘贴后修正有序列表序号 https://github.com/siyuan-note/siyuan/issues/17890
+    // 粘贴后修正有序列表序号 
     const orderLists = new Set<Element>();
     if (cursorLiElement) {
         // cursorLiElement 可能已被清理删除，用 parentList 引用

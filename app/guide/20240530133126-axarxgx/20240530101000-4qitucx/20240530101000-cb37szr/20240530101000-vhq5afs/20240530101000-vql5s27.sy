@@ -127,7 +127,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "https://liuyun.io/apis/scribli/inbox/addCloudShorthand"
+									"TextMarkTextContent": ""
 								},
 								{
 									"Type": "NodeText",
@@ -242,8 +242,8 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://liuyun.io/settings/account",
-									"TextMarkTextContent": "[LiuYun] - [設定] - [アカウント]"
+									"TextMarkAHref": "",
+									"TextMarkTextContent": "[Scribli] - [設定] - [アカウント]"
 								},
 								{
 									"Type": "NodeText",

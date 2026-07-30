@@ -38,11 +38,11 @@ let mobileKeyboardHandler: EventListener | undefined;
 
 const dismissOnboarding = () => {
     if (pendingSyncHandler) {
-        window.removeEventListener("siyuan-sync-success", pendingSyncHandler);
+        window.removeEventListener("scribli-sync-success", pendingSyncHandler);
         pendingSyncHandler = undefined;
     }
     if (mobileKeyboardHandler) {
-        window.removeEventListener("siyuan-mobile-keyboard-change", mobileKeyboardHandler);
+        window.removeEventListener("scribli-mobile-keyboard-change", mobileKeyboardHandler);
         mobileKeyboardHandler = undefined;
     }
     const onboardingElement = document.querySelector(".onboarding");
@@ -54,13 +54,13 @@ const dismissOnboarding = () => {
 
 const syncAndDismissOnSuccess = (app: App) => {
     if (pendingSyncHandler) {
-        window.removeEventListener("siyuan-sync-success", pendingSyncHandler);
+        window.removeEventListener("scribli-sync-success", pendingSyncHandler);
     }
     pendingSyncHandler = () => {
         pendingSyncHandler = undefined;
         dismissOnboarding();
     };
-    window.addEventListener("siyuan-sync-success", pendingSyncHandler, {once: true});
+    window.addEventListener("scribli-sync-success", pendingSyncHandler, {once: true});
     syncGuide(app);
 };
 
@@ -123,7 +123,7 @@ const renderOnboarding = (app: App) => {
     mobileKeyboardHandler = (event: Event) => {
         element.classList.toggle("onboarding--keyboard", (event as CustomEvent<boolean>).detail);
     };
-    window.addEventListener("siyuan-mobile-keyboard-change", mobileKeyboardHandler);
+    window.addEventListener("scribli-mobile-keyboard-change", mobileKeyboardHandler);
     /// #endif
 };
 

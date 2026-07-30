@@ -1267,7 +1267,7 @@
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
 									"TextMarkAHref": "https://github.com/scribli-note/theme-sample",
-									"TextMarkTextContent": "siyuan-note/theme-sample"
+									"TextMarkTextContent": "Scribli-note/theme-sample"
 								},
 								{
 									"Type": "NodeText",
@@ -1647,7 +1647,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/en/community.html",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "コミュニティマーケットプレイスのリポジトリ"
 				},
 				{

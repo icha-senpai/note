@@ -406,7 +406,7 @@ const registerAppearanceControlsGroup = (tab: SettingTabBuilder) => {
     const desktopModeControl = controlBoolean("desktopMode", {
         readConfig: () => desktopModeCookie.read(),
     });
-    // https://github.com/siyuan-note/siyuan/issues/13952
+    // 
     group.composite({
         key: "desktopMode",
         keywords: [

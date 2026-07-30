@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import (
 
 var (
 	BasicAuthHeaderKey   = "WWW-Authenticate"
-	BasicAuthHeaderValue = "Basic realm=\"SiYuan Authorization Require\", charset=\"UTF-8\""
+	BasicAuthHeaderValue = "Basic realm=\"Scribli Authorization Required\", charset=\"UTF-8\""
 )
 
 func LogoutAuth(c *gin.Context) {
@@ -97,7 +97,7 @@ func LoginAuth(c *gin.Context) {
 			ret.Msg = Conf.Language(22)
 			logging.LogWarnf("invalid captcha")
 
-			workspaceSession.Captcha = gulu.Rand.String(7) // https://github.com/siyuan-note/siyuan/issues/13147
+			workspaceSession.Captcha = gulu.Rand.String(7) //
 			if err := session.Save(c); err != nil {
 				logging.LogError("save session failed: " + err.Error())
 				session.Clear(c)
@@ -140,7 +140,7 @@ func LoginAuth(c *gin.Context) {
 
 	maxAge := 0 // Default session expiration (browser session)
 	if rememberMe, ok := arg["rememberMe"].(bool); ok && rememberMe {
-		// Add a 'Remember me' checkbox when logging in to save a session https://github.com/siyuan-note/siyuan/pull/14964
+		// Add a 'Remember me' checkbox when logging in to save a session
 		maxAge = 60 * 60 * 24 * 30 // 30 days
 	}
 	ginSessions.Default(c).Options(ginSessions.Options{
@@ -256,14 +256,14 @@ func CheckAuth(c *gin.Context) {
 	localhost := util.IsLocalHost(c.Request.RemoteAddr)
 
 	if "" == Conf.AccessAuthCode {
-		// Skip the empty access authorization code check https://github.com/siyuan-note/siyuan/issues/9709
+		// Skip the empty access authorization code check
 		if util.ScribliAccessAuthCodeBypass {
 			c.Set(RoleContextKey, RoleAdministrator)
 			c.Next()
 			return
 		}
 
-		// Authenticate requests with the Origin header other than 127.0.0.1 https://github.com/siyuan-note/siyuan/issues/9180
+		// Authenticate requests with the Origin header other than 127.0.0.1
 		clientIP := c.ClientIP()
 		host := c.GetHeader("Host")
 		origin := c.GetHeader("Origin")
@@ -407,7 +407,7 @@ func CheckReadRole(c *gin.Context) {
 }
 
 var timingAPIs = map[string]int{
-	"/api/search/fullTextSearchBlock": 200, // Monitor the search performance and suggest solutions https://github.com/siyuan-note/siyuan/issues/7873
+	"/api/search/fullTextSearchBlock": 200, // Monitor the search performance and suggest solutions
 }
 
 func Timing(c *gin.Context) {
@@ -460,7 +460,7 @@ func ControlConcurrency(c *gin.Context) {
 
 	reqPath := c.Request.URL.Path
 
-	// Improve the concurrency of the kernel data reading interfaces https://github.com/siyuan-note/siyuan/issues/10149
+	// Improve the concurrency of the kernel data reading interfaces
 	if strings.HasPrefix(reqPath, "/stage/") ||
 		strings.HasPrefix(reqPath, "/assets/") ||
 		strings.HasPrefix(reqPath, "/emojis/") ||

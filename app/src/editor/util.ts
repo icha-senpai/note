@@ -36,7 +36,7 @@ import {Model} from "../layout/Model";
 import {hideElements} from "../protyle/ui/hideElements";
 
 const DATABASE_ROW_MODEL_TYPE = "scribli-database-row";
-const LEGACY_DATABASE_ROW_MODEL_TYPE = "siyuan-database-row";
+const LEGACY_DATABASE_ROW_MODEL_TYPE = "Scribli-database-row";
 
 const normalizeCustomModelType = (type: string) => {
     if (type === LEGACY_DATABASE_ROW_MODEL_TYPE) {
@@ -119,7 +119,7 @@ export const openFile = async (options: IOpenFileOptions) => {
     if (typeof options.removeCurrentTab === "undefined") {
         options.removeCurrentTab = true;
     }
-    // https://github.com/siyuan-note/siyuan/issues/10168
+    // 
     document.querySelectorAll(".av__panel, .av__mask").forEach(item => {
         item.remove();
     });
@@ -194,7 +194,7 @@ export const openFile = async (options: IOpenFileOptions) => {
                     activeEditor = item;
                 }
                 if (!editor || item.headElement.getAttribute("data-activetime") > editor.headElement.getAttribute("data-activetime")) {
-                    // https://github.com/siyuan-note/siyuan/issues/11981#issuecomment-2351939812
+                    // 
                     editor = item;
                 }
             }
@@ -225,7 +225,7 @@ export const openFile = async (options: IOpenFileOptions) => {
     }
 
     /// #if !BROWSER
-    // https://github.com/siyuan-note/siyuan/issues/7491
+    // 
     if (!options.position || (options.position === "right" && options.assetPath)) {
         let hasMatch = false;
         const optionsClone: IObject = {};
@@ -286,7 +286,7 @@ export const openFile = async (options: IOpenFileOptions) => {
                     }
                     return;
                 }
-                // 在右侧/下侧打开已有页签将进行页签切换 https://github.com/siyuan-note/siyuan/issues/5366
+                // 在右侧/下侧打开已有页签将进行页签切换 
                 let hasEditor = !options.openNewTab && targetWnd.children.find(item => {
                     if (item.model && item.model instanceof Editor && item.model.editor.protyle.block.rootID === options.rootID) {
                         switchEditor(item.model, options, allModels);
@@ -323,12 +323,12 @@ export const openFile = async (options: IOpenFileOptions) => {
             wnd.addTab(createdTab, options.keepCursor);
         } else if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
             let unUpdateTab: Tab;
-            // 不能 reverse, 找到也不能提前退出循环，否则 https://github.com/siyuan-note/siyuan/issues/3271
+            // 不能 reverse, 找到也不能提前退出循环，否则 
             wnd.children.find((item) => {
                 if (item.headElement && item.headElement.classList.contains("item--unupdate") && !item.headElement.classList.contains("item--pin")) {
                     unUpdateTab = item;
                     if (item.headElement.classList.contains("item--focus")) {
-                        // https://ld246.com/article/1658979494658
+                        // 
                         return true;
                     }
                 }
@@ -456,7 +456,7 @@ const switchEditor = (editor: Editor, options: IOpenFileOptions, allModels: IMod
                 }, 1000 * 3);
                 editor.editor.protyle.observerLoad.observe(editor.editor.protyle.wysiwyg.element);
             } else if (editor.editor.protyle.block.rootID === options.id) {
-                // 由于 https://github.com/siyuan-note/siyuan/issues/5420，移除定位
+                // 由于 ，移除定位
             } else if (editor.editor.protyle.toolbar.range) {
                 nodeElement = hasClosestBlock(editor.editor.protyle.toolbar.range.startContainer) as Element;
                 focusByRange(editor.editor.protyle.toolbar.range);
@@ -465,7 +465,7 @@ const switchEditor = (editor: Editor, options: IOpenFileOptions, allModels: IMod
         }
         pushBack(editor.editor.protyle, editor.editor.protyle.toolbar.range);
     }
-    // https://github.com/siyuan-note/siyuan/issues/16445
+    // 
     if (options.action?.includes(Constants.CB_GET_OUTLINE)) {
         hideElements(["select"], editor.editor.protyle);
     }
@@ -514,7 +514,7 @@ const newTab = (options: IOpenFileOptions) => {
                     }
                 } else {
                     // plugin 0.8.3 历史兼容
-                    console.warn("0.8.3 将移除 custom.fn 参数，请参照 https://github.com/siyuan-note/plugin-sample/blob/91a716358941791b4269241f21db25fd22ae5ff5/src/index.ts 将其修改为 custom.id");
+                    console.warn("0.8.3 将移除 custom.fn 参数，请将其修改为 custom.id");
                     tab.addModel(options.custom.fn({
                         tab,
                         data: options.custom.data
@@ -577,10 +577,10 @@ export const updatePanelByEditor = (options: {
     resize: boolean
 }) => {
     if (options.protyle && options.protyle.path) {
-        // https://ld246.com/article/1637636106054/comment/1641485541929#comments
+        // 
         if (options.protyle.element.classList.contains("fn__none") ||
             (!hasClosestByClassName(options.protyle.element, "layout__wnd--active") &&
-                document.querySelector(".layout__wnd--active")  // https://github.com/siyuan-note/siyuan/issues/4414
+                document.querySelector(".layout__wnd--active")  // 
             )
         ) {
             return;
@@ -690,10 +690,10 @@ export const updateOutline = (models: IModels, protyle: IProtyle, reload = false
 };
 
 export const updateBacklinkGraph = (models: IModels, protyle: IProtyle) => {
-    // https://ld246.com/article/1637636106054/comment/1641485541929#comments
+    // 
     if (protyle && protyle.element.classList.contains("fn__none") ||
         (protyle && !hasClosestByClassName(protyle.element, "layout__wnd--active") &&
-            document.querySelector(".layout__wnd--active")  // https://github.com/siyuan-note/siyuan/issues/4414
+            document.querySelector(".layout__wnd--active")  // 
         )
     ) {
         return;
@@ -761,20 +761,20 @@ export const openBy = (url: string, type: "folder" | "app") => {
     }
     let address = "";
     if ("windows" === window.scribli.config.system.os) {
-        // `file://` 协议兼容 Window 平台使用 `/` 作为目录分割线 https://github.com/siyuan-note/siyuan/issues/5681
+        // `file://` 协议兼容 Window 平台使用 `/` 作为目录分割线 
         address = url.replace("file:///", "").replace("file://\\", "").replace("file://", "").replace(/\//g, "\\");
     } else {
         address = url.replace("file://", "");
     }
 
-    // 拖入文件名包含 `)` 、`(` 的文件以 `file://` 插入后链接解析错误 https://github.com/siyuan-note/siyuan/issues/5786
+    // 拖入文件名包含 `)` 、`(` 的文件以 `file://` 插入后链接解析错误 
     address = address.replace(/\\\)/g, ")").replace(/\\\(/g, "(");
     if (type === "app") {
         useShell("openPath", address);
     } else if (type === "folder") {
         if ("windows" === window.scribli.config.system.os) {
-            if (!address.startsWith("\\\\")) { // \\ 开头的路径是 Windows 网络共享路径 https://github.com/siyuan-note/siyuan/issues/5980
-                // Windows 端打开本地文件所在位置失效 https://github.com/siyuan-note/siyuan/issues/5808
+            if (!address.startsWith("\\\\")) { // \\ 开头的路径是 Windows 网络共享路径 
+                // Windows 端打开本地文件所在位置失效 
                 address = address.replace(/\\\\/g, "\\");
             }
         }

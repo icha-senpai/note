@@ -1955,7 +1955,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "workspace/data/.siyuan/syncignore"
+					"TextMarkTextContent": "workspace/data/.scribli/syncignore"
 				},
 				{
 					"Type": "NodeText",

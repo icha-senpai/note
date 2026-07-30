@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ func PinYinCompare(str1, str2 string) bool {
 	str1 = RemoveEmojiInvisible(str1)
 	str2 = RemoveEmojiInvisible(str2)
 
-	// Doc tree, backlinks, tags and templates ignores case when sorting alphabetically by name https://github.com/siyuan-note/siyuan/issues/8360
+	// Doc tree, backlinks, tags and templates ignores case when sorting alphabetically by name
 	str1 = strings.ToLower(str1)
 	str2 = strings.ToLower(str2)
 
@@ -66,14 +66,14 @@ func PinYinCompare(str1, str2 string) bool {
 
 func PinYinCompare4FileTree(str1, str2 string) bool {
 
-	// Improve doc tree Name Alphabet sorting https://github.com/siyuan-note/siyuan/issues/14773
+	// Improve doc tree Name Alphabet sorting
 
 	str1 = RemoveEmojiInvisible(str1)
 	str1 = strings.TrimSuffix(str1, ".sy")
 	str2 = RemoveEmojiInvisible(str2)
 	str2 = strings.TrimSuffix(str2, ".sy")
 
-	// Doc tree, backlinks, tags and templates ignores case when sorting alphabetically by name https://github.com/siyuan-note/siyuan/issues/8360
+	// Doc tree, backlinks, tags and templates ignores case when sorting alphabetically by name
 	str1 = strings.ToLower(str1)
 	str2 = strings.ToLower(str2)
 

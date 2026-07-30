@@ -72,7 +72,7 @@ const focusStack = async (app: App, stack: IBackStack) => {
             });
             if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
                 let unUpdateTab: Tab;
-                // 不能 reverse, 找到也不能提前退出循环，否则 https://github.com/siyuan-note/siyuan/issues/3271
+                // 不能 reverse, 找到也不能提前退出循环，否则 
                 wnd.children.forEach((item) => {
                     if (item.headElement && item.headElement.classList.contains("item--unupdate") && !item.headElement.classList.contains("item--pin")) {
                         unUpdateTab = item;
@@ -171,7 +171,7 @@ const focusStack = async (app: App, stack: IBackStack) => {
             }
             return false;
         }
-        // 动态加载导致内容移除 https://github.com/siyuan-note/siyuan/issues/10692
+        // 动态加载导致内容移除 
         if (!blockElement && !stack.zoomId && !stack.protyle.scroll.element.classList.contains("fn__none")) {
             const getDocParam: IObject = {
                 id: stack.id,

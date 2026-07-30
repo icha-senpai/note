@@ -40,11 +40,9 @@ def walk(obj, prefix=""):
 
 
 def norm_placeholders(s):
-    """Normalize placeholder comparison by unifying quotes and ignoring help-link URL/domain differences."""
+    """Normalize placeholder comparison by unifying quotes and ignoring help-link URL differences."""
     s2 = s.replace('"', "'")
-    s2 = re.sub(r"b3log\.org/siyuan(/[a-z]{2})?/", "scribli.local/", s2)
-    s2 = re.sub(r"b3log\.org/siyuan(\?[^\s\"']*)?", "scribli.local", s2)
-    s2 = re.sub(r"https://(ld246\.com|liuyun\.io)/article/\d+", "HELPURL", s2)
+    s2 = re.sub(r"https://[^\\s\"']+/article/\d+", "HELPURL", s2)
     ps = re.findall(r"\$\{[^}]+\}|\{[a-zA-Z_][a-zA-Z0-9_]*\}|%[sdf]|\d+\$[sdf]|<[^>]+>", s2)
     return sorted(ps)
 

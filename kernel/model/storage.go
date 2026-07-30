@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -80,7 +80,7 @@ func RemoveLocalStorageVals(keys []string) (err error) {
 }
 
 func getLocalStorage() (ret map[string]any) {
-	// When local.json is corrupted, clear the file to avoid being unable to enter the main interface https://github.com/siyuan-note/siyuan/issues/7911
+	// When local.json is corrupted, clear the file to avoid being unable to enter the main interface
 	ret = map[string]any{}
 	lsPath := filepath.Join(util.DataDir, "storage/local.json")
 	if !filelock.IsExist(lsPath) {
@@ -479,7 +479,7 @@ func getRecentDocs(sortBy string) (ret []*RecentDoc, err error) {
 		}
 
 		if merged, ok := mergedDocs[bt.RootID]; !ok {
-			doc.Title = path.Base(bt.HPath) // Recent docs not updated after renaming https://github.com/siyuan-note/siyuan/issues/7827
+			doc.Title = path.Base(bt.HPath) // Recent docs not updated after renaming
 			mergedDocs[bt.RootID] = doc
 			rootIDs = append(rootIDs, bt.RootID)
 		} else {

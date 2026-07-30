@@ -58,7 +58,7 @@ export const initWindowEvent = (app: App) => {
         windowMouseMove(event, mouseIsEnter);
     });
 
-    // 横向滚动表格时重新定位表格列宽调整手柄 https://github.com/siyuan-note/siyuan/issues/13828
+    // 横向滚动表格时重新定位表格列宽调整手柄 
     window.addEventListener("scroll", (event: Event) => {
         const scrollElement = event.target as HTMLElement;
         // 仅处理表格内容容器（.table 块的 firstElementChild）的滚动
@@ -91,7 +91,7 @@ export const initWindowEvent = (app: App) => {
             return;
         }
         // 拖拽标题/列表项块标时，按浮窗模型控制文档树所在浮动 dock 的显隐：
-        // 鼠标在边缘触发区或面板内则展开，离开则收起 https://github.com/siyuan-note/siyuan/issues/18043
+        // 鼠标在边缘触发区或面板内则展开，离开则收起 
         if (!isWindow() &&
             (!window.scribli.layout.leftDock.pin || !window.scribli.layout.rightDock.pin || !window.scribli.layout.bottomDock.pin)) {
             const fileDock = getDockByType("file");
@@ -226,7 +226,7 @@ export const initWindowEvent = (app: App) => {
         time = Date.now();
         startX = event.touches[0].clientX;
         startY = event.touches[0].clientY;
-        // https://github.com/siyuan-note/siyuan/issues/6328
+        // 
         const target = event.target as HTMLElement;
         if (hasClosestByClassName(target, "protyle-icons") ||
             hasClosestByClassName(target, "item") ||

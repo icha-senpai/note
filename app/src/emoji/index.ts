@@ -45,7 +45,7 @@ export const unicode2Emoji = (unicode: string, className = "", needSpan = false,
                 emoji = `<span class="${className}">${emoji}</span>`;
             }
         } catch (e) {
-            // 自定义表情搜索报错 https://github.com/siyuan-note/siyuan/issues/5883
+            // 自定义表情搜索报错 
             // 这里忽略错误不做处理
         }
     }
@@ -550,7 +550,7 @@ export const openEmojiPanel = (
     }
     lazyLoadEmoji(dialog.element);
     lazyLoadEmojiImg(dialog.element);
-    // 不能使用 getEventName 否则 https://github.com/siyuan-note/siyuan/issues/5472
+    // 不能使用 getEventName 否则 
     dialog.element.addEventListener("click", (event) => {
         let target = event.target as HTMLElement;
         while (target && target !== dialog.element) {

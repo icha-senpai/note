@@ -930,7 +930,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "公式サイト"
 				},
 				{

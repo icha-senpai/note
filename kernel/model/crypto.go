@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -81,7 +81,7 @@ func NotebookCryptoMuLock() { notebookCryptoMu.Lock() }
 func NotebookCryptoMuUnlock() { notebookCryptoMu.Unlock() }
 
 func notebookCryptoBackupPath() string {
-	return filepath.Join(util.DataDir, ".siyuan", "notebook-crypto-backup.json")
+	return filepath.Join(util.DataDir, ".scribli", "notebook-crypto-backup.json")
 }
 
 func computeBackupChecksum(nc *conf.NotebookCrypto) string {
@@ -198,7 +198,7 @@ func ImportNotebookCryptoBackup(data []byte, password string) error {
 	if !verifyKEKMAC(nc, kek) {
 		return errors.New(Conf.Language(317))
 	}
-	decrypted, dErr := util.DecryptWithAAD(kek, nc.KEKVerifier, []byte("siyuan:v1:kek-verifier"))
+	decrypted, dErr := util.DecryptWithAAD(kek, nc.KEKVerifier, []byte("scribli:v1:kek-verifier"))
 	if dErr != nil || string(decrypted) != string(kekVerifierMagic) {
 		return errors.New(Conf.Language(311))
 	}
@@ -348,7 +348,7 @@ type migrationBoxEntry struct {
 }
 
 func masterPasswordMigrationPath() string {
-	return filepath.Join(util.DataDir, ".siyuan", "master-password-migration.json")
+	return filepath.Join(util.DataDir, ".scribli", "master-password-migration.json")
 }
 
 func writeMasterPasswordMigration(m *masterPasswordMigration) error {
@@ -525,14 +525,14 @@ func HasEncryptedNotebookHistory() bool {
 }
 
 func isEncryptedHistoryBoxDir(boxDir string) (bool, error) {
-	siyuanDir := filepath.Join(boxDir, ".siyuan")
-	backupPath := filepath.Join(siyuanDir, "notebook-crypt-backup.json")
+	scribliDir := filepath.Join(boxDir, ".scribli")
+	backupPath := filepath.Join(scribliDir, "notebook-crypt-backup.json")
 	if _, err := os.Stat(backupPath); err == nil {
 		return true, nil
 	} else if !os.IsNotExist(err) {
 		return false, fmt.Errorf("stat encrypted notebook history backup [%s] failed: %w", boxDir, err)
 	}
-	confPath := filepath.Join(siyuanDir, "conf.json")
+	confPath := filepath.Join(scribliDir, "conf.json")
 	if _, err := os.Stat(confPath); err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
@@ -610,7 +610,7 @@ func EnableEncryptedNotebook(password string) error {
 	kek := util.DeriveKey(password, salt, params)
 	defer zeroAndClear(kek)
 
-	verifierCT, err := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("siyuan:v1:kek-verifier"))
+	verifierCT, err := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("scribli:v1:kek-verifier"))
 	if err != nil {
 		return err
 	}
@@ -714,7 +714,7 @@ func tryRestoreNotebookCryptoFromBackupLocked(password string) (kek []byte, err 
 		return nil, errors.New(Conf.Language(317))
 	}
 	kek = util.DeriveKey(password, backup.MasterSalt, params)
-	decrypted, dErr := util.DecryptWithAAD(kek, backup.KEKVerifier, []byte("siyuan:v1:kek-verifier"))
+	decrypted, dErr := util.DecryptWithAAD(kek, backup.KEKVerifier, []byte("scribli:v1:kek-verifier"))
 	if dErr != nil || string(decrypted) != string(kekVerifierMagic) {
 
 		zeroAndClear(kek)
@@ -766,7 +766,7 @@ func deriveKEK(password string) ([]byte, error) {
 	}
 	kek := util.DeriveKey(password, nc.MasterSalt, params)
 
-	decrypted, err := util.DecryptWithAAD(kek, nc.KEKVerifier, []byte("siyuan:v1:kek-verifier"))
+	decrypted, err := util.DecryptWithAAD(kek, nc.KEKVerifier, []byte("scribli:v1:kek-verifier"))
 	if err != nil {
 		zeroAndClear(kek)
 		return nil, errors.New(Conf.Language(311))
@@ -989,7 +989,7 @@ func WrapNewDEK(boxID string, kek []byte) (*conf.BoxEncryption, []byte, error) {
 }
 
 func wrappedDEKAAD(boxID string) []byte {
-	return []byte("siyuan:v1:wrapped-dek:" + boxID)
+	return []byte("scribli:v1:wrapped-dek:" + boxID)
 }
 
 func decryptWrappedDEK(boxID string, enc *conf.BoxEncryption, kek []byte) ([]byte, error) {
@@ -1060,7 +1060,7 @@ func ChangeMasterPassword(oldPassword, newPassword string) error {
 	}
 	newKEK := util.DeriveKey(newPassword, nc.MasterSalt, params)
 	defer zeroAndClear(newKEK)
-	newVerifier, err := util.EncryptWithAAD(newKEK, kekVerifierMagic, []byte("siyuan:v1:kek-verifier"))
+	newVerifier, err := util.EncryptWithAAD(newKEK, kekVerifierMagic, []byte("scribli:v1:kek-verifier"))
 	if err != nil {
 		return err
 	}
@@ -1378,7 +1378,7 @@ func ExtractBoxIDFromHistoryPath(absPath string) string {
 }
 
 func EncryptFile(boxID, relativePath string, dek, plaintext []byte) ([]byte, error) {
-	fileKey := util.DeriveSubKey(dek, "siyuan/file")
+	fileKey := util.DeriveSubKey(dek, "scribli/file")
 	aad, err := filesys.SyAAD(boxID, relativePath)
 	if err != nil {
 		return nil, err
@@ -1387,7 +1387,7 @@ func EncryptFile(boxID, relativePath string, dek, plaintext []byte) ([]byte, err
 }
 
 func DecryptFile(boxID, relativePath string, dek, ciphertext []byte) ([]byte, error) {
-	fileKey := util.DeriveSubKey(dek, "siyuan/file")
+	fileKey := util.DeriveSubKey(dek, "scribli/file")
 	aad, err := filesys.SyAAD(boxID, relativePath)
 	if err != nil {
 		return nil, err
@@ -1397,30 +1397,30 @@ func DecryptFile(boxID, relativePath string, dek, ciphertext []byte) ([]byte, er
 
 func EncryptAsset(boxID, diskName string, dek, plaintext []byte) ([]byte, error) {
 	assetKey := util.DeriveSubKey(dek, "siyuan/asset")
-	aad := "siyuan:v1:asset:" + boxID + ":assets/" + diskName
+	aad := "scribli:v1:asset:" + boxID + ":assets/" + diskName
 	return util.EncryptWithAAD(assetKey, plaintext, []byte(aad))
 }
 
 func DecryptAsset(boxID, diskName string, dek, ciphertext []byte) ([]byte, error) {
 	assetKey := util.DeriveSubKey(dek, "siyuan/asset")
-	aad := "siyuan:v1:asset:" + boxID + ":assets/" + diskName
+	aad := "scribli:v1:asset:" + boxID + ":assets/" + diskName
 	return util.DecryptWithAAD(assetKey, ciphertext, []byte(aad))
 }
 
 func EncryptAssetNameMapping(boxID string, dek, plaintext []byte) ([]byte, error) {
 	assetKey := util.DeriveSubKey(dek, "siyuan/asset")
-	aad := "siyuan:v1:asset-names:" + boxID
+	aad := "scribli:v1:asset-names:" + boxID
 	return util.EncryptWithAAD(assetKey, plaintext, []byte(aad))
 }
 
 func DecryptAssetNameMapping(boxID string, dek, ciphertext []byte) ([]byte, error) {
 	assetKey := util.DeriveSubKey(dek, "siyuan/asset")
-	aad := "siyuan:v1:asset-names:" + boxID
+	aad := "scribli:v1:asset-names:" + boxID
 	return util.DecryptWithAAD(assetKey, ciphertext, []byte(aad))
 }
 
 func notebookCryptBackupPath(boxID string) string {
-	return filepath.Join(util.DataDir, boxID, ".siyuan", "notebook-crypt-backup.json")
+	return filepath.Join(util.DataDir, boxID, ".scribli", "notebook-crypt-backup.json")
 }
 
 func writeNotebookCryptBackup(boxID string, crypt *conf.BoxEncryption) error {

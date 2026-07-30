@@ -222,7 +222,7 @@ export const handleTouchStart = (event: TouchEvent) => {
     time = Date.now();
     const target = event.touches[0].target as HTMLElement;
     if (0 < event.touches.length && (target.tagName === "VIDEO" || target.tagName === "AUDIO")) {
-        // https://github.com/siyuan-note/siyuan/issues/14569
+        // 
         activeBlur();
         return;
     }

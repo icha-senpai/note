@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -2393,7 +2393,7 @@ func GetBlockAttributeViewKeys(nodeID string) (ret []*BlockAttributeViewKeys) {
 
 		if !attrView.ExistBoundBlock(nodeID) {
 
-			// Auto verify the database name when clicking the block superscript icon https://github.com/siyuan-note/siyuan/issues/10861
+			// Auto verify the database name when clicking the block superscript icon
 			unbindBlockAv(nil, avID, nodeID)
 			return
 		}
@@ -2415,7 +2415,7 @@ func GetBlockAttributeViewKeys(nodeID string) (ret []*BlockAttributeViewKeys) {
 		for _, kv := range attrView.KeyValues {
 			if av.KeyTypeLineNumber == kv.Key.Type {
 
-				// The line number field no longer appears in the database attribute panel https://github.com/siyuan-note/siyuan/issues/11319
+				// The line number field no longer appears in the database attribute panel
 				continue
 			}
 
@@ -4048,7 +4048,7 @@ func (tx *Transaction) doInsertAttrViewBlock(operation *Operation) (ret *TxErr) 
 }
 
 func AddAttributeViewBlock(tx *Transaction, srcs []map[string]any, avID, dbBlockID, viewID, groupID, previousItemID string, ignoreDefaultFill bool) (err error) {
-	slices.Reverse(srcs) // https://github.com/siyuan-note/siyuan/issues/11286
+	slices.Reverse(srcs) //
 
 	now := time.Now().UnixMilli()
 	for _, src := range srcs {
@@ -4173,7 +4173,7 @@ func addAttributeViewBlock(now int64, avID, dbBlockID, viewID, groupID, previous
 		fillDefaultValue(attrView, view, groupView, previousItemID, addingItemID, true)
 	}
 
-	// The database date field supports filling the current time by default https://github.com/siyuan-note/siyuan/issues/10823
+	// The database date field supports filling the current time by default
 	for _, keyValues := range attrView.KeyValues {
 		if av.KeyTypeDate == keyValues.Key.Type && nil != keyValues.Key.Date && keyValues.Key.Date.AutoFillNow {
 			val := keyValues.GetValue(addingItemID)
@@ -4357,7 +4357,7 @@ func removeAttributeViewBlock(srcIDs []string, avID string, tx *Transaction) (er
 			if !gulu.Str.Contains(val.BlockID, srcIDs) {
 				tmp = append(tmp, keyValues.Values[i])
 			} else {
-				// Remove av block also remove node attr https://github.com/siyuan-note/siyuan/issues/9091#issuecomment-1709824006
+				// Remove av block also remove node attr
 				if !val.IsDetached && nil != val.Block {
 					bt := treenode.GetBlockTree(val.Block.ID)
 					if nil == bt {
@@ -5704,7 +5704,7 @@ func BatchUpdateAttributeViewCells(tx *Transaction, avID string, values []any) (
 		} else if _, ok := v["rowID"]; ok {
 
 			itemID = v["rowID"].(string)
-			msg := fmt.Sprintf("[%s] parameter [%s] is deprecated, visit [https://github.com/siyuan-note/siyuan/issues/15727] for details",
+			msg := fmt.Sprintf("[%s] parameter [%s] is deprecated, check Scribli documentation for details",
 				"/api/av/batchSetAttributeViewBlockAttrs", "rowID")
 			logging.LogWarn(msg)
 			err = errors.New(msg)
@@ -5824,7 +5824,7 @@ func updateAttributeViewValue(tx *Transaction, attrView *av.AttributeView, keyID
 				return
 			}
 
-			// The selection options are inconsistent after pasting data into the database https://github.com/siyuan-note/siyuan/issues/11409
+			// The selection options are inconsistent after pasting data into the database
 			for _, valOpt := range val.MSelect {
 				if opt := key.GetOption(valOpt.Content); nil == opt {
 
@@ -6372,7 +6372,7 @@ func updateAttributeViewColumnOption(operation *Operation) (err error) {
 		break
 	}
 
-	// Database select field filters follow option editing changes https://github.com/siyuan-note/siyuan/issues/10881
+	// Database select field filters follow option editing changes
 	for _, view := range attrView.Views {
 		av.RenameSelectOptionInFilters(view.Filters, key.ID, oldName, newName, newColor)
 	}

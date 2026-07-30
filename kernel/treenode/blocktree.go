@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -767,7 +767,7 @@ func execInsertBlocktrees(tx *sql.Tx, tree *parse.Tree, changedNodes []*ast.Node
 			closeDatabase()
 			util.RemoveDatabaseFile(util.BlockTreeDBPath)
 			initDatabase(true)
-			logging.LogFatalf(logging.ExitCodeUnavailableDatabase, "database disk image [%s] is malformed, please restart SiYuan kernel to rebuild it\n\t%s", util.BlockTreeDBPath, err)
+			logging.LogFatalf(logging.ExitCodeUnavailableDatabase, "database disk image [%s] is malformed, please restart Scribli kernel to rebuild it\n\t%s", util.BlockTreeDBPath, err)
 		}
 		return
 	}
@@ -786,7 +786,7 @@ func execInsertBlocktrees(tx *sql.Tx, tree *parse.Tree, changedNodes []*ast.Node
 				closeDatabase()
 				util.RemoveDatabaseFile(util.BlockTreeDBPath)
 				initDatabase(true)
-				logging.LogFatalf(logging.ExitCodeUnavailableDatabase, "database disk image [%s] is malformed, please restart SiYuan kernel to rebuild it\n\t%s", util.BlockTreeDBPath, err)
+				logging.LogFatalf(logging.ExitCodeUnavailableDatabase, "database disk image [%s] is malformed, please restart Scribli kernel to rebuild it\n\t%s", util.BlockTreeDBPath, err)
 			}
 			return
 		}
@@ -877,7 +877,7 @@ func OpenEncryptedBlockTreeDB(boxID string, dek []byte) (err error) {
 		return nil
 	}
 	dbPath := util.EncryptedBlockTreeDBPath(boxID)
-	blocktreeKey := util.DeriveSubKey(dek, "siyuan/sqlcipher/blocktree")
+	blocktreeKey := util.DeriveSubKey(dek, "scribli/sqlcipher/blocktree")
 	dsn := dbPath + "?_journal_mode=WAL&_synchronous=OFF&_mmap_size=4294967296&_secure_delete=OFF" +
 		"&_cache_size=-128000&_page_size=32768&_busy_timeout=7000&_ignore_check_constraints=ON" +
 		"&_temp_store=MEMORY&_case_sensitive_like=OFF&_key=x'" + hex.EncodeToString(blocktreeKey) + "'"

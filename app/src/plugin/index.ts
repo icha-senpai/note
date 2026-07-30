@@ -89,7 +89,7 @@ export class Plugin {
             eventBus: this.eventBus,
         });
 
-        // https://github.com/siyuan-note/siyuan/issues/9943
+        // 
         Object.defineProperty(this, "name", {
             value: options.name,
             writable: false,

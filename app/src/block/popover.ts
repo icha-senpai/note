@@ -15,7 +15,7 @@ import {Tab} from "../layout/Tab";
 /// #endif
 
 let popoverTargetElement: HTMLElement;
-// 异步获取信息后再显示 tooltip，鼠标已移走时需中断请求 https://github.com/siyuan-note/siyuan/issues/14823
+// 异步获取信息后再显示 tooltip，鼠标已移走时需中断请求 
 let tooltipAbortController: AbortController | null = null;
 export const initBlockPopover = (app: App) => {
     let timeout: number;
@@ -96,16 +96,16 @@ export const initBlockPopover = (app: App) => {
             let tooltipSpace: number | undefined;
             if (!tip && aElement.getAttribute("data-type")?.includes("inline-memo")) {
                 tip = window.DOMPurify.sanitize(aElement.getAttribute("data-inline-memo-content"));
-                tooltipClass = "memo"; // 为行级备注添加 class https://github.com/siyuan-note/siyuan/issues/6161
-                tooltipSpace = 0; // tooltip 和备注元素之间不能有空隙 https://github.com/siyuan-note/siyuan/issues/14796#issuecomment-3649757267
+                tooltipClass = "memo"; // 为行级备注添加 class 
+                tooltipSpace = 0; // tooltip 和备注元素之间不能有空隙 
             }
             if (!tip) {
                 if (aElement.getAttribute("data-type")?.includes("a")) {
-                    tooltipClass = "href"; // 为超链接添加 class https://github.com/siyuan-note/siyuan/issues/11440#issuecomment-2119080691
+                    tooltipClass = "href"; // 为超链接添加 class 
                     tooltipSpace = 0;
                 }
                 const href = aElement.getAttribute("data-href") || "";
-                // 链接地址强制换行 https://github.com/siyuan-note/siyuan/issues/11539
+                // 链接地址强制换行 
                 if (href) {
                     tip = `<span style="word-break: break-all">${href.substring(0, Constants.SIZE_TITLE)}</span>`;
                 }
@@ -198,11 +198,11 @@ export const initBlockPopover = (app: App) => {
             }
 
             if (tip && !aElement.classList.contains("b3-tooltips")) {
-                // https://github.com/siyuan-note/siyuan/issues/11294
+                // 
                 try {
                     showTooltip(decodeURIComponent(tip), aElement, tooltipClass, event, tooltipSpace);
                 } catch (e) {
-                    // https://ld246.com/article/1718235737991
+                    // 
                     showTooltip(tip, aElement, tooltipClass, event, tooltipSpace);
                 }
                 event.stopPropagation();
@@ -224,7 +224,7 @@ export const initBlockPopover = (app: App) => {
             if (!getTarget(event, aElement)) {
                 return;
             }
-            // https://github.com/siyuan-note/siyuan/issues/9007
+            // 
             if (event.relatedTarget && !document.contains(event.relatedTarget as Node)) {
                 return;
             }
@@ -285,7 +285,7 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
             return false;
         }
     } else {
-        // 浮窗上点击菜单，浮窗不能消失 https://ld246.com/article/1632668091023
+        // 浮窗上点击菜单，浮窗不能消失 
         const menuElement = hasClosestByClassName(target, "b3-menu");
         if (menuElement && menuElement.getAttribute("data-name") !== Constants.MENU_DOC_TREE_MORE) {
             const blockPanel = window.scribli.blockPanels.find((item) => {
@@ -312,7 +312,7 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
     }
     if (!popoverTargetElement || (popoverTargetElement && window.scribli.menus.menu.data && window.scribli.menus.menu.data === popoverTargetElement)) {
         // 移动到弹窗的 loading 元素上，但经过 settimeout 后 loading 已经被移除了
-        // https://ld246.com/article/1673596577519/comment/1673767749885#comments
+        // 
         let targetElement = target;
         if (!targetElement.parentElement && event.path && event.path[1]) {
             targetElement = event.path[1];
@@ -367,7 +367,7 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
                         break;
                     } else if (item.targetElement && item.targetElement.classList.contains("protyle-wysiwyg__embed") &&
                         item.targetElement.contains(targetElement)) {
-                        // 点击嵌入块后浮窗消失后再快速点击嵌入块无法弹出浮窗 https://github.com/siyuan-note/siyuan/issues/12511
+                        // 点击嵌入块后浮窗消失后再快速点击嵌入块无法弹出浮窗 
                         break;
                     } else {
                         const hasToolbar = item.editors.find(editItem => {
@@ -414,7 +414,7 @@ const getTarget = (event: MouseEvent & { target: HTMLElement }, aElement: false 
         (popoverTargetElement && popoverTargetElement.getAttribute("prevent-popover") === "true")) {
         return false;
     }
-    // https://github.com/siyuan-note/siyuan/issues/4314
+    // 
     if (popoverTargetElement && getSelection().rangeCount > 0) {
         const range = getSelection().getRangeAt(0);
         if (range.toString() !== "" && popoverTargetElement.contains(range.startContainer)) {

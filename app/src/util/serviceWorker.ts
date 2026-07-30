@@ -1,4 +1,4 @@
-// https://github.com/siyuan-note/siyuan/pull/8012
+// 
 export const registerServiceWorker = (
     scriptURL: string,
     options: RegistrationOptions = {

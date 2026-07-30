@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -1673,7 +1673,7 @@ func importObsidianVaultTask(ctx context.Context, taskID, notebookName string) {
 		removeObsidianTemp(taskID)
 		return
 	}
-	if err = filelock.WriteFile(filepath.Join(boxDir, ".siyuan", "sort.json"), sortData); err != nil {
+	if err = filelock.WriteFile(filepath.Join(boxDir, ".scribli", "sort.json"), sortData); err != nil {
 		result.Incomplete = true
 		markObsidianNotebookIncomplete(boxID, notebookName)
 		failObsidianTask(taskID, "writing", err, result)

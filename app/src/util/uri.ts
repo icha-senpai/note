@@ -93,7 +93,7 @@ const processScribliUriPlugins = (app: App, uriObj: URL): boolean => {
         }
         // scribli://plugins/plugin-samplecustom_tab?title=自定义页签&icon=iconFace&data={"text": "This is the custom plugin tab I opened via protocol."}
         /// #if !MOBILE
-        // https://github.com/siyuan-note/siyuan/pull/9256
+        // 
         const data = (() => {
             try {
                 return JSON.parse(uriObj.searchParams.get("data") || "{}");

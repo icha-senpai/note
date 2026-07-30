@@ -188,7 +188,7 @@ export const openMenuPanel = (options: {
         if (["select", "date", "asset", "relation", "rollup"].includes(options.type)) {
             let lastElement = options.cellElements[options.cellElements.length - 1];
             if (!options.blockElement.contains(lastElement)) {
-                // https://github.com/siyuan-note/siyuan/issues/15839
+                // 
                 const rowID = getFieldIdByCellElement(lastElement, data.viewType);
                 if (data.viewType === "table") {
                     lastElement = options.blockElement.querySelector(`.av__row[data-id="${rowID}"] .av__cell[data-col-id="${lastElement.dataset.colId}"]`);

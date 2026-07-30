@@ -78,16 +78,16 @@ export const processMessage = (response: IWebSocketData) => {
 
 export const handlePublishServiceClosed = (msg: string) => {
     if (isBrowser()) {
-        sessionStorage.setItem("siyuanPublishServiceClosed", msg || "");
+        sessionStorage.setItem("ScribliPublishServiceClosed", msg || "");
         window.location.reload();
     }
 };
 
 export const checkPublishServiceClosed = (): boolean => {
     if (isBrowser()) {
-        const publishServiceClosedMsg = sessionStorage.getItem("siyuanPublishServiceClosed");
+        const publishServiceClosedMsg = sessionStorage.getItem("ScribliPublishServiceClosed");
         if (publishServiceClosedMsg) {
-            sessionStorage.removeItem("siyuanPublishServiceClosed");
+            sessionStorage.removeItem("ScribliPublishServiceClosed");
             document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh">${publishServiceClosedMsg}</div>`;
             return true;
         }

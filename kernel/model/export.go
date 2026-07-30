@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -64,7 +64,7 @@ import (
 )
 
 func ExportCodeBlock(blockID string) (filePath string, err error) {
-	// Supports exporting a code block as a file https://github.com/siyuan-note/siyuan/pull/16774
+	// Supports exporting a code block as a file
 
 	err = withExportReadLockByBlockID(blockID, func() error {
 		tree, _ := LoadTreeByBlockID(blockID)
@@ -116,7 +116,7 @@ func ExportCodeBlock(blockID string) (filePath string, err error) {
 }
 
 func ExportAv2CSV(avID, blockID string) (zipPath string, err error) {
-	// Database block supports export as CSV https://github.com/siyuan-note/siyuan/issues/10072
+	// Database block supports export as CSV
 
 	err = withExportReadLockByBlockID(blockID, func() error {
 		avBoxID := ""
@@ -808,7 +808,7 @@ func ExportPreview(id string, fillCSSVar bool) (retStdHTML string) {
 			}
 
 			if ast.NodeFootnotesRef == n.Type && nil != n.Next {
-				// https://github.com/siyuan-note/siyuan/issues/15654
+				//
 				nextText := n.NextNodeText()
 				if strings.HasPrefix(nextText, "(") && strings.HasSuffix(nextText, ")") {
 					n.InsertAfter(&ast.Node{Type: ast.NodeText, Tokens: []byte(editor.Zwsp)})
@@ -1001,7 +1001,7 @@ func ExportMarkdownHTML(id, savePath string, docx, merge bool) (name, dom string
 		srcs = []string{"themes/" + theme}
 		appearancePath := util.AppearancePath
 		if util.IsSymlinkPath(util.AppearancePath) {
-			// Support for symlinked theme folder when exporting HTML https://github.com/siyuan-note/siyuan/issues/9173
+			// Support for symlinked theme folder when exporting HTML
 			var readErr error
 			appearancePath, readErr = filepath.EvalSymlinks(util.AppearancePath)
 			if nil != readErr {
@@ -1200,7 +1200,7 @@ func ExportHTML(id, savePath string, pdf, keepFold, merge bool) (name, dom strin
 			srcs = []string{"themes/" + theme}
 			appearancePath := util.AppearancePath
 			if util.IsSymlinkPath(util.AppearancePath) {
-				// Support for symlinked theme folder when exporting HTML https://github.com/siyuan-note/siyuan/issues/9173
+				// Support for symlinked theme folder when exporting HTML
 				var readErr error
 				appearancePath, readErr = filepath.EvalSymlinks(util.AppearancePath)
 				if nil != readErr {
@@ -1393,7 +1393,7 @@ func ProcessPDF(id, p string, merge, removeAssets, watermark bool) (err error) {
 }
 
 func processPDFWatermark(pdfCtx *model.Context, watermark bool) {
-	// Support adding the watermark on export PDF https://github.com/siyuan-note/siyuan/issues/9961
+	// Support adding the watermark on export PDF
 	// https://pdfcpu.io/core/watermark
 
 	if !watermark {
@@ -1490,7 +1490,7 @@ func processPDFWatermark(pdfCtx *model.Context, watermark bool) {
 		return
 	}
 
-	wm.OnTop = true // Export PDF and add watermarks no longer covered by images https://github.com/siyuan-note/siyuan/issues/10818
+	wm.OnTop = true // Export PDF and add watermarks no longer covered by images
 	err = pdfcpu.AddWatermarks(pdfCtx, nil, wm)
 	if err != nil {
 		logging.LogErrorf("add watermark failed: %s", err)
@@ -1616,7 +1616,7 @@ func processPDFLinkEmbedAssets(pdfCtx *model.Context, assetDests []string, boxID
 	for _, link := range assetLinks {
 		link.URI = strings.ReplaceAll(link.URI, "http://"+util.LocalHost+":"+util.ServerPort+"/export/temp/", "")
 		link.URI = strings.ReplaceAll(link.URI, "http://"+util.LocalHost+":6806/export/temp/", "")
-		link.URI = strings.ReplaceAll(link.URI, "http://"+util.LocalHost+":"+util.ServerPort+"/", "") // Exporting PDF embedded asset files as attachments fails https://github.com/siyuan-note/siyuan/issues/7414#issuecomment-1704573557
+		link.URI = strings.ReplaceAll(link.URI, "http://"+util.LocalHost+":"+util.ServerPort+"/", "") // Exporting PDF embedded asset files as attachments fails
 		link.URI = strings.ReplaceAll(link.URI, "http://"+util.LocalHost+":6806/", "")
 		link.URI, _ = url.PathUnescape(link.URI)
 		sourceURI := link.URI
@@ -2183,7 +2183,7 @@ func exportSYZip(boxID, rootDirPath, baseFolderName string, docPaths []string, i
 			logging.LogErrorf("marshal export notebook conf failed: %s", marshalErr)
 			return
 		}
-		confDir := filepath.Join(exportDir, ".siyuan")
+		confDir := filepath.Join(exportDir, ".scribli")
 		if mkdirErr := os.MkdirAll(confDir, 0755); mkdirErr != nil {
 			logging.LogErrorf("create export notebook conf dir failed: %s", mkdirErr)
 			return
@@ -2277,7 +2277,7 @@ func exportSYZip(boxID, rootDirPath, baseFolderName string, docPaths []string, i
 	for _, tree := range trees {
 		var assets []string
 		assets = append(assets, getAssetsLinkDests(tree.Root, false)...)
-		titleImgPath := treenode.GetDocTitleImgPath(tree.Root) // Export .sy.zip doc title image is not exported https://github.com/siyuan-note/siyuan/issues/8748
+		titleImgPath := treenode.GetDocTitleImgPath(tree.Root) // Export .sy.zip doc title image is not exported
 		if "" != titleImgPath {
 			if util.IsAssetLinkDest([]byte(titleImgPath), false) {
 				assets = append(assets, titleImgPath)
@@ -2318,7 +2318,7 @@ func exportSYZip(boxID, rootDirPath, baseFolderName string, docPaths []string, i
 			if !gulu.File.IsDir(srcPath) && strings.HasSuffix(strings.ToLower(srcPath), ".pdf") {
 				sya := srcPath + ".sya"
 				if filelock.IsExist(sya) {
-					// Related PDF annotation information is not exported when exporting .sy.zip https://github.com/siyuan-note/siyuan/issues/7836
+					// Related PDF annotation information is not exported when exporting .sy.zip
 					if syaErr := copyAssetDecryptIfEncrypted(sya, destPath+".sya"); nil != syaErr {
 						logging.LogErrorf("copy sya from [%s] to [%s] failed: %s", sya, destPath+".sya", syaErr)
 					}
@@ -2397,7 +2397,7 @@ func exportSYZip(boxID, rootDirPath, baseFolderName string, docPaths []string, i
 		}
 	}
 
-	sortPath := filepath.Join(util.DataDir, box.ID, ".siyuan", "sort.json")
+	sortPath := filepath.Join(util.DataDir, box.ID, ".scribli", "sort.json")
 	fullSortIDs := map[string]int{}
 	sortIDs := map[string]int{}
 	var sortData []byte
@@ -2426,7 +2426,7 @@ func exportSYZip(boxID, rootDirPath, baseFolderName string, docPaths []string, i
 				logging.LogErrorf("marshal sort conf failed: %s", sortErr)
 			}
 			if 0 < len(sortData) {
-				confDir := filepath.Join(exportDir, ".siyuan")
+				confDir := filepath.Join(exportDir, ".scribli")
 				if mkdirErr := os.MkdirAll(confDir, 0755); nil != mkdirErr {
 					logging.LogErrorf("create export conf folder [%s] failed: %s", confDir, mkdirErr)
 				} else {
@@ -2718,7 +2718,7 @@ func exportMarkdownContent0(id string, tree *parse.Tree, cloudAssetsBase string,
 
 		if ast.NodeBr == n.Type {
 			if !n.ParentIs(ast.NodeTableCell) {
-				// When exporting Markdown, `<br />` nodes in non-tables are replaced with `\n` text nodes https://github.com/siyuan-note/siyuan/issues/9509
+				// When exporting Markdown, `<br />` nodes in non-tables are replaced with `\n` text nodes
 				n.InsertBefore(&ast.Node{Type: ast.NodeText, Tokens: []byte("\n")})
 				unlinks = append(unlinks, n)
 			}
@@ -2936,7 +2936,7 @@ func exportTree(tree *parse.Tree, wysiwyg, keepFold, avHiddenCol bool,
 		footnotesDefBlock := resolveFootnotesDefs(&refFootnoteOrder, refFootnotesByID, ret, currentTreeNodeIDs, blockRefTextLeft, blockRefTextRight)
 		if nil != footnotesDefBlock {
 
-			// Improve focus export conversion of block refs to footnotes https://github.com/siyuan-note/siyuan/issues/10647
+			// Improve focus export conversion of block refs to footnotes
 			footnotesRefs := ret.Root.ChildrenByType(ast.NodeFootnotesRef)
 			for footnotesDef := footnotesDefBlock.FirstChild; nil != footnotesDef; footnotesDef = footnotesDef.Next {
 				fnRefsInDef := footnotesDef.ChildrenByType(ast.NodeFootnotesRef)
@@ -3098,7 +3098,7 @@ func exportTree(tree *parse.Tree, wysiwyg, keepFold, avHiddenCol bool,
 	}
 
 	unlinks = nil
-	// Attribute View export https://github.com/siyuan-note/siyuan/issues/8710
+	// Attribute View export
 	ast.Walk(ret.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if !entering {
 			return ast.WalkContinue
@@ -3738,7 +3738,7 @@ func processFileAnnotationRef(refID string, n *ast.Node, fileAnnotationRefMode i
 	}
 	fileAnnotationRefLink.AppendChild(&ast.Node{Type: ast.NodeCloseBracket})
 	fileAnnotationRefLink.AppendChild(&ast.Node{Type: ast.NodeOpenParen})
-	dest := p + "#page=" + pageStr // https://github.com/siyuan-note/siyuan/issues/11780
+	dest := p + "#page=" + pageStr //
 	fileAnnotationRefLink.AppendChild(&ast.Node{Type: ast.NodeLinkDest, Tokens: []byte(dest)})
 	fileAnnotationRefLink.AppendChild(&ast.Node{Type: ast.NodeCloseParen})
 	n.InsertBefore(fileAnnotationRefLink)
@@ -3827,7 +3827,7 @@ func exportPandocConvertZip(boxID, baseFolderName string, docPaths, defBlockIDs 
 			entries, readErr := os.ReadDir(filepath.Join(util.DataDir, tree.Box, strings.TrimSuffix(tree.Path, ".sy")))
 			if nil == readErr && 0 < len(entries) {
 
-				// Improve export of empty documents with subdocuments https://github.com/siyuan-note/siyuan/issues/15009
+				// Improve export of empty documents with subdocuments
 				continue
 			}
 		}
@@ -3845,8 +3845,8 @@ func exportPandocConvertZip(boxID, baseFolderName string, docPaths, defBlockIDs 
 				continue
 			}
 
-			// Improve export of Markdown hyperlink spaces https://github.com/siyuan-note/siyuan/issues/9792
-			// No assets were exported when exporting Markdown https://github.com/siyuan-note/siyuan/issues/17046
+			// Improve export of Markdown hyperlink spaces
+			// No assets were exported when exporting Markdown
 			spaceEncodedNewAsset := strings.ReplaceAll(newAsset, " ", "%20")
 			oldAsset := assetsNewOld[spaceEncodedNewAsset]
 			if "" == oldAsset {
@@ -4077,7 +4077,7 @@ func exportRefTrees(tree *parse.Tree, defBlockIDs *[]string, retTrees map[string
 			exportRefTrees(defTree, defBlockIDs, retTrees)
 		} else if ast.NodeAttributeView == n.Type {
 
-			// Export the binding block docs when exporting the doc where the database is located https://github.com/siyuan-note/siyuan/issues/11486
+			// Export the binding block docs when exporting the doc where the database is located
 
 			avID := n.AttributeViewID
 			if "" == avID {
@@ -4166,7 +4166,7 @@ func getAttrViewTableAligns(table *av.Table, hiddenCol bool) (ret []int) {
 	return
 }
 
-// Export preview mode supports focus use https://github.com/siyuan-note/siyuan/issues/15340
+// Export preview mode supports focus use
 func adjustHeadingLevel(bt *treenode.BlockTree, tree *parse.Tree) {
 	if "d" == bt.Type {
 		return

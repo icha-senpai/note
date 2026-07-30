@@ -195,7 +195,7 @@ let resizeTimeout: number;
 export const resizeTabs = (isSaveLayout = true) => {
     clearTimeout(resizeTimeout);
     //  .layout .fn__flex-shrink {width .15s cubic-bezier(0, 0, .2, 1) 0ms} 时需要再次计算 padding
-    // PDF 避免分屏多次调用后，页码跳转到1 https://github.com/siyuan-note/siyuan/issues/5646
+    // PDF 避免分屏多次调用后，页码跳转到1 
     resizeTimeout = window.setTimeout(() => {
         const models = getAllModels();
         models.editor.forEach((item) => {
@@ -204,7 +204,7 @@ export const resizeTabs = (isSaveLayout = true) => {
                 item.editor.resize();
             }
         });
-        // https://github.com/siyuan-note/siyuan/issues/6250
+        // 
         models.backlink.forEach(item => {
             const mTreeElement = item.element.querySelector(".backlinkMList") as HTMLElement;
             if (mTreeElement.style.height && mTreeElement.style.height !== "0px" && item.element.clientHeight !== 0) {
@@ -339,7 +339,7 @@ export const copyTab = (app: App, tab: Tab) => {
             let model: Model;
             if (tab.model instanceof Editor) {
                 const newAction: TProtyleAction[] = [];
-                // https://github.com/siyuan-note/siyuan/issues/12132
+                // 
                 tab.model.editor.protyle.block.action.forEach(item => {
                     if (item !== Constants.CB_GET_APPEND && item !== Constants.CB_GET_BEFORE && item !== Constants.CB_GET_HTML) {
                         newAction.push(item);
@@ -350,10 +350,10 @@ export const copyTab = (app: App, tab: Tab) => {
                     tab: newTab,
                     blockId: tab.model.editor.protyle.block.id,
                     rootId: tab.model.editor.protyle.block.rootID,
-                    // https://github.com/siyuan-note/siyuan/issues/12150
+                    // 
                     action: newAction,
                     afterInitProtyle(editor) {
-                        // https://github.com/siyuan-note/siyuan/issues/13851
+                        // 
                         if (tab.model instanceof Editor) {
                             const copyResizeTopElement = tab.model.editor.protyle.wysiwyg.element.querySelector("[data-resize-top]");
                             if (copyResizeTopElement) {

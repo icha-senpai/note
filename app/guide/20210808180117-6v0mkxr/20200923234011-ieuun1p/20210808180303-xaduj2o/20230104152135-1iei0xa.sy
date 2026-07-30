@@ -39,7 +39,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://ld246.com",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "Community publishing"
 				},
 				{
@@ -421,12 +421,12 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "Points are required to share documents to LiuYun, please refer to "
+									"Data": "Points are required to share documents to Scribli, please refer to "
 								},
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://liuyun.io/article/1685240430351",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "point rules"
 								}
 							]

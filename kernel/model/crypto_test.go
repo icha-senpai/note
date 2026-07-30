@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -149,7 +149,7 @@ func TestUnmount0ClearsDEKForUnmountedEncryptedBox(t *testing.T) {
 		LockBox("unmount-unlocked-test-box")
 	}()
 
-	confDir := filepath.Join(tempDir, boxID, ".siyuan")
+	confDir := filepath.Join(tempDir, boxID, ".scribli")
 	if err := os.MkdirAll(confDir, 0755); err != nil {
 		t.Fatalf("mkdir conf dir failed: %v", err)
 	}
@@ -186,7 +186,7 @@ func TestBackupRejectsUnsupportedSpec(t *testing.T) {
 			defer func() { util.DataDir = origDataDir }()
 
 			backup := &conf.NotebookCrypto{Spec: spec}
-			backupPath := filepath.Join(util.DataDir, ".siyuan", "notebook-crypto-backup.json")
+			backupPath := filepath.Join(util.DataDir, ".scribli", "notebook-crypto-backup.json")
 			if err := os.MkdirAll(filepath.Dir(backupPath), 0755); err != nil {
 				t.Fatal(err)
 			}
@@ -213,7 +213,7 @@ func TestBackupChecksumCorruption(t *testing.T) {
 		MasterSalt: []byte("corrupt-test-salt12"),
 	}
 	prepareBackupForWrite(nc)
-	backupPath := filepath.Join(tempDir, ".siyuan", "notebook-crypto-backup.json")
+	backupPath := filepath.Join(tempDir, ".scribli", "notebook-crypto-backup.json")
 	os.MkdirAll(filepath.Dir(backupPath), 0755)
 	data, _ := json.Marshal(nc)
 	os.WriteFile(backupPath, data, 0644)
@@ -266,7 +266,7 @@ func TestDeriveKEKRejectsTamperedBackupMAC(t *testing.T) {
 	salt, _ := util.GenerateSalt()
 	params := util.DefaultArgon2Params()
 	kek := util.DeriveKey(password, salt, params)
-	verifier, _ := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("siyuan:v1:kek-verifier"))
+	verifier, _ := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("scribli:v1:kek-verifier"))
 	nc := conf.NotebookCrypto{
 		Enabled:     true,
 		MasterSalt:  salt,
@@ -277,7 +277,7 @@ func TestDeriveKEKRejectsTamperedBackupMAC(t *testing.T) {
 	}
 	prepareBackupForWrite(&nc)
 	nc.KEKMAC = []byte("tampered")
-	backupPath := filepath.Join(util.DataDir, ".siyuan", "notebook-crypto-backup.json")
+	backupPath := filepath.Join(util.DataDir, ".scribli", "notebook-crypto-backup.json")
 	if err := os.MkdirAll(filepath.Dir(backupPath), 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -307,7 +307,7 @@ func TestDeriveKEKAllowsLocalAutoLockChange(t *testing.T) {
 	params := util.DefaultArgon2Params()
 	kek := util.DeriveKey(password, salt, params)
 	defer zeroAndClear(kek)
-	verifier, _ := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("siyuan:v1:kek-verifier"))
+	verifier, _ := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("scribli:v1:kek-verifier"))
 	backup := &conf.NotebookCrypto{
 		Enabled:         true,
 		MasterSalt:      salt,
@@ -359,7 +359,7 @@ func TestBackupMACRoundTrip(t *testing.T) {
 	kek := util.DeriveKey(password, salt, params)
 	defer zeroAndClear(kek)
 
-	verifierCT, _ := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("siyuan:v1:kek-verifier"))
+	verifierCT, _ := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("scribli:v1:kek-verifier"))
 	nc := &conf.NotebookCrypto{
 		Enabled:     true,
 		MasterSalt:  salt,
@@ -518,7 +518,7 @@ func TestEnabledWithoutBackupReturnsRecoveryError(t *testing.T) {
 	kek := util.DeriveKey(password, salt, params)
 	defer zeroAndClear(kek)
 
-	verifierCT, _ := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("siyuan:v1:kek-verifier"))
+	verifierCT, _ := util.EncryptWithAAD(kek, kekVerifierMagic, []byte("scribli:v1:kek-verifier"))
 	nc := &conf.NotebookCrypto{
 		Enabled:     true,
 		MasterSalt:  salt,
@@ -592,7 +592,7 @@ func TestEnableEncryptedNotebookRestoresConfigWhenBackupWriteFails(t *testing.T)
 	originalDataDir := util.DataDir
 	originalHistoryDir := util.HistoryDir
 	dataDir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(dataDir, ".siyuan"), []byte("not a directory"), 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(dataDir, ".scribli"), []byte("not a directory"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	Conf = NewAppConf()

@@ -7,7 +7,7 @@ import {isMobile} from "../../util/functions";
 import {isEncryptedBox} from "../../util/pathName";
 import {saveExportFile} from "../util/compatibility";
 
-// 导出参数对话框 https://github.com/siyuan-note/siyuan/issues/17031
+// 导出参数对话框 
 // 通用部分（8 项）可被各导出格式复用，Markdown 专属部分仅 Markdown 导出使用。
 // 默认值一律取自全局 window.scribli.config.export，确认后本次导出生效，不修改全局设置、不记忆上次选择。
 

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -873,7 +873,7 @@ func matchBacklinkKeyword(block *Block, keywords []string) bool {
 
 func removeDuplicatedRefs(refs []*sql.Ref) (ret []*sql.Ref) {
 
-	// De-duplication of backlinks after referencing multiple blocks in the same block https://github.com/siyuan-note/siyuan/issues/12147
+	// De-duplication of backlinks after referencing multiple blocks in the same block
 
 	for _, ref := range refs {
 		contain := false

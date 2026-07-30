@@ -74,7 +74,7 @@ export class Hint {
             if (btnElement && !btnElement.classList.contains("emojis__item") && !btnElement.classList.contains("emojis__type")) {
                 this.fill(decodeURIComponent(btnElement.getAttribute("data-value")), protyle, false, this.source === "search" ? isNotCtrl(event) : isOnlyMeta(event));
                 event.preventDefault();
-                event.stopPropagation(); // https://github.com/siyuan-note/siyuan/issues/3710
+                event.stopPropagation(); // 
                 return;
             }
             const emojisContentElement = this.element.querySelector(".emojis__panel");
@@ -139,7 +139,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
             return;
         }
         protyle.toolbar.range = getSelection().getRangeAt(0);
-        // 粘贴后 range.startContainer 为空 https://github.com/siyuan-note/siyuan/issues/7360
+        // 粘贴后 range.startContainer 为空 
         if (protyle.toolbar.range.startContainer.nodeType === 3 && protyle.toolbar.range.startContainer.textContent === "") {
             const lastSibling = hasPreviousSibling(protyle.toolbar.range.startContainer) as Text;
             if (lastSibling && lastSibling.nodeType === 3) {
@@ -171,7 +171,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
             return;
         }
 
-        // https://github.com/siyuan-note/siyuan/issues/7933
+        // 
         if (this.splitChar === "#") {
             const blockElement = hasClosestBlock(protyle.toolbar.range.startContainer);
             if (blockElement && blockElement.getAttribute("data-type") === "NodeHeading") {
@@ -193,7 +193,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
             }
             return;
         }
-        // https://github.com/siyuan-note/siyuan/issues/5083
+        // 
         if (this.splitChar === "/" || this.splitChar === "、") {
             clearTimeout(this.timeId);
             if (protyle.lite) {
@@ -272,7 +272,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
             hintsHTML = '<input style="margin:0 8px 4px 8px" class="b3-text-field"><div style="flex: 1;overflow:auto;">';
         }
         data.forEach((hintData, i) => {
-            // https://github.com/siyuan-note/siyuan/issues/1229 提示时，新建文件不应默认选中
+            //  提示时，新建文件不应默认选中
             let focusClass = "";
             if ((i === 1 && data[i].focus) ||
                 (i === 0 && (data.length === 1 || !data[1].focus))) {
@@ -298,7 +298,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
 
         this.element.innerHTML = this.getHTMLByData(data);
         this.element.classList.remove("fn__none");
-        // https://github.com/siyuan-note/siyuan/issues/4575
+        // 
         if (data[0].filter) {
             this.element.classList.add("hint--menu");
         } else {
@@ -389,7 +389,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
             response.data.blocks.forEach((item: IBlock, index: number) => {
                 let blockRefHTML;
                 if (source === "av") {
-                    // av 搜索时需要获取值 https://github.com/siyuan-note/siyuan/issues/12020
+                    // av 搜索时需要获取值 
                     let refText = item.name || item.refText.replace(new RegExp(Constants.ZWSP, "g"), "");
                     if (nodeElement) {
                         refText = item.ial["custom-sy-av-s-text-" + nodeElement.getAttribute("data-av-id")] || refText;
@@ -549,13 +549,13 @@ ${genHintItemHTML(item)}
             id = nodeElement.getAttribute("data-node-id");
         }
         const html = nodeElement.outerHTML;
-        // 自顶向下法新建文档后光标定位问题 https://github.com/siyuan-note/siyuan/issues/299
-        // QQ 拼音输入法自动补全需移除补全内容 https://github.com/siyuan-note/siyuan/issues/320
-        // 前后有标记符的情况 https://github.com/siyuan-note/siyuan/issues/2511
+        // 自顶向下法新建文档后光标定位问题 
+        // QQ 拼音输入法自动补全需移除补全内容 
+        // 前后有标记符的情况 
         const endSplit = Constants.BLOCK_HINT_CLOSE_KEYS[this.splitChar];
         if (Constants.BLOCK_HINT_KEYS.includes(this.splitChar) && endSplit && range.startContainer.nodeType === 3
             && (range.startContainer as Text).wholeText.indexOf(endSplit) > -1
-            // 在包含 )) 的块中引用时会丢失字符  https://ld246.com/article/1679980200782
+            // 在包含 )) 的块中引用时会丢失字符  
             && (range.startContainer as Text).wholeText.indexOf(this.splitChar) > -1) {
             let matchEndChar = 0;
             let textNode = range.startContainer;
@@ -588,7 +588,7 @@ ${genHintItemHTML(item)}
             const fileNames = value.substring(11, value.length - 4).split(`"${Constants.ZWSP}'`);
             const realFileName = fileNames.length === 1 ? fileNames[0] : fileNames[1];
             newFileByRefHint(protyle, realFileName, (id) => {
-                // https://github.com/siyuan-note/siyuan/issues/10133
+                // 
                 protyle.toolbar.range = range;
                 const refElement = protyle.toolbar.setInlineMark(protyle, "block-ref", "range", {
                     type: "id",
@@ -782,7 +782,7 @@ ${genHintItemHTML(item)}
                     textContent = value + (Constants.SCRIBLI_RENDER_CODE_LANGUAGES.includes(window.scribli.storage[Constants.LOCAL_CODELANG]) ? "" : window.scribli.storage[Constants.LOCAL_CODELANG]) + Lute.Caret + "\n```";
                 }
                 const editableElement = getContenteditableElement(nodeElement);
-                if (value === "![]()") { // https://github.com/siyuan-note/siyuan/issues/4586 1
+                if (value === "![]()") { //  1
                     range.insertNode(document.createElement("wbr"));
                     range.insertNode(document.createTextNode(value));
                     nodeElement.insertAdjacentHTML("afterend", protyle.lute.SpinBlockDOM(nodeElement.outerHTML));
@@ -794,7 +794,7 @@ ${genHintItemHTML(item)}
                     if (imgElement && imgElement.nodeType !== 3 && imgElement.classList.contains("img")) {
                         // 已经找到图片
                     } else if (imgElement.previousSibling?.nodeType !== 3 && (imgElement.previousSibling as HTMLElement).classList.contains("img")) {
-                        // https://github.com/siyuan-note/siyuan/issues/7540
+                        // 
                         imgElement = imgElement.previousSibling as HTMLElement;
                     } else {
                         Array.from(nodeElement.querySelectorAll(".img")).find((item: HTMLElement) => {
@@ -818,7 +818,7 @@ ${genHintItemHTML(item)}
                         editableElement.textContent = textContent;
                         newHTML = protyle.lute.SpinBlockDOM(nodeElement.outerHTML);
                     }
-                    // 列表项内创建列表时保留空段落，避免形成 li>list 非法结构 https://github.com/siyuan-note/siyuan/issues/17890
+                    // 列表项内创建列表时保留空段落，避免形成 li>list 非法结构 
                     const tempCheck = document.createElement("div");
                     tempCheck.innerHTML = newHTML;
                     const keepEmptyInLi = hasClosestByClassName(nodeElement, "li") &&
@@ -833,7 +833,7 @@ ${genHintItemHTML(item)}
                     nodeElement = nodeElement.nextElementSibling as HTMLElement;
                     if (!keepEmptyInLi) {
                         nodeElement.previousElementSibling.remove();
-                        // https://github.com/siyuan-note/siyuan/issues/6864
+                        // 
                         if (nodeElement.getAttribute("data-type") === "NodeTable") {
                             nodeElement.querySelectorAll("colgroup col").forEach((item: HTMLElement) => {
                                 item.style.minWidth = "60px";
@@ -866,7 +866,7 @@ ${genHintItemHTML(item)}
                     if (value === "<div>") {
                         newHTML = `<div data-node-id="${Lute.NewNodeID()}" data-type="NodeHTMLBlock" class="render-node" data-subtype="block">${genIconHTML()}<div><protyle-html data-content=""></protyle-html><span style="position: absolute">${Constants.ZWSP}</span></div><div class="protyle-attr" contenteditable="false"></div></div>`;
                     }
-                    // 列表项内创建列表时保留空段落，避免 ID 冲突和 li>list 非法结构 https://github.com/siyuan-note/siyuan/issues/17890
+                    // 列表项内创建列表时保留空段落，避免 ID 冲突和 li>list 非法结构 
                     const keepEmptyInLi2 = hasClosestByClassName(nodeElement, "li") &&
                         (() => {
                             const tc = document.createElement("div");
@@ -912,7 +912,7 @@ ${genHintItemHTML(item)}
                     const newId = newHTML.substr(newHTML.indexOf('data-node-id="') + 14, 22);
                     nodeElement.setAttribute(Constants.ATTRIBUTE_EDITING, "true");
                     nodeElement = protyle.wysiwyg.element.querySelector(`[data-node-id="${newId}"]`);
-                    // https://github.com/siyuan-note/siyuan/issues/6864
+                    // 
                     if (nodeElement.getAttribute("data-type") === "NodeTable") {
                         nodeElement.querySelectorAll("colgroup col").forEach((item: HTMLElement) => {
                             item.style.minWidth = "60px";
@@ -1100,7 +1100,7 @@ ${genHintItemHTML(item)}
         }
         if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
             hideElements(["hint"], protyle);
-            // 不需要 preventDefault https://github.com/siyuan-note/siyuan/issues/11846
+            // 不需要 preventDefault 
             return true;
         }
         return false;
@@ -1123,7 +1123,7 @@ ${genHintItemHTML(item)}
         this.splitChar = "";
         extend.forEach((item) => {
             let currentLastIndex = currentLineValue.lastIndexOf(item.key);
-            // https://ld246.com/article/1701670704754
+            // 
             if (Constants.BLOCK_HINT_KEYS.includes(item.key) && currentLastIndex > -1) {
                 const thirdLastIndex = currentLineValue.lastIndexOf(item.key + item.key.substring(0, 1));
                 if (thirdLastIndex > -1) {
@@ -1138,7 +1138,7 @@ ${genHintItemHTML(item)}
         if (this.lastIndex === -1) {
             return undefined;
         }
-        // 上一次提示没有结束时不能被其余提示干扰 https://github.com/siyuan-note/siyuan/issues/14324
+        // 上一次提示没有结束时不能被其余提示干扰 
         if (!this.element.classList.contains("fn__none") && prevSplit && prevSplit !== this.splitChar &&
             !(["/", "、"].includes(prevSplit) && this.splitChar === ":")) {
             this.splitChar = prevSplit;
@@ -1153,10 +1153,10 @@ ${genHintItemHTML(item)}
         const lineArray = currentLineValue.split(this.splitChar);
         const lastItem = lineArray[lineArray.length - 1];
         if (lineArray.length > 1 &&
-            // https://github.com/siyuan-note/siyuan/issues/10637
+            // 
             lastItem.trimStart() === lastItem &&
             lastItem.length < Constants.SIZE_TITLE) {
-            // 输入法自动补全 https://github.com/siyuan-note/insider/issues/100
+            // 输入法自动补全 
             if (this.splitChar === "【【" && currentLineValue.endsWith("【【】")) {
                 return "";
             }

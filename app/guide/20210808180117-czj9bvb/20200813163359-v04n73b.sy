@@ -21,7 +21,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/privacy.html",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "Scribli隐私政策"
 				}
 			]
@@ -37,7 +37,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/eula.html",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "Scribli用户协议"
 				}
 			]

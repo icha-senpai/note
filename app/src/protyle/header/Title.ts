@@ -51,7 +51,7 @@ export class Title {
                 event.stopPropagation();
                 event.preventDefault();
                 // 不能使用 range.insertNode，否则无法撤销
-                let text = event.clipboardData.getData("text/scribli") || event.clipboardData.getData("text/siyuan");
+                let text = event.clipboardData.getData("text/scribli") || event.clipboardData.getData("text/Scribli");
                 if (text) {
                     try {
                         JSON.parse(text);
@@ -87,7 +87,7 @@ export class Title {
                 this.rename(protyle);
             });
             this.editElement.addEventListener("drop", (event: DragEvent) => {
-                // https://ld246.com/article/1661911210429
+                // 
                 event.stopPropagation();
                 event.preventDefault();
             });
@@ -104,9 +104,9 @@ export class Title {
                     event.stopPropagation();
                     let textPlain = await readText() || "";
                     if (textPlain) {
-                        // 对 <<assets/...>> 进行内部转义 https://github.com/siyuan-note/siyuan/issues/11992
+                        // 对 <<assets/...>> 进行内部转义 
                         textPlain = textPlain.replace(/<<assets\//g, "__@lt2assets/@__").replace(/>>/g, "__@gt2@__");
-                        // 对 HTML 标签进行内部转义，避免被 Lute 解析以后变为小写 https://github.com/siyuan-note/siyuan/issues/10620
+                        // 对 HTML 标签进行内部转义，避免被 Lute 解析以后变为小写 
                         textPlain = textPlain.replace(/</g, ";;;lt;;;").replace(/>/g, ";;;gt;;;");
                         // 反转义 <<assets/...>>
                         textPlain = textPlain.replace(/__@lt2assets\/@__/g, "<<assets/").replace(/__@gt2@__/g, ">>");
@@ -140,11 +140,11 @@ export class Title {
                 }
                 if (event.key === "ArrowDown") {
                     const rects = getSelection().getRangeAt(0).getClientRects();
-                    // https://github.com/siyuan-note/siyuan/issues/11729
+                    // 
                     if (rects.length === 0 // 标题为空时时
                         || this.editElement.getBoundingClientRect().bottom - rects[rects.length - 1].bottom < 25) {
                         const noContainerElement = getNoContainerElement(protyle.wysiwyg.element.firstElementChild);
-                        // https://github.com/siyuan-note/siyuan/issues/4923
+                        // 
                         if (noContainerElement) {
                             focusBlock(noContainerElement, protyle.wysiwyg.element);
                         }
@@ -195,7 +195,7 @@ export class Title {
             });
             const iconElement = this.element.querySelector(".protyle-title__icon") as HTMLElement;
             iconElement.addEventListener("click", (event) => {
-                // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 https://github.com/siyuan-note/siyuan/issues/15075
+                // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 
                 if (event.shiftKey) {
                     const docInfoParam: IObject = {
                         id: protyle.block.rootID
@@ -420,7 +420,7 @@ export class Title {
         if (response.data.refCount !== 0) {
             this.element.querySelector(".protyle-attr").insertAdjacentHTML("beforeend", `<div class="protyle-attr--refcount popover__block">${response.data.refCount}</div>`);
         }
-        // 存在设置新建文档名模板，不能使用 Untitled 进行判断，https://ld246.com/article/1649301009888
+        // 存在设置新建文档名模板，不能使用 Untitled 进行判断，
         if (this.editElement && Date.now() - dayjs(response.data.id.split("-")[0]).toDate().getTime() < 2000) {
             const range = this.editElement.ownerDocument.createRange();
             range.selectNodeContents(this.editElement);

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -313,7 +313,7 @@ func InitConf() {
 	}
 	for i, emoji := range Conf.Editor.Emoji {
 		if strings.Contains(emoji, ".") {
-			// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+			// XSS through emoji name
 			emoji = util.FilterUploadEmojiFileName(emoji)
 			Conf.Editor.Emoji[i] = emoji
 		}
@@ -792,7 +792,6 @@ var exitLock = sync.Mutex{}
 
 //
 
-// https://github.com/siyuan-note/siyuan/issues/10288
 func Close(force, setCurrentWorkspace bool, execInstallPkg int) (exitCode int, installPkgPath string) {
 	exitLock.Lock()
 	defer exitLock.Unlock()
@@ -821,10 +820,10 @@ func Close(force, setCurrentWorkspace bool, execInstallPkg int) (exitCode int, i
 		}
 	}
 
-	// Close the user guide when exiting https://github.com/siyuan-note/siyuan/issues/10322
+	// Close the user guide when exiting
 	closeUserGuide()
 
-	// Improve indexing completeness when exiting https://github.com/siyuan-note/siyuan/issues/12039
+	// Improve indexing completeness when exiting
 	sql.FlushQueue()
 
 	util.IsExiting.Store(true)
@@ -857,7 +856,7 @@ func Close(force, setCurrentWorkspace bool, execInstallPkg int) (exitCode int, i
 
 	if setCurrentWorkspace {
 
-		// Open the last workspace by default https://github.com/siyuan-note/siyuan/issues/10570
+		// Open the last workspace by default
 		workspacePaths, err := util.ReadWorkspacePaths()
 		if err != nil {
 			logging.LogErrorf("read workspace paths failed: %s", err)
@@ -1129,7 +1128,7 @@ func GetMaskedConf() (ret *AppConf, err error) {
 	return
 }
 
-// REF: https://github.com/siyuan-note/siyuan/issues/11364
+// REF:
 func HideConfSecret(c *AppConf) {
 	c.AI = &conf.AI{}
 	c.MCPOAuth = ""
@@ -1198,7 +1197,7 @@ func clearCorruptedNotebooks() {
 		}
 
 		boxDirPath := filepath.Join(util.DataDir, dir.Name())
-		boxConfPath := filepath.Join(boxDirPath, ".siyuan", "conf.json")
+		boxConfPath := filepath.Join(boxDirPath, ".scribli", "conf.json")
 		if !filelock.IsExist(boxConfPath) {
 			logging.LogWarnf("found a corrupted box [%s]", boxDirPath)
 			continue
@@ -1246,7 +1245,7 @@ func clearWorkspaceTemp(preserveInstallPkgs bool) {
 		}
 	}
 
-	tmps, err = filepath.Glob(filepath.Join(util.DataDir, ".siyuan", "*.tmp"))
+	tmps, err = filepath.Glob(filepath.Join(util.DataDir, ".scribli", "*.tmp"))
 	if err != nil {
 		logging.LogErrorf("glob temp files failed: %s", err)
 	}
@@ -1258,8 +1257,8 @@ func clearWorkspaceTemp(preserveInstallPkgs bool) {
 		}
 	}
 
-	os.RemoveAll(filepath.Join(util.DataDir, "assets", ".siyuan", "assets.json"))
-	os.RemoveAll(filepath.Join(util.DataDir, ".siyuan", "history"))
+	os.RemoveAll(filepath.Join(util.DataDir, "assets", ".scribli", "assets.json"))
+	os.RemoveAll(filepath.Join(util.DataDir, ".scribli", "history"))
 	os.RemoveAll(filepath.Join(util.WorkspaceDir, "backup"))
 	os.RemoveAll(filepath.Join(util.WorkspaceDir, "sync"))
 	os.RemoveAll(filepath.Join(util.TempDir, "blocktree.msgpack"))
@@ -1291,7 +1290,7 @@ func closeUserGuide() {
 		boxID := dir.Name()
 		boxDirPath := filepath.Join(util.DataDir, boxID)
 		boxConf := conf.NewBoxConf()
-		boxConfPath := filepath.Join(boxDirPath, ".siyuan", "conf.json")
+		boxConfPath := filepath.Join(boxDirPath, ".scribli", "conf.json")
 		if !filelock.IsExist(boxConfPath) {
 			logging.LogWarnf("found a corrupted user guide box [%s]", boxDirPath)
 			if removeErr := filelock.Remove(boxDirPath); nil != removeErr {

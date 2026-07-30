@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -816,7 +816,7 @@ func (value *Value) filter(other *Value, relativeDate, relativeDate2 *RelativeDa
 		if nil != value.Date {
 			if !value.Date.IsNotEmpty {
 
-				// Database date filter excludes empty values https://github.com/siyuan-note/siyuan/issues/11061
+				// Database date filter excludes empty values
 				return false
 			}
 

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -206,7 +206,7 @@ func getEmojiConf(c *gin.Context) {
 					emojiFullName := filepath.Join(customConfDir, name)
 					name = util.FilterUploadEmojiFileName(name)
 					fullPathFilteredName := filepath.Join(customConfDir, name)
-					// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+					// XSS through emoji name
 					logging.LogWarnf("renaming invalid custom emoji file [%s] to [%s]", name, fullPathFilteredName)
 					if removeErr := filelock.Rename(emojiFullName, fullPathFilteredName); nil != removeErr {
 						logging.LogErrorf("renaming invalid custom emoji file to [%s] failed: %s", fullPathFilteredName, removeErr)
@@ -234,7 +234,7 @@ func getEmojiConf(c *gin.Context) {
 						if !util.IsValidUploadFileName(html.UnescapeString(subName)) {
 							emojiFullName := filepath.Join(customConfDir, name, subName)
 							fullPathFilteredName := filepath.Join(customConfDir, name, util.FilterUploadEmojiFileName(subName))
-							// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+							// XSS through emoji name
 							logging.LogWarnf("renaming invalid custom emoji file [%s] to [%s]", subName, fullPathFilteredName)
 							if removeErr := filelock.Rename(emojiFullName, fullPathFilteredName); nil != removeErr {
 								logging.LogErrorf("renaming invalid custom emoji file to [%s] failed: %s", fullPathFilteredName, removeErr)
@@ -604,7 +604,7 @@ func getConf(c *gin.Context) {
 		maskedConf.Sync.Stat = model.Conf.Language(53)
 	}
 
-	// REF: https://github.com/siyuan-note/siyuan/issues/11364
+	// REF:
 	role := model.GetGinContextRole(c)
 	isPublish := model.IsReadOnlyRole(role)
 	if isPublish {
@@ -622,7 +622,7 @@ func getConf(c *gin.Context) {
 		maskedConf = model.FilterConfByPublishIgnore(publishIgnore, maskedConf)
 	}
 
-	// REF: https://github.com/siyuan-note/siyuan/issues/17410
+	// REF:
 	if util.IsBrowserRequest(c) {
 		maskedConf.System.WorkspaceDir = ""
 		maskedConf.System.AppDir = ""

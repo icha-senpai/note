@@ -137,7 +137,7 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
         },
         {
           "id": "20210808180117-czj9bvb",
-          "name": "SiYuan User Guide",
+          "name": "Scribli User Guide",
           "icon": "1f4d4",
           "sort": 1,
           "closed": false
@@ -1145,7 +1145,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   ```json
   {
     "id": "20220724223548-j6g0o87",
-    "path": "F:\\SiYuan\\data\\templates\\foo.md"
+    "path": "F:\\Scribli\\data\\templates\\foo.md"
   }
   ```
 
@@ -1159,7 +1159,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     "msg": "",
     "data": {
       "content": "<div data-node-id=\"20220729234848-dlgsah7\" data-node-index=\"1\" data-type=\"NodeParagraph\" class=\"p\" updated=\"20220729234840\"><div contenteditable=\"true\" spellcheck=\"false\">foo</div><div class=\"protyle-attr\" contenteditable=\"false\">​</div></div>",
-      "path": "F:\\SiYuan\\data\\templates\\foo.md"
+      "path": "F:\\Scribli\\data\\templates\\foo.md"
     }
   }
   ```
@@ -1338,7 +1338,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     "msg": "",
     "data": {
       "hPath": "/Please Start Here",
-      "content": "## 🍫 Content Block\n\nIn SiYuan, the only important core concept is..."
+      "content": "## 🍫 Content Block\n\nIn Scribli, the only important core concept is..."
     }
   }
   ```

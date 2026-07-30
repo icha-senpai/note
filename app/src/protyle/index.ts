@@ -238,7 +238,7 @@ export class Protyle {
                             if (this.protyle.options.render.title && this.protyle.block.parentID === data.data.id) {
                                 if (!document.body.classList.contains("body--blur") && getSelection().rangeCount > 0 &&
                                     this.protyle.title.editElement?.contains(getSelection().getRangeAt(0).startContainer)) {
-                                    // 标题编辑中的不用更新 https://github.com/siyuan-note/siyuan/issues/6565
+                                    // 标题编辑中的不用更新 
                                 } else {
                                     this.protyle.title.setTitle(data.data.title, data.data.empty);
                                 }
@@ -251,7 +251,7 @@ export class Protyle {
                             // update ref
                             this.protyle.wysiwyg.element.querySelectorAll(`[data-type~="block-ref"][data-id="${data.data.id}"]`).forEach(item => {
                                 if (item.getAttribute("data-subtype") === "d") {
-                                    // 同 updateRef 一样处理 https://github.com/siyuan-note/siyuan/issues/10458
+                                    // 同 updateRef 一样处理 
                                     item.innerHTML = data.data.refText;
                                 }
                             });
@@ -293,7 +293,7 @@ export class Protyle {
             if (options.backlinkData) {
                 this.protyle.block.rootID = options.blockId;
                 renderBacklink(this.protyle, options.backlinkData);
-                // 为了满足 eventPath0.style.paddingLeft 从而显示块标 https://github.com/siyuan-note/siyuan/issues/11578
+                // 为了满足 eventPath0.style.paddingLeft 从而显示块标 
                 this.protyle.wysiwyg.element.style.padding = "4px 16px 4px 24px";
                 return;
             }
@@ -345,7 +345,7 @@ export class Protyle {
                 /// #if !MOBILE
                 if (2 == data.data[0].doOperations.length && "insert" === data.data[0].doOperations[0].action && "delete" === data.data[0].doOperations[1].action) {
                     // 从反链面板复制块到正文粘贴时不再自动刷新反链面板
-                    // The list in the backlink panel no longer collapses automatically https://github.com/siyuan-note/siyuan/issues/17362
+                    // The list in the backlink panel no longer collapses automatically 
                     return true;
                 }
 
@@ -369,7 +369,7 @@ export class Protyle {
             }
         });
         // 聚焦块被分屏另一侧的删除操作连带删除时（容器块删除会级联删除其所有子孙块，如列表/超级块/引述等），当前页签的聚焦块已成为孤儿但仍显示，需退出聚焦
-        // Improve editor state synchronization when deleting blocks https://github.com/siyuan-note/siyuan/issues/17742
+        // Improve editor state synchronization when deleting blocks 
         if (this.protyle.block.showAll && hasDeleteOp) {
             fetchPost("/api/block/checkBlockExist", {id: this.protyle.block.id}, response => {
                 if (!response.data) {
@@ -481,7 +481,7 @@ export class Protyle {
             }
             /// #endif
         });
-        // 需等渲染完后再回调，用于定位搜索字段 https://github.com/siyuan-note/siyuan/issues/3171
+        // 需等渲染完后再回调，用于定位搜索字段 
         if (mergedOptions.after) {
             mergedOptions.after(this);
         }

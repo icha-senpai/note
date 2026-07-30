@@ -82,7 +82,7 @@ export const cancelSB = async (protyle: IProtyle, nodeElement: Element, range?: 
         previousId = item.getAttribute("data-node-id");
     });
     mathRender(protyle.wysiwyg.element);
-    // 超级块内嵌入块无面包屑，需重新渲染 https://github.com/siyuan-note/siyuan/issues/7574
+    // 超级块内嵌入块无面包屑，需重新渲染 
     doOperations.forEach(item => {
         const element = protyle.wysiwyg.element.querySelector(`[data-node-id="${item.id}"]`);
         if (element && element.getAttribute("data-type") === "NodeBlockQueryEmbed") {
@@ -226,7 +226,7 @@ export const insertEmptyBlock = async (protyle: IProtyle, position: InsertPositi
         } else {
             blockElement = hasClosestBlock(range.startContainer) as HTMLElement;
             blockElement = getTopAloneElement(blockElement);
-            // https://github.com/siyuan-note/siyuan/issues/14720#issuecomment-2840665326
+            // 
             if (blockElement.classList.contains("list")) {
                 blockElement = hasClosestByClassName(range.startContainer, "li") as HTMLElement;
             } else if (blockElement.classList.contains("bq") || blockElement.classList.contains("callout")) {

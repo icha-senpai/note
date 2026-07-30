@@ -77,7 +77,7 @@ export class Undo implements IUndo {
         document.querySelector(".av__panel")?.remove();
         preventScroll(protyle);
         // 同步 toolbar range，避免 undo/redo 替换 DOM 后 range 变为 detached，
-        // 导致后续异步操作（如 F3 创建子文档）读到无效 range 而报错 https://github.com/siyuan-note/siyuan/issues/17896
+        // 导致后续异步操作（如 F3 创建子文档）读到无效 range 而报错 
         syncToolbarRange(protyle);
     }
 
@@ -191,7 +191,7 @@ export class LocalUndo implements IUndo {
     }
 
     public replace(doOperations: IOperation[], protyle: IProtyle) {
-        // undo 引发 replace 导致 stack 错误 https://github.com/siyuan-note/siyuan/issues/9178
+        // undo 引发 replace 导致 stack 错误 
         if (this.hasUndo && this.redoStack.length > 0) {
             this.undoStack.push(this.redoStack.pop());
             this.redoStack = [];

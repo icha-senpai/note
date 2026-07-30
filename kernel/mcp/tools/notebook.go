@@ -35,7 +35,7 @@ var NotebookTool = &Tool{
 			"action": {Type: "string", Description: "Operation", Enum: []string{"list", "open", "close", "create", "rename", "remove", "set_icon", "random_icon"}},
 			"id":     {Type: "string", Description: "Notebook ID (for open, close, rename, remove, set_icon, random_icon)"},
 			"name":   {Type: "string", Description: "Notebook name (for create, rename)"},
-			"icon":   {Type: "string", Description: "Notebook icon (for set_icon). Emoji hex codepoint like \"1f4ca\", emoji character like \"📊\", custom image path like \"1/b3log.png\", or dynamic icon URL like \"api/icon/getDynamicIcon?type=8&color=%23d23f31&content=Scribli&id=xxx\""},
+			"icon":   {Type: "string", Description: "Notebook icon (for set_icon). Emoji hex codepoint like \"1f4ca\", emoji character like \"📊\", custom image path like \"1/custom-icon.png\", or dynamic icon URL like \"api/icon/getDynamicIcon?type=8&color=%23d23f31&content=Scribli&id=xxx\""},
 		},
 		Required: []string{"action"},
 	},

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ const (
 	fixCooldown = 120 * time.Minute
 )
 
-// Index fixing should not be performed before data synchronization https://github.com/siyuan-note/siyuan/issues/10761
+// Index fixing should not be performed before data synchronization
 func checkIndex() {
 	checkIndexOnce.Do(func() {
 		if util.IsMobileContainer() {
@@ -196,7 +196,7 @@ func resetDuplicateBlocksOnFileSys() {
 			continue
 		}
 
-		legacyHistory := filepath.Join(util.DataDir, box.ID, ".siyuan", "history")
+		legacyHistory := filepath.Join(util.DataDir, box.ID, ".scribli", "history")
 		if gulu.File.IsDir(legacyHistory) {
 			if removeErr := os.RemoveAll(legacyHistory); nil != removeErr {
 				logging.LogErrorf("remove legacy history failed: %s", removeErr)

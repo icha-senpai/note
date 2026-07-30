@@ -43,10 +43,10 @@ type TProtyleAction = "cb-get-append" | // 向下滚动加载
     "cb-get-rootscroll" | // 如果为 rootID 就滚动到指定位置，必有 rootID
     "cb-get-html" | // 直接渲染，不需要再 /api/block/getDocInfo，否则搜索表格无法定位
     "cb-get-history" | // 历史渲染
-    "cb-get-opennew" | // 编辑器只读后新建文件需为临时解锁状态 & https://github.com/siyuan-note/siyuan/issues/12197
+    "cb-get-opennew" | // 编辑器只读后新建文件需为临时解锁状态 & 
     "cb-get-av-no-create"  // 属性视图不自动创建
 
-/** @link https://ld246.com/article/1588412297062 */
+/** @link  */
 interface ILuteRender {
     renderDocument?: ILuteRenderCallback;
     renderParagraph?: ILuteRenderCallback;
@@ -312,7 +312,7 @@ declare const webkitAudioContext: {
     new(contextOptions?: AudioContextOptions): AudioContext,
 };
 
-/** @link https://ld246.com/article/1549638745630#options-upload */
+/** @link  */
 interface IUpload {
     /** 上传 url */
     url?: string;
@@ -372,7 +372,7 @@ interface IScrollAttr {
     zoomInId?: string
 }
 
-/** @link https://ld246.com/article/1549638745630#options-toolbar */
+/** @link  */
 interface IMenuItem {
     /** 唯一标示 */
     name: string;
@@ -392,7 +392,7 @@ interface IMenuItem {
     click?(protyle: import("../protyle").Protyle): void;
 }
 
-/** @link https://ld246.com/article/1549638745630#options-preview-markdown */
+/** @link  */
 interface IMarkdownConfig {
     /** 段落开头是否空两格。默认值: false */
     paragraphBeginningSpace?: boolean;
@@ -402,7 +402,7 @@ interface IMarkdownConfig {
     listStyle?: boolean;
 }
 
-/** @link https://ld246.com/article/1549638745630#options-preview */
+/** @link  */
 interface IPreview {
     /** 预览 debounce 毫秒间隔。默认值: 1000 */
     delay?: number;
@@ -410,9 +410,9 @@ interface IPreview {
     mode?: "both" | "editor";
     /** md 解析请求 */
     url?: string;
-    /** @link https://ld246.com/article/1549638745630#options-preview-markdown */
+    /** @link  */
     markdown?: IMarkdownConfig;
-    /** @link https://ld246.com/article/1549638745630#options-preview-actions  */
+    /** @link   */
     actions?: Array<IPreviewAction | IPreviewActionCustom>;
 
     /** 渲染之前回调 */
@@ -446,7 +446,7 @@ interface IHintExtend {
     hint?(value: string, protyle: IProtyle, source: THintSource): IHintData[];
 }
 
-/** @link https://ld246.com/article/1549638745630#options-hint */
+/** @link  */
 interface IHint {
     /** 常用表情提示 HTML */
     emojiTail?: string;
@@ -458,7 +458,7 @@ interface IHint {
     extend?: IHintExtend[];
 }
 
-/** @link https://ld246.com/article/1549638745630#options */
+/** @link  */
 interface IProtyleOptions {
     databaseAttr?: boolean,
     history?: {
@@ -494,13 +494,13 @@ interface IProtyleOptions {
     /** 是否启用打字机模式。默认值: false */
     typewriterMode?: boolean;
     toolbar?: Array<string | IMenuItem>;
-    /** @link https://ld246.com/article/1549638745630#options-preview */
+    /** @link  */
     preview?: IPreview;
-    /** @link https://ld246.com/article/1549638745630#options-hint */
+    /** @link  */
     hint?: IHint;
-    /** @link https://ld246.com/article/1549638745630#options-upload */
+    /** @link  */
     upload?: IUpload;
-    /** @link https://ld246.com/article/1549638745630#options-classes */
+    /** @link  */
     classes?: {
         preview?: string;
     };

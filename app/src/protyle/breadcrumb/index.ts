@@ -86,7 +86,7 @@ ${padHTML}
                     event.stopPropagation();
                     break;
                 } else if (type === "doc") {
-                    // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 https://github.com/siyuan-note/siyuan/issues/15075
+                    // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 
                     if (event.shiftKey) {
                         const docInfoParam: IObject = {
                             id: protyle.block.rootID
@@ -286,7 +286,7 @@ ${padHTML}
                     const imageUploadMenu = new MenuItem({
                         id: "insertImage",
                         icon: "iconImage",
-                        label: `${window.scribli.languages.insertImage}<input class="b3-form__upload" type="file" multiple="multiple" accept="image/*,application/x-siyuan-image-picker">`,
+                        label: `${window.scribli.languages.insertImage}<input class="b3-form__upload" type="file" multiple="multiple" accept="image/*,application/x-scribli-image-picker">`,
                     }).element;
                     imageUploadMenu.querySelector("input").addEventListener("change", (event: InputEvent & {
                         target: HTMLInputElement
@@ -586,14 +586,14 @@ ${padHTML}
         let range: Range;
         let blockElement: Element;
         if (nodeElement &&
-            !nodeElement.classList.contains("list")   // 列表 id 不会返回数据，因此不进行处理 https://github.com/siyuan-note/siyuan/issues/11685
+            !nodeElement.classList.contains("list")   // 列表 id 不会返回数据，因此不进行处理 
         ) {
             blockElement = nodeElement;
         } else if (getSelection().rangeCount > 0) {
             range = getSelection().getRangeAt(0);
             if (!protyle.wysiwyg.element.isEqualNode(range.startContainer) && !protyle.wysiwyg.element.contains(range.startContainer)) {
                 if (protyle.element.id === "searchPreview") {
-                    // https://github.com/siyuan-note/siyuan/issues/8807
+                    // 
                     blockElement = hasClosestBlock(protyle.wysiwyg.element.querySelector('[data-type="search-mark"]')) as Element;
                 } else {
                     blockElement = getNoContainerElement(protyle.wysiwyg.element.firstElementChild) || protyle.wysiwyg.element.firstElementChild;

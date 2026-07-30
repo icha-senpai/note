@@ -633,7 +633,7 @@ const addAttrViewColAnimation = (options: {
                 previousElement = item.querySelector(".av__cell").previousElementSibling;
             }
             // 分组视图下空分组或被虚拟滚动裁剪的行内可能找不到锚点单元格，此时跳过该行，
-            // 避免在 null 上调用 insertAdjacentHTML 抛出异常而中断整轮遍历 https://github.com/siyuan-note/siyuan/issues/18014
+            // 避免在 null 上调用 insertAdjacentHTML 抛出异常而中断整轮遍历 
             if (!previousElement) {
                 return;
             }
@@ -682,7 +682,7 @@ const addAttrViewColAnimation = (options: {
         }
         return;
     }
-    // https://github.com/siyuan-note/siyuan/issues/14724
+    // 
     let colData;
     if (options.data) {
         colData = getFieldsByData(options.data).find((item => item.id === options.id));
@@ -740,7 +740,7 @@ export const showColMenu = (protyle: IProtyle, blockElement: Element, cellElemen
                 data: oldDesc,
             }]);
         }
-        // https://github.com/siyuan-note/siyuan/issues/9862
+        // 
         focusBlock(blockElement);
     });
     menu.addItem({

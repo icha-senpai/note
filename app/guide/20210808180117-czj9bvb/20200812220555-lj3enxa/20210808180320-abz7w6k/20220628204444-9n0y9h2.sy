@@ -304,7 +304,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://ld246.com",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "超链接锚文本"
 								}
 							]

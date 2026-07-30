@@ -246,7 +246,7 @@
 												{
 													"Type": "NodeTextMark",
 													"TextMarkType": "code",
-													"TextMarkTextContent": "siyuan.desktop"
+													"TextMarkTextContent": "Scribli.desktop"
 												},
 												{
 													"Type": "NodeText",
@@ -385,7 +385,7 @@
 												},
 												{
 													"Type": "NodeCodeBlockCode",
-													"Data": "sudo update-desktop-database\nxdg-mime default siyuan.desktop x-scheme-handler/scribli\nxdg-settings set default-url-scheme-handler siyuan siyuan.desktop\n"
+													"Data": "sudo update-desktop-database\nxdg-mime default Scribli.desktop x-scheme-handler/scribli\nxdg-settings set default-url-scheme-handler Scribli Scribli.desktop\n"
 												},
 												{
 													"Type": "NodeCodeBlockFenceCloseMarker",

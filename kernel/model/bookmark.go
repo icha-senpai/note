@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -198,14 +198,14 @@ func BuildBookmark() (ret *Bookmarks) {
 	luteEngine := NewLute()
 	for _, block := range blocks {
 		if "" != block.Name {
-			// Blocks in the bookmark panel display their name instead of content https://github.com/siyuan-note/siyuan/issues/8514
+			// Blocks in the bookmark panel display their name instead of content
 			block.Content = block.Name
 		} else if "NodeAttributeView" == block.Type {
-			// Display database title in bookmark panel https://github.com/siyuan-note/siyuan/issues/11666
+			// Display database title in bookmark panel
 			avID := gulu.Str.SubStringBetween(block.Markdown, "av-id=\"", "\"")
 			block.Content, _ = av.GetAttributeViewName(avID)
 		} else {
-			// Improve bookmark panel rendering https://github.com/siyuan-note/siyuan/issues/9361
+			// Improve bookmark panel rendering
 			tree, err := LoadTreeByBlockID(block.ID)
 			if err != nil {
 				logging.LogErrorf("parse block [%s] failed: %s", block.ID, err)

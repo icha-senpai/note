@@ -711,7 +711,7 @@ export const contentMenu = (protyle: IProtyle, nodeElement: Element) => {
             accelerator: "⌘C",
             label: window.scribli.languages.copy,
             click() {
-                // range 需要重新计算 https://ld246.com/article/1644979219025
+                // range 需要重新计算 
                 focusByRange(getEditorRange(nodeElement));
                 document.execCommand("copy");
             }
@@ -753,7 +753,7 @@ export const contentMenu = (protyle: IProtyle, nodeElement: Element) => {
             }
         }).element);
     } else {
-        // https://github.com/siyuan-note/siyuan/issues/9630
+        // 
         const inlineElement = hasClosestByTag(range.startContainer, "SPAN");
         if (inlineElement) {
             const inlineTypes = protyle.toolbar.getCurrentType(range);
@@ -1001,7 +1001,7 @@ export const zoomOut = (options: {
             scrollPosition: options.focusId ? "start" : undefined,
             afterCB: options.callback,
         });
-        // https://github.com/siyuan-note/siyuan/issues/4874
+        // 
         if (options.focusId) {
             let focusElement = options.protyle.wysiwyg.element.querySelector(`[data-node-id="${options.focusId}"]`);
             if (!focusElement) {
@@ -1010,13 +1010,13 @@ export const zoomOut = (options: {
                 focusElement = options.protyle.wysiwyg.element.querySelector(`[data-node-id="${unfoldResponse.data.parentID}"]`);
             }
             if (focusElement) {
-                // 退出聚焦后块在折叠中 https://github.com/siyuan-note/siyuan/issues/10746
+                // 退出聚焦后块在折叠中 
                 let showElement = focusElement;
                 while (showElement.getBoundingClientRect().height === 0) {
                     showElement = showElement.parentElement;
                 }
                 if (showElement.classList.contains("protyle-wysiwyg")) {
-                    // 闪卡退出聚焦元素被隐藏 https://github.com/siyuan-note/siyuan/issues/10058#issuecomment-2029524211
+                    // 闪卡退出聚焦元素被隐藏 
                     showElement = focusElement.previousElementSibling || focusElement.nextElementSibling;
                 } else {
                     showElement = getFirstBlock(showElement);
@@ -1169,7 +1169,7 @@ export const imgMenu = (protyle: IProtyle, range: Range, assetElement: HTMLEleme
         icon: "iconCopy",
         click() {
             let content = protyle.lute.BlockDOM2StdMd(assetElement.outerHTML);
-            // The file name encoding is abnormal after copying the image and pasting it https://github.com/siyuan-note/siyuan/issues/11246
+            // The file name encoding is abnormal after copying the image and pasting it 
             content = content.replace(/%20/g, " ");
             writeText(content);
         }
@@ -1192,7 +1192,7 @@ export const imgMenu = (protyle: IProtyle, range: Range, assetElement: HTMLEleme
             label: window.scribli.languages.cut,
             click() {
                 let content = protyle.lute.BlockDOM2StdMd(assetElement.outerHTML);
-                // The file name encoding is abnormal after copying the image and pasting it https://github.com/siyuan-note/siyuan/issues/11246
+                // The file name encoding is abnormal after copying the image and pasting it 
                 content = content.replace(/%20/g, " ");
                 writeText(content);
                 (assetElement as HTMLElement).outerHTML = "<wbr>";
@@ -1528,7 +1528,7 @@ style="margin:4px 0;width: ${isMobile() ? "100%" : "360px"}" class="b3-text-fiel
                     }
                 });
 
-                // https://github.com/siyuan-note/siyuan/issues/6798
+                // 
                 let anchor = linkElement.textContent.replace(Constants.ZWSP, "");
                 if (!anchor && linkAddress) {
                     anchor = decodeURIComponent(linkAddress.replace("https://", "").replace("http://", ""));
@@ -1543,7 +1543,7 @@ style="margin:4px 0;width: ${isMobile() ? "100%" : "360px"}" class="b3-text-fiel
                 });
                 inputElements[1].addEventListener("input", (event: KeyboardEvent) => {
                     if (!event.isComposing) {
-                        // https://github.com/siyuan-note/siyuan/issues/4511
+                        // 
                         linkElement.innerHTML = Lute.EscapeHTMLStr(inputElements[1].value.replace(/\n|\r\n|\r|\u2028|\u2029/g, "").trim()) || "*";
                     }
                 });

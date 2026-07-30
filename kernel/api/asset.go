@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -423,7 +423,7 @@ func getUnusedAssets(c *gin.Context) {
 	unusedAssets := model.UnusedAssets(true)
 	total := len(unusedAssets)
 
-	// List only 512 unreferenced assets https://github.com/siyuan-note/siyuan/issues/13075
+	// List only 512 unreferenced assets
 	const maxUnusedAssets = 512
 	if total > maxUnusedAssets {
 		unusedAssets = unusedAssets[:maxUnusedAssets]

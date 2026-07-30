@@ -23,7 +23,7 @@ import {getWorkspaceName} from "./processTitle";
 export const loadAssets = (data: Config.IAppearance) => {
     const htmlElement = document.getElementsByTagName("html")[0];
     htmlElement.setAttribute("lang", window.scribli.config.appearance.lang);
-    htmlElement.setAttribute("data-frontend", getFrontend()); // https://github.com/siyuan-note/siyuan/issues/12549
+    htmlElement.setAttribute("data-frontend", getFrontend()); // 
     htmlElement.setAttribute("data-backend", getBackend());
     htmlElement.setAttribute("data-theme-mode", getThemeMode());
     htmlElement.setAttribute("data-light-theme", window.scribli.config.appearance.themeLight);
@@ -282,11 +282,11 @@ export const setInlineStyle = async (set = true, servePath = "../../../") => {
         style += "\n.b3-menu .b3-menu__action {opacity: 0.68;}";
     }
     if (set) {
-        const siyuanStyle = document.getElementById("siyuanStyle");
-        if (siyuanStyle) {
-            siyuanStyle.innerHTML = style;
+        const ScribliStyle = document.getElementById("ScribliStyle");
+        if (ScribliStyle) {
+            ScribliStyle.innerHTML = style;
         } else {
-            document.querySelector("#pluginsStyle").insertAdjacentHTML("beforebegin", `<style id="siyuanStyle">${style}</style>`);
+            document.querySelector("#pluginsStyle").insertAdjacentHTML("beforebegin", `<style id="ScribliStyle">${style}</style>`);
         }
     }
     return style;

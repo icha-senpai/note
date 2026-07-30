@@ -51,7 +51,7 @@ export const openSearch = async (options: {
         replaceTypes: Object.assign({}, localData.replaceTypes),
         page: options.key ? 1 : localData.page
     };
-    // 搜索中继续执行 ctrl+F/P 不退出 https://github.com/siyuan-note/siyuan/issues/11637
+    // 搜索中继续执行 ctrl+F/P 不退出 
     const exitDialog = window.scribli.dialogs.find((item) => {
         // 再次打开
         if (item.element.querySelector("#searchList")) {

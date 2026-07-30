@@ -383,12 +383,12 @@ export class Dock {
         if (!reset && (this.layout.element.style.opacity === "0" || this.pin)) {
             return;
         }
-        // 关系图全屏不应该退出 & https://github.com/siyuan-note/siyuan/issues/11775
+        // 关系图全屏不应该退出 & 
         const fullscreenElement = this.layout.element.querySelector(".fullscreen");
         if (fullscreenElement && fullscreenElement.clientHeight > 0) {
             return;
         }
-        // https://github.com/siyuan-note/siyuan/issues/7504
+        // 
         if (document.activeElement && this.layout.element.contains(document.activeElement) &&
             (document.activeElement.classList.contains("b3-text-field") ||
                 (document.activeElement as HTMLElement).getAttribute("contenteditable") === "true")) {
@@ -657,7 +657,7 @@ export class Dock {
                 this.hideResizeTimeout = window.setTimeout(() => {
                     this.resizeElement.classList.remove("fn__none");
                     adjustLayout();
-                }, Constants.TIMEOUT_TRANSITION);    // 需等待动画完毕后再出现，否则会出现滚动条 https://ld246.com/article/1676596622064
+                }, Constants.TIMEOUT_TRANSITION);    // 需等待动画完毕后再出现，否则会出现滚动条 
             }
             if (document.activeElement) {
                 (document.activeElement as HTMLElement).blur();
@@ -791,7 +791,7 @@ export class Dock {
         if (hasActive) {
             this.toggleModel(type, true, false, false, false);
         }
-        // 保存布局需等待动画完毕 https://github.com/siyuan-note/siyuan/issues/13507
+        // 保存布局需等待动画完毕 
         setTimeout(() => {
             saveLayout();
         }, Constants.TIMEOUT_TRANSITION);
@@ -890,7 +890,7 @@ export class Dock {
             if (typeof tabIndex === "undefined" && !TYPES.includes(item.type)) {
                 return;
             }
-            // https://github.com/siyuan-note/siyuan/issues/7976 历史兼容 3.6.5 -> 3.7.0
+            //  历史兼容 3.6.5 -> 3.7.0
             if (item.type === "outline") {
                 item.icon = "iconOutline";
             } else if (item.type === "tags") {
@@ -910,7 +910,7 @@ export class Dock {
         } else {
             this.elements[index].innerHTML = html;
         }
-        // https://github.com/siyuan-note/siyuan/issues/8614
+        // 
         if (!window.scribli.config.uiLayout.hideDock) {
             this.elements[0].parentElement.classList.remove("fn__none");
         }

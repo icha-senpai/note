@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -258,7 +258,7 @@ func ParentNodesWithHeadings(node *ast.Node) (parents []*ast.Node) {
 			return
 		}
 
-		// The heading block update time is refreshed after editing the blocks under the heading https://github.com/siyuan-note/siyuan/issues/11374
+		// The heading block update time is refreshed after editing the blocks under the heading
 		parentHeadingLevel := 7
 		if ast.NodeHeading == n.Type {
 			parentHeadingLevel = n.HeadingLevel

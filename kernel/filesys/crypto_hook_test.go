@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -81,7 +81,7 @@ func TestSyAADIndependentOfParentDir(t *testing.T) {
 		t.Fatalf("AAD must be independent of parent dir: bare=%q dir=%q deep=%q", aadBare, aadWithDir, aadDeepDir)
 	}
 
-	if strings.Contains(strings.TrimPrefix(aadBare, "siyuan:v1:file:"+boxID+":"), "/") {
+	if strings.Contains(strings.TrimPrefix(aadBare, "scribli:v1:file:"+boxID+":"), "/") {
 		t.Fatalf("AAD must not contain path separator: %q", aadBare)
 	}
 }

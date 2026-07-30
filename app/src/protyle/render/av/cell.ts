@@ -36,7 +36,7 @@ const renderCellURL = (urlContent: string) => {
     } catch (e) {
         // 不是 url 地址
     }
-    // host 统一在输出处转义，避免非 http 协议（如 asd:<img...>）绕过 https://github.com/siyuan-note/siyuan/issues/9291
+    // host 统一在输出处转义，避免非 http 协议（如 asd:<img...>）绕过 
     return `<span class="av__celltext av__celltext--url" data-type="url" data-href="${escapeAttr(urlContent)}"><span>${Lute.EscapeHTMLStr(host)}</span><span class="ft__on-surface">${Lute.EscapeHTMLStr(suffix)}</span></span>`;
 };
 
@@ -399,7 +399,7 @@ export const cellScrollIntoView = (blockElement: HTMLElement, cellElement: Eleme
         const rowElement = hasClosestByClassName(cellElement, "av__row");
         if (avScrollElement && rowElement) {
             const stickyElement = rowElement.querySelector(".av__colsticky");
-            if (!stickyElement.contains(cellElement)) { // https://github.com/siyuan-note/siyuan/issues/12162
+            if (!stickyElement.contains(cellElement)) { // 
                 const stickyRight = stickyElement.getBoundingClientRect().right;
                 const avScrollRect = avScrollElement.getBoundingClientRect();
                 if (stickyRight > cellRect.left || avScrollRect.right < cellRect.left) {
@@ -781,12 +781,12 @@ export const updateCellsValue = async (protyle: IProtyle, nodeElement: HTMLEleme
                 const htmlValue: IAVCellAssetValue[] = [];
                 let link = protyle.lute.GetLinkDest(value);
                 let name = "";
-                // https://github.com/siyuan-note/siyuan/issues/13892
+                // 
                 if (!link && value.startsWith("assets/")) {
                     link = value;
                     name = getAssetName(value) + pathPosix().extname(value);
                 }
-                // https://github.com/siyuan-note/siyuan/issues/12308
+                // 
                 if (html) {
                     const tempElement = document.createElement("template");
                     tempElement.innerHTML = html;
@@ -966,7 +966,7 @@ export const renderCell = (cellValue: IAVCellValue, rowIndex = 0, showIcon = tru
     } else if ("url" === cellValue.type) {
         text = renderCellURL(cellValue?.url?.content || "");
     } else if (cellValue.type === "block") {
-        // 不可使用换行 https://github.com/siyuan-note/siyuan/issues/11365
+        // 不可使用换行 
         if (cellValue?.isDetached) {
             text = `<span class="av__celltext">${Lute.EscapeHTMLStr(cellValue.block.content || "")}</span>`;
         } else {
@@ -1189,7 +1189,7 @@ export const dragFillCellsValue = (protyle: IProtyle, nodeElement: HTMLElement, 
                 (item.type === "block" && item.element.getAttribute("data-detached") !== "true")) {
                 return;
             }
-            // https://ld246.com/article/1707975507571 数据库下拉填充数据后异常
+            //  数据库下拉填充数据后异常
             const data = JSON.parse(JSON.stringify(originData[originKeys[index % originKeys.length]][cellIndex]));
             data.id = item.id;
             const keyID = item.colId;

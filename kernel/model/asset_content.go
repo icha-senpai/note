@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -564,7 +564,7 @@ func (parser *TxtAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 	}
 
 	if !utf8.Valid(data) {
-		// Non-UTF-8 encoded text files are not included in asset file content searching https://github.com/siyuan-note/siyuan/issues/9052
+		// Non-UTF-8 encoded text files are not included in asset file content searching
 		logging.LogWarnf("text asset [%s] is not UTF-8 encoded", absPath)
 		return
 	}
@@ -861,7 +861,7 @@ func (parser *PdfAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 	instance.Close()
 
 	if PDFAssetContentMaxPage < pc.PageCount {
-		// PDF files longer than 1024 pages are not included in asset file content searching https://github.com/siyuan-note/siyuan/issues/9053
+		// PDF files longer than 1024 pages are not included in asset file content searching
 		logging.LogWarnf("ignore large PDF asset [%s] with [%d] pages", absPath, pc.PageCount)
 		return
 	}
@@ -878,7 +878,7 @@ func (parser *PdfAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 	}
 
 	if PDFAssetContentMaxSize < uint64(len(pdfData)) {
-		// PDF files larger than 128MB are not included in asset file content searching https://github.com/siyuan-note/siyuan/issues/9500
+		// PDF files larger than 128MB are not included in asset file content searching
 		logging.LogWarnf("ignore large PDF asset [%s] with [%s]", absPath, humanize.BytesCustomCeil(uint64(len(pdfData)), 2))
 		return
 	}

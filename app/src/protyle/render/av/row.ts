@@ -55,7 +55,7 @@ export const getRowHTML = (options: {
                 checkClass = cell.value?.checkbox?.checked ? " av__cell-check" : " av__cell-uncheck";
             }
             const isEmpty = cellValueIsEmpty(cell.value);
-            // NOTE: innerHTML 中不能换行否则 https://github.com/siyuan-note/siyuan/issues/15132
+            // NOTE: innerHTML 中不能换行否则 
             let ariaLabel = escapeAttr(kanbanData.fields[fieldsIndex].name) || getColNameByType(kanbanData.fields[fieldsIndex].type);
             if (kanbanData.fields[fieldsIndex].desc) {
                 ariaLabel += escapeAttr(`<div class="ft__on-surface">${kanbanData.fields[fieldsIndex].desc}</div>`);
@@ -121,7 +121,7 @@ ${cell.color ? `color:${cell.color};` : ""}">${renderCell(cell.value, options.ro
                 checkClass = cell.value?.checkbox?.checked ? " av__cell-check" : " av__cell-uncheck";
             }
             const isEmpty = cellValueIsEmpty(cell.value);
-            // NOTE: innerHTML 中不能换行否则 https://github.com/siyuan-note/siyuan/issues/15132
+            // NOTE: innerHTML 中不能换行否则 
             let ariaLabel = escapeAttr(kanbanData.fields[fieldsIndex].name) || getColNameByType(kanbanData.fields[fieldsIndex].type);
             if (kanbanData.fields[fieldsIndex].desc) {
                 ariaLabel += escapeAttr(`<div class="ft__on-surface">${kanbanData.fields[fieldsIndex].desc}</div>`);
@@ -180,7 +180,7 @@ ${cell.color ? `color:${cell.color};` : ""}">${renderCell(cell.value, options.ro
         if (column.hidden) {
             return;
         }
-        // https://github.com/siyuan-note/siyuan/issues/10262
+        // 
         let checkClass = "";
         if (cell.valueType === "checkbox") {
             checkClass = cell.value?.checkbox?.checked ? " av__cell-check" : " av__cell-uncheck";

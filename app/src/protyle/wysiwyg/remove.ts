@@ -137,7 +137,7 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
                     }
                 }
                 inserts.push(...foldTransaction.data.undoOperations);
-                // https://github.com/siyuan-note/siyuan/issues/4422
+                // 
                 topElement.firstElementChild.removeAttribute("contenteditable");
                 topElement.remove();
             } else {
@@ -174,7 +174,7 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
                 } else {
                     listElement = undefined;
                 }
-                // https://github.com/siyuan-note/siyuan/issues/12327
+                // 
                 if (topElement.parentElement.classList.contains("li") && topElement.parentElement.childElementCount === 4 &&
                     topElement.parentElement.getAttribute("fold") === "1") {
                     unfoldData[topElement.parentElement.getAttribute("data-node-id")] = {
@@ -183,10 +183,10 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
                 }
                 topElement.remove();
                 // 删除列表项内容块后，若该列表项仅剩子列表而无内容块，需补一个空段落
-                // 避免"列表项下直接挂列表"的非法结构 https://github.com/siyuan-note/siyuan/issues/17892
+                // 避免"列表项下直接挂列表"的非法结构 
                 const liChildren = Array.from(topParentElement.children);
                 // 首个子块是列表块时，说明列表项下直接挂列表，需补一个空段落作为内容块
-                // https://github.com/siyuan-note/siyuan/issues/17892
+                // 
                 const firstBlock = liChildren.find(item => item.hasAttribute("data-node-id") &&
                     !item.classList.contains("protyle-action") && !item.classList.contains("protyle-attr"));
                 if (topParentElement.classList.contains("li") && firstBlock?.classList.contains("list")) {
@@ -238,9 +238,9 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
                     sideElement = undefined;
                     focusByWbr(emptyElement, range);
                 }
-                // https://github.com/siyuan-note/siyuan/issues/5485
-                // https://github.com/siyuan-note/siyuan/issues/10389
-                // https://github.com/siyuan-note/siyuan/issues/10899
+                // 
+                // 
+                // 
                 if (type !== "Backspace" && sideIsNext) {
                     focusBlock(sideElement as Element);
                 } else {
@@ -305,7 +305,7 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
             }
         }
         /// #endif
-        // https://github.com/siyuan-note/siyuan/issues/16767
+        // 
         setTimeout(() => {
             if (!document.contains(protyle.element)) {
                 return;
@@ -443,11 +443,11 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
         return;
     }
     // 设置 bq 和代码块光标
-    // 需放在列表处理后 https://github.com/siyuan-note/siyuan/issues/11606
+    // 需放在列表处理后 
     if (["NodeCodeBlock", "NodeTable", "NodeAttributeView"].includes(blockType)) {
         if (previousElement) {
             if (previousElement.classList.contains("p") && getContenteditableElement(previousElement).textContent === "") {
-                // 空块向后删除时移除改块 https://github.com/siyuan-note/siyuan/issues/11732
+                // 空块向后删除时移除改块 
                 const ppElement = getPreviousBlock(previousElement);
                 transaction(protyle, [{
                     action: "delete",
@@ -562,7 +562,7 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
             return;
         }
         if (editableElement.textContent !== "" ||
-            // https://github.com/siyuan-note/siyuan/issues/10207
+            // 
             blockElement.classList.contains("av")) {
             focusBlock(previousLastElement, undefined, false);
             return;
@@ -597,14 +597,14 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
         // 需先移除 removeElement，否则 side 会选中 removeElement
         removeElement.remove();
         focusBlock(previousLastElement, undefined, false);
-        // https://github.com/siyuan-note/siyuan/issues/13254
+        // 
         undoOperations.splice(0, 1);
     } else {
         const previousLastEditElement = getContenteditableElement(previousLastElement);
         if (editableElement && (editableElement.textContent !== "" || editableElement.querySelector(".emoji"))) {
             // 非空块
             range.setEndAfter(editableElement.lastChild);
-            // 数学公式回车后再删除 https://github.com/siyuan-note/siyuan/issues/3850
+            // 数学公式回车后再删除 
             if ((previousLastEditElement?.lastElementChild?.getAttribute("data-type") || "").indexOf("inline-math") > -1) {
                 const lastSibling = hasNextSibling(previousLastEditElement?.lastElementChild);
                 if (lastSibling && lastSibling.textContent === "\n") {
@@ -613,7 +613,7 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
             }
         }
 
-        // https://github.com/siyuan-note/siyuan/issues/14807
+        // 
         if (previousLastEditElement) {
             let previousLastChild = previousLastEditElement.lastChild;
             if (previousLastChild && previousLastChild.nodeType === 3) {
@@ -633,7 +633,7 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
         range.insertNode(leftNodes);
         const previousHTML = previousLastEditElement.innerHTML.trimStart();
         const previousText = previousLastEditElement.textContent.trimStart();
-        // https://github.com/siyuan-note/siyuan/issues/15554
+        // 
         if (previousHTML.startsWith("```") || previousHTML.startsWith("···") || previousHTML.startsWith("~~~") ||
             (previousHTML.indexOf("\n```") > -1 && previousText.indexOf("\n```") > -1) ||
             (previousHTML.indexOf("\n~~~") > -1 && previousText.indexOf("\n~~~") > -1) ||
@@ -654,7 +654,7 @@ export const removeBlock = async (protyle: IProtyle, blockElement: Element, rang
         previousLastElement.previousElementSibling.remove();
         mathRender(getPreviousBlock(removeElement) as HTMLElement);
         const removeParentElement = removeElement.parentElement;
-        // https://github.com/siyuan-note/siyuan/issues/12327
+        // 
         if (removeParentElement.classList.contains("li") && removeParentElement.childElementCount === 4 &&
             removeParentElement.getAttribute("fold") === "1") {
             const foldOperations = setFold(protyle, removeParentElement, true, false, false, true);
@@ -747,7 +747,7 @@ export const moveToPrevious = (blockElement: Element, range: Range, isDelete: bo
     }
 };
 
-// https://github.com/siyuan-note/siyuan/issues/10393
+// 
 export const removeImage = (imgSelectElement: Element, nodeElement: HTMLElement, range: Range, protyle: IProtyle) => {
     const oldHTML = nodeElement.outerHTML;
     const imgPreviousSibling = hasPreviousSibling(imgSelectElement);
@@ -762,7 +762,7 @@ export const removeImage = (imgSelectElement: Element, nodeElement: HTMLElement,
     imgSelectElement.remove();
     updateTransaction(protyle, nodeElement, oldHTML);
     focusByWbr(nodeElement, range);
-    // 不太清楚为什么删除图片后无法上下键定位，但重绘后就好了 https://ld246.com/article/1714314625702
+    // 不太清楚为什么删除图片后无法上下键定位，但重绘后就好了 
     const editElement = getContenteditableElement(nodeElement);
     if (editElement.innerHTML.trim() === "") {
         editElement.innerHTML = "";

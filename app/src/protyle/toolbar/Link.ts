@@ -30,7 +30,7 @@ export class Link extends ToolbarItem {
             let dataText = range.toString().trim().replace(Constants.ZWSP, "");
             let showMenu = false;
             try {
-                // 选中链接时需忽略剪切板内容 https://ld246.com/article/1643035329737
+                // 选中链接时需忽略剪切板内容 
                 dataHref = protyle.lute.GetLinkDest(dataText);
                 if (!dataHref) {
                     const clipObject = await readClipboard();
@@ -57,7 +57,7 @@ export class Link extends ToolbarItem {
                             }
                         }
                     }
-                    // https://github.com/siyuan-note/siyuan/issues/14704#issuecomment-2867555769 第一点 & https://github.com/siyuan-note/siyuan/issues/6798
+                    //  第一点 & 
                     if (dataHref && !dataText) {
                         dataText = genLinkText(dataHref, true, true);
                         showMenu = true;

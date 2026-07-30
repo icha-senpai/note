@@ -68,7 +68,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "工作空間/data/.siyuan/indexignore"
+					"TextMarkTextContent": "工作空間/data/.scribli/indexignore"
 				},
 				{
 					"Type": "NodeText",

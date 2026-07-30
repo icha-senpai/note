@@ -48,7 +48,7 @@ export const newCardModel = (options: {
                 });
                 customObj.editors.push(editor);
                 editor.resize();
-                // https://github.com/siyuan-note/siyuan/issues/9561#issuecomment-1794473512
+                // 
                 delete options.data.cardsData;
                 delete options.data.index;
             } else {

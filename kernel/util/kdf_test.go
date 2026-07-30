@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -149,7 +149,7 @@ func TestAESGCMLegacyCiphertextCompatibility(t *testing.T) {
 func TestAESGCMLegacyCiphertextWithAADCompatibility(t *testing.T) {
 	key, _ := GenerateDEK()
 	plaintext := []byte("legacy encrypted asset")
-	aad := []byte("siyuan:v1:asset:box:assets/file.png")
+	aad := []byte("scribli:v1:asset:box:assets/file.png")
 	legacy, err := encryptLegacyForTest(key, plaintext, aad)
 	if err != nil {
 		t.Fatalf("create legacy ciphertext failed: %v", err)

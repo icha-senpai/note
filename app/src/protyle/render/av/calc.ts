@@ -141,7 +141,7 @@ export const openCalcMenu = async (protyle: IProtyle, calcElement: HTMLElement, 
         target: calcElement
     });
     if (panelData?.data && type !== "checkbox") {
-        // 汇总字段汇总方式中才有“显示唯一值”选项 Add "Show unique values" to the calculation of the database rollup field https://github.com/siyuan-note/siyuan/issues/15852
+        // 汇总字段汇总方式中才有“显示唯一值”选项 Add "Show unique values" to the calculation of the database rollup field 
         calcItem({
             menu,
             protyle,

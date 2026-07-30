@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -583,7 +583,7 @@ func FindReplace(keyword, replacement string, replaceTypes map[string]bool, ids 
 
 	if 1 == method {
 
-		// Find and replace supports query syntax https://github.com/siyuan-note/siyuan/issues/14937
+		// Find and replace supports query syntax
 		method = 0
 	}
 
@@ -593,7 +593,7 @@ func FindReplace(keyword, replacement string, replaceTypes map[string]bool, ids 
 		return
 	}
 
-	// No longer trim spaces for the keyword and replacement https://github.com/siyuan-note/siyuan/issues/9229
+	// No longer trim spaces for the keyword and replacement
 	if keyword == replacement {
 		return
 	}
@@ -614,7 +614,7 @@ func FindReplace(keyword, replacement string, replaceTypes map[string]bool, ids 
 	}
 
 	if 1 > len(ids) {
-		// `Replace All` is no longer affected by pagination https://github.com/siyuan-note/siyuan/issues/8265
+		// `Replace All` is no longer affected by pagination
 		blocks, _, _, _, _ := FullTextSearchBlock(keyword, boxes, paths, types, subTypes, method, orderBy, groupBy, 1, math.MaxInt)
 		for _, block := range blocks {
 			ids = append(ids, block.ID)
@@ -977,7 +977,7 @@ func FindReplace(keyword, replacement string, replaceTypes map[string]bool, ids 
 							unlinks = append(unlinks, n)
 						}
 					} else if n.IsTextMarkType("text") {
-						// Search and replace fails in some cases https://github.com/siyuan-note/siyuan/issues/10016
+						// Search and replace fails in some cases
 						if !replaceTypes["text"] {
 							return ast.WalkContinue
 						}
@@ -1135,7 +1135,7 @@ func replaceNodeTextMarkTextContent(n *ast.Node, method int, keyword, escapedKey
 	}
 }
 
-// Supports replacing text elements with other elements https://github.com/siyuan-note/siyuan/issues/11058
+// Supports replacing text elements with other elements
 func replaceTextNode(text *ast.Node, method int, keyword string, replacement string, r *regexp.Regexp, luteEngine *lute.Lute) bool {
 	if 0 == method {
 		newContent := text.Tokens
@@ -1146,7 +1146,7 @@ func replaceTextNode(text *ast.Node, method int, keyword string, replacement str
 		} else {
 			if "" != strings.TrimSpace(keyword) {
 
-				// Replace fails when search results contain mixed case in text elements https://github.com/siyuan-note/siyuan/issues/9171
+				// Replace fails when search results contain mixed case in text elements
 				keywords := strings.Split(keyword, " ")
 
 				if 0 < len(keywords) {
@@ -1263,7 +1263,7 @@ func FullTextSearchBlockInBox(query string, boxes, paths []string, types, subTyp
 	}
 	var ignoreFilter string
 	if ignoreLines := getSearchIgnoreLines(); 0 < len(ignoreLines) {
-		// Support ignore search results https://github.com/siyuan-note/siyuan/issues/10089
+		// Support ignore search results
 		buf := bytes.Buffer{}
 		for _, line := range ignoreLines {
 			buf.WriteString(" AND ")
@@ -1801,7 +1801,7 @@ func fullTextSearchRefBlockInBox(keyword string, beforeLen int, onlyDoc bool, bo
 	}
 
 	if ignoreLines := getRefSearchIgnoreLines(); 0 < len(ignoreLines) {
-		// Support ignore search results https://github.com/siyuan-note/siyuan/issues/10089
+		// Support ignore search results
 		buf := bytes.Buffer{}
 		for _, line := range ignoreLines {
 			buf.WriteString(" AND ")
@@ -1874,7 +1874,7 @@ func buildRefUsedOrderBy(refUsed map[string]int64) string {
 }
 
 func extractID(content string) (ret string) {
-	// Improve block ref search ID extraction https://github.com/siyuan-note/siyuan/issues/10848
+	// Improve block ref search ID extraction
 
 	if 22 > len(content) {
 		return
@@ -1939,7 +1939,7 @@ func fullTextSearchByFTS(query, boxFilter, pathFilter string, boxArgs, pathArgs 
 func fullTextSearchByFTSInBox(query, boxFilter, pathFilter string, boxArgs, pathArgs []any, typeFilter, ignoreFilter, orderBy string, beforeLen, page, pageSize int, boxID string) (ret []*Block, matchedBlockCount, matchedRootCount int) {
 	table := "blocks_fts"
 	projections := "id, parent_id, root_id, hash, box, path, " +
-		// Search result content snippet returns more text https://github.com/siyuan-note/siyuan/issues/10707
+		// Search result content snippet returns more text
 		"snippet(" + table + ", 6, '" + search.SearchMarkLeft + "', '" + search.SearchMarkRight + "', '...', 512) AS hpath, " +
 		"snippet(" + table + ", 7, '" + search.SearchMarkLeft + "', '" + search.SearchMarkRight + "', '...', 512) AS name, " +
 		"snippet(" + table + ", 8, '" + search.SearchMarkLeft + "', '" + search.SearchMarkRight + "', '...', 512) AS alias, " +
@@ -2496,7 +2496,7 @@ var (
 )
 
 func getSearchIgnoreLines() (ret []string) {
-	// Support ignore search results https://github.com/siyuan-note/siyuan/issues/10089
+	// Support ignore search results
 
 	now := time.Now().UnixMilli()
 	if now-searchIgnoreLastModified < 30*1000 {
@@ -2508,7 +2508,7 @@ func getSearchIgnoreLines() (ret []string) {
 
 	searchIgnoreLastModified = now
 
-	searchIgnorePath := filepath.Join(util.DataDir, ".siyuan", "searchignore")
+	searchIgnorePath := filepath.Join(util.DataDir, ".scribli", "searchignore")
 	err := os.MkdirAll(filepath.Dir(searchIgnorePath), 0755)
 	if err != nil {
 		return
@@ -2546,7 +2546,7 @@ var (
 )
 
 func getRefSearchIgnoreLines() (ret []string) {
-	// Support ignore search results https://github.com/siyuan-note/siyuan/issues/10089
+	// Support ignore search results
 
 	now := time.Now().UnixMilli()
 	if now-refSearchIgnoreLastModified < 30*1000 {
@@ -2558,7 +2558,7 @@ func getRefSearchIgnoreLines() (ret []string) {
 
 	refSearchIgnoreLastModified = now
 
-	searchIgnorePath := filepath.Join(util.DataDir, ".siyuan", "refsearchignore")
+	searchIgnorePath := filepath.Join(util.DataDir, ".scribli", "refsearchignore")
 	err := os.MkdirAll(filepath.Dir(searchIgnorePath), 0755)
 	if err != nil {
 		return

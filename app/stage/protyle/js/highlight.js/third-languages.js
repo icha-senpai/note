@@ -155,7 +155,7 @@ hljs.registerLanguage("mlir",function(){"use strict";return function(e){
             className:"symbol",variants:[{begin:"%"+s+"([:#]\\d+)?"},{begin:"\\^"+s},{
                 begin:"#"+s}]},e.C_NUMBER_MODE]}}}());
 
-// https://github.com/siyuan-note/siyuan/pull/15345
+// 
 hljs.registerLanguage('template', function (hljs) {
 
     const markdownRules = hljs.getLanguage('markdown') || { contains: [] };
@@ -390,7 +390,7 @@ hljs.registerLanguage('template', function (hljs) {
 
     return {
         name: 'template',
-        aliases: ['siyuan-template'],
+        aliases: ['Scribli-template'],
         case_insensitive: true,
         contains: [
             ACTION_BLOCK,

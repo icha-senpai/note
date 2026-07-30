@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -281,7 +281,7 @@ func GetBlockRefText(id string) string {
 		}
 
 		if n.IsTextMarkType("inline-memo") {
-			// Block ref anchor text no longer contains contents of inline-level memos https://github.com/siyuan-note/siyuan/issues/9363
+			// Block ref anchor text no longer contains contents of inline-level memos
 			n.TextMarkInlineMemoContent = ""
 			return ast.WalkContinue
 		}
@@ -595,7 +595,7 @@ func buildBlockBreadcrumb(node *ast.Node, excludeTypes []string, isEmbedBlock bo
 		if ast.NodeList == parent.Type || ast.NodeSuperBlock == parent.Type || ast.NodeBlockquote == parent.Type || ast.NodeCallout == parent.Type {
 			add = false
 			if parent == node {
-				// https://github.com/siyuan-note/siyuan/issues/13141#issuecomment-2476789553
+				//
 				add = true
 			}
 		}

@@ -89,7 +89,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://liuyun.io",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "Hyperlink"
 								}
 							]
@@ -2281,7 +2281,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan-template"
+					"TextMarkTextContent": "Scribli-template"
 				},
 				{
 					"Type": "NodeText",

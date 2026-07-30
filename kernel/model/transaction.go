@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -515,7 +515,7 @@ func (tx *Transaction) doMove(operation *Operation) (ret *TxErr) {
 	var headingChildren []*ast.Node
 	if isMovingFoldHeading := ast.NodeHeading == srcNode.Type && "1" == srcNode.IALAttr("fold"); isMovingFoldHeading {
 		headingChildren = treenode.HeadingChildren(srcNode)
-		// Blocks below other non-folded headings are no longer moved when moving a folded heading https://github.com/siyuan-note/siyuan/issues/8321
+		// Blocks below other non-folded headings are no longer moved when moving a folded heading
 		headingChildren = treenode.GetHeadingFold(headingChildren)
 	}
 
@@ -578,7 +578,7 @@ func (tx *Transaction) doMove(operation *Operation) (ret *TxErr) {
 
 		if 0 < len(headingChildren) {
 
-			// Nested lists cause hang after collapsing headings https://github.com/siyuan-note/siyuan/issues/15943
+			// Nested lists cause hang after collapsing headings
 			lastChild := headingChildren[len(headingChildren)-1]
 			if "1" == lastChild.IALAttr("heading-fold") && ast.NodeList == lastChild.Type &&
 				nil != lastChild.FirstChild && nil != lastChild.FirstChild.FirstChild && lastChild.FirstChild.FirstChild.ID == targetPreviousID {
@@ -1048,7 +1048,7 @@ func (tx *Transaction) doDelete(operation *Operation) (ret *TxErr) {
 		return
 	}
 
-	// Improve editor state synchronization when deleting blocks https://github.com/siyuan-note/siyuan/issues/17742
+	// Improve editor state synchronization when deleting blocks
 	deletedIDs := deletedNode.BlockIDs()
 	treenode.RemoveBlockTreesByIDs(tree.Box, deletedIDs)
 	tx.writeTree(tree)
@@ -1093,7 +1093,7 @@ func (tx *Transaction) doDelete0(operation *Operation, tree *parse.Tree) (delete
 
 	delete(tx.nodes, node.ID)
 
-	// List item disconnection no longer affects database binding blocks https://github.com/siyuan-note/siyuan/issues/12235
+	// List item disconnection no longer affects database binding blocks
 	needSyncDel2AvBlock := true
 	if ast.NodeListItem == node.Type {
 		for _, op := range tx.DoOperations {
@@ -2343,7 +2343,7 @@ func updateRefText(refNode *ast.Node, changedDefNodes map[string]*ast.Node) (cha
 }
 
 func checkUpsertInUserGuide(tree *parse.Tree) {
-	// In production mode, data reset warning pops up when editing data in the user guide https://github.com/siyuan-note/siyuan/issues/9757
+	// In production mode, data reset warning pops up when editing data in the user guide
 	if "prod" == util.Mode && IsUserGuide(tree.Box) {
 		util.PushErrMsg(Conf.Language(52), 7000)
 	}

@@ -25,10 +25,10 @@ export const turnIntoTaskList = (protyle: IProtyle, type: string, blockElement: 
         editElement.removeAttribute("placeholder");
         const isDone = dataTask && dataTask[1] !== " ";
         if (blockElement.parentElement.classList.contains("li") &&
-            blockElement.parentElement.childElementCount === 3  // https://ld246.com/article/1659315815506
+            blockElement.parentElement.childElementCount === 3  // 
         ) {
             // 仅有一项的列表才可转换
-            if (!blockElement.parentElement.parentElement.classList.contains("protyle-wysiwyg") && // https://ld246.com/article/1659315815506
+            if (!blockElement.parentElement.parentElement.classList.contains("protyle-wysiwyg") && // 
                 blockElement.parentElement.parentElement.childElementCount === 2) {
                 const liElement = blockElement.parentElement.parentElement;
                 const oldHTML = liElement.outerHTML;

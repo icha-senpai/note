@@ -217,7 +217,7 @@
     --b3-parent-background: var(--b3-theme-background);
 }
 
-/* 微软字体斜体会被相邻背景遮挡，将 arial 放置其前 https://github.com/siyuan-note/siyuan/issues/11841 */
+/* 微软字体斜体会被相邻背景遮挡，将 arial 放置其前  */
 :root:lang(zh-CN) {
     --b3-font-family: "Emojis Additional", "Emojis Reset", BlinkMacSystemFont, Helvetica, "PingFang SC", "Luxi Sans", "DejaVu Sans", arial, "Microsoft Yahei", "Hiragino Sans GB", "Source Han Sans SC", sans-serif, emojis;
 }

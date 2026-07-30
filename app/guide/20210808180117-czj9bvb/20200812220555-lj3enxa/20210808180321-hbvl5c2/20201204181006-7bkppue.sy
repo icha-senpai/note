@@ -158,7 +158,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://docs.siyuan-note.club/zh-Hans/reference/template/sprig/",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "中文版"
 				},
 				{
@@ -1829,7 +1829,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/community.html",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "社区集市仓库"
 				},
 				{

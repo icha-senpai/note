@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -136,7 +136,7 @@ func InsertLocalAssets(id string, assetAbsPaths []string, isUpload bool) (succMa
 
 		if gulu.File.IsSubPath(assetsDirPath, assetAbsPath) {
 
-			// Dragging a file from the assets folder into the editor causes the kernel to exit https://github.com/siyuan-note/siyuan/issues/15355
+			// Dragging a file from the assets folder into the editor causes the kernel to exit
 			succMap[baseName] = "assets/" + baseName
 			continue
 		}

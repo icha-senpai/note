@@ -60,7 +60,7 @@ export const setDefRefCount = (data: {
         }
         // 不能对比 rootId，否则嵌入块中的锚文本无法更新
         editor.protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${data.blockID}"]`).forEach(item => {
-            // 不能直接查询，否则列表中会获取到第一个列表项的 attr https://github.com/siyuan-note/siyuan/issues/12738
+            // 不能直接查询，否则列表中会获取到第一个列表项的 attr 
             const countElement = item.lastElementChild?.querySelector(".protyle-attr--refcount");
             if (countElement) {
                 if (data.refCount === 0) {
@@ -409,7 +409,7 @@ export const bootSync = () => {
 
 export const processSync = (data?: IWebSocketData, plugins?: Plugin[]) => {
     if (data?.code === 1) {
-        window.dispatchEvent(new CustomEvent("siyuan-sync-success"));
+        window.dispatchEvent(new CustomEvent("scribli-sync-success"));
     }
     /// #if MOBILE
     const menuSyncUseElement = document.querySelector("#menuSyncNow use");

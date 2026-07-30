@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ func renderOutline(heading *ast.Node, luteEngine *lute.Lute) (ret string) {
 		if !entering {
 			switch n.Type {
 			case ast.NodeHeading:
-				// Show heading block appearance style in the Outline Panel https://github.com/siyuan-note/siyuan/issues/7872
+				// Show heading block appearance style in the Outline Panel
 				if style := n.IALAttr("style"); "" != style {
 					buf.WriteString("</span>")
 				}
@@ -67,7 +67,7 @@ func renderOutline(heading *ast.Node, luteEngine *lute.Lute) (ret string) {
 
 		switch n.Type {
 		case ast.NodeHeading:
-			// Show heading block appearance style in the Outline Panel https://github.com/siyuan-note/siyuan/issues/7872
+			// Show heading block appearance style in the Outline Panel
 			if style := n.IALAttr("style"); "" != style {
 				buf.WriteString("<span style=\"")
 				buf.WriteString(style)
@@ -284,9 +284,9 @@ func resolveEmbedR(n *ast.Node, blockEmbedMode int, luteEngine *lute.Lute, resol
 					if 0 == blockEmbedMode {
 
 						// Improve export of heading levels in embedded blocks
-						// https://github.com/siyuan-note/siyuan/issues/12233
-						// https://github.com/siyuan-note/siyuan/issues/12741
-						// https://github.com/siyuan-note/siyuan/issues/17629
+						//
+						//
+						//
 						embedTopLevel := 0
 						embedFirstHeading := subTree.Root.ChildByType(ast.NodeHeading)
 						if nil != embedFirstHeading {

@@ -48,7 +48,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": " 样例项目 github repo: siyuan-note/theme-sample"
+									"Data": " 样例项目 github repo: Scribli-note/theme-sample"
 								}
 							]
 						}
@@ -83,7 +83,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": " 样例项目 github repo: siyuan-note/icon-sample"
+									"Data": " 样例项目 github repo: Scribli-note/icon-sample"
 								}
 							]
 						}
@@ -118,7 +118,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": " 样例项目 github repo: siyuan-note/widget-sample"
+									"Data": " 样例项目 github repo: Scribli-note/widget-sample"
 								}
 							]
 						}
@@ -153,7 +153,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": " 样例项目 github repo: siyuan-note/plugin-sample"
+									"Data": " 样例项目 github repo: Scribli-note/plugin-sample"
 								}
 							]
 						}
@@ -188,7 +188,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": " 样例项目 github repo: siyuan-note/template-sample"
+									"Data": " 样例项目 github repo: Scribli-note/template-sample"
 								}
 							]
 						}
@@ -216,7 +216,7 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "集市仓库 github repo: siyuan-note/bazaar"
+									"Data": "集市仓库 github repo: Scribli-note/bazaar"
 								}
 							]
 						}

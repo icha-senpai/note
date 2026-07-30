@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -100,9 +100,9 @@ func NewStdLute() (ret *lute.Lute) {
 	ret.SetLinkRef(false)
 	ret.SetGFMAutoLink(false)
 	ret.SetImgPathAllowSpace(true)
-	ret.SetInlineMathAllowDigitAfterOpenMarker(true) // Formula parsing supports $ followed by numbers when importing Markdown https://github.com/siyuan-note/siyuan/issues/8362
+	ret.SetInlineMathAllowDigitAfterOpenMarker(true) // Formula parsing supports $ followed by numbers when importing Markdown
 
-	// Follow editor Markdown syntax settings when importing Markdown https://github.com/siyuan-note/siyuan/issues/14731
+	// Follow editor Markdown syntax settings when importing Markdown
 	ret.SetInlineAsterisk(MarkdownSettings.InlineAsterisk)
 	ret.SetInlineUnderscore(MarkdownSettings.InlineUnderscore)
 	ret.SetSup(MarkdownSettings.InlineSup)
@@ -146,7 +146,7 @@ func LinkTarget(htmlStr, linkBase string) (ret string) {
 				selection.SetAttr("href", linkBase+href)
 			}
 
-			// The hyperlink in the extension package README fails to jump to the browser to open https://github.com/siyuan-note/siyuan/issues/8452
+			// The hyperlink in the extension package README fails to jump to the browser to open
 			selection.SetAttr("target", "_blank")
 		}
 	})

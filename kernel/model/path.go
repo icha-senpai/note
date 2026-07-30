@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ func createDocsByHPath(boxID, hPath, content, parentID, id string, titleEmpty bo
 			}
 			return
 		}
-		// The save path is incorrect when creating a sub-doc by ref in a doc with the same name https://github.com/siyuan-note/siyuan/issues/8138
+		// The save path is incorrect when creating a sub-doc by ref in a doc with the same name
 
 		parentHPath, name := path.Split(hPath)
 		parentHPath = strings.TrimSuffix(parentHPath, "/")
@@ -68,7 +68,7 @@ func createDocsByHPath(boxID, hPath, content, parentID, id string, titleEmpty bo
 	hPathBuilder := bytes.Buffer{}
 	hpathBtMap := map[string]*treenode.BlockTree{}
 	parts := strings.Split(hPath, "/")[1:]
-	// The subdoc creation path is unstable when a parent doc with the same name exists https://github.com/siyuan-note/siyuan/issues/9322
+	// The subdoc creation path is unstable when a parent doc with the same name exists
 
 	for i, part := range parts {
 		if i == len(parts)-1 {

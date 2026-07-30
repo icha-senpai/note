@@ -310,12 +310,12 @@ export const isEndOfBlock = (range: Range) => {
     if (range.endContainer.nodeType !== 3) {
         nextSibling = range.endContainer.childNodes[range.endOffset];
         if (!nextSibling) {
-            // https://github.com/siyuan-note/siyuan/issues/16214
+            // 
             if (range.endContainer.parentElement.getAttribute("spellcheck")) {
                 nextSibling = range.endContainer;
             }
         } else if (nextSibling.nodeType === 3 && !range.endContainer.childNodes[range.endOffset + 1]) {
-            // https://github.com/siyuan-note/siyuan/issues/16227
+            // 
             return nextSibling.textContent === Constants.ZWSP || nextSibling.textContent === "\n";
         }
     }
@@ -396,7 +396,7 @@ export const getPreviousFileLi = (current: Element) => {
     return false;
 };
 
-// 相邻标签之间插入空格区隔，避免 SpinBlockDOM 解析时合并为一个标签 https://github.com/siyuan-note/siyuan/issues/18191
+// 相邻标签之间插入空格区隔，避免 SpinBlockDOM 解析时合并为一个标签 
 export const fixAdjacentTags = (editableElement: Element) => {
     if (!editableElement) {
         return;

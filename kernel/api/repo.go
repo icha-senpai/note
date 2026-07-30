@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -76,7 +76,7 @@ func setRetentionIndexesDaily(c *gin.Context) {
 }
 
 func getRepoFile(c *gin.Context) {
-	// Add internal kernel API `/api/repo/getRepoFile` https://github.com/siyuan-note/siyuan/issues/10101
+	// Add internal kernel API `/api/repo/getRepoFile`
 
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)

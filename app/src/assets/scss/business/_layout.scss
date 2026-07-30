@@ -1,5 +1,5 @@
 .layout {
-  overflow-y: hidden; // https://github.com/siyuan-note/siyuan/issues/6706
+  overflow-y: hidden; // 
 
   &__wnd--active .layout-tab-bar .item--focus {
     color: var(--b3-theme-on-background);
@@ -116,7 +116,7 @@
     height: 6px;
     width: 100%;
     position: relative;
-    z-index: 4; // 需大于 #sidebarContainer https://github.com/siyuan-note/siyuan/issues/11759
+    z-index: 4; // 需大于 #sidebarContainer 
     flex-shrink: 0;
     touch-action: none;
 

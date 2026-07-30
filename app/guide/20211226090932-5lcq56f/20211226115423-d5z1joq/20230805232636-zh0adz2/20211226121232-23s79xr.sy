@@ -268,7 +268,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://ld246.com/subscribe/scribli",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "中國大陸地區"
 								}
 							]
@@ -298,7 +298,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://liuyun.io/subscribe/scribli",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "非中國大陸地區"
 								}
 							]

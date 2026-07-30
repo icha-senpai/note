@@ -164,7 +164,7 @@ export const setColOption = (protyle: IProtyle, data: IAV, target: HTMLElement, 
         if ((name === inputElement.value && desc === descElement.value) || !inputElement.value) {
             return;
         }
-        // cell 不判断重名 https://github.com/siyuan-note/siyuan/issues/11484
+        // cell 不判断重名 
         transaction(protyle, [{
             action: "updateAttrViewColOption",
             id: colId,
@@ -192,7 +192,7 @@ export const setColOption = (protyle: IProtyle, data: IAV, target: HTMLElement, 
         }]);
         fields.find(column => {
             if (column.id === colId) {
-                // 重名不进行更新 https://github.com/siyuan-note/siyuan/issues/13554
+                // 重名不进行更新 
                 const sameItem = column.options.find((item) => {
                     if (item.name === inputElement.value && item.desc === descElement.value) {
                         return true;
@@ -667,7 +667,7 @@ export const addColOptionOrCell = (protyle: IProtyle, data: IAV, cellElements: H
 
 export const getSelectHTML = (fields: IAVColumn[], cellElements: HTMLElement[], init = false, blockElement: Element) => {
     if (init) {
-        // 快速选中后如果 render 了再使用 genCellValueByElement 获取的元素和当前选中的不一致， https://github.com/siyuan-note/siyuan/issues/11268
+        // 快速选中后如果 render 了再使用 genCellValueByElement 获取的元素和当前选中的不一致， 
         cellValues = [];
         const isCustomAttr = cellElements[0].classList.contains("custom-attr__avvalue");
         cellElements.forEach(item => {

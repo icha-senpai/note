@@ -116,7 +116,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "workspace/data/.siyuan/searchignore"
+									"TextMarkTextContent": "workspace/data/.scribli/searchignore"
 								},
 								{
 									"Type": "NodeText",
@@ -160,7 +160,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "workspace/data/.siyuan/refsearchignore"
+									"TextMarkTextContent": "workspace/data/.scribli/refsearchignore"
 								},
 								{
 									"Type": "NodeText",

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -733,7 +733,7 @@ func syncRepoUploadWithDNSRetry() (err error) {
 }
 
 func getSyncIgnoreLines() (ret []string) {
-	ignore := filepath.Join(util.DataDir, ".siyuan", "syncignore")
+	ignore := filepath.Join(util.DataDir, ".scribli", "syncignore")
 	err := os.MkdirAll(filepath.Dir(ignore), 0755)
 	if err != nil {
 		return

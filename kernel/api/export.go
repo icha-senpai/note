@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -785,7 +785,7 @@ func exportPreviewHTML(c *gin.Context) {
 
 	content = strings.ReplaceAll(content, "http://"+util.LocalHost+":"+util.ServerPort+"/#", "#")
 
-	// Add `data-doc-type` and attribute when exporting image and PDF https://github.com/siyuan-note/siyuan/issues/9497
+	// Add `data-doc-type` and attribute when exporting image and PDF
 	attrs := map[string]string{}
 	var typ string
 	if nil != node {

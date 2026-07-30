@@ -9,7 +9,7 @@
  *   pnpm run sign:dev           # macOS 开发者手动签名，供本地通知等功能使用
  *
  * 非 macOS 平台直接跳过。无可用证书时仅打印提示并以退出码 0 结束。
- * 可通过环境变量 SIYUAN_DEV_SIGN_IDENTITY 或 CSC_NAME 指定证书名称。
+ * 可通过环境变量 SCRIBLI_DEV_SIGN_IDENTITY 或 CSC_NAME 指定证书名称。
  */
 const {execFileSync} = require("child_process");
 const fs = require("fs");
@@ -53,7 +53,7 @@ function listCodeSignIdentities() {
 }
 
 function pickIdentity(identities) {
-    const envIdentity = process.env.SIYUAN_DEV_SIGN_IDENTITY || process.env.CSC_NAME;
+    const envIdentity = process.env.SCRIBLI_DEV_SIGN_IDENTITY || process.env.CSC_NAME;
     if (envIdentity) {
         if (identities.includes(envIdentity)) {
             return envIdentity;
@@ -98,7 +98,7 @@ function main() {
     const identity = pickIdentity(identities);
     if (!identity) {
         console.warn("sign:dev: no codesigning identity (macOS notifications may not work)");
-        console.warn("sign:dev: sign in with Apple ID in Xcode, or set SIYUAN_DEV_SIGN_IDENTITY");
+        console.warn("sign:dev: sign in with Apple ID in Xcode, or set SCRIBLI_DEV_SIGN_IDENTITY");
         return;
     }
 

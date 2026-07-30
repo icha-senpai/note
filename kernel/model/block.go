@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -423,7 +423,7 @@ func RecentUpdatedBlocks() (ret []*Block) {
 	}
 
 	if ignoreLines := getSearchIgnoreLines(); 0 < len(ignoreLines) {
-		// Support ignore search results https://github.com/siyuan-note/siyuan/issues/10089
+		// Support ignore search results
 		buf := bytes.Buffer{}
 		for _, line := range ignoreLines {
 			buf.WriteString(" AND ")
@@ -1103,7 +1103,7 @@ func getBlockKramdown0(tree *parse.Tree, id, mode string, luteEngine *lute.Lute)
 	root.AppendChild(node.Next) // IAL
 	root.PrependChild(node)
 	if "md" == mode {
-		// `/api/block/getBlockKramdown` link/image URLs are no longer encoded with spaces https://github.com/siyuan-note/siyuan/issues/15611
+		// `/api/block/getBlockKramdown` link/image URLs are no longer encoded with spaces
 		luteEngine.SetPreventEncodeLinkSpace(true)
 		ret = treenode.ExportNodeStdMd(root, luteEngine)
 	} else {

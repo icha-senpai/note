@@ -62,15 +62,15 @@ var attrSetCmd = &cobra.Command{
 	Long: `Set custom attributes on a block.
 
 Common attributes:
-  icon       Emoji hex codepoint (e.g. "1f4ca"), emoji character (e.g. "📊"), custom image path (e.g. "1/b3log.png"), or dynamic icon URL (e.g.
+  icon       Emoji hex codepoint (e.g. "1f4ca"), emoji character (e.g. "📊"), custom image path (e.g. "1/custom-icon.png"), or dynamic icon URL (e.g.
              "api/icon/getDynamicIcon?type=8&color=%23d23f31&content=Scribli&id=xxx").
   title-img  CSS background-image format (e.g. 'background-image:url("assets/example.jpg")').
              DO NOT use a bare asset path.
   tags       Comma-separated tag names.
 
 Examples:
-  siyuan-kernel attr set --id 20260605100657-v080a4j --attr icon=1f4ca
-  siyuan-kernel attr set --id 20260605100657-v080a4j --attr title-img='background-image:url("assets/example.jpg")'`,
+  scribli-kernel attr set --id 20260605100657-v080a4j --attr icon=1f4ca
+  scribli-kernel attr set --id 20260605100657-v080a4j --attr title-img='background-image:url("assets/example.jpg")'`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		id, _ := cmd.Flags().GetString("id")
 		if id == "" {

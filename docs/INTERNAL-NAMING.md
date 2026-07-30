@@ -1,6 +1,6 @@
 # Scribli Internal Naming Cleanup
 
-Scribli is a local-first fork of SiYuan. The target state is Scribli naming throughout the app, codebase, packaging, docs, and runtime behavior. Some inherited identifiers are easy private implementation names; others cross plugin, API, clipboard, workspace, or module boundaries and need explicit migrations instead of blind replacement.
+Scribli is a local-first fork of an upstream AGPL project. The target state is Scribli naming throughout the app, codebase, packaging, docs, and runtime behavior. Some inherited identifiers are easy private implementation names; others cross plugin, API, clipboard, workspace, or module boundaries and need explicit migrations instead of blind replacement.
 
 ## Do Not Blindly Rename
 
@@ -9,10 +9,10 @@ These families are not permanent exceptions. They need staged migrations because
 | Identifier family | Why it is sensitive |
 | --- | --- |
 | Legacy frontend global | Removed from Scribli-owned frontend startup and export HTML. Plugins/snippets should use `window.scribli`; do not reintroduce the old global without a deliberate compatibility decision. |
-| `application/siyuan-*` and legacy clipboard markers (`text/siyuan`, `data-siyuan`) | MIME, clipboard, export, and paste formats can affect copied content and external integrations. The app writes Scribli clipboard formats now and keeps read fallback for old copied content. Migrate the remaining MIME/API surfaces with tests before removing legacy readers. |
+| Scribli MIME and clipboard markers | MIME, clipboard, export, and paste formats can affect copied content and external integrations. The app writes Scribli clipboard formats now and keeps read fallback only where deliberately tested. |
 | `github.com/siyuan-note/siyuan/kernel` | Current Go module path and import root. Renaming it is a broad module detachment project. |
-| `.siyuan` | Workspace and notebook metadata folder. Migrate only with backups, upgrade code, downgrade expectations, and tests. |
-| `/api/*` endpoint names inherited from SiYuan | Public API and plugin compatibility surface. Add Scribli endpoints or payload aliases before removing old names. |
+| Inherited workspace metadata paths | Workspace and notebook metadata folders. Migrate only with backups, upgrade code, downgrade expectations, and tests. |
+| `/api/*` endpoint names inherited from upstream | Public API and plugin compatibility surface. Add Scribli endpoints or payload aliases before removing old names. |
 | Plugin event/API names | Third-party plugins can depend on them. Scribli-owned plugin APIs should use Scribli names; old names require an explicit compatibility reason and tests before being kept. |
 
 ## Classification
@@ -22,10 +22,10 @@ Classify every legacy name before changing it.
 | Class | Default action | Examples |
 | --- | --- | --- |
 | User-visible branding | Rename to Scribli now. | README text, app window titles, installer labels, product metadata, visible settings text, public docs that describe the fork. |
-| Network or service identifiers | Remove or disable upstream official service behavior. | SiYuan/B3log/LiuYun/LianDi cloud endpoints, upstream update URLs, upstream marketplace/bazaar URLs, payment/subscription endpoints. |
+| Network or service identifiers | Remove or disable upstream official service behavior. | Official cloud endpoints, upstream update URLs, upstream marketplace/bazaar URLs, payment/subscription endpoints. |
 | Safe private implementation names | Rename only when local and well-tested. | Private helper names, local variables, comments, test names, private filenames that are not imported or serialized. |
 | Public plugin/API compatibility names | Use Scribli names by default; keep an old name only for a tested, deliberate compatibility reason. | public API payload keys, plugin APIs, command names. |
-| Stored-data compatibility names | Migrate with backup-safe upgrade code and tests. | `.siyuan`, `conf.json` keys, notebook metadata paths, snapshot metadata, MIME strings in saved content. |
+| Stored-data compatibility names | Migrate with backup-safe upgrade code and tests. | Workspace metadata paths, `conf.json` keys, notebook metadata paths, snapshot metadata, MIME strings in saved content. |
 
 ## Rename Rules
 
@@ -49,7 +49,7 @@ Do not pretend the module path has already been detached. Renaming the module an
 
 ## Upstream-Owned Go Dependencies
 
-Do not fork every `github.com/siyuan-note/*` dependency solely because of its namespace. For each dependency, classify it first:
+Do not fork every inherited upstream dependency solely because of its namespace. For each dependency, classify it first:
 
 | Question | Action |
 | --- | --- |

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -612,7 +612,7 @@ func GetDocInBox(startID, endID, id string, index int, query string, queryTypes,
 	luteEngine := NewLute()
 	node := treenode.GetNodeInTree(tree, id)
 	if nil == node {
-		// Unable to open the doc when the block pointed by the scroll position does not exist https://github.com/siyuan-note/siyuan/issues/9030
+		// Unable to open the doc when the block pointed by the scroll position does not exist
 		node = treenode.GetNodeInTree(tree, tree.Root.ID)
 		if nil == node {
 			err = ErrBlockNotFound
@@ -803,7 +803,7 @@ func GetDocInBox(startID, endID, id string, index int, query string, queryTypes,
 	for _, n := range nodes {
 		var unlinks []*ast.Node
 
-		// The referenced block under the folded heading cannot be hovered to view https://github.com/siyuan-note/siyuan/issues/9582
+		// The referenced block under the folded heading cannot be hovered to view
 		nInFoldedHeading := topInFoldedHeading[n.ID]
 		if nInFoldedHeading && ((0 != mode && id != n.ID) || isDoc) {
 			continue
@@ -1382,7 +1382,7 @@ func CreateDailyNote(boxID string) (p string, existed bool, err error) {
 				tree.Root.AppendChild(c)
 			}
 
-			// Creating a dailynote template supports doc attributes https://github.com/siyuan-note/siyuan/issues/10698
+			// Creating a dailynote template supports doc attributes
 			templateIALs := parse.IAL2Map(templateTree.Root.KramdownIAL)
 			for k, v := range templateIALs {
 				if "name" == k || "alias" == k || "bookmark" == k || "memo" == k || "icon" == k || strings.HasPrefix(k, "custom-") {
@@ -1570,7 +1570,7 @@ func MoveDocs(fromPaths []string, toBoxID, toPath string, callback any) (err err
 		}
 	}
 
-	// A progress layer appears when moving more than 64 documents at once https://github.com/siyuan-note/siyuan/issues/9356
+	// A progress layer appears when moving more than 64 documents at once
 	subDocsCount := 0
 	for fromPath, fromBox := range pathsBoxes {
 		subDocsCount += countSubDocs(fromBox.ID, fromPath)
@@ -2118,7 +2118,7 @@ func createDoc(boxID, p, title, dom string, titleEmpty bool) (tree *parse.Tree, 
 		tree.Root.AppendChild(treenode.NewParagraph(""))
 	}
 
-	// Convert mp3 and mp4 hyperlinks to audio and video when moving cloud inbox to docs https://github.com/siyuan-note/siyuan/issues/9778
+	// Convert mp3 and mp4 hyperlinks to audio and video when moving cloud inbox to docs
 	var unlinks []*ast.Node
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if !entering {
@@ -2203,7 +2203,7 @@ func moveSorts(rootID, fromBox, toBox string) {
 
 	fromRootSorts := map[string]int{}
 	ids := treenode.RootChildIDs(rootID)
-	fromConfPath := filepath.Join(util.DataDir, fromBox, ".siyuan", "sort.json")
+	fromConfPath := filepath.Join(util.DataDir, fromBox, ".scribli", "sort.json")
 	fromFullSortIDs, err := readSortConfMap(fromConfPath)
 	if err != nil {
 		return
@@ -2212,7 +2212,7 @@ func moveSorts(rootID, fromBox, toBox string) {
 		fromRootSorts[id] = fromFullSortIDs[id]
 	}
 
-	toConfPath := filepath.Join(util.DataDir, toBox, ".siyuan", "sort.json")
+	toConfPath := filepath.Join(util.DataDir, toBox, ".scribli", "sort.json")
 	toFullSortIDs, err := readSortConfMap(toConfPath)
 	if err != nil {
 		return
@@ -2283,7 +2283,7 @@ func ChangeFileTreeSort(boxID string, paths []string) {
 		sortFolderIDs[id] = val
 	}
 
-	confDir := filepath.Join(util.DataDir, box.ID, ".siyuan")
+	confDir := filepath.Join(util.DataDir, box.ID, ".scribli")
 	if err = os.MkdirAll(confDir, 0755); err != nil {
 		logging.LogErrorf("create conf dir failed: %s", err)
 		return
@@ -2306,7 +2306,7 @@ func ChangeFileTreeSort(boxID string, paths []string) {
 }
 
 func (box *Box) fillSort(files *[]*File) {
-	confPath := filepath.Join(util.DataDir, box.ID, ".siyuan", "sort.json")
+	confPath := filepath.Join(util.DataDir, box.ID, ".scribli", "sort.json")
 	fullSortIDs, err := readSortConfMap(confPath)
 	if err != nil {
 		return
@@ -2319,7 +2319,7 @@ func (box *Box) fillSort(files *[]*File) {
 }
 
 func (box *Box) removeSort(ids []string) {
-	confPath := filepath.Join(util.DataDir, box.ID, ".siyuan", "sort.json")
+	confPath := filepath.Join(util.DataDir, box.ID, ".scribli", "sort.json")
 	if !filelock.IsExist(confPath) {
 		return
 	}
@@ -2392,7 +2392,7 @@ func (box *Box) addMinSort(parentPath, id string) {
 
 func (box *Box) setSortVal(id string, sortVal int) {
 	var err error
-	confDir := filepath.Join(util.DataDir, box.ID, ".siyuan")
+	confDir := filepath.Join(util.DataDir, box.ID, ".scribli")
 	if err = os.MkdirAll(confDir, 0755); err != nil {
 		logging.LogErrorf("create conf dir failed: %s", err)
 		return
@@ -2410,7 +2410,7 @@ func (box *Box) setSortVal(id string, sortVal int) {
 }
 
 func (box *Box) addSort(previousPath, id string) {
-	confDir := filepath.Join(util.DataDir, box.ID, ".siyuan")
+	confDir := filepath.Join(util.DataDir, box.ID, ".scribli")
 	if err := os.MkdirAll(confDir, 0755); err != nil {
 		logging.LogErrorf("create conf dir failed: %s", err)
 		return
@@ -2449,7 +2449,7 @@ func (box *Box) addSort(previousPath, id string) {
 }
 
 func (box *Box) setSort(sortIDVals map[string]int) {
-	confPath := filepath.Join(util.DataDir, box.ID, ".siyuan", "sort.json")
+	confPath := filepath.Join(util.DataDir, box.ID, ".scribli", "sort.json")
 	if !filelock.IsExist(confPath) {
 		return
 	}

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -375,7 +375,7 @@ func isInvalidWorkspacePath(absPath string) bool {
 		return true
 	}
 	if 32 < utf8.RuneCountInString(name) {
-		// Adjust workspace name length limit to 32 runes https://github.com/siyuan-note/siyuan/issues/9440
+		// Adjust workspace name length limit to 32 runes
 		return true
 	}
 	toLower := strings.ToLower(name)

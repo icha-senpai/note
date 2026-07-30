@@ -495,7 +495,7 @@ export class Outline extends Model {
                             parentID: undoParentID,
                         }]);
 
-                        // https://github.com/siyuan-note/siyuan/issues/10828#issuecomment-2044099675
+                        // 
                         editor.wysiwyg.element.querySelectorAll('[data-type="NodeHeading"] [contenteditable="true"][spellcheck]').forEach(item => {
                             item.setAttribute("contenteditable", "false");
                         });
@@ -588,13 +588,13 @@ export class Outline extends Model {
                 outlineParam.notebook = notebookId;
             }
             fetchPost("/api/outline/getDocOutline", outlineParam, response => {
-                // 文档切换后不再更新原有推送 https://github.com/siyuan-note/siyuan/issues/13409
+                // 文档切换后不再更新原有推送 
                 if (data.data.rootID !== this.blockId) {
                     return;
                 }
                 this.update(response);
                 this.updateDocTitle(null, response.data?.length || 0);
-                // https://github.com/siyuan-note/siyuan/issues/8372
+                // 
                 if (getSelection().rangeCount > 0) {
                     const blockElement = hasClosestBlock(getSelection().getRangeAt(0).startContainer);
                     if (blockElement && blockElement.getAttribute("data-type") === "NodeHeading") {

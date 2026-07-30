@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -347,7 +347,7 @@ func QueryNoLimitArgs(stmt string, args ...any) (ret []map[string]any, err error
 
 func Query(stmt string, limit int) (ret []map[string]any, err error) {
 	originalStmt := stmt
-	// Kernel API `/api/query/sql` support `||` operator https://github.com/siyuan-note/siyuan/issues/9662
+	// Kernel API `/api/query/sql` support `||` operator
 
 	p := sqlparser2.NewParser(strings.NewReader(stmt))
 	parsedStmt2, err := p.ParseStatement()
@@ -366,7 +366,7 @@ func Query(stmt string, limit int) (ret []map[string]any, err error) {
 				slct.Limit = limitClause
 				stmt = sqlparser.String(slct)
 			case *sqlparser.Union:
-				// Kernel API `/api/query/sql` support `UNION` statement https://github.com/siyuan-note/siyuan/issues/8226
+				// Kernel API `/api/query/sql` support `UNION` statement
 				limitClause := getLimitClause(parsedStmt, limit)
 				union := parsedStmt.(*sqlparser.Union)
 				union.Limit = limitClause

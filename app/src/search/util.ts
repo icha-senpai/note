@@ -806,7 +806,7 @@ export const genSearch = (app: App, config: Config.IUILayoutTabSearchConfig, ele
                     let isClick = event.detail === 1;
                     let isDblClick = event.detail === 2;
                     /// #if BROWSER
-                    if (isIPad()) { // 需要进行 ipad 判断 https://github.com/siyuan-note/siyuan/issues/12704
+                    if (isIPad()) { // 需要进行 ipad 判断 
                         const newDate = Date.now();
                         isClick = newDate - lastClickTime > Constants.TIMEOUT_DBLCLICK;
                         isDblClick = !isClick;
@@ -1011,7 +1011,7 @@ export const updateConfig = (element: Element, item: Config.IUILayoutTabSearchCo
                              edit: Protyle, clear = false) => {
     const dialogElement = hasClosestByClassName(element, "b3-dialog--open");
     if (dialogElement && dialogElement.getAttribute("data-key") === Constants.DIALOG_SEARCH) {
-        // https://github.com/siyuan-note/siyuan/issues/6828
+        // 
         item.hPath = config.hPath;
         item.idPath = [...config.idPath];
     }
@@ -1185,7 +1185,7 @@ export const getArticle = (options: {
                     types: options.config?.types || null,
                     subTypes: options.config?.subTypes || null,
                 };
-                // https://ld246.com/article/1770132984152
+                // 
                 if (options.edit.protyle.options.render.title) {
                     options.edit.protyle.wysiwyg.renderCustom(response.data.ial);
                 }
@@ -1233,7 +1233,7 @@ export const getArticle = (options: {
                         }
                     }
                 });
-                // 只能放在 onGet 后，否则 title 不会更新 https://github.com/siyuan-note/siyuan/issues/16739
+                // 只能放在 onGet 后，否则 title 不会更新 
                 if (options.edit.protyle.options.render.title) {
                     options.edit.protyle.title.render(options.edit.protyle, response);
                 }

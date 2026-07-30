@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ const (
 
 	ClaimsContextKey = "claims"
 
-	iss = "siyuan-kernel"
+	iss = "scribli-kernel"
 
 	ClaimsKeyRole string = "role"
 )
@@ -115,7 +115,7 @@ func InitPublishJWT() {
 			jwt.MapClaims{
 				"iss": iss,
 				"sub": username,
-				"aud": "siyuan-publish-server",
+				"aud": "scribli-publish-server",
 				"jti": uuid.New().String(),
 
 				ClaimsKeyRole: RoleReader,
@@ -136,7 +136,7 @@ func CreatePluginJWT(name string) (string, error) {
 		jwt.MapClaims{
 			"iss": iss,
 			"sub": name,
-			"aud": "siyuan-kernel-plugin",
+			"aud": "scribli-kernel-plugin",
 			"jti": uuid.New().String(),
 
 			ClaimsKeyRole: RoleAdministrator,

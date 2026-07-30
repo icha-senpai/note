@@ -23,7 +23,7 @@ A Scribli workspace is a **self-describing** directory tree: notebooks, document
 │   ├── ca.crt / ca.key / cert.pem / key.pem   # TLS certificates and keys
 │   └── windowState.json        # Desktop window state
 ├── data/                       # DataDir — root of all notebook data
-│   ├── .siyuan/                # Workspace-level hidden config
+│   ├── .scribli/                # Workspace-level hidden config
 │   │   ├── syncignore / searchignore / embeddingignore / indexignore / refsearchignore
 │   │   └── notebook-crypto-backup.json # Optional encrypted-notebook global recovery metadata
 │   ├── assets/                 # ★Global assets (images/audio/video/files)
@@ -35,7 +35,7 @@ A Scribli workspace is a **self-describing** directory tree: notebooks, document
 │   ├── public/                 # Static resources
 │   ├── storage/                # Persistent structured data (attribute views, plugins, etc.)
 │   └── <boxID>/                # ★Notebook (dir name = notebook ID)
-│       ├── .siyuan/
+│       ├── .scribli/
 │       │   ├── conf.json       # ★Notebook config (BoxConf: name/icon/closed...)
 │       │   ├── sort.json       # Optional custom sort mapping {docID: order}
 │       │   ├── boxDoc.json     # Optional top-level notebook document marker for .sy.zip import/export
@@ -80,7 +80,7 @@ Workspace-root entries:
 
 The first level of `data/` mixes two kinds of entries:
 
-1. **Fixed data directories:** `.siyuan/`, `assets/`, `templates/`, `widgets/`, `plugins/`, `emojis/`, `snippets/`, `public/`, `storage/`.
+1. **Fixed data directories:** `.scribli/`, `assets/`, `templates/`, `widgets/`, `plugins/`, `emojis/`, `snippets/`, `public/`, `storage/`.
 2. **Notebook directories:** each is a folder named with the notebook ID.
 
 ### Reserved-filename list (★ avoid when writing files)
@@ -90,11 +90,11 @@ The first level of `data/` mixes two kinds of entries:
 ```go
 func IsReservedFilename(baseName string) bool {
     return "assets" == baseName || "templates" == baseName || "widgets" == baseName ||
-        "emojis" == baseName || ".siyuan" == baseName || strings.HasPrefix(baseName, ".")
+        "emojis" == baseName || ".scribli" == baseName || strings.HasPrefix(baseName, ".")
 }
 ```
 
-That is, the physical path segments `assets` / `templates` / `widgets` / `emojis` / `.siyuan`, as well as anything starting with `.`, are reserved. This restriction applies to on-disk IDs and path segments, not to the notebook names or document titles displayed to users.
+That is, the physical path segments `assets` / `templates` / `widgets` / `emojis` / `.scribli`, as well as anything starting with `.`, are reserved. This restriction applies to on-disk IDs and path segments, not to the notebook names or document titles displayed to users.
 
 ### Persistent data vs rebuildable indexes
 
@@ -155,9 +155,9 @@ The kernel maps virtual paths beginning with `/<boxID>/` back to the notebook's 
 
 ---
 
-## 5. Notebook metadata: `<boxID>/.siyuan/`
+## 5. Notebook metadata: `<boxID>/.scribli/`
 
-Each notebook directory contains a `.siyuan/` hidden folder, which can contain:
+Each notebook directory contains a `.scribli/` hidden folder, which can contain:
 
 | File | Purpose |
 | --- | --- |
@@ -186,7 +186,7 @@ The `BoxConf` struct:
 
 > ⚠️ **The notebook ID is NOT in `conf.json`** — the ID is the notebook directory name itself (see §3).
 
-Read/write sites: `GetConf` / `SaveConf`. The path is hard-coded as `<DataDir>/<boxID>/.siyuan/conf.json`.
+Read/write sites: `GetConf` / `SaveConf`. The path is hard-coded as `<DataDir>/<boxID>/.scribli/conf.json`.
 
 `boxDoc.json` contains a metadata spec version and the top-level document ID. At runtime the kernel derives that document ID directly from `box.ID`; the metadata file is retained so `.sy.zip` import can identify the source notebook's top-level document and remap it to the destination notebook ID.
 
@@ -201,15 +201,15 @@ Be careful to distinguish the two `conf.json` files:
 | File | Location | Scope |
 | --- | --- | --- |
 | `conf/conf.json` | **Workspace root** | Workspace-level global config (appearance / langs / system / editor / sync / repo, etc.) |
-| `<boxID>/.siyuan/conf.json` | **Inside a notebook** | That notebook only (BoxConf) |
+| `<boxID>/.scribli/conf.json` | **Inside a notebook** | That notebook only (BoxConf) |
 
 `conf/conf.json` holds UI appearance, sync, AI, flashcard, and other workspace-level settings.
 
 ---
 
-## 7. Workspace-level hidden config: `data/.siyuan/`
+## 7. Workspace-level hidden config: `data/.scribli/`
 
-`data/.siyuan/` is different from the per-notebook `.siyuan/` — the former holds **workspace-level** rules and state:
+`data/.scribli/` is different from the per-notebook `.scribli/` — the former holds **workspace-level** rules and state:
 
 | File | Purpose |
 | --- | --- |
@@ -295,7 +295,7 @@ When writing files directly:
 2. ☐ A document's `.sy` filename equals its rootID (§9).
 3. ☐ A document with children must have the **paired same-named directory**; moving the parent means moving that directory too (§4).
 4. ☐ Do not move root-level documents into `<boxID>/<boxID>/`; the top-level notebook document uses a virtual parent-child mapping (§4).
-5. ☐ A notebook's name/icon/closed state lives in `<boxID>/.siyuan/conf.json`; the name and icon are synchronized with `<boxID>.sy` when that document exists (§5).
+5. ☐ A notebook's name/icon/closed state lives in `<boxID>/.scribli/conf.json`; the name and icon are synchronized with `<boxID>.sy` when that document exists (§5).
 6. ☐ Treat `data/storage/` as persistent source data and `temp/*.db` as rebuildable indexes; do not interchange their lifecycle (§3).
 7. ☐ After changes you usually need to **rebuild the index**, or search/block-refs/breadcrumbs will be stale.
 

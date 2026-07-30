@@ -19,7 +19,7 @@
     margin: 0 auto;
   }
 
-  // 需显示 p 的使用范围 https://github.com/siyuan-note/siyuan/issues/11670
+  // 需显示 p 的使用范围 
   li > p,
   & > p,
   blockquote > p,
@@ -74,14 +74,14 @@
     direction: ltr;
     user-select: text;
     display: inline;
-    // https://github.com/siyuan-note/siyuan/issues/17211
+    // 
     &:after {
       content: '‎';
     }
 
-    // https://github.com/siyuan-note/siyuan/issues/3081 test $\begin{bmatrix}   a & b \\c & d \\   e & f\end{bmatrix}$ test
-    // https://ld246.com/article/1626937851892 <u>test $\mu_p$ test</u>
-    // https://ld246.com/article/1636204769623  test $\rightarrow$ test
+    //  test $\begin{bmatrix}   a & b \\c & d \\   e & f\end{bmatrix}$ test
+    //  <u>test $\mu_p$ test</u>
+    //   test $\rightarrow$ test
   }
 
   kbd,
@@ -459,11 +459,11 @@
     overflow-x: auto;
     overflow-y: hidden;
     max-width: 100%;
-    padding: 4px 0; // https://ld246.com/article/1626774181074/comment/1626789173915#comments
-    // https://github.com/siyuan-note/siyuan/issues/3541
+    padding: 4px 0; // 
+    // 
     & > .katex > .katex-html {
       display: flex;
-      align-items: baseline; // https://ld246.com/article/1645933216334
+      align-items: baseline; // 
 
       &::before {
         content: "";
@@ -479,10 +479,10 @@
   }
 
   .katex {
-    // https://github.com/siyuan-note/siyuan/issues/10251
-    // https://github.com/siyuan-note/siyuan/issues/10321
-    // https://github.com/siyuan-note/siyuan/issues/10346
-    line-height: normal; // https://ld246.com/article/1649890278771
+    // 
+    // 
+    // 
+    line-height: normal; // 
 
     .mathnormal {
       font-family: var(--b3-font-family-math);
@@ -494,8 +494,8 @@
 
     [contenteditable="false"] svg {
       border-radius: var(--b3-border-radius);
-      max-width: 100%; // https://github.com/siyuan-note/siyuan/issues/11181
-      height: 100%; // https://github.com/siyuan-note/siyuan/issues/13852
+      max-width: 100%; // 
+      height: 100%; // 
     }
   }
 
@@ -559,11 +559,11 @@
   }
 
   .img {
-    // inline-block 会导致 https://ld246.com/article/1677809509055
-    // initial 会导致 https://ld246.com/article/1678257197581?r=88250
+    // inline-block 会导致 
+    // initial 会导致 
     display: inline-block;
     text-align: center;
-    vertical-align: top; // https://ld246.com/article/1647522074722
+    vertical-align: top; // 
     margin: 0 auto;
     max-width: 100%;
     word-break: keep-all;

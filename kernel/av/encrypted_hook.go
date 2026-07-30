@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 
@@ -262,7 +262,7 @@ func encryptAVData(boxID, avID string, data []byte) ([]byte, error) {
 	if dek == nil {
 		return data, nil
 	}
-	avKey := util.DeriveSubKey(dek, "siyuan/av")
+	avKey := util.DeriveSubKey(dek, "scribli/av")
 	aad := avAAD(boxID, avID)
 	return util.EncryptWithAAD(avKey, data, []byte(aad))
 }
@@ -289,7 +289,7 @@ func decryptAVDataLocked(boxID, avID string, data []byte) ([]byte, error) {
 	if dek == nil {
 		return data, nil
 	}
-	avKey := util.DeriveSubKey(dek, "siyuan/av")
+	avKey := util.DeriveSubKey(dek, "scribli/av")
 	aad := avAAD(boxID, avID)
 	return util.DecryptWithAAD(avKey, data, []byte(aad))
 }
@@ -297,11 +297,11 @@ func decryptAVDataLocked(boxID, avID string, data []byte) ([]byte, error) {
 func avAAD(boxID, avID string) string {
 	switch avID {
 	case "mirror":
-		return "siyuan:v1:av-mirror:" + boxID
+		return "scribli:v1:av-mirror:" + boxID
 	case "relation":
-		return "siyuan:v1:av-relation:" + boxID
+		return "scribli:v1:av-relation:" + boxID
 	default:
-		return "siyuan:v1:av:" + boxID + ":" + avID
+		return "scribli:v1:av:" + boxID + ":" + avID
 	}
 }
 

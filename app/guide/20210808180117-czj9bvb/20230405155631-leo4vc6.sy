@@ -275,7 +275,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "SIYUAN_PERFORMANCE_TIMING"
+									"TextMarkTextContent": "Scribli_PERFORMANCE_TIMING"
 								},
 								{
 									"Type": "NodeText",

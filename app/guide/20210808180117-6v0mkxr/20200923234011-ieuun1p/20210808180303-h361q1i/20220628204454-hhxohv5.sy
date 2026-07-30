@@ -288,7 +288,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://liuyun.io",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "Hyperlink anchor text"
 								}
 							]

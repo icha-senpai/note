@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -603,7 +603,7 @@ func graphTypeFilter(local bool) string {
 }
 
 func filterDailyNote(blocks []*Block, local bool) (ret []*Block) {
-	// Graph dailynote filtering not working https://github.com/siyuan-note/siyuan/issues/16463
+	// Graph dailynote filtering not working
 
 	dailyNote := Conf.Graph.Local.DailyNote
 	if !local {

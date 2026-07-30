@@ -191,7 +191,7 @@ const editKeydown = (app: App, event: KeyboardEvent) => {
                 Object.keys(item.editors).find(key => {
                     if (item.editors[key].protyle.element.contains(range.startContainer)) {
                         protyle = item.editors[key].protyle;
-                        // https://github.com/siyuan-note/siyuan/issues/9384
+                        // 
                         isFileFocus = false;
                         return true;
                     }
@@ -535,7 +535,7 @@ const editKeydown = (app: App, event: KeyboardEvent) => {
     if (hasClosestByClassName(target, "protyle-title__input")) {
         return false;
     }
-    // 没有光标时，无法撤销 https://ld246.com/article/1624021111567
+    // 没有光标时，无法撤销 
     if (matchHotKey(window.scribli.config.keymap.editor.general.undo.custom, event)) {
         protyle.undo.undo(protyle);
         event.preventDefault();
@@ -1418,7 +1418,7 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
         event.preventDefault();
         return;
     }
-    // https://github.com/siyuan-note/siyuan/issues/8913#issuecomment-1679720605
+    // 
     const confirmDialogElement = document.querySelector('.b3-dialog--open[data-key="dialog-confirm"]');
     if (confirmDialogElement) {
         if (event.key === "Enter") {
@@ -1462,8 +1462,8 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
             return;
         }
 
-        // 闪卡长按 Esc 光标定位到闪卡按钮上 https://github.com/siyuan-note/siyuan/issues/12989
-        // https://github.com/siyuan-note/siyuan/issues/14730
+        // 闪卡长按 Esc 光标定位到闪卡按钮上 
+        // 
         if (event.repeat && document.activeElement && hasClosestByClassName(document.activeElement, "card__action")) {
             return;
         }
@@ -1501,7 +1501,7 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
             return;
         }
 
-        // 光标在文档树等面板中，按 Esc 回到编辑器中 https://github.com/siyuan-note/siyuan/issues/4289
+        // 光标在文档树等面板中，按 Esc 回到编辑器中 
         if (getSelection().rangeCount > 0) {
             const range = getSelection().getRangeAt(0);
             if (hasClosestByClassName(range.startContainer, "protyle-content", true)) {
@@ -1748,7 +1748,7 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
         event.preventDefault();
         return;
     }
-    // https://github.com/siyuan-note/insider/issues/445
+    // 
     if (matchHotKey("⌘S", event)) {
         event.preventDefault();
         return true;

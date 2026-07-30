@@ -20,7 +20,7 @@ import {base64ToURL} from "../../util/image";
 import {resolveLinkDest} from "../toolbar/util";
 
 export const beforePaste = (protyle: IProtyle, blockElement: HTMLElement) => {
-    // 链接，备注，样式，引用，pdf标注粘贴 https://github.com/siyuan-note/siyuan/issues/11572
+    // 链接，备注，样式，引用，pdf标注粘贴 
     const range = getSelection().getRangeAt(0);
     protyle.toolbar.range = range;
     const inlineElement = range.startContainer.parentElement;
@@ -136,10 +136,10 @@ export const pasteEscaped = async (protyle: IProtyle, nodeElement: Element) => {
         // 删掉 <span data-type\="text".*>text</span> 标签，只保留文本
         clipText = clipText.replace(/<span data-type="text".*?>(.*?)<\/span>/g, "$1");
 
-        // https://github.com/siyuan-note/siyuan/issues/5446
+        // 
         // A\B\C\D\
         // E
-        // task-blog-2~default~baiduj 无法原义粘贴含有 `~foo~` 的文本 https://github.com/siyuan-note/siyuan/issues/5523
+        // task-blog-2~default~baiduj 无法原义粘贴含有 `~foo~` 的文本 
 
         // 这里必须多加一个反斜杆，因为 Lute 在进行 Markdown 嵌套节点转换平铺标记节点时会剔除 Backslash 节点，
         // 多加入的一个反斜杆会作为文本节点保留下来，后续 Spin 时刚好用于转义标记符
@@ -164,7 +164,7 @@ export const pasteEscaped = async (protyle: IProtyle, nodeElement: Element) => {
             .replace(/\^/g, "\\^")
             .replace(/\|/g, "\\|")
             .replace(/\./g, "\\.");
-        // 转义文本不能使用 DOM 结构 https://github.com/siyuan-note/siyuan/issues/11778
+        // 转义文本不能使用 DOM 结构 
         paste(protyle, {textPlain: clipText, textHTML: "", target: nodeElement as HTMLElement});
     } catch (e) {
         console.log(e);
@@ -181,7 +181,7 @@ export const pasteAsPlainText = async (protyle: IProtyle) => {
     }
     /// #endif
     if (localFiles.length === 0) {
-        // Inline-level elements support pasted as plain text https://github.com/siyuan-note/siyuan/issues/8010
+        // Inline-level elements support pasted as plain text 
         let textPlain = await readText() || "";
         if (getSelection().rangeCount > 0) {
             const range = getSelection().getRangeAt(0);
@@ -190,7 +190,7 @@ export const pasteAsPlainText = async (protyle: IProtyle) => {
                 return;
             }
         }
-        // 对一些内置需要解析的 HTML 标签进行内部转移 Improve sub/sup pasting as plain text https://github.com/siyuan-note/siyuan/issues/12155
+        // 对一些内置需要解析的 HTML 标签进行内部转移 Improve sub/sup pasting as plain text 
         textPlain = textPlain.replace(/<sub>/g, "__@sub@__").replace(/<\/sub>/g, "__@/sub@__");
         textPlain = textPlain.replace(/<sup>/g, "__@sup@__").replace(/<\/sup>/g, "__@/sup@__");
         textPlain = textPlain.replace(/<kbd>/g, "__@kbd@__").replace(/<\/kbd>/g, "__@/kbd@__");
@@ -199,10 +199,10 @@ export const pasteAsPlainText = async (protyle: IProtyle) => {
         // 删掉 <span data-type\="text".*>text</span> 标签，只保留文本
         textPlain = textPlain.replace(/<span data-type="text".*?>(.*?)<\/span>/g, "$1");
 
-        // 对 <<assets/...>> 进行内部转义 https://github.com/siyuan-note/siyuan/issues/11992
+        // 对 <<assets/...>> 进行内部转义 
         textPlain = textPlain.replace(/<<assets\//g, "__@lt2assets/@__").replace(/>>/g, "__@gt2@__");
 
-        // 对 HTML 标签进行内部转义，避免被 Lute 解析以后变为小写 https://github.com/siyuan-note/siyuan/issues/10620
+        // 对 HTML 标签进行内部转义，避免被 Lute 解析以后变为小写 
         textPlain = textPlain.replace(/</g, ";;;lt;;;").replace(/>/g, ";;;gt;;;");
 
         // 反转义 <<assets/...>>
@@ -285,12 +285,12 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
     if ("clipboardData" in event) {
         textHTML = event.clipboardData.getData("text/html");
         textPlain = event.clipboardData.getData("text/plain");
-        scribliHTML = event.clipboardData.getData("text/scribli") || event.clipboardData.getData("text/siyuan");
+        scribliHTML = event.clipboardData.getData("text/scribli") || event.clipboardData.getData("text/Scribli");
         files = event.clipboardData.files;
     } else if ("dataTransfer" in event) {
         textHTML = event.dataTransfer.getData("text/html");
         textPlain = event.dataTransfer.getData("text/plain");
-        scribliHTML = event.dataTransfer.getData("text/scribli") || event.dataTransfer.getData("text/siyuan");
+        scribliHTML = event.dataTransfer.getData("text/scribli") || event.dataTransfer.getData("text/Scribli");
         if (event.dataTransfer.types[0] === "Files") {
             files = event.dataTransfer.items;
         }
@@ -305,7 +305,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         files = event.files;
     }
 
-    // Improve the pasting of selected text in PDF rectangular annotation https://github.com/siyuan-note/siyuan/issues/11629
+    // Improve the pasting of selected text in PDF rectangular annotation 
     textPlain = textPlain.replace(/\r\n|\r|\u2028|\u2029/g, "\n");
 
     /// #if !BROWSER
@@ -335,7 +335,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         scribliHTML = textObj.textScribli;
         textHTML = textObj.textHtml;
     }
-    // 剪切复制中首位包含空格或仅有空格 https://github.com/siyuan-note/siyuan/issues/5667
+    // 剪切复制中首位包含空格或仅有空格 
     if (!scribliHTML) {
         // process word
         const doc = new DOMParser().parseFromString(textHTML, "text/html");
@@ -400,7 +400,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
     const code = processPasteCode(textHTML, textPlain, originalTextHTML, protyle);
     if (nodeElement.getAttribute("data-type") === "NodeCodeBlock" ||
         protyle.toolbar.getCurrentType(range).includes("code")) {
-        // https://github.com/siyuan-note/siyuan/issues/13552
+        // 
         insertHTML(removeZWJ(textPlain).replace(/```/g, "\u200D```"), protyle);
         return;
     } else if (scribliHTML) {
@@ -525,7 +525,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             }
         } else {
             if (-1 < tempInnerHTML.indexOf("NodeHTMLBlock")) {
-                // 复制 HTML 块粘贴出来的不是 HTML 块 https://github.com/siyuan-note/siyuan/issues/12994
+                // 复制 HTML 块粘贴出来的不是 HTML 块 
                 tempInnerHTML = Lute.UnEscapeHTMLStr(tempInnerHTML);
             }
 
@@ -554,7 +554,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             )) {
                 isHTML = false;
             } else {
-                // 需注意 Edge 中的划选不应识别为图片 https://github.com/siyuan-note/siyuan/issues/7021
+                // 需注意 Edge 中的划选不应识别为图片 
                 isHTML = true;
             }
 
@@ -582,13 +582,13 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                     0 > textHTMLLowercase.indexOf("</h1>") && 0 > textHTMLLowercase.indexOf("</h2>") &&
                     0 > textHTMLLowercase.indexOf("</h3>") && 0 > textHTMLLowercase.indexOf("</h4>") &&
                     0 > textHTMLLowercase.indexOf("</h5>") && 0 > textHTMLLowercase.indexOf("</h6>"))) {
-                // 豆包复制粘贴问题 https://github.com/siyuan-note/siyuan/issues/13265 https://github.com/siyuan-note/siyuan/issues/14313
+                // 豆包复制粘贴问题  
                 isHTML = false;
             }
         } else if (textPlain && textPlain.trimStart().startsWith("<")) {
             // 剪贴板没有 text/html，但 text/plain 实际是 HTML 表格（如从纯文本编辑器复制的表格 HTML）
             // Md2BlockDOM 会把标签当字面文本，需走 html2BlockDOM 解析
-            // Improve pasting for tables containing merged cells https://github.com/siyuan-note/siyuan/issues/11888
+            // Improve pasting for tables containing merged cells 
             if (textPlain.toLowerCase().indexOf("</table>") > -1) {
                 textHTML = textPlain;
                 isHTML = true;
@@ -603,7 +603,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                     e.remove();
                 }
             });
-            // https://github.com/siyuan-note/siyuan/issues/14625#issuecomment-2869618067
+            // 
             let linkElement;
             if (tempElement.childElementCount === 1 && tempElement.childNodes.length === 1) {
                 if (tempElement.firstElementChild.tagName === "A") {
@@ -623,7 +623,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                 });
                 if (!selectText) {
                     if (aElements[0].lastChild) {
-                        // https://github.com/siyuan-note/siyuan/issues/15801
+                        // 
                         range.setEnd(aElements[0].lastChild, aElements[0].lastChild.textContent.length);
                     }
                     range.collapse(false);
@@ -657,7 +657,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                 if (isDynamicRef(textPlain)) {
                     const refElement = protyle.toolbar.setInlineMark(protyle, "block-ref", "range", {
                         type: "id",
-                        // range 不能 escape，否则 https://github.com/siyuan-note/siyuan/issues/8359
+                        // range 不能 escape，否则 
                         color: `${textPlain.substring(2, 22 + 2)}${Constants.ZWSP}s${Constants.ZWSP}${range.toString()}`
                     });
                     if (refElement[0]) {
@@ -671,7 +671,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                     });
                     return;
                 } else {
-                    // https://github.com/siyuan-note/siyuan/issues/8475
+                    // 
                     const linkDest = resolveLinkDest(textPlain, protyle.lute);
                     if (linkDest) {
                         protyle.toolbar.setInlineMark(protyle, "a", "range", {
@@ -684,7 +684,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             }
             let textPlainDom: string;
 
-            // Auto-convert pasted URL to link format https://github.com/siyuan-note/siyuan/issues/17337
+            // Auto-convert pasted URL to link format 
             if (window.scribli.config.editor.pasteURLAutoConvert) {
                 textPlainDom = protyle.lute.Md2BlockDOMWithAutoLink(textPlain);
             } else {

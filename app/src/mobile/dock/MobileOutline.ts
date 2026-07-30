@@ -358,7 +358,7 @@ export class MobileOutline extends Model {
                             parentID: undoParentID,
                         }]);
 
-                        // https://github.com/siyuan-note/siyuan/issues/10828#issuecomment-2044099675
+                        // 
                         editor.wysiwyg.element.querySelectorAll('[data-type="NodeHeading"] [contenteditable="true"][spellcheck]').forEach(headingItem => {
                             headingItem.setAttribute("contenteditable", "false");
                         });
@@ -815,7 +815,7 @@ export class MobileOutline extends Model {
         }
         if (needReload) {
             this.reload(() => {
-                // https://github.com/siyuan-note/siyuan/issues/8372
+                // 
                 if (getSelection().rangeCount > 0) {
                     const blockElement = hasClosestBlock(getSelection().getRangeAt(0).startContainer);
                     if (blockElement && blockElement.getAttribute("data-type") === "NodeHeading") {

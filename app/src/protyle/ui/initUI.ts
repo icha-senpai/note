@@ -142,15 +142,15 @@ export const initUI = (protyle: IProtyle) => {
     }, {passive: true});
     protyle.contentElement.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
         hideElements(["hint", "util"], protyle);
-        // wysiwyg 元素下方点击无效果 https://github.com/siyuan-note/siyuan/issues/12009
+        // wysiwyg 元素下方点击无效果 
         if (protyle.disabled ||
-            // 选中块时，禁止添加空块 https://github.com/siyuan-note/siyuan/issues/13905
+            // 选中块时，禁止添加空块 
             protyle.contentElement.querySelector(".protyle-wysiwyg--select") ||
             (!event.target.classList.contains("protyle-content") && !event.target.classList.contains("protyle-wysiwyg"))) {
             return;
         }
-        // https://github.com/siyuan-note/siyuan/issues/14190 选中最后一个块末尾点击底部时，range 会有值，需使用 setTimeout，最新测试无需 setTimeout 了，且会影响移动端键盘弹起故移除
-        // 选中文本禁止添加空块 https://github.com/siyuan-note/siyuan/issues/13905
+        //  选中最后一个块末尾点击底部时，range 会有值，需使用 setTimeout，最新测试无需 setTimeout 了，且会影响移动端键盘弹起故移除
+        // 选中文本禁止添加空块 
         if (window.getSelection().rangeCount > 0) {
             const currentRange = window.getSelection().getRangeAt(0);
             if (currentRange.toString() !== "" && protyle.wysiwyg.element.contains(currentRange.startContainer)) {
@@ -339,7 +339,7 @@ export const setPadding = (protyle: IProtyle) => {
         protyle.databaseAttributePanel.element.style.margin = `8px ${paddingRight}px 8px ${paddingLeft}px`;
     }
 
-    // https://github.com/siyuan-note/siyuan/issues/15021
+    // 
     protyle.element.style.setProperty("--b3-width-protyle", protyle.element.clientWidth + "px");
     protyle.element.style.setProperty("--b3-width-protyle-content", protyle.contentElement.clientWidth + "px");
     const realWidth = protyle.wysiwyg.element.getAttribute("data-realwidth");
@@ -366,7 +366,7 @@ export const getPadding = (protyle: IProtyle) => {
         let padding = (protyle.element.clientWidth - Constants.SIZE_EDITOR_WIDTH) / 2;
         if (isFullWidth === "false" && padding > 96) {
             if (padding > Constants.SIZE_EDITOR_WIDTH) {
-                // 超宽屏调整 https://ld246.com/article/1668266637363
+                // 超宽屏调整 
                 padding = protyle.element.clientWidth * .382 / 1.382;
             }
             padding = Math.ceil(padding);

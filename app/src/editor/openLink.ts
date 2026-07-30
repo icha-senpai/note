@@ -35,7 +35,7 @@ export const openLink = (app: App, aLink: string, event?: MouseEvent, ctrlIsPres
         if (Constants.SCRIBLI_ASSETS_EXTS.includes(pathPosix().extname(linkAddress)) &&
             (
                 !linkAddress.endsWith(".pdf") ||
-                // 本地 pdf 仅 assets/ 开头的才使用 siyuan 打开
+                // 本地 pdf 仅 assets/ 开头的才使用 Scribli 打开
                 (linkAddress.endsWith(".pdf") && linkAddress.startsWith("assets/"))
             )
         ) {
@@ -69,8 +69,8 @@ export const openLink = (app: App, aLink: string, event?: MouseEvent, ctrlIsPres
         }
     } else if (linkAddress) {
         if (0 > linkAddress.indexOf(":")) {
-            // 使用 : 判断，不使用 :// 判断 Open external application protocol invalid https://github.com/siyuan-note/siyuan/issues/10075
-            // Support click to open hyperlinks like `www.foo.com` https://github.com/siyuan-note/siyuan/issues/9986
+            // 使用 : 判断，不使用 :// 判断 Open external application protocol invalid 
+            // Support click to open hyperlinks like `www.foo.com` 
             linkAddress = `https://${linkAddress}`;
         }
         /// #if !BROWSER

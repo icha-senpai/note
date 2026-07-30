@@ -1794,7 +1794,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "工作空间/data/.siyuan/syncignore"
+					"TextMarkTextContent": "工作空间/data/.scribli/syncignore"
 				},
 				{
 					"Type": "NodeText",

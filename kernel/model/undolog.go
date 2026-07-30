@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -393,7 +393,7 @@ func ResolveReplayDuplicateIds(tx *Transaction) {
 
 			_, idReplaced := replacements[op.ID]
 
-			// https://github.com/siyuan-note/siyuan/issues/18012
+			//
 			if "insert" == op.Action {
 				if newID, ok := replacements[op.ID]; ok {
 					op.ID = newID

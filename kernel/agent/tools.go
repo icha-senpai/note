@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ func executeTool(ctx context.Context, tc openai.ToolCall, sessionID string) (res
 
 	args := parseToolArgs(tc.Function.Arguments)
 
-	// https://github.com/siyuan-note/siyuan/issues/17927
+	//
 	if t.Source == "native" || t.Source == "" {
 		args["_sessionID"] = sessionID
 		args["_toolCallID"] = tc.ID

@@ -25,7 +25,7 @@ const getKanbanTitleHTML = (group: IAVView, counter: number) => {
     } else {
         nameHTML = group.name;
     }
-    // av__group-name 为第三方需求，本应用内没有使用，但不能移除 https://github.com/siyuan-note/siyuan/issues/15736
+    // av__group-name 为第三方需求，本应用内没有使用，但不能移除 
     return `<div class="av__group-title">
     <span class="av__group-name fn__ellipsis" style="white-space: nowrap;">${nameHTML}</span>
     ${(!counter || counter === 0) ? '<span class="fn__space"></span>' : `<span aria-label="${window.scribli.languages.entryNum}" data-position="north" class="av__group-counter ariaLabel">${counter}</span>`}

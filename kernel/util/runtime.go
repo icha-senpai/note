@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -268,7 +268,7 @@ func checkFileSysStatus() {
 	}
 	defer checkFileSysStatusLock.Unlock()
 
-	const fileSysStatusCheckFile = ".siyuan/filesys_status_check"
+	const fileSysStatusCheckFile = ".scribli/filesys_status_check"
 	if IsCloudDrivePath(WorkspaceDir) {
 		ReportFileSysFatalError(fmt.Errorf("workspace dir [%s] is in third party sync dir", WorkspaceDir))
 		return

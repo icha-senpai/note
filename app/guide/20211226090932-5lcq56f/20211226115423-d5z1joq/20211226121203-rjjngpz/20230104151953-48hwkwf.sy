@@ -39,7 +39,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://ld246.com",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "鏈滴"
 				},
 				{
@@ -426,7 +426,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://ld246.com/article/1441724208848",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "積分規則"
 								}
 							]

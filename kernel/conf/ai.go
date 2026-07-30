@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ type Agent struct {
 
 // Editing holds behavior parameters used by the in-editor chat scenario. They
 // are kept here (instead of on Model) to mirror Agent and to decouple scenario
-// behavior from the model registry. See https://github.com/siyuan-note/siyuan/issues/17797
+// behavior from the model registry. See
 type Editing struct {
 	ModelID             string  `json:"modelId"`
 	MaxHistoryMessages  int     `json:"maxHistoryMessages"`  // Max number of prior turns kept as context

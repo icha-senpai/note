@@ -1473,7 +1473,7 @@
 												{
 													"Type": "NodeTextMark",
 													"TextMarkType": "code",
-													"TextMarkTextContent": "SIYUAN_SYNC_INDEX_TIMING"
+													"TextMarkTextContent": "Scribli_SYNC_INDEX_TIMING"
 												},
 												{
 													"Type": "NodeText",
@@ -1482,7 +1482,7 @@
 												{
 													"Type": "NodeTextMark",
 													"TextMarkType": "code",
-													"TextMarkTextContent": "SIYUAN_SYNC_INDEX_TIMING=30000"
+													"TextMarkTextContent": "Scribli_SYNC_INDEX_TIMING=30000"
 												},
 												{
 													"Type": "NodeText",

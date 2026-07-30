@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -244,7 +244,7 @@ func RollbackRepoSnapshotFile(fileID string) (err error) {
 		return
 	}
 
-	// When rolling back a snapshot, a snapshot is created for the current data by default https://github.com/siyuan-note/siyuan/issues/12470
+	// When rolling back a snapshot, a snapshot is created for the current data by default
 	FlushTxQueue()
 	_, err = repo.Index("Backup before checkout", false, map[string]any{eventbus.CtxPushMsg: eventbus.CtxPushMsgToStatusBarAndProgress})
 	if err != nil {
@@ -459,7 +459,7 @@ func OpenRepoSnapshotFile(fileID string) (title, content string, displayInText b
 		}
 		if mimeType := mime.TypeByExtension(filepath.Ext(file.Path)); strings.HasPrefix(mimeType, "text/") || strings.Contains(mimeType, "json") {
 
-			// All plain text formats are supported when comparing data snapshots https://github.com/siyuan-note/siyuan/issues/12975
+			// All plain text formats are supported when comparing data snapshots
 			content = gulu.Str.FromBytes(data)
 		} else {
 			if strings.Contains(file.Path, "assets/") {
@@ -1218,7 +1218,7 @@ func checkoutRepo(id string) {
 		util.PushMsg(Conf.Language(134), 0)
 	}
 
-	// When rolling back a snapshot, a snapshot is created for the current data by default https://github.com/siyuan-note/siyuan/issues/12470
+	// When rolling back a snapshot, a snapshot is created for the current data by default
 	FlushTxQueue()
 	_, err = repo.Index("Backup before checkout", false, map[string]any{eventbus.CtxPushMsg: eventbus.CtxPushMsgToStatusBarAndProgress})
 	if err != nil {
@@ -1913,20 +1913,20 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 			needReloadOcrTexts = true
 		}
 
-		if strings.HasSuffix(file.Path, "/.siyuan/conf.json") {
+		if strings.HasSuffix(file.Path, "/.scribli/conf.json") {
 			needReloadFiletree = true
-			boxID := strings.TrimSuffix(strings.TrimPrefix(file.Path, "/"), "/.siyuan/conf.json")
+			boxID := strings.TrimSuffix(strings.TrimPrefix(file.Path, "/"), "/.scribli/conf.json")
 			needUnindexBoxes[boxID] = true
 			needIndexBoxes[boxID] = true
 		}
-		if strings.HasSuffix(file.Path, "/.siyuan/boxDoc.json") {
+		if strings.HasSuffix(file.Path, "/.scribli/boxDoc.json") {
 			needReloadFiletree = true
-			boxID := strings.TrimSuffix(strings.TrimPrefix(file.Path, "/"), "/.siyuan/boxDoc.json")
+			boxID := strings.TrimSuffix(strings.TrimPrefix(file.Path, "/"), "/.scribli/boxDoc.json")
 			needUnindexBoxes[boxID] = true
 			needIndexBoxes[boxID] = true
 		}
 
-		if file.Path == "/.siyuan/notebook-crypto-backup.json" {
+		if file.Path == "/.scribli/notebook-crypto-backup.json" {
 			needRestoreNotebookCrypto = true
 		}
 
@@ -1979,14 +1979,14 @@ func processSyncMergeResult(exit, byHand bool, mergeResult *dejavu.MergeResult, 
 			needReloadOcrTexts = true
 		}
 
-		if strings.HasSuffix(file.Path, "/.siyuan/conf.json") {
+		if strings.HasSuffix(file.Path, "/.scribli/conf.json") {
 			needReloadFiletree = true
-			boxID := strings.TrimSuffix(strings.TrimPrefix(file.Path, "/"), "/.siyuan/conf.json")
+			boxID := strings.TrimSuffix(strings.TrimPrefix(file.Path, "/"), "/.scribli/conf.json")
 			needUnindexBoxes[boxID] = true
 		}
-		if strings.HasSuffix(file.Path, "/.siyuan/boxDoc.json") {
+		if strings.HasSuffix(file.Path, "/.scribli/boxDoc.json") {
 			needReloadFiletree = true
-			boxID := strings.TrimSuffix(strings.TrimPrefix(file.Path, "/"), "/.siyuan/boxDoc.json")
+			boxID := strings.TrimSuffix(strings.TrimPrefix(file.Path, "/"), "/.scribli/boxDoc.json")
 			needUnindexBoxes[boxID] = true
 			needIndexBoxes[boxID] = true
 		}
@@ -2256,7 +2256,7 @@ func newRepository() (ret *dejavu.Repo, err error) {
 	}
 
 	ignoreLines := getSyncIgnoreLines()
-	ignoreLines = append(ignoreLines, "/.siyuan/conf.json")
+	ignoreLines = append(ignoreLines, "/.scribli/conf.json")
 	ret, err = dejavu.NewRepo(util.DataDir, util.RepoDir, util.HistoryDir, util.TempDir, Conf.System.ID, Conf.System.Name, Conf.System.OS, Conf.Repo.Key, ignoreLines, cloudRepo)
 	if err != nil {
 		logging.LogErrorf("init data repo failed: %s", err)

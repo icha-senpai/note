@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -124,7 +124,7 @@ func html2BlockDOM(c *gin.Context) {
 		n.Unlink()
 	}
 
-	// Copy one cell from Excel/HTML table and paste it using the cell's content https://github.com/siyuan-note/siyuan/issues/9614
+	// Copy one cell from Excel/HTML table and paste it using the cell's content
 	unlinks = nil
 	if nil != tree.Root.FirstChild && ast.NodeTable == tree.Root.FirstChild.Type && (nil == tree.Root.FirstChild.Next ||
 		(ast.NodeKramdownBlockIAL == tree.Root.FirstChild.Next.Type && nil == tree.Root.FirstChild.Next.Next)) {
@@ -166,7 +166,7 @@ func html2BlockDOM(c *gin.Context) {
 			}
 			localPath = util.FileURLToLocalPath(localPath)
 			if !filepath.IsAbs(localPath) {
-				// Kernel crash when copy-pasting from some browsers https://github.com/siyuan-note/siyuan/issues/9203
+				// Kernel crash when copy-pasting from some browsers
 				return ast.WalkContinue
 			}
 			if !gulu.File.IsExist(localPath) {

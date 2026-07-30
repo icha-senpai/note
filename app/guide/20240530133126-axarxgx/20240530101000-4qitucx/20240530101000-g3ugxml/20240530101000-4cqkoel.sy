@@ -42,7 +42,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://ld246.com",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "Community publishing"
 				},
 				{
@@ -452,12 +452,12 @@
 							"Children": [
 								{
 									"Type": "NodeText",
-									"Data": "ドキュメントを LiuYun に公開するには"
+									"Data": "ドキュメントを Scribli に公開するには"
 								},
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://liuyun.io/article/1685240430351",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "ポイント"
 								},
 								{

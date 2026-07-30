@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -61,7 +61,7 @@ func mergeSubDocs(rootTree *parse.Tree) (ret *parse.Tree, err error) {
 
 	if ast.NodeParagraph == insertPoint.Type && nil == insertPoint.FirstChild {
 
-		// Ignore the last empty paragraph block when exporting merged sub-documents https://github.com/siyuan-note/siyuan/issues/15028
+		// Ignore the last empty paragraph block when exporting merged sub-documents
 		insertPoint.Unlink()
 	}
 	return
@@ -85,7 +85,7 @@ func walkBlock(insertPoint *ast.Node, block *Block, level int) (err error) {
 			node := nodes[j]
 			if j == lastIndex && ast.NodeParagraph == node.Type && nil == node.FirstChild {
 
-				// Ignore the last empty paragraph block when exporting merged sub-documents https://github.com/siyuan-note/siyuan/issues/15028
+				// Ignore the last empty paragraph block when exporting merged sub-documents
 				continue
 			}
 			insertPoint.InsertAfter(node)

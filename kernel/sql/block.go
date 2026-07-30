@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -354,7 +354,7 @@ func nodeStaticContent(node *ast.Node, excludeTypes []string, includeTextMarkATi
 		return ast.WalkContinue
 	})
 
-	// Improve search and replace for spaces https://github.com/siyuan-note/siyuan/issues/10231
+	// Improve search and replace for spaces
 	return buf.String()
 }
 

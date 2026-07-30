@@ -246,7 +246,7 @@ export const getGroupTitleHTML = (group: IAVView, counter: number) => {
     } else {
         nameHTML = group.name;
     }
-    // av__group-name 为第三方需求，本应用内没有使用，但不能移除 https://github.com/siyuan-note/siyuan/issues/15736
+    // av__group-name 为第三方需求，本应用内没有使用，但不能移除 
     return `<div class="av__group-title">
     <div class="av__group-icon" data-type="av-group-fold" data-id="${group.id}">
         <svg class="${group.groupFolded ? "" : "av__group-arrow--open"}"><use xlink:href="#iconRight"></use></svg>
@@ -299,7 +299,7 @@ const afterRenderTable = (options: ITableOptions) => {
             headerTransformElement.style.transform = options.resetData.headerTransform.transform;
         }
     } else if (editRect && !options.protyle.options.action.includes(Constants.CB_GET_HISTORY)) {
-        // 需等待渲染完，否则 getBoundingClientRect 错误 https://github.com/siyuan-note/siyuan/issues/13787
+        // 需等待渲染完，否则 getBoundingClientRect 错误 
         setTimeout(() => {
             stickyRow(options.blockElement, options.protyle.contentElement, "top");
         }, Constants.TIMEOUT_LOAD);
@@ -310,7 +310,7 @@ const afterRenderTable = (options: ITableOptions) => {
             footerTransformElement.style.transform = options.resetData.footerTransform.transform;
         }
     } else if (editRect && !options.protyle.options.action.includes(Constants.CB_GET_HISTORY)) {
-        // 需等待渲染完，否则 getBoundingClientRect 错误 https://github.com/siyuan-note/siyuan/issues/13787
+        // 需等待渲染完，否则 getBoundingClientRect 错误 
         setTimeout(() => {
             stickyRow(options.blockElement, options.protyle.contentElement, "bottom");
         }, Constants.TIMEOUT_LOAD);
@@ -885,7 +885,7 @@ export const refreshAV = (protyle: IProtyle, operation: IOperation) => {
     // 只能 setTimeout，以前方案快速输入后最后一次修改会被忽略；必须为每一个 protyle 单独设置，否则有多个 protyle 时，其余无法被执行
     clearTimeout(refreshTimeouts[protyle.id]);
     refreshTimeouts[protyle.id] = window.setTimeout(() => {
-        // 修改表格名 avID 传入到 id 上了 https://github.com/siyuan-note/siyuan/issues/12724
+        // 修改表格名 avID 传入到 id 上了 
         const avID = operation.action === "setAttrViewName" ? operation.id : operation.avID;
         const attrElement = document.querySelector(`.b3-dialog--open[data-key="${Constants.DIALOG_ATTR}"] .custom-attr > [data-av-id="${avID}"]`) as HTMLElement;
         if (attrElement) {

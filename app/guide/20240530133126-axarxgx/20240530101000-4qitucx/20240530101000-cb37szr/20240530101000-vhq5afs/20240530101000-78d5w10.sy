@@ -262,8 +262,8 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://liuyun.io/settings/file?type=3",
-					"TextMarkTextContent": "[LiuYun] - [設定] - [ファイル] - [ノート]"
+					"TextMarkAHref": "",
+					"TextMarkTextContent": "[Scribli] - [設定] - [ファイル] - [ノート]"
 				},
 				{
 					"Type": "NodeText",

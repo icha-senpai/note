@@ -648,7 +648,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "SIYUAN_PDF_ASSET_CONTENT_INDEX_MAX_SIZE"
+									"TextMarkTextContent": "Scribli_PDF_ASSET_CONTENT_INDEX_MAX_SIZE"
 								},
 								{
 									"Type": "NodeText",
@@ -657,7 +657,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "SIYUAN_PDF_ASSET_CONTENT_INDEX_MAX_SIZE=256000000"
+									"TextMarkTextContent": "Scribli_PDF_ASSET_CONTENT_INDEX_MAX_SIZE=256000000"
 								},
 								{
 									"Type": "NodeText",

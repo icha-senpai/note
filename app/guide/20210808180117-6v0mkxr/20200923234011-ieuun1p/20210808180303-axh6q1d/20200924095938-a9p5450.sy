@@ -1201,7 +1201,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": "​, for specific examples, please refer to github repo: siyuan-note/theme-sample\n"
+									"Data": "​, for specific examples, please refer to github repo: Scribli-note/theme-sample\n"
 								}
 							]
 						}
@@ -1611,7 +1611,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/en/community.html",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "Community marketplace repo"
 				},
 				{

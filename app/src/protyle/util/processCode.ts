@@ -26,7 +26,7 @@ export const processPasteCode = (html: string, text: string, originalTextHTML: s
         // 网页源码
         isCode = true;
     }
-    /* Mac 上不好识别，先统一移除代码标识 https://github.com/siyuan-note/siyuan/issues/17818
+    /* Mac 上不好识别，先统一移除代码标识 
     else if (originalTextHTML.indexOf('<meta name="Generator" content="Cocoa HTML Writer">') > -1 &&
         html.indexOf('\n<p class="p1">') === 0 &&
         //  ChatGPT app 目前没有此标识

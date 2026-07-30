@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -260,7 +260,7 @@ func TruncateLenFileName(name string) (ret string) {
 	var pdfAnnoPngPart string
 	if ".png" == ext {
 
-		// https://github.com/siyuan-note/siyuan/pull/16714#issuecomment-3737987302
+		//
 
 		pdfAnnoPngPattern := "-{0,1}P{0,1}[0-9]{0,4}-{0,1}[0-9]{1,3}-[0-9]{14}-[0-9a-zA-Z]{7}\\.png$"
 		regx := regexp.MustCompile(pdfAnnoPngPattern)
@@ -315,7 +315,7 @@ func FilterFileName(name string) string {
 	name = strings.ReplaceAll(name, "<", "_")
 	name = strings.ReplaceAll(name, ">", "_")
 	name = strings.ReplaceAll(name, "|", "_")
-	name = RemoveInvalid(name) // Remove invisible characters from file names when uploading assets https://github.com/siyuan-note/siyuan/issues/11683
+	name = RemoveInvalid(name) // Remove invisible characters from file names when uploading assets
 	name = strings.TrimSpace(name)
 	name = strings.TrimSuffix(name, ".")
 	return name
@@ -397,7 +397,7 @@ func CeilSize(size int64) int64 {
 }
 
 func IsReservedFilename(baseName string) bool {
-	return "assets" == baseName || "templates" == baseName || "widgets" == baseName || "emojis" == baseName || ".siyuan" == baseName || strings.HasPrefix(baseName, ".")
+	return "assets" == baseName || "templates" == baseName || "widgets" == baseName || "emojis" == baseName || ".scribli" == baseName || strings.HasPrefix(baseName, ".")
 }
 
 func WalkWithSymlinks(root string, fn fs.WalkDirFunc) error {

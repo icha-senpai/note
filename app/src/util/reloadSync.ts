@@ -14,8 +14,8 @@ export const reloadSync = (
     app: App,
     data: { upsertRootIDs: string[], removeRootIDs: string[] },
     hideMsg = true,
-    // 同步的时候需要更新只读状态 https://github.com/siyuan-note/siyuan/issues/11517
-    // 调整大纲的时候需要使用现有状态 https://github.com/siyuan-note/siyuan/issues/11808
+    // 同步的时候需要更新只读状态 
+    // 调整大纲的时候需要使用现有状态 
     updateReadonly = true,
     onlyUpdateDoc = false
 ) => {

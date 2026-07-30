@@ -33,7 +33,7 @@ class Protyle {
     public static htmlRender = htmlRender;
 }
 
-// 由于 https://github.com/siyuan-note/siyuan/issues/7800，先临时解决一下
+// 由于 ，先临时解决一下
 window.Protyle = Protyle;
 
 export default Protyle;

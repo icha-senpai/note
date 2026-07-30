@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ type SetFlashcardDueTime struct {
 }
 
 func SetFlashcardsDueTime(cardDues []*SetFlashcardDueTime) (err error) {
-	// Add internal kernel API `/api/riff/batchSetRiffCardsDueTime` https://github.com/siyuan-note/siyuan/issues/10423
+	// Add internal kernel API `/api/riff/batchSetRiffCardsDueTime`
 
 	deckLock.Lock()
 	defer deckLock.Unlock()
@@ -114,7 +114,7 @@ func SetFlashcardsDueTime(cardDues []*SetFlashcardDueTime) (err error) {
 }
 
 func ResetFlashcards(typ, id, deckID string, blockIDs []string) {
-	// Support resetting the learning progress of flashcards https://github.com/siyuan-note/siyuan/issues/9564
+	// Support resetting the learning progress of flashcards
 
 	if 0 < len(blockIDs) {
 		if "" == deckID {
@@ -387,12 +387,12 @@ func GetDeckFlashcards(deckID string, page, pageSize int) (blocks []*Block, tota
 }
 
 func getCardsBlocks(cards []riff.Card, page, pageSize int) (blocks []*Block, total, pageCount int) {
-	// sort by due date asc https://github.com/siyuan-note/siyuan/pull/9673
+	// sort by due date asc
 	sort.Slice(cards, func(i, j int) bool {
 		due1 := cards[i].(*riff.FSRSCard).C.Due
 		due2 := cards[j].(*riff.FSRSCard).C.Due
 		if due1.IsZero() || due2.IsZero() {
-			// Improve flashcard management sorting https://github.com/siyuan-note/siyuan/issues/14686
+			// Improve flashcard management sorting
 			cid1 := cards[i].ID()
 			cid2 := cards[j].ID()
 			return cid1 < cid2
@@ -729,7 +729,7 @@ func getAllDueFlashcards(reviewedCardIDs []string) (ret []*Flashcard, unreviewed
 	for _, deck := range Decks {
 		if deck.ID != builtinDeckID {
 
-			// Alt+0 flashcard review entry no longer returns to card deck flashcards https://github.com/siyuan-note/siyuan/issues/10635
+			// Alt+0 flashcard review entry no longer returns to card deck flashcards
 			continue
 		}
 

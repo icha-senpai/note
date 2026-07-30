@@ -79,7 +79,7 @@ export const highlightRender = (element: Element, cdn = Constants.PROTYLE_CDN, z
                     hljsElement.style.setProperty("white-space", "pre-wrap");
                     hljsElement.style.setProperty("word-break", "break-word");
                 } else {
-                    // https://ld246.com/article/1684031600711 该属性会导致有 tab 后光标跳至末尾，目前无解
+                    //  该属性会导致有 tab 后光标跳至末尾，目前无解
                     hljsElement.style.setProperty("white-space", "pre");
                     hljsElement.style.setProperty("word-break", "initial");
                 }
@@ -91,7 +91,7 @@ export const highlightRender = (element: Element, cdn = Constants.PROTYLE_CDN, z
                 const codeText = hljsElement.textContent;
                 if (block.firstElementChild) {
                     if (!isPreview && (lineNumber === "true" || (lineNumber !== "false" && window.scribli.config.editor.codeSyntaxHighlightLineNum))) {
-                        // 需要先添加 class 以防止抖动 https://ld246.com/article/1648116585443
+                        // 需要先添加 class 以防止抖动 
                         block.firstElementChild.className = "protyle-linenumber__rows";
                         block.firstElementChild.setAttribute("contenteditable", "false");
                         lineNumberRender(block, zoom);
@@ -104,7 +104,7 @@ export const highlightRender = (element: Element, cdn = Constants.PROTYLE_CDN, z
                     }
                 }
                 hljsElement.innerHTML = window.hljs.highlight(
-                    codeText + (codeText.endsWith("\n") ? "" : "\n"), // https://github.com/siyuan-note/siyuan/issues/4609
+                    codeText + (codeText.endsWith("\n") ? "" : "\n"), // 
                     {
                         language,
                         ignoreIllegals: true
@@ -144,7 +144,7 @@ export const lineNumberRender = (hljsElement: HTMLElement, zoom = 1) => {
         const lineNumberTemp = document.createElement("div");
         lineNumberTemp.className = "hljs";
         // 不能使用 codeElement.clientWidth，被忽略小数点导致宽度不一致
-        // 需要手动复制字体样式 https://ld246.com/article/1762527296449
+        // 需要手动复制字体样式 
         lineNumberTemp.innerHTML = `<div contenteditable="true" style="padding-left:${codeElement.style.paddingLeft};
 width: ${codeElement.getBoundingClientRect().width / zoom}px;
 white-space:${codeElementStyle.whiteSpace};
@@ -169,7 +169,7 @@ padding-right:0;max-height: none;box-sizing: border-box;position: absolute;paddi
         lineNumberHTML = "<span></span>".repeat(lineList.length);
     }
     hljsElement.firstElementChild.innerHTML = lineNumberHTML;
-    // https://github.com/siyuan-note/siyuan/issues/12726
+    // 
     if (hljsElement.scrollHeight > hljsElement.clientHeight) {
         if (getSelection().rangeCount > 0) {
             const range = getSelection().getRangeAt(0);

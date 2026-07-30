@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -229,8 +229,8 @@ func DocSaveAsTemplate(id, name string, overwrite bool) (code int, err error) {
 		}
 
 		// Content in templates is not properly escaped
-		// https://github.com/siyuan-note/siyuan/issues/9649
-		// https://github.com/siyuan-note/siyuan/issues/13701
+		//
+		//
 		switch n.Type {
 		case ast.NodeCodeBlockCode:
 			n.Tokens = bytes.ReplaceAll(n.Tokens, []byte("&quot;"), []byte("\""))
@@ -253,7 +253,7 @@ func DocSaveAsTemplate(id, name string, overwrite bool) (code int, err error) {
 		}
 
 		if ast.NodeCodeBlockFenceInfoMarker == n.Type {
-			if lang := string(n.CodeBlockInfo); "siyuan-template" == lang || "template" == lang {
+			if lang := string(n.CodeBlockInfo); "scribli-template" == lang || "template" == lang {
 
 				unlinks = append(unlinks, n.Parent)
 				p := treenode.NewParagraph(n.Parent.ID)
@@ -410,7 +410,7 @@ func RenderTemplate(p, id string, preview bool) (tree *parse.Tree, dom string, e
 			n.SetIALAttr("id", n.ID)
 			n.RemoveIALAttr(av.NodeAttrNameAvs)
 
-			// Blocks created via template update time earlier than creation time https://github.com/siyuan-note/siyuan/issues/8607
+			// Blocks created via template update time earlier than creation time
 			treenode.RefreshUpdated(n)
 		}
 

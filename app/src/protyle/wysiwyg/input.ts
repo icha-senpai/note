@@ -40,13 +40,13 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
     const editElement = getContenteditableElement(blockElement) as HTMLElement;
     const type = blockElement.getAttribute("data-type");
     if (!editElement) {
-        // hr、嵌入块、数学公式、iframe、音频、视频、图表渲染块等不允许输入 https://github.com/siyuan-note/siyuan/issues/3958
+        // hr、嵌入块、数学公式、iframe、音频、视频、图表渲染块等不允许输入 
         if (type === "NodeThematicBreak") {
             blockElement.innerHTML = "<div><wbr></div>";
         } else if (type === "NodeBlockQueryEmbed") {
             blockElement.lastElementChild.previousElementSibling.innerHTML = "<wbr>" + Constants.ZWSP;
         } else if (type === "NodeMathBlock" || type === "NodeHTMLBlock") {
-            // https://github.com/siyuan-note/siyuan/issues/15761
+            // 
             if (blockElement.firstElementChild.firstChild.nodeType === 3) {
                 blockElement.firstElementChild.firstChild.remove();
             }
@@ -81,16 +81,16 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
                 }
             }
         }
-        // https://github.com/siyuan-note/siyuan/issues/12468
+        // 
         if ((event.inputType === "deleteContentBackward" || event.inputType === "deleteContentForward") &&
             wbrNextElement && wbrNextElement.nodeType === 1 && wbrNextElement.tagName === "BR") {
-            // https://github.com/siyuan-note/siyuan/issues/13190
+            // 
             const brNextElement = hasNextSibling(wbrNextElement);
             if (brNextElement && brNextElement.nodeType === 1 &&
                 (brNextElement as HTMLElement).getAttribute("data-type")?.indexOf("inline-math") > -1) {
                 wbrNextElement.remove();
             }
-            // https://github.com/siyuan-note/siyuan/issues/14290
+            // 
             if (event.inputType === "deleteContentBackward" &&
                 wbrNextElement.previousSibling.previousSibling?.textContent.endsWith("\n")) {
                 wbrNextElement.outerHTML = "\n";
@@ -98,7 +98,7 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
         }
     }
     const id = blockElement.getAttribute("data-node-id");
-    if ((type !== "NodeCodeBlock" && type !== "NodeHeading") && // https://github.com/siyuan-note/siyuan/issues/11851
+    if ((type !== "NodeCodeBlock" && type !== "NodeHeading") && // 
         (editElement.innerHTML.endsWith("\n<wbr>") || editElement.innerHTML.endsWith("\n<wbr>\n"))) {
         // 软换行
         updateTransaction(protyle, blockElement, protyle.wysiwyg.lastHTMLs[id] || blockElement.outerHTML.replace("\n<wbr>", "<wbr>"));
@@ -139,10 +139,10 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
         wbrElement.remove();
         return;
     }
-    // https://github.com/siyuan-note/siyuan/issues/9015
+    // 
     if (type === "NodeParagraph" && (
         editElement.innerHTML.startsWith("¥¥<wbr>") || editElement.innerHTML.startsWith("￥￥<wbr>") ||
-        // https://ld246.com/article/1730020516427
+        // 
         trimStartHTML.indexOf("\n¥¥<wbr>") > -1 || trimStartHTML.indexOf("\n￥￥<wbr>") > -1
     )) {
         editElement.innerHTML = editElement.innerHTML.replace("¥¥<wbr>", "$$$$<wbr>").replace("￥￥<wbr>", "$$$$<wbr>");
@@ -155,13 +155,13 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
             refElement.setAttribute("data-subtype", "s");
         }
     }
-    // 相邻标签之间插入空格区隔，避免 SpinBlockDOM 解析时合并为一个标签 https://github.com/siyuan-note/siyuan/issues/18191
+    // 相邻标签之间插入空格区隔，避免 SpinBlockDOM 解析时合并为一个标签 
     fixAdjacentTags(editElement);
     let html = blockElement.outerHTML;
     let focusHR = false;
     if (["---", "___", "***"].includes(editElement.textContent) && type !== "NodeCodeBlock") {
         html = `<div data-node-id="${id}" data-type="NodeThematicBreak" class="hr"><div></div></div>`;
-        // https://github.com/siyuan-note/siyuan/issues/12593
+        // 
         const nextBlockElement = getNextBlockSibling(blockElement);
         if (nextBlockElement) {
             if (!isNotEditBlock(nextBlockElement)) {
@@ -185,16 +185,16 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
                 let replaceInnerHTML = editElement.innerHTML.trim().replace(/^(~|·|`){3,}/g, "```").replace(/\n(~|·|`){3,}/g, "\n```").trim();
                 if (replaceInnerHTML.endsWith("\n```<wbr>") &&
                     (replaceInnerHTML.split("\n```").length - 1 + (replaceInnerHTML.startsWith("```") ? 1 : 0)) % 2 === 0) {
-                    // 匹配已闭合的不需添加 https://github.com/siyuan-note/siyuan/issues/16053
+                    // 匹配已闭合的不需添加 
                 } else if (!replaceInnerHTML.endsWith("\n```")) {
-                    // 以 "\n```<wbr>" 结尾需要添加的情况 https://github.com/siyuan-note/siyuan/issues/16519
+                    // 以 "\n```<wbr>" 结尾需要添加的情况 
                     replaceInnerHTML = replaceInnerHTML.replace("<wbr>", "") + "<wbr>\n```";
                 }
                 editElement.innerHTML = replaceInnerHTML;
                 html = blockElement.outerHTML;
             }
         }
-        // 相邻标签之间插入空格区隔，避免 SpinBlockDOM 解析时合并为一个标签 https://github.com/siyuan-note/siyuan/issues/18191
+        // 相邻标签之间插入空格区隔，避免 SpinBlockDOM 解析时合并为一个标签 
         // 使用迭代替换处理多个连续相邻标签（全局正则无法匹配重叠情况）
         // 若中间含有 <wbr>（光标标记），替换后需保留 <wbr>，否则 focusByWbr 无法定位光标
         let prevHTML: string;
@@ -213,7 +213,7 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
     }
     const tempElement = document.createElement("template");
     tempElement.innerHTML = html;
-    // 列表项内紧挨标记的第一个段落块不允许产生子列表 https://github.com/siyuan-note/siyuan/issues/17890
+    // 列表项内紧挨标记的第一个段落块不允许产生子列表 
     if (blockElement.closest('[data-type="NodeListItem"]') &&
         blockElement.previousElementSibling?.classList.contains("protyle-action")) {
         if (tempElement.content.firstElementChild.classList.contains("list")) {
@@ -224,7 +224,7 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
     }
     if (needRender && (
             getContenteditableElement(tempElement.content.firstElementChild)?.innerHTML !== getContenteditableElement(blockElement).innerHTML ||
-            // 内容删空后使用上下键，光标无法到达 https://github.com/siyuan-note/siyuan/issues/4167 https://ld246.com/article/1636256333803
+            // 内容删空后使用上下键，光标无法到达  
             tempElement.content.childElementCount === 1 && getContenteditableElement(tempElement.content.firstElementChild)?.innerHTML === "<wbr>"
         ) &&
         !(tempElement.content.childElementCount === 1 && tempElement.content.firstElementChild.classList.contains("code-block") && type === "NodeCodeBlock")
@@ -240,7 +240,7 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
         let contentScrollTop: number;
         if (blockElement.classList.contains("table")) {
             // 表格的横向、纵向滚动均发生在首个子节点（contenteditable 容器，overflow:auto）上，
-            // 重建 DOM 后需一并还原，否则固定表头长表格输入会跳回开头 https://github.com/siyuan-note/siyuan/issues/18035
+            // 重建 DOM 后需一并还原，否则固定表头长表格输入会跳回开头 
             scrollLeft = blockElement.firstElementChild.scrollLeft;
             scrollTop = blockElement.firstElementChild.scrollTop;
             contentScrollTop = protyle.contentElement.scrollTop;
@@ -253,7 +253,7 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
         blockElement = blockElement.nextElementSibling as HTMLElement;
         blockElement.previousElementSibling.remove();
         blockElement.setAttribute(Constants.ATTRIBUTE_EDITING, "true");
-        // https://github.com/siyuan-note/siyuan/issues/8972
+        // 
         if (html.split('<span data-type="inline-math" data-subtype="math"').length > 1) {
             Array.from(blockElement.querySelectorAll('[data-type="inline-math"]')).find((item: HTMLElement) => {
                 if (item.dataset.content.indexOf("<wbr>") > -1) {
@@ -298,7 +298,7 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
             } else if (realType === "NodeThematicBreak" && focusHR) {
                 focusBlock(blockElement);
             } else {
-                // https://github.com/siyuan-note/siyuan/issues/6087
+                // 
                 realElement.querySelectorAll('[data-type~="block-ref"][data-subtype="d"]').forEach(refItem => {
                     if (refItem.textContent === "") {
                         fetchPost("/api/block/getRefText", {id: refItem.getAttribute("data-id")}, (response) => {
@@ -308,7 +308,7 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
                 });
                 mathRender(realElement);
                 if (index === tempElement.content.childElementCount - 1) {
-                    // https://github.com/siyuan-note/siyuan/issues/11156
+                    // 
                     const currentWbrElement = blockElement.querySelector("wbr");
                     if (currentWbrElement && currentWbrElement.parentElement.tagName === "SPAN" && currentWbrElement.parentElement.innerHTML === "<wbr>") {
                         const types = currentWbrElement.parentElement.getAttribute("data-type") || "";
@@ -319,7 +319,7 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
                     itemHTML = realElement.outerHTML;
                     focusByWbr(protyle.wysiwyg.element, range);
                     protyle.hint.render(protyle);
-                    // 表格出现滚动条，输入数字会向前滚 https://github.com/siyuan-note/siyuan/issues/3650
+                    // 表格出现滚动条，输入数字会向前滚 
                     if (scrollLeft > 0) {
                         blockElement.firstElementChild.scrollLeft = scrollLeft;
                     }
@@ -328,14 +328,14 @@ export const input = async (protyle: IProtyle, blockElement: HTMLElement, range:
                     }
                     // SpinBlockDOM 会生成新表格并替换旧节点，旧节点移除时外层编辑器的滚动锚点会失效，
                     // 因此需在恢复光标后还原滚动位置
-                    // https://github.com/siyuan-note/siyuan/issues/18235
+                    // 
                     if (contentScrollTop > 0) {
                         protyle.contentElement.scrollTop = contentScrollTop;
                         protyle.scroll.lastScrollTop = contentScrollTop - 1;
                     }
                 }
             }
-            // https://github.com/siyuan-note/siyuan/issues/14766
+            // 
             html += itemHTML || realElement.outerHTML;
         });
     } else if (blockElement.getAttribute("data-type") === "NodeCodeBlock") {

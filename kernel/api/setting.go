@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -86,7 +86,7 @@ func setConfSnippet(c *gin.Context) {
 }
 
 func addVirtualBlockRefExclude(c *gin.Context) {
-	// Add internal kernel API `/api/setting/addVirtualBlockRefExclude` https://github.com/siyuan-note/siyuan/issues/9909
+	// Add internal kernel API `/api/setting/addVirtualBlockRefExclude`
 
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -107,7 +107,7 @@ func addVirtualBlockRefExclude(c *gin.Context) {
 }
 
 func addVirtualBlockRefInclude(c *gin.Context) {
-	// Add internal kernel API `/api/setting/addVirtualBlockRefInclude` https://github.com/siyuan-note/siyuan/issues/9909
+	// Add internal kernel API `/api/setting/addVirtualBlockRefInclude`
 
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -128,7 +128,7 @@ func addVirtualBlockRefInclude(c *gin.Context) {
 }
 
 func refreshVirtualBlockRef(c *gin.Context) {
-	// Add internal kernel API `/api/setting/refreshVirtualBlockRef` https://github.com/siyuan-note/siyuan/issues/9829
+	// Add internal kernel API `/api/setting/refreshVirtualBlockRef`
 
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -781,7 +781,7 @@ func setEmoji(c *gin.Context) {
 	for _, ae := range argEmoji {
 		e := ae.(string)
 		if strings.Contains(e, ".") {
-			// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+			// XSS through emoji name
 			e = util.FilterUploadEmojiFileName(e)
 		}
 		emoji = append(emoji, e)

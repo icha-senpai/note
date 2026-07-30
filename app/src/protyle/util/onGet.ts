@@ -37,7 +37,7 @@ export const onGet = (options: {
     options.protyle.wysiwyg.element.removeAttribute("data-top");
     if (options.data.code === 1) {
         // 其他报错
-        if (!options.action.includes(Constants.CB_GET_APPEND)) {    // 向下加载时块可能还没有创建 https://github.com/siyuan-note/siyuan/issues/10851
+        if (!options.action.includes(Constants.CB_GET_APPEND)) {    // 向下加载时块可能还没有创建 
             if (options.protyle.model) {
                 options.protyle.model.parent.parent.removeTab(options.protyle.model.parent.id);
             } else {
@@ -149,7 +149,7 @@ const setHTML = (options: {
         return;
     }
 
-    // XSS in inline memo elements https://github.com/siyuan-note/siyuan/issues/15280
+    // XSS in inline memo elements 
     const parser = new DOMParser();
     const doc = parser.parseFromString(options.content, "text/html");
     doc.querySelectorAll("[data-inline-memo-content]").forEach(item => {
@@ -210,7 +210,7 @@ const setHTML = (options: {
     } else {
         protyle.wysiwyg.element.innerHTML = options.content;
         // 设置 innerHTML 会导致浏览器将 scrollTop 重置为 0，此处立即恢复以避免页面跳转到开头
-        // https://github.com/siyuan-note/siyuan/issues/17886
+        // 
         if (options.scrollAttr && typeof options.scrollAttr.scrollTop === "number") {
             protyle.contentElement.scrollTop = options.scrollAttr.scrollTop;
             protyle.scroll.lastScrollTop = options.scrollAttr.scrollTop;
@@ -224,7 +224,7 @@ const setHTML = (options: {
         });
     });
     /// #endif
-    // https://github.com/siyuan-note/siyuan/issues/10528
+    // 
     if (!protyle.block.showAll && protyle.wysiwyg.element.childElementCount === 1 && protyle.wysiwyg.element.firstElementChild.classList.contains("p")) {
         const editElement = getContenteditableElement(protyle.wysiwyg.element.firstElementChild);
         if (editElement && editElement.textContent === "") {
@@ -279,7 +279,7 @@ const setHTML = (options: {
     focusElementById(protyle, options.action, options.scrollAttr, options.scrollPosition);
 
     if (options.action.includes(Constants.CB_GET_SETID)) {
-        // 点击大纲后，如果需要动态加载，在定位后，需要重置 block.id https://github.com/siyuan-note/siyuan/issues/4487
+        // 点击大纲后，如果需要动态加载，在定位后，需要重置 block.id 
         protyle.block.id = protyle.block.rootID;
         protyle.wysiwyg.element.setAttribute("data-doc-type", "NodeDocument");
     }
@@ -313,12 +313,12 @@ const setHTML = (options: {
         options.afterCB();
     }
     // 需等待 afterCB 执行后 resize 计算出高度后再进行计算
-    // 屏幕太高的页签 https://github.com/siyuan-note/siyuan/issues/5018
+    // 屏幕太高的页签 
     if (options.scrollAttr && !protyle.scroll.element.classList.contains("fn__none") &&
-        !protyle.element.classList.contains("block__edit") &&   // 不能为浮窗，否则悬浮为根文档无法打开整个文档 https://github.com/siyuan-note/siyuan/issues/9082
+        !protyle.element.classList.contains("block__edit") &&   // 不能为浮窗，否则悬浮为根文档无法打开整个文档 
         protyle.wysiwyg.element.lastElementChild.getAttribute("data-eof") !== "2" &&
-        protyle.contentElement.scrollHeight > 0 && // 没有激活的页签 https://github.com/siyuan-note/siyuan/issues/5255
-        !options.action.includes(Constants.CB_GET_FOCUSFIRST) && // 防止 eof 为true https://github.com/siyuan-note/siyuan/issues/5291
+        protyle.contentElement.scrollHeight > 0 && // 没有激活的页签 
+        !options.action.includes(Constants.CB_GET_FOCUSFIRST) && // 防止 eof 为true 
         protyle.contentElement.scrollHeight <= protyle.contentElement.clientHeight) {
         const getDocParam: IObject = {
             id: protyle.wysiwyg.element.lastElementChild.getAttribute("data-node-id"),
@@ -332,7 +332,7 @@ const setHTML = (options: {
             onGet({data: getResponse, protyle, action: [Constants.CB_GET_APPEND, Constants.CB_GET_UNCHANGEID]});
         });
     }
-    // 动态滚动条拖拽到最后几个块时需多加载一点块 https://github.com/siyuan-note/siyuan/issues/16906
+    // 动态滚动条拖拽到最后几个块时需多加载一点块 
     if (options.action.includes(Constants.CB_GET_FOCUSFIRST) &&
         protyle.wysiwyg.element.getBoundingClientRect().top > protyle.breadcrumb.element.getBoundingClientRect().bottom) {
         const getDocParam: IObject = {
@@ -356,8 +356,8 @@ const setHTML = (options: {
         const startId = options.scrollAttr.startId || protyle.wysiwyg.element.firstElementChild?.getAttribute("data-node-id");
         if (startId) {
             protyle.scroll.updateIndex(protyle, startId, (index) => {
-                // https://github.com/siyuan-note/siyuan/issues/8224
-                // https://github.com/siyuan-note/siyuan/issues/10716
+                // 
+                // 
                 if (index > 1 && protyle.block.blockCount > 1 && protyle.contentElement.scrollHeight <= protyle.contentElement.clientHeight) {
                     showMessage(window.scribli.languages.scrollGetMore);
                 }
@@ -445,8 +445,8 @@ export const enableProtyle = (protyle: IProtyle) => {
     }
     protyle.disabled = false;
     if (isMobile()) {
-        // Android 端空块输入法弹出会收起 https://ld246.com/article/1689713888289
-        // iPhone，iPad 端 protyle.wysiwyg.element contenteditable 为 true 时，输入会在块中间插入 span 导致保存失败 https://ld246.com/article/1643473862873/comment/1643813765839#comments
+        // Android 端空块输入法弹出会收起 
+        // iPhone，iPad 端 protyle.wysiwyg.element contenteditable 为 true 时，输入会在块中间插入 span 导致保存失败 
         document.getElementById("toolbarName").removeAttribute("readonly");
     } else {
         protyle.wysiwyg.element.setAttribute("contenteditable", "true");
@@ -540,7 +540,7 @@ const focusElementById = (protyle: IProtyle, action: string[], scrollAttr?: IScr
     if (hasScrollTop) {
         protyle.contentElement.scrollTop = scrollAttr.scrollTop;
     }
-    // 下一个请求过来前需断开，否则 observerLoad 重新赋值后无法 disconnect https://ld246.com/article/1704612002446
+    // 下一个请求过来前需断开，否则 observerLoad 重新赋值后无法 disconnect 
     protyle.observerLoad?.disconnect();
     if (action.includes(Constants.CB_GET_FOCUS) || action.includes(Constants.CB_GET_SCROLL) || action.includes(Constants.CB_GET_HL) || action.includes(Constants.CB_GET_FOCUSFIRST)) {
         if (!hasScrollTop) {

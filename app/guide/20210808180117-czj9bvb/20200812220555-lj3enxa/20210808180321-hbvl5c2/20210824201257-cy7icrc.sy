@@ -140,7 +140,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/community.html",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "社区集市仓库"
 				},
 				{

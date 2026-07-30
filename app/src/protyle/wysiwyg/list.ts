@@ -37,7 +37,7 @@ export const updateListOrder = (listElement: Element, sIndex?: number) => {
     }
     let starIndex: number;
     Array.from(listElement.children).forEach((item, index) => {
-        // https://github.com/siyuan-note/siyuan/issues/16315 第三点会有为空的情况
+        //  第三点会有为空的情况
         if (!item.classList.contains("li")) {
             return;
         }
@@ -493,7 +493,7 @@ export const listOutdent = async (protyle: IProtyle, liItemElements: Element[], 
         return;
     }
     if (liElement.previousElementSibling?.classList.contains("protyle-action") && !parentParentElement.getAttribute("data-node-id")) {
-        // https://ld246.com/article/1691981936960 情况下 zoom in 列表项
+        //  情况下 zoom in 列表项
         return;
     }
     if (parentLiItemElement.classList.contains("protyle-wysiwyg") || parentLiItemElement.classList.contains("sb") ||
@@ -529,7 +529,7 @@ export const listOutdent = async (protyle: IProtyle, liItemElements: Element[], 
                     id,
                     previousID: index === 1 ? undefined : topPreviousID,
                     parentID: item.getAttribute("data-node-id"),
-                    data: blockElement.contains(range.startContainer) ? "focus" : "" // 标记需要 focus，https://ld246.com/article/1650018446988/comment/1650081404993?r=Vanessa#comments
+                    data: blockElement.contains(range.startContainer) ? "focus" : "" // 标记需要 focus，
                 });
                 topPreviousID = id;
                 previousElement.after(blockElement);
@@ -663,7 +663,7 @@ export const listOutdent = async (protyle: IProtyle, liItemElements: Element[], 
     }
 
     if (liElement.childElementCount === 2 && parentLiItemElement.childElementCount === 3) {
-        // 列表项里仅有包含一个列表项的列表，如 1. 1. 1 https://github.com/siyuan-note/insider/issues/494
+        // 列表项里仅有包含一个列表项的列表，如 1. 1. 1 
         range.collapse(false);
         moveToPrevious(deleteElement, range, isDelete);
         range.insertNode(document.createElement("wbr"));
@@ -847,7 +847,7 @@ export const listOutdent = async (protyle: IProtyle, liItemElements: Element[], 
         }
     }
     if (!window.scribli.config.editor.listLogicalOutdent && liElement.nextElementSibling) {
-        // https://github.com/siyuan-note/siyuan/issues/9226
+        // 
         nextElement = liElement.nextElementSibling;
         let subBlockPreviousID;
         while (nextElement && !nextElement.classList.contains("protyle-attr")) {
@@ -870,7 +870,7 @@ export const listOutdent = async (protyle: IProtyle, liItemElements: Element[], 
         }
     }
     if (liElement.childElementCount === 1 && parentLiItemElement.childElementCount === 3) {
-        // https://ld246.com/article/1691981936960
+        // 
         doOperations.push({
             action: "delete",
             id: parentLiItemElement.getAttribute("data-node-id")
@@ -880,7 +880,7 @@ export const listOutdent = async (protyle: IProtyle, liItemElements: Element[], 
             id: parentLiItemElement.getAttribute("data-node-id"),
             data: parentLiItemElement.outerHTML,
             previousID: getPreviousBlockSibling(parentLiItemElement)?.getAttribute("data-node-id"),
-            // https://github.com/siyuan-note/siyuan/issues/9237 无 previousID
+            //  无 previousID
             parentID: getParentBlock(parentLiItemElement).getAttribute("data-node-id"),
         });
         parentLiItemElement.remove();

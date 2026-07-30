@@ -432,7 +432,7 @@ const getHightlightCoordsByRange = (pdf: any, color: string) => {
         return;
     }
     const endIndex = parseInt(endPageElement.getAttribute("data-page-number")) - 1;
-    // https://github.com/siyuan-note/siyuan/issues/5213
+    // 
     const rangeContents = range.cloneContents();
     Array.from(rangeContents.children).forEach(item => {
         if (item.tagName === "BR" && item.previousElementSibling && item.nextElementSibling) {
@@ -443,7 +443,7 @@ const getHightlightCoordsByRange = (pdf: any, color: string) => {
                 if (previousText.endsWith("-")) {
                     item.previousElementSibling.textContent = previousText.substring(0, previousText.length - 1);
                 } else {
-                    // 中文情况不能添加 https://github.com/siyuan-note/siyuan/issues/8152
+                    // 中文情况不能添加 
                     item.insertAdjacentText("afterend", " ");
                 }
             }
@@ -674,7 +674,7 @@ const showHighlight = (selected: IPdfAnno, pdf: any, hl?: boolean) => {
         return;
     }
 
-    const viewport = page.viewport.clone({rotation: 0}); // rotation https://github.com/siyuan-note/siyuan/issues/9831
+    const viewport = page.viewport.clone({rotation: 0}); // rotation 
     let rectsElement = textLayerElement.querySelector(".pdf__rects");
     if (!rectsElement) {
         textLayerElement.insertAdjacentHTML("beforeend", "<div class='pdf__rects'></div>");

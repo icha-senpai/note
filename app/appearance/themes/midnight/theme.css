@@ -216,7 +216,7 @@
     --b3-parent-background: var(--b3-theme-background);
 }
 
-/* 微软字体斜体会被相邻背景遮挡，将 arial 放置其前 https://github.com/siyuan-note/siyuan/issues/11841；"Segoe UI" 和 Noto-COLRv1-2.047 冲突，故移除。 */
+/* 微软字体斜体会被相邻背景遮挡，将 arial 放置其前 ；"Segoe UI" 和 Noto-COLRv1-2.047 冲突，故移除。 */
 :root:lang(zh-CN) {
     --b3-font-family: "Emojis Additional", "Emojis Reset", BlinkMacSystemFont, Helvetica, "PingFang SC", "Luxi Sans", "DejaVu Sans", "Hiragino Sans GB", "Source Han Sans SC", arial, "Microsoft Yahei", sans-serif, emojis;
 }

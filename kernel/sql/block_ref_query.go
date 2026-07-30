@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -404,7 +404,7 @@ func QueryRefsRecent(onlyDoc bool, typeFilter string, ignoreLines []string) (ret
 		stmt = "SELECT r.* FROM refs AS r, blocks AS b WHERE b.id = r.def_block_id AND b.type = 'd'"
 	}
 	if 0 < len(ignoreLines) {
-		// Support ignore search results https://github.com/siyuan-note/siyuan/issues/10089
+		// Support ignore search results
 		buf := bytes.Buffer{}
 		for _, line := range ignoreLines {
 			buf.WriteString(" AND ")

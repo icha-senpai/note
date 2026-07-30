@@ -113,13 +113,13 @@ const handleTouchStart = (e: TouchEvent) => {
     }
 
     // 原生 <select> 下拉层由 WebView 以系统 overlay 绘制，合成 mousedown 会干扰其触摸序列导致下拉层闪退
-    // https://github.com/siyuan-note/siyuan/issues/17953
+    // 
     if (target.tagName === "SELECT" || target.tagName === "OPTION" || target.closest("select")) {
         return;
     }
     // 手动 mousedown 路径：dock / outline / resize 把手等自实现拖拽的区域
     if (!target.closest(".dock") &&
-        // 弹窗内不能按整个 .b3-dialog 匹配，否则导致闪卡文本扩选失效 https://github.com/siyuan-note/siyuan/issues/18055
+        // 弹窗内不能按整个 .b3-dialog 匹配，否则导致闪卡文本扩选失效 
         !(target.closest(".b3-dialog") &&  ["resize__move", "resize__rd", "resize__r", "resize__rt",
             "resize__d", "resize__l", "resize__ld", "resize__lt", "resize__t"].some(cls => target.closest("." + cls))) &&
         !target.closest(".sy__outline") &&

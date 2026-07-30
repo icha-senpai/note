@@ -79,7 +79,7 @@ export class Preview {
                 if (target.tagName === "A") {
                     const linkAddress = target.getAttribute("href");
                     if (linkAddress.startsWith("#")) {
-                        // 导出预览模式点击块引转换后的脚注跳转不正确 https://github.com/siyuan-note/siyuan/issues/5700
+                        // 导出预览模式点击块引转换后的脚注跳转不正确 
                         const hash = linkAddress.substring(1);
                         previewElement.querySelector('[data-node-id="' + hash + '"], [id="' + hash + '"]').scrollIntoView();
                         event.stopPropagation();
@@ -228,7 +228,7 @@ export class Preview {
             copyElement.querySelectorAll("mjx-container > svg").forEach((item) => {
                 item.setAttribute("width", (parseInt(item.getAttribute("width")) * 8) + "px");
             });
-            // 列表嵌套 https://github.com/siyuan-note/siyuan/issues/11276
+            // 列表嵌套 
             copyElement.querySelectorAll("ul, ol").forEach((listItem: HTMLOListElement) => {
                 if (typeof listItem.start === "number") {
                     listItem.classList.add("list-paddingleft-" + Math.min(listItem.start.toString().length, 3));
@@ -270,7 +270,7 @@ export class Preview {
         } else if (type === "zhihu") {
             this.link2online(copyElement);
             copyElement.querySelectorAll('[data-subtype="math"]').forEach((item: HTMLElement) => {
-                // https://github.com/siyuan-note/siyuan/issues/10015
+                // 
                 item.outerHTML = `<img class="Formula-image" data-eeimg="true" src="//www.zhihu.com/equation?tex=" alt="${item.getAttribute("data-content")}" style="${item.tagName === "DIV" ? "display: block; max-width: 100%;" : ""}margin: 0 auto;">`;
             });
             copyElement.querySelectorAll("blockquote").forEach((item) => {

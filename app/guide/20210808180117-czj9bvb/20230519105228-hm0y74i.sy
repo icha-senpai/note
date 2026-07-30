@@ -46,7 +46,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "B3log开源"
+									"TextMarkTextContent": "Scribli contributors"
 								},
 								{
 									"Type": "NodeText",
@@ -134,7 +134,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "B3log开源社区"
+									"TextMarkTextContent": "Scribli contributors"
 								},
 								{
 									"Type": "NodeText",
@@ -143,8 +143,8 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://weibo.com/b3log",
-									"TextMarkTextContent": "https://weibo.com/b3log"
+									"TextMarkAHref": "https://weibo.com/Scribli contributors",
+									"TextMarkTextContent": "https://weibo.com/Scribli contributors"
 								}
 							]
 						},
@@ -220,7 +220,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "B3log Open Source"
+									"TextMarkTextContent": "Scribli contributors"
 								},
 								{
 									"Type": "NodeText",
@@ -229,8 +229,8 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://x.com/b3logos",
-									"TextMarkTextContent": "https://x.com/b3logos"
+									"TextMarkAHref": "https://x.com/Scribli contributorsos",
+									"TextMarkTextContent": "https://x.com/Scribli contributorsos"
 								}
 							]
 						}
@@ -263,8 +263,8 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://ld246.com/tag/scribli",
-									"TextMarkTextContent": "https://ld246.com/tag/scribli"
+									"TextMarkAHref": "",
+									"TextMarkTextContent": ""
 								}
 							]
 						}

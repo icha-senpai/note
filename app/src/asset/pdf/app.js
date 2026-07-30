@@ -1333,7 +1333,7 @@ class PDFViewerApplication {
                     if (stored?.page && viewOnLoad !== ViewOnLoad.INITIAL) {
                         hash =
                             `page=${stored.page}&zoom=${zoom || stored.zoom},` +
-                            // NOTE https://github.com/siyuan-note/siyuan/issues/12291
+                            // NOTE 
                             `${stored.scrollLeft}${this.pdfId ? "" : "," + stored.scrollTop}`;
 
                         rotation = parseInt(stored.rotation, 10);
@@ -1416,7 +1416,7 @@ class PDFViewerApplication {
                     // To prevent any future issues, e.g. the document being completely
                     // blank on load, always trigger rendering here.
                     pdfViewer.update();
-                    // NOTE: 没有渲染完就切换页签导致 https://ld246.com/article/1677072688346
+                    // NOTE: 没有渲染完就切换页签导致 
                     const tabElement = hasClosestByClassName(pdfViewer.container, "fn__flex-1")
                     if (tabElement) {
                         tabElement.removeAttribute("data-loading")
@@ -2791,7 +2791,7 @@ function onTouchEnd(evt) {
 }
 
 function onClick(evt) {
-    // 点击后证快捷键可正常使用，select 等也可正常使用 https://github.com/siyuan-note/siyuan/issues/7869
+    // 点击后证快捷键可正常使用，select 等也可正常使用 
     if (!["SELECT", "TEXTAREA", "INPUT"].includes(evt.target.tagName)) {
         this.pdfViewer.focus();
     }
@@ -2855,7 +2855,7 @@ function onKeyDown(evt) {
         (evt.shiftKey ? 4 : 0) |
         (evt.metaKey ? 8 : 0);
     if (cmd === 0 && [38, 40].includes(evt.keyCode)) {
-        // NOTE https://github.com/siyuan-note/siyuan/issues/8164
+        // NOTE 
         if (document.activeElement) {
             document.activeElement.blur();
         }

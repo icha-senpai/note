@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -68,7 +68,7 @@ func GetPublishAccess() (ret PublishAccess) {
 
 	publishAccessLastModified = now
 
-	publishAccessPath := filepath.Join(util.DataDir, ".siyuan", "publishAccess.json")
+	publishAccessPath := filepath.Join(util.DataDir, ".scribli", "publishAccess.json")
 	err := os.MkdirAll(filepath.Dir(publishAccessPath), 0755)
 	if err != nil {
 		return
@@ -99,7 +99,7 @@ func SetPublishAccess(inputPublishAccess PublishAccess) (err error) {
 	publishAccessLastModified = now
 	publishAccess = inputPublishAccess
 
-	publishAccessPath := filepath.Join(util.DataDir, ".siyuan", "publishAccess.json")
+	publishAccessPath := filepath.Join(util.DataDir, ".scribli", "publishAccess.json")
 	err = os.MkdirAll(filepath.Dir(publishAccessPath), 0755)
 	if err != nil {
 		msg := fmt.Sprintf("create dir for publishAccess.json [%s] failed: %s", publishAccessPath, err)

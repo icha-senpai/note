@@ -84,12 +84,12 @@ remote.initialize();
 
 // Store Electron data under `Scribli-Electron`.
 // app.getPath("userData") creates an empty Scribli directory, so use app.getPath("appData") instead.
-// https://github.com/siyuan-note/siyuan/issues/3349
+// 
 app.setPath("userData", path.join(app.getPath("appData"), app.getName() + "-Electron"));
 
 if (process.platform === "win32") {
     // Windows needs AppUserModelId to show the app name and icon correctly.
-    // https://github.com/siyuan-note/siyuan/issues/17022
+    // 
     app.setAppUserModelId("app.scribli.desktop");
 }
 
@@ -130,7 +130,7 @@ app.commandLine.appendSwitch("xdg-portal-required-version", "4");
 // Do not auto-upgrade HTTP linked images loaded from local HTTPS pages to HTTPS.
 app.commandLine.appendSwitch("disable-features", "AutoupgradeMixedContent");
 
-// Support set Chromium command line arguments on the desktop https://github.com/siyuan-note/siyuan/issues/9696
+// Support set Chromium command line arguments on the desktop 
 writeLog("app is packaged [" + app.isPackaged + "], command line args [" + process.argv.join(", ") + "]");
 let argStart = 1;
 if (!app.isPackaged) {
@@ -164,7 +164,7 @@ try {
 }
 
 // Parse command-line arguments passed as `name=value`.
-// https://github.com/siyuan-note/siyuan/issues/14748
+// 
 const getArg = (name) => {
     for (let i = 0; i < process.argv.length; i++) {
         if (process.argv[i].startsWith(name)) {
@@ -174,7 +174,7 @@ const getArg = (name) => {
 };
 
 // Detect whether the last opened workspace is missing.
-// https://github.com/siyuan-note/siyuan/issues/14748
+// 
 let lastWorkspaceMissing = false;
 let missingWorkspacePath = "";
 let availableWorkspaces = [];
@@ -355,7 +355,7 @@ const exitApp = (port, errorWindowId) => {
                 // x/y/width/height must use getNormalBounds because it returns the restored rectangle for every
                 // window state. getBounds returns fullscreen size while maximized, which can pin the restored window
                 // to an edge.
-                // https://github.com/siyuan-note/siyuan/issues/18154
+                // 
                 // https://www.electronjs.org/docs/latest/api/browser-window#wingetnormalbounds
                 const bounds = mainWindow.getNormalBounds();
                 fs.writeFileSync(windowStatePath, JSON.stringify({
@@ -638,8 +638,8 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
         if (windowState.width > workArea.width + 32 || windowState.height > workArea.height + 32) {
             // Window size may reset to default after restart.
             // The +32 tolerance avoids false resets when the window is only a few pixels larger than the work area.
-            // https://github.com/siyuan-note/siyuan/issues/7755
-            // https://github.com/siyuan-note/siyuan/issues/13732
+            // 
+            // 
             windowState.width = Math.min(defaultWidth, workArea.width);
             windowState.height = Math.min(defaultHeight, workArea.height);
             writeLog("reset window size [width=" + windowState.width + ", height=" + windowState.height + "]");
@@ -721,25 +721,25 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
     });
 
     // Bypass security policy for internet service requests.
-    // https://github.com/siyuan-note/siyuan/issues/5516
+    // 
     currentWindow.webContents.session.webRequest.onBeforeSendHeaders((details, cb) => {
         if (-1 < details.url.toLowerCase().indexOf("bili")) {
             // Keep Referer for Bilibili.
-            // https://github.com/siyuan-note/siyuan/issues/94
+            // 
             cb({requestHeaders: details.requestHeaders});
             return;
         }
 
         if (-1 < details.url.toLowerCase().indexOf("douyin")) {
             // Keep Referer for Douyin because iframe login depends on Referer validation.
-            // https://github.com/siyuan-note/siyuan/issues/18070
+            // 
             cb({requestHeaders: details.requestHeaders});
             return;
         }
 
         if (-1 < details.url.toLowerCase().indexOf("youtube")) {
             // Set Referer handling for YouTube.
-            // https://github.com/siyuan-note/siyuan/issues/16319
+            // 
             delete details.requestHeaders["Referer"];
             cb({requestHeaders: details.requestHeaders});
             return;
@@ -1128,7 +1128,7 @@ app.whenReady().then(() => {
 
         if ("win32" === process.platform) {
             // Support always-on-top on Windows.
-            // https://github.com/siyuan-note/siyuan/issues/6860
+            // 
             trayMenuTemplate.splice(1, 0, {
                 label: mainWindow.isAlwaysOnTop() ? lang.cancelWindowTop : lang.setWindowTop, click: () => {
                     if (!mainWindow.isAlwaysOnTop()) {
@@ -1145,7 +1145,7 @@ app.whenReady().then(() => {
     };
     const hideWindow = (wnd) => {
         // Return focus to the previous window after minimizing with `Alt+M`.
-        // https://github.com/siyuan-note/siyuan/issues/7275
+        // 
         wnd.minimize();
         // On Mac, hidden windows cannot be shown from the Dock again.
         if ("win32" === process.platform || "linux" === process.platform) {
@@ -1497,7 +1497,7 @@ app.whenReady().then(() => {
         });
     });
     ipcMain.on("scribli-export-newwindow", (event, data) => {
-        // The PDF/Word export preview window automatically adjusts according to the size of the main window https://github.com/siyuan-note/siyuan/issues/10554
+        // The PDF/Word export preview window automatically adjusts according to the size of the main window 
         const wndBounds = getWindowByContentId(event.sender.id).getBounds();
         const wndScreen = screen.getDisplayNearestPoint({x: wndBounds.x, y: wndBounds.y});
         const printWin = new BrowserWindow({
@@ -1606,7 +1606,7 @@ app.whenReady().then(() => {
         const exitWS = workspaces.find(item => {
             if (event.sender.id === item.webContentsId && item.workspaceDir) {
                 if (item.tray && ("win32" === process.platform || "linux" === process.platform)) {
-                    // Tray menu text does not change with the appearance language https://github.com/siyuan-note/siyuan/issues/7935
+                    // Tray menu text does not change with the appearance language 
                     resetTrayMenu(item.tray, data.languages, item.browserWindow);
                 }
                 return true;
@@ -1739,7 +1739,7 @@ app.whenReady().then(() => {
         }
 
         // Improve the appearance language used during desktop initialization.
-        // https://github.com/siyuan-note/siyuan/issues/6803
+        // 
         const languages = app.getPreferredSystemLanguages();
         const language = getArg("--lang") || resolveAppLanguage(languages);
         firstOpenWindow.loadFile(initHTMLPath, {
@@ -1780,7 +1780,7 @@ app.whenReady().then(() => {
         }
 
         // Improve the appearance language used during desktop initialization.
-        // https://github.com/siyuan-note/siyuan/issues/6803
+        // 
         const languages = app.getPreferredSystemLanguages();
         const language = getArg("--lang") || resolveAppLanguage(languages);
         let crashWorkspace = appCrashInfo.workspaceDir || lastWorkspacePath;
@@ -1814,7 +1814,7 @@ app.whenReady().then(() => {
         });
     } else if (lastWorkspaceMissing) {
         // The last used workspace is missing; show the workspace selection window.
-        // https://github.com/siyuan-note/siyuan/issues/14748
+        // 
         const missingWorkspaceWindow = new BrowserWindow({
             width: Math.floor(screen.getPrimaryDisplay().size.width * 0.55),
             height: Math.floor(screen.getPrimaryDisplay().workAreaSize.height * 0.65),
@@ -1833,7 +1833,7 @@ app.whenReady().then(() => {
         }
 
         // Improve the appearance language used during desktop initialization.
-        // https://github.com/siyuan-note/siyuan/issues/6803
+        // 
         const languages = app.getPreferredSystemLanguages();
         const language = getArg("--lang") || resolveAppLanguage(languages);
         missingWorkspaceWindow.loadFile(missingWorkspaceHTMLPath, {
@@ -1882,13 +1882,13 @@ app.whenReady().then(() => {
 
     // Power-related events must be inside whenReady, otherwise Linux startup can fail with
     // Trace/breakpoint trap (core dumped).
-    // https://github.com/siyuan-note/siyuan/issues/9347
+    // 
     powerMonitor.on("suspend", () => {
         writeLog("system suspend");
     });
     powerMonitor.on("resume", async () => {
         // After desktop resume, check network connectivity before running data sync.
-        // https://github.com/siyuan-note/siyuan/issues/6687
+        // 
         writeLog("system resume");
 
         const isOnline = async () => {
@@ -2027,7 +2027,7 @@ app.on("activate", () => {
 
 app.on("web-contents-created", (webContentsCreatedEvent, contents) => {
     contents.setWindowOpenHandler((details) => {
-        // https://github.com/siyuan-note/siyuan/issues/10567
+        // 
         if (details.url.startsWith("file:///") && details.disposition === "foreground-tab") {
             return;
         }

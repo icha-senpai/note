@@ -89,7 +89,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://ld246.com",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "超链接"
 								}
 							]
@@ -2273,7 +2273,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan-template"
+					"TextMarkTextContent": "Scribli-template"
 				},
 				{
 					"Type": "NodeText",

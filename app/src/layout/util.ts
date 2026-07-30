@@ -36,8 +36,8 @@ import {activateQueuedAVLocate, queueAVLocateRequest} from "../protyle/render/av
 
 const CARD_MODEL_TYPE = "scribli-card";
 const DATABASE_ROW_MODEL_TYPE = "scribli-database-row";
-const LEGACY_CARD_MODEL_TYPE = "siyuan-card";
-const LEGACY_DATABASE_ROW_MODEL_TYPE = "siyuan-database-row";
+const LEGACY_CARD_MODEL_TYPE = "Scribli-card";
+const LEGACY_DATABASE_ROW_MODEL_TYPE = "Scribli-database-row";
 
 const normalizeBuiltInCustomModelType = (type: string) => {
     if (type === LEGACY_CARD_MODEL_TYPE) {
@@ -124,7 +124,7 @@ const dockToJSON = (dock: Dock) => {
     const data0 = subDockToJSON(0);
     const data2 = subDockToJSON(1);
     if (data0.length > 0 || data2.length > 0) {
-        // https://github.com/siyuan-note/siyuan/issues/5641
+        // 
         json.push(data0);
     }
     if (data2.length > 0) {
@@ -341,7 +341,7 @@ export const JSONToCenter = (
 ) => {
     let child: Layout | Wnd | Tab | Model;
     if (json.instance === "Layout") {
-        // TabA 向右分屏后向下分屏，依次关闭右侧、上侧分屏无法移除 layout 嵌套，故在此解决 https://github.com/siyuan-note/siyuan/issues/12196
+        // TabA 向右分屏后向下分屏，依次关闭右侧、上侧分屏无法移除 layout 嵌套，故在此解决 
         while (json.children.length === 1 && json.children[0].instance === "Layout" &&
         json.children[0].type === "normal" && json.children[0].children.length === 1) {
             json.children = json.children[0].children;
@@ -571,7 +571,7 @@ export const JSONToLayout = (app: App, isStart: boolean) => {
         if (latestTabHeaderElement) {
             setPanelFocus(latestTabHeaderElement.parentElement.parentElement.parentElement, false);
         }
-        // 移除没有数据的页签 https://github.com/siyuan-note/siyuan/issues/13390
+        // 移除没有数据的页签 
         removedTabs.forEach(item => {
             item.parent.removeTab(item.id, false, false, false);
         });
@@ -579,7 +579,7 @@ export const JSONToLayout = (app: App, isStart: boolean) => {
     // 需放在 tab.parent.switchTab 后，否则当前 tab 永远为最后一个
     afterLayoutReady(app);
     saveLayout();
-    // https://github.com/siyuan-note/siyuan/issues/17779
+    // 
     if (window.scribli.layout.rightDock.layout.children[0].element.classList.contains("fn__none") &&
         window.scribli.layout.rightDock.layout.children[1].element.classList.contains("fn__none")) {
         window.scribli.layout.rightDock.layout.element.style.width = "0px";
@@ -942,7 +942,7 @@ export const addResize = (obj: Layout | Wnd, after = true) => {
             const documentSelf = document;
             const nextElement = resizeElement.nextElementSibling as HTMLElement;
             const previousElement = resizeElement.previousElementSibling as HTMLElement;
-            nextElement.style.overflow = "auto"; // 拖动时 layout__resize 会出现 https://github.com/siyuan-note/siyuan/issues/6221
+            nextElement.style.overflow = "auto"; // 拖动时 layout__resize 会出现 
             previousElement.style.overflow = "auto";
             nextElement.style.transition = "none";
             previousElement.style.transition = "none";
@@ -975,7 +975,7 @@ export const addResize = (obj: Layout | Wnd, after = true) => {
                 }
                 if (window.scribli.layout.leftDock && window.scribli.layout.leftDock.layout.element === previousElement &&
                     previousNowSize < getMinSize(previousElement) &&
-                    // https://github.com/siyuan-note/siyuan/issues/10506
+                    // 
                     previousNowSize < previousSize) {
                     return;
                 }

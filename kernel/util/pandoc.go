@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -133,7 +133,7 @@ func InitPandoc() {
 
 	tempPandocDir := filepath.Join(TempDir, "pandoc")
 	if confPath := filepath.Join(ConfDir, "conf.json"); gulu.File.IsExist(confPath) {
-		// Workspace built-in Pandoc is no longer initialized after customizing Pandoc path https://github.com/siyuan-note/siyuan/issues/8377
+		// Workspace built-in Pandoc is no longer initialized after customizing Pandoc path
 		if data, err := os.ReadFile(confPath); err == nil {
 			conf := map[string]any{}
 			if err = gulu.JSON.UnmarshalJSON(data, &conf); err == nil && nil != conf["export"] {

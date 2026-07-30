@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ func getTag(c *gin.Context) {
 	var app string
 	var sortVal float64
 	if !util.ParseJsonArgs(arg, ret,
-		// API `getTag` add an optional parameter `ignoreMaxListHint` https://github.com/siyuan-note/siyuan/issues/16000
+		// API `getTag` add an optional parameter `ignoreMaxListHint`
 		util.BindJsonArg("ignoreMaxListHint", &ignoreMaxListHint, false, false),
 		util.BindJsonArg("app", &app, false, false),
 		util.BindJsonArg("sort", &sortVal, false, false),

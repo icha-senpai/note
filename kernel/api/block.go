@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -979,7 +979,7 @@ func getBlockKramdown(c *gin.Context) {
 		return
 	}
 
-	// https://github.com/siyuan-note/siyuan/issues/13183
+	//
 	mode := "md"
 	if modeArg := arg["mode"]; nil != modeArg {
 		mode = modeArg.(string)
@@ -1037,7 +1037,7 @@ func getBlockKramdowns(c *gin.Context) {
 		}
 	}
 
-	// https://github.com/siyuan-note/siyuan/issues/13183
+	//
 	mode := "md"
 	if modeArg := arg["mode"]; nil != modeArg {
 		mode = modeArg.(string)

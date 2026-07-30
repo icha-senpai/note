@@ -235,7 +235,7 @@ const renderSlashMenu = (protyle: IProtyle, toolbarElement: Element) => {
 </div>
 <div class="keyboard__slash-title"></div>
 <div class="keyboard__slash-block">
-    ${isInAndroid() ? getSlashItem(Constants.ZWSP + 3, "iconImage", window.scribli.languages.insertImage + '<input class="b3-form__upload" type="file" multiple="multiple" accept="image/*,application/x-siyuan-image-picker"/>', "true") : ""}
+    ${isInAndroid() ? getSlashItem(Constants.ZWSP + 3, "iconImage", window.scribli.languages.insertImage + '<input class="b3-form__upload" type="file" multiple="multiple" accept="image/*,application/x-scribli-image-picker"/>', "true") : ""}
     ${isInAndroid() ? getSlashItem(Constants.ZWSP + 3, "iconCamera", window.scribli.languages.insertPhoto + '<input class="b3-form__upload" capture="user" type="file"' + (protyle.options.upload.accept ? (' multiple="' + protyle.options.upload.accept + '"') : "") + "/>", "true") : ""}
     ${getSlashItem(Constants.ZWSP + 3, "iconDownload", window.scribli.languages.insertAsset + '<input class="b3-form__upload" type="file"' + (protyle.options.upload.accept ? (' multiple="' + protyle.options.upload.accept + '"') : "") + "/>", "true")}
     ${getSlashItem('<iframe sandbox="allow-forms allow-presentation allow-same-origin allow-scripts allow-modals allow-popups allow-storage-access-by-user-activation" src="" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>', "iconGlobe", window.scribli.languages.insertIframeURL, "true")}
@@ -427,7 +427,7 @@ export const showKeyboardToolbar = () => {
         hideKeyboardToolbarUtil();
     }
     const toolbarElement = document.getElementById("keyboardToolbar");
-    window.dispatchEvent(new CustomEvent("siyuan-mobile-keyboard-change", {detail: true}));
+    window.dispatchEvent(new CustomEvent("scribli-mobile-keyboard-change", {detail: true}));
     if (!toolbarElement.classList.contains("fn__none") || getSelection().rangeCount === 0) {
         return;
     }
@@ -482,7 +482,7 @@ export const showKeyboardToolbar = () => {
 export const hideKeyboardToolbar = () => {
     clearTimeout(renderKeyboardToolbarTimeout);
     clearTimeout(scrollSelectionIntoViewTimeout);
-    window.dispatchEvent(new CustomEvent("siyuan-mobile-keyboard-change", {detail: false}));
+    window.dispatchEvent(new CustomEvent("scribli-mobile-keyboard-change", {detail: false}));
     if (showUtil) {
         return;
     }
@@ -664,7 +664,7 @@ export const initKeyboardToolbar = () => {
             event.preventDefault();
             event.stopPropagation();
             if (dataValue === "((" || dataValue === "{{") {
-                // (( / {{ 的候选列表无输入框，需保持键盘不收起，否则无法继续输入筛选 https://github.com/siyuan-note/siyuan/issues/17877
+                // (( / {{ 的候选列表无输入框，需保持键盘不收起，否则无法继续输入筛选 
                 callMobileAppShowKeyboard();
                 if (isInHarmony() || isInAndroid()) {
                     setTimeout(() => focusByRange(protyle.toolbar.range), Constants.TIMEOUT_TRANSITION);

@@ -867,7 +867,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "官方网站"
 				},
 				{
@@ -1286,7 +1286,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://ld246.com/sponsor",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "靠爱发电 - 链滴"
 				}
 			]

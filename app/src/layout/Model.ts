@@ -55,7 +55,7 @@ export class Model {
         };
         ws.onmessage = (event) => {
             if (options.msgCallback &&
-                // 等待 config 加载完成才接受推送 https://github.com/siyuan-note/siyuan/issues/17508
+                // 等待 config 加载完成才接受推送 
                 window.scribli.config) {
                 const data = processMessage(JSON.parse(event.data));
                 options.msgCallback.call(this, data);

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -347,7 +347,7 @@ func InitTesseract() {
 		}
 	}
 
-	// Supports via environment var `SCRIBLI_TESSERACT_ENABLED=false` to close OCR https://github.com/siyuan-note/siyuan/issues/9619
+	// Supports via environment var `SCRIBLI_TESSERACT_ENABLED=false` to close OCR
 	if enabled := os.Getenv("SCRIBLI_TESSERACT_ENABLED"); "" != enabled {
 		if enabledBool, parseErr := strconv.ParseBool(enabled); nil == parseErr {
 			TesseractEnabled = enabledBool

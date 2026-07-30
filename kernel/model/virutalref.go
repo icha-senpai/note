@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -198,7 +198,7 @@ func processVirtualRef(n *ast.Node, unlinks *[]*ast.Node, virtualBlockRefKeyword
 
 	if 0 < refCount[parentBlock.ID] {
 
-		// Referenced blocks support rendering virtual references https://github.com/siyuan-note/siyuan/issues/10960
+		// Referenced blocks support rendering virtual references
 		parentText := getNodeRefText(parentBlock)
 		virtualBlockRefKeywords = gulu.Str.RemoveElem(virtualBlockRefKeywords, parentText)
 	}
@@ -312,7 +312,7 @@ func getVirtualRefKeywords(root *ast.Node) (ret []string) {
 		}
 	}
 
-	// Virtual references exclude the name and aliases from the current document https://github.com/siyuan-note/siyuan/issues/9204
+	// Virtual references exclude the name and aliases from the current document
 	title := root.IALAttr("title")
 	ret = gulu.Str.ExcludeElem(ret, []string{title})
 	if name := root.IALAttr("name"); "" != name {

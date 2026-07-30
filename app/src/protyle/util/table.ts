@@ -131,7 +131,7 @@ export const insertRowAbove = (protyle: IProtyle, range: Range, cellElement: HTM
         if (className === "fn__none") {
             hasNone = true;
         }
-        // 不需要空格，否则列宽调整后在空格后插入图片会换行 https://github.com/siyuan-note/siyuan/issues/7631
+        // 不需要空格，否则列宽调整后在空格后插入图片会换行 
         const classAttr = className ? ` class="${className}"` : "";
         const tag = cellElement.tagName === "TH" ? "th" : "td";
         rowHTML += `<${tag}${classAttr} colspan="${currentCellElement.colSpan}" align="${currentCellElement.getAttribute("align") || ""}"></${tag}>`;
@@ -403,7 +403,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         range.extractContents();
         const types = protyle.toolbar.getCurrentType(range);
         if (types.includes("code") && range.startContainer.nodeType !== 3) {
-            // https://github.com/siyuan-note/siyuan/issues/4169
+            // 
             const brElement = document.createElement("br");
             (range.startContainer as HTMLElement).after(brElement);
             range.setStartAfter(brElement);
@@ -582,7 +582,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         // Backspace：光标移动到前一个 cell
         if (isNotCtrl(event) && !event.shiftKey && !event.altKey && event.key === "Backspace"
             && getSelectionOffset(cellElement, protyle.wysiwyg.element, range).start === 0 && range.toString() === "" &&
-            // 空换行无法删除 https://github.com/siyuan-note/siyuan/issues/2732
+            // 空换行无法删除 
             (range.startOffset === 0 || (range.startOffset === 1 && cellElement.querySelectorAll("br").length === 1))) {
             const previousCellElement = goPreviousCell(cellElement, range, false);
             if (!previousCellElement && nodeElement.previousElementSibling) {
@@ -757,7 +757,7 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
 
     // 删除当前行
     if (matchHotKey(window.scribli.config.keymap.editor.table["delete-row"].custom, event)) {
-        if ((!hasNone && !hasRowSpan) || //https://github.com/siyuan-note/siyuan/issues/5045
+        if ((!hasNone && !hasRowSpan) || //
             (hasNone && !hasRowSpan && hasColSpan)) {
             deleteRow(protyle, range, cellElement, nodeElement);
         }
@@ -1058,7 +1058,7 @@ export const getTableRangeHTML = (tableElement: HTMLElement, startCell: HTMLElem
 
     // 5. 按新行列号输出。需建立输出网格以正确处理 rowspan 占位：
     // 当某单元格 newRowspan > 1 跨多行时，后续行对应列要插入 class="fn__none" 占位单元格
-    //（与思源内部合并单元格规范一致），否则行列对应关系会错乱。
+    //（与 Scribli 内部合并单元格规范一致），否则行列对应关系会错乱。
     // 输出时会根据规范化后的 thead/tbody 选择 th/td，保证结果可直接解析为独立表格块。
     if (outCells.length === 0) {
         return "";

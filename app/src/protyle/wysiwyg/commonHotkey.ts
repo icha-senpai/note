@@ -149,7 +149,7 @@ export const upSelect = (options: {
         const innerText = nodeEditableElement.innerText;
         const isExpandUp = matchHotKey(window.scribli.config.keymap.editor.general.expandUp.custom, options.event);
         if (!isMac() && isExpandUp) {
-            // Windows 中 ⌥⇧↑ 默认无选中功能会导致 https://ld246.com/article/1716635371149
+            // Windows 中 ⌥⇧↑ 默认无选中功能会导致 
         } else if (startIndex > 0) {
             // 选中上一个节点的处理在 toolbar/index.ts 中 `shift+方向键或三击选中`
             if (innerText.substr(0, startIndex).indexOf("\n") === -1 &&
@@ -196,7 +196,7 @@ export const downSelect = (options: {
         const innerText = nodeEditableElement.innerText;
         const isExpandDown = matchHotKey(window.scribli.config.keymap.editor.general.expandDown.custom, options.event);
         if (!isMac() && isExpandDown) {
-            // Windows 中 ⌥⇧↓ 默认无选中功能会导致 https://ld246.com/article/1716635371149
+            // Windows 中 ⌥⇧↓ 默认无选中功能会导致 
         } else if (endIndex < innerText.length) {
             // 选中下一个节点的处理在 toolbar/index.ts 中 `shift+方向键或三击选中`
             if (!getNextBlock(options.nodeElement) && innerText.trimRight().substr(endIndex).indexOf("\n") === -1 &&

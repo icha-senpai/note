@@ -32,13 +32,13 @@
 
     .textLayer,
     .pdf__resize {
-      /* dark 蓝色、紫色背景显示不清楚，文档位于 https://github.com/siyuan-note/siyuan/issues/5351 */
+      /* dark 蓝色、紫色背景显示不清楚，文档位于  */
       mix-blend-mode: multiply;
     }
   }
 
   &__util {
-    z-index: 9999; // https://github.com/siyuan-note/siyuan/issues/13928
+    z-index: 9999; // 
     padding: 8px;
 
     &--hide .pdf__util__hide {
@@ -325,7 +325,7 @@
   align-items: center;
   flex-wrap: wrap;
   overflow: initial;
-  z-index: 99; // https://github.com/siyuan-note/siyuan/issues/13614
+  z-index: 99; // 
 
   #findInput {
     width: 120px;

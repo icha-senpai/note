@@ -122,7 +122,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://ld246.com/settings/account",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "链滴 - 设置 - 账号"
 								},
 								{
@@ -162,7 +162,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "B3log开源"
+									"TextMarkTextContent": "Scribli contributors"
 								},
 								{
 									"Type": "NodeText",
@@ -497,7 +497,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "https://ld246.com/apis/scribli/inbox/addCloudShorthand"
+									"TextMarkTextContent": ""
 								}
 							]
 						}
@@ -602,7 +602,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://ld246.com/settings/account",
+									"TextMarkAHref": "",
 									"TextMarkTextContent": "链滴 - 设置 - 账号"
 								},
 								{

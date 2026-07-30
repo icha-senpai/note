@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ func SyAAD(boxID, relativePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return "siyuan:v1:file:" + boxID + ":" + base, nil
+	return "scribli:v1:file:" + boxID + ":" + base, nil
 }
 
 func encryptedBox(boxID string) bool {
@@ -82,7 +82,7 @@ func encryptData(boxID, relativePath string, data []byte) ([]byte, error) {
 	if dek == nil {
 		return data, nil
 	}
-	fileKey := util.DeriveSubKey(dek, "siyuan/file")
+	fileKey := util.DeriveSubKey(dek, "scribli/file")
 	aad, err := SyAAD(boxID, relativePath)
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func decryptData(boxID, relativePath string, data []byte) ([]byte, error) {
 	if dek == nil {
 		return data, nil
 	}
-	fileKey := util.DeriveSubKey(dek, "siyuan/file")
+	fileKey := util.DeriveSubKey(dek, "scribli/file")
 	aad, err := SyAAD(boxID, relativePath)
 	if err != nil {
 		return nil, err

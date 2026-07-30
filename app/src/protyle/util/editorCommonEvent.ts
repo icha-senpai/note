@@ -446,7 +446,7 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
 const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElement: Element, isBottom: boolean,
                       direct: "col" | "row", isCopy: boolean) => {
     const isSameDoc = protyle.element.contains(sourceElements[0]);
-    // 移动前记录源块所在的超级块，移动后刷新其手柄（移出后需重建）https://github.com/siyuan-note/siyuan/issues/9521
+    // 移动前记录源块所在的超级块，移动后刷新其手柄（移出后需重建）
     const originSbSet = new Set<Element>();
     sourceElements.forEach(el => {
         const sb = el.closest('[data-type="NodeSuperBlock"]');
@@ -455,7 +455,7 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
             originSbSet.add(sb);
         }
     });
-    // 把列表块中的唯一一个列表项块拖拽到列表块的左侧 https://github.com/siyuan-note/siyuan/issues/16315
+    // 把列表块中的唯一一个列表项块拖拽到列表块的左侧 
     if (isSameDoc && sourceElements[0].classList.contains("li") && targetElement === sourceElements[0].parentElement &&
         targetElement.childElementCount === sourceElements.length + 1) {
         const outLiElement = sourceElements.find((element) => {
@@ -493,14 +493,14 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
     doOperations.push(...moveToResult.doOperations);
     undoOperations.push(...moveToResult.undoOperations);
     const newSourceParentElement = moveToResult.newSourceElements;
-    // 横向超级块A内两个元素拖拽成纵向超级块B，取消超级块A会导致 targetElement 被删除，需先移动再删除 https://github.com/siyuan-note/siyuan/issues/16292
+    // 横向超级块A内两个元素拖拽成纵向超级块B，取消超级块A会导致 targetElement 被删除，需先移动再删除 
     let removeIndex = doOperations.length;
     doOperations.find((item, index) => {
-        // 横向超级块A内两个元素拖拽成纵向超级块B，取消超级块A会导致 targetElement 被删除，需先移动再删除 https://github.com/siyuan-note/siyuan/issues/16292
+        // 横向超级块A内两个元素拖拽成纵向超级块B，取消超级块A会导致 targetElement 被删除，需先移动再删除 
         if (item.action === "delete" && item.id === targetMoveUndo.parentID) {
             removeIndex = index;
         }
-        // 超级块内有两个块，拖拽其中一个到超级块外 https://github.com/siyuan-note/siyuan/issues/16292#issuecomment-3523600155
+        // 超级块内有两个块，拖拽其中一个到超级块外 
         if (item.action === "delete" && item.id === targetElement.getAttribute("data-node-id")) {
             targetElement = sbElement.querySelector(`[data-node-id="${doOperations[index - 1].id}"]`);
         }
@@ -605,7 +605,7 @@ const dragSame = async (protyle: IProtyle, sourceElements: Element[], targetElem
     }
     if (targetElement.getAttribute("data-type") === "NodeListItem" &&
         targetElement.getAttribute("data-subtype") === "o") {
-        // https://github.com/siyuan-note/insider/issues/536
+        // 
         Array.from(targetElement.parentElement.children).forEach((item) => {
             if (item.classList.contains("protyle-attr")) {
                 return;
@@ -982,7 +982,7 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                     });
                 } else if (window.scribli.config.system.workspaceDir.toLowerCase() === gutterTypes[3]) {
                     // 跨窗口拖拽
-                    // 不能跨工作区域拖拽 https://github.com/siyuan-note/siyuan/issues/13582
+                    // 不能跨工作区域拖拽 
                     const targetProtyleElement = document.createElement("template");
                     targetProtyleElement.innerHTML = `<div>${event.dataTransfer.getData(gutterType)}</div>`;
                     targetProtyleElement.content.querySelectorAll(queryClass.substring(0, queryClass.length - 1)).forEach(elementItem => {
@@ -1402,7 +1402,7 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                         }
                     }
 
-                    // https://github.com/siyuan-note/siyuan/issues/10528#issuecomment-2205165824
+                    // 
                     editorElement.querySelectorAll(".protyle-wysiwyg--empty").forEach(item => {
                         item.classList.remove("protyle-wysiwyg--empty");
                     });
@@ -1535,7 +1535,7 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                             resize: false,
                         });
                         /// #endif
-                        // 文档标题互转后，编辑区会跳转到开头 https://github.com/siyuan-note/siyuan/issues/2939
+                        // 文档标题互转后，编辑区会跳转到开头 
                         setTimeout(() => {
                             protyle.contentElement.scrollTop = scrollTop;
                             protyle.scroll.lastScrollTop = scrollTop - 1;
@@ -1549,7 +1549,7 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
         )) {
             event.preventDefault();
             // 外部文件拖入编辑器中或者编辑器内选中文字拖拽
-            // https://github.com/siyuan-note/siyuan/issues/9544
+            // 
             const avElement = hasClosestByClassName(event.target, "av");
             if (!avElement) {
                 focusByRange(getRangeByPoint(event.clientX, event.clientY));
@@ -1788,12 +1788,12 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                     dragoverElement = targetElement;
                 }
             }
-            // 使用 event.preventDefault(); 会导致无光标 https://github.com/siyuan-note/siyuan/issues/12857
+            // 使用 event.preventDefault(); 会导致无光标 
             return;
         }
 
         if (!gutterType && !window.scribli.dragElement) {
-            // https://github.com/siyuan-note/siyuan/issues/6436
+            // 
             event.preventDefault();
             return;
         }
@@ -1927,7 +1927,7 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                 if (bodyElement) {
                     const blockElement = hasClosestBlock(bodyElement) as HTMLElement;
                     const groupID = bodyElement.getAttribute("data-group-id");
-                    // 模板、创建时间、更新时间 字段作为分组方式时不允许跨分组拖拽 https://github.com/siyuan-note/siyuan/issues/15553
+                    // 模板、创建时间、更新时间 字段作为分组方式时不允许跨分组拖拽 
                     const isTCU = ["template", "created", "updated"].includes(bodyElement.getAttribute("data-dtype"));
                     // 排序只能夸组拖拽
                     const hasSort = blockElement.querySelector('.block__icon[data-type="av-sort"]')?.classList.contains("block__icon--active");
@@ -1955,7 +1955,7 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                 if (bodyElement) {
                     const blockElement = hasClosestBlock(bodyElement) as HTMLElement;
                     const groupID = bodyElement.getAttribute("data-group-id");
-                    // 模板、创建时间、更新时间 字段作为分组方式时不允许跨分组拖拽 https://github.com/siyuan-note/siyuan/issues/15553
+                    // 模板、创建时间、更新时间 字段作为分组方式时不允许跨分组拖拽 
                     const isTCU = ["template", "created", "updated"].includes(bodyElement.getAttribute("data-dtype"));
                     // 排序只能夸组拖拽
                     const hasSort = blockElement.querySelector('.block__icon[data-type="av-sort"]')?.classList.contains("block__icon--active");
@@ -2265,7 +2265,7 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                 // 非边缘：不 return，继续走通用判断
             }
 
-            // 减小两个列表之间左侧间距，以便拖拽到其中 https://github.com/siyuan-note/siyuan/issues/15672
+            // 减小两个列表之间左侧间距，以便拖拽到其中 
             if (event.clientX < nodeRect.left + (targetElement.classList.contains("list") ? 8 : 32) &&
                 event.clientX >= nodeRect.left - 1 &&
                 !targetElement.classList.contains("av__row")) {
@@ -2354,7 +2354,7 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                 return;
             }
             if (gutterTypes[0] === "nodelistitem" && "NodeListItem" === targetElement.getAttribute("data-type")) {
-                // 选中非列表不能拖拽到列表中 https://github.com/siyuan-note/siyuan/issues/13822
+                // 选中非列表不能拖拽到列表中 
                 const notLiItem = Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--select")).find((item: HTMLElement) => {
                     if (!item.classList.contains("li")) {
                         return true;
@@ -2377,7 +2377,7 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
             }
             if (gutterTypes[0] === "nodelistitem" &&
                 targetElement.nextElementSibling?.classList.contains("list") &&
-                // https://github.com/siyuan-note/siyuan/issues/15672
+                // 
                 targetElement.parentElement?.classList.contains("li")) {
                 // 列表项不能拖入列表上方块的下面
                 disabledPosition = "bottom";
@@ -2522,7 +2522,7 @@ const highlightColColumn = (element: HTMLElement) => {
     }
 };
 
-// https://github.com/siyuan-note/siyuan/issues/12651
+// 
 const clearDragoverElement = (element: Element) => {
     if (element) {
         element.classList.remove("dragover__top", "dragover__bottom", "dragover", "dragover__left", "dragover__right", "dragover__top--sibling", "dragover__bottom--sibling", "dragover__top--child", "dragover__bottom--child");

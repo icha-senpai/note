@@ -170,7 +170,7 @@ export class BlockPanel {
                 action.push(Constants.CB_GET_ALL);
             } else {
                 action.push(Constants.CB_GET_CONTEXT);
-                // 不需要高亮 https://github.com/siyuan-note/siyuan/issues/11160#issuecomment-2084652764
+                // 不需要高亮 
             }
 
             if (this.isBacklink) {
@@ -207,7 +207,7 @@ export class BlockPanel {
                     if (afterCB) {
                         afterCB();
                     }
-                    // https://ld246.com/article/1653639418266
+                    // 
                     if (editor.protyle.element.nextElementSibling || editor.protyle.element.previousElementSibling) {
                         editor.protyle.element.style.minHeight = Math.min(30 + editor.protyle.wysiwyg.element.clientHeight, window.innerHeight / 3) + "px";
                     }
@@ -231,7 +231,7 @@ export class BlockPanel {
         });
         if (this.editors.length > 0) {
             this.editors.forEach(item => {
-                // https://github.com/siyuan-note/siyuan/issues/8199
+                // 
                 hideElements(["util"], item.protyle);
                 item.destroy();
             });
@@ -244,7 +244,7 @@ export class BlockPanel {
         // 移除弹出上使用右键菜单
         const menuLevel = parseInt(window.scribli.menus.menu.element.dataset.from);
         if (menuLevel && menuLevel >= level && window.scribli.menus.menu.element.dataset.from?.includes("popover")) {
-            // https://github.com/siyuan-note/siyuan/issues/9854 右键菜单不是从浮窗中弹出的则不进行移除
+            //  右键菜单不是从浮窗中弹出的则不进行移除
             window.scribli.menus.menu.remove();
         }
     }
@@ -310,7 +310,7 @@ export class BlockPanel {
                     let targetRect;
                     if (this.targetElement && this.targetElement.classList.contains("protyle-wysiwyg__embed")) {
                         targetRect = this.targetElement.getBoundingClientRect();
-                        // 嵌入块过长时，单击弹出的悬浮窗位置居下 https://ld246.com/article/1634292738717
+                        // 嵌入块过长时，单击弹出的悬浮窗位置居下 
                         let top = targetRect.top;
                         const contentElement = hasClosestByClassName(this.targetElement, "protyle-content", true);
                         if (contentElement) {
@@ -329,11 +329,11 @@ export class BlockPanel {
                         } else {
                             targetRect = this.targetElement.getBoundingClientRect();
                         }
-                        // 下部位置大的话就置于下部 https://ld246.com/article/1690333302147
+                        // 下部位置大的话就置于下部 
                         if (window.innerHeight - targetRect.bottom - 4 > targetRect.top + 12) {
                             this.element.style.maxHeight = Math.floor(window.innerHeight - targetRect.bottom - 12) + "px";
                         }
-                        // 靠边不宜拖拽 https://github.com/siyuan-note/siyuan/issues/2937
+                        // 靠边不宜拖拽 
                         setPosition(this.element, targetRect.left, targetRect.bottom + 4, targetRect.height + 12, 8);
                     } else if (typeof this.x === "number" && typeof this.y === "number") {
                         setPosition(this.element, this.x, this.y);

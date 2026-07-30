@@ -553,7 +553,7 @@
 								},
 								{
 									"Type": "NodeText",
-									"Data": "​ 文件，具體示例請參考 github repo: siyuan-note/icon-sample"
+									"Data": "​ 文件，具體示例請參考 github repo: Scribli-note/icon-sample"
 								}
 							]
 						}
@@ -1401,7 +1401,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/community.html",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "社區集市倉庫"
 				},
 				{

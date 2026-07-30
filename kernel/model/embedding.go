@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -342,7 +342,7 @@ func getEmbeddingIgnoreMatcher() *ignore.GitIgnore {
 		return embeddingIgnoreMatcher
 	}
 
-	embeddingIgnorePath := filepath.Join(util.DataDir, ".siyuan", "embeddingignore")
+	embeddingIgnorePath := filepath.Join(util.DataDir, ".scribli", "embeddingignore")
 	if !gulu.File.IsExist(embeddingIgnorePath) {
 		return nil
 	}

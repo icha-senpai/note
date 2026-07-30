@@ -48,7 +48,7 @@ export const scrollCenter = (
         const range = getSelection().getRangeAt(0);
         const blockElement = hasClosestBlock(range.startContainer);
         if (blockElement) {
-            // https://github.com/siyuan-note/siyuan/issues/10769
+            // 
             if (blockElement.classList.contains("code-block")) {
                 const hljsElement = blockElement.querySelector(".hljs");
                 const scrollLeft = hljsElement.scrollLeft;
@@ -74,7 +74,7 @@ export const scrollCenter = (
                 }
                 return;
             }
-            // 撤销时 br 插入删除会导致 rang 被修改 https://github.com/siyuan-note/siyuan/issues/12679
+            // 撤销时 br 插入删除会导致 rang 被修改 
             const cloneRange = range.cloneRange();
             const br2Element = document.createElement("br");
             range.insertNode(br2Element);
@@ -96,7 +96,7 @@ export const scrollCenter = (
     }
 
     if (!nodeElement &&
-        // https://github.com/siyuan-note/siyuan/issues/11175
+        // 
         document.activeElement?.tagName !== "TEXTAREA" && document.activeElement?.tagName !== "INPUT") {
         nodeElement = hasClosestBlock(getEditorRange(protyle.wysiwyg.element).startContainer) as HTMLElement;
     }

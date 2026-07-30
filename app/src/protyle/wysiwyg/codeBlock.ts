@@ -4,7 +4,7 @@ import {updateTransaction} from "./transaction";
 
 export const tabCodeBlock = (protyle: IProtyle, nodeElement: HTMLElement,
                              range: Range, outdent = false) => {
-    // https://github.com/siyuan-note/siyuan/issues/12650
+    // 
     if (!hasNextSibling(range.endContainer) && range.endContainer.textContent.endsWith("\n") && range.endOffset > 0) {
         range.setEnd(range.endContainer, range.endOffset - 1);
     }
@@ -28,12 +28,12 @@ export const tabCodeBlock = (protyle: IProtyle, nodeElement: HTMLElement,
         });
     }
     let language = nodeElement.querySelector(".protyle-action__language").textContent;
-    // 语言优先级处理 https://github.com/siyuan-note/siyuan/issues/14767
+    // 语言优先级处理 
     if (range.commonAncestorContainer.nodeType === 1) {
         const snippetClassName = (range.commonAncestorContainer as HTMLElement).className;
         if (snippetClassName.startsWith("language-")) {
             language = snippetClassName.replace("language-", "");
-            // https://github.com/siyuan-note/siyuan/issues/14767
+            // 
             if (wbrElement.parentElement !== range.commonAncestorContainer) {
                 wbrElement.parentElement.after(wbrElement);
                 wbrElement.previousElementSibling.remove();

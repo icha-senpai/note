@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -86,12 +86,12 @@ func GenerateFileHistory() {
 	historyDir := util.HistoryDir
 
 	for _, box := range Conf.GetBoxes() {
-		historyDir = filepath.Join(util.DataDir, box.ID, ".siyuan", "history")
+		historyDir = filepath.Join(util.DataDir, box.ID, ".scribli", "history")
 		os.RemoveAll(historyDir)
 	}
-	historyDir = filepath.Join(util.DataDir, "assets", ".siyuan", "history")
+	historyDir = filepath.Join(util.DataDir, "assets", ".scribli", "history")
 	os.RemoveAll(historyDir)
-	historyDir = filepath.Join(util.DataDir, ".siyuan", "history")
+	historyDir = filepath.Join(util.DataDir, ".scribli", "history")
 	os.RemoveAll(historyDir)
 }
 
@@ -121,7 +121,7 @@ func ClearWorkspaceHistory() (err error) {
 
 	for _, notebook := range notebooks {
 		boxID := notebook.ID
-		historyDir := filepath.Join(util.DataDir, boxID, ".siyuan", "history")
+		historyDir := filepath.Join(util.DataDir, boxID, ".scribli", "history")
 		if !gulu.File.IsDir(historyDir) {
 			continue
 		}
@@ -133,7 +133,7 @@ func ClearWorkspaceHistory() (err error) {
 		logging.LogInfof("removed notebook history dir [%s]", historyDir)
 	}
 
-	historyDir = filepath.Join(util.DataDir, ".siyuan", "history")
+	historyDir = filepath.Join(util.DataDir, ".scribli", "history")
 	if gulu.File.IsDir(historyDir) {
 		if err = os.RemoveAll(historyDir); err != nil {
 			logging.LogErrorf("remove data history dir [%s] failed: %s", historyDir, err)
@@ -141,7 +141,7 @@ func ClearWorkspaceHistory() (err error) {
 		}
 		logging.LogInfof("removed data history dir [%s]", historyDir)
 	}
-	historyDir = filepath.Join(util.DataDir, "assets", ".siyuan", "history")
+	historyDir = filepath.Join(util.DataDir, "assets", ".scribli", "history")
 	if gulu.File.IsDir(historyDir) {
 		if err = os.RemoveAll(historyDir); err != nil {
 			logging.LogErrorf("remove assets history dir [%s] failed: %s", historyDir, err)
@@ -404,7 +404,7 @@ func RollbackDocHistory(historyPath string) (err error) {
 		}
 	}
 
-	// Reindex only the current document after rolling back the document https://github.com/siyuan-note/siyuan/issues/12320
+	// Reindex only the current document after rolling back the document
 	sql.RemoveTreeQueue(boxID, rootID)
 	if writeErr := indexWriteTreeIndexQueue(tree); nil != writeErr {
 		return
@@ -701,7 +701,7 @@ func GetNotebookHistory() (ret []*History, err error) {
 		return
 	}
 
-	historyNotebookConfs, err := filepath.Glob(historyDir + "/*-delete/*/.siyuan/conf.json")
+	historyNotebookConfs, err := filepath.Glob(historyDir + "/*-delete/*/.scribli/conf.json")
 	if err != nil {
 		logging.LogErrorf("read dir [%s] failed: %s", historyDir, err)
 		return

@@ -570,7 +570,7 @@ export const bindCardEvent = async (options: {
                             }
                         }];
                         ipcRenderer.send(Constants.SCRIBLI_OPEN_WINDOW, {
-                            // 需要 encode， 否则 https://github.com/siyuan-note/siyuan/issues/9343
+                            // 需要 encode， 否则 
                             url: `${window.location.protocol}//${window.location.host}/stage/build/app/window.html?v=${Constants.SCRIBLI_VERSION}&json=${encodeURIComponent(JSON.stringify(json))}`
                         });
                         options.dialog.destroy();

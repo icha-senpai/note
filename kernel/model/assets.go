@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -653,7 +653,7 @@ func netAssets2LocalAssets0(tree *parse.Tree, onlyImg bool, originalURL string, 
 
 			if strings.HasPrefix(strings.ToLower(dest), "https://") || strings.HasPrefix(strings.ToLower(dest), "http://") || strings.HasPrefix(dest, "//") {
 				if strings.HasPrefix(dest, "//") {
-					// `Convert network images to local` supports `//` https://github.com/siyuan-note/siyuan/issues/10598
+					// `Convert network images to local` supports `//`
 					dest = "https:" + dest
 				}
 
@@ -1234,7 +1234,7 @@ func RenameAsset(oldPath, newName string) (newPath string, err error) {
 	oldSya := filepath.Join(util.DataDir, oldPath+".sya")
 	filelock.Lock(oldSya)
 	if gulu.File.IsExist(oldSya) {
-		// Rename the .sya annotation file when renaming a PDF asset https://github.com/siyuan-note/siyuan/issues/9390
+		// Rename the .sya annotation file when renaming a PDF asset
 		newSya := filepath.Join(util.DataDir, newPath+".sya")
 		if err = os.Rename(oldSya, newSya); err != nil {
 			if err = gulu.File.Copy(oldSya, newSya); err != nil {
@@ -1592,7 +1592,7 @@ func MissingAssets() (ret []*UnusedItem) {
 	for dest, blockIDSet := range destBlockIDs {
 		if "" == assetsPathMap[dest] {
 			if strings.HasPrefix(dest, "assets/.") {
-				// Assets starting with `.` should not be considered missing assets https://github.com/siyuan-note/siyuan/issues/8821
+				// Assets starting with `.` should not be considered missing assets
 				if filelock.IsExist(filepath.Join(util.DataDir, dest)) {
 					continue
 				}
@@ -1705,7 +1705,7 @@ func emojisInTree(tree *parse.Tree) (ret []string) {
 }
 
 func getQueryEmbedNodesAssetsLinkDests(node *ast.Node) (ret []string) {
-	// The images in the embed blocks are not uploaded to the community hosting https://github.com/siyuan-note/siyuan/issues/10042
+	// The images in the embed blocks are not uploaded to the community hosting
 
 	ret = []string{}
 	ast.Walk(node, func(n *ast.Node, entering bool) ast.WalkStatus {
@@ -1740,7 +1740,7 @@ func getAssetsLinkDests(node *ast.Node, includeServePath bool) (ret []string) {
 	ast.Walk(node, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if n.IsBlock() {
 
-			// Ignore assets associated with the `custom-data-assets` block attribute when cleaning unreferenced assets https://github.com/siyuan-note/siyuan/issues/12574
+			// Ignore assets associated with the `custom-data-assets` block attribute when cleaning unreferenced assets
 			for _, kv := range n.KramdownIAL {
 				k := kv[0]
 				if strings.HasPrefix(k, "custom-data-assets") {

@@ -97,7 +97,7 @@ left:${left || "auto"};top:${top || "auto"}">
         setTimeout(() => {
             // av 修改列头emoji后点击关闭emoji图标
             if ((this.element.querySelector(".b3-dialog") as HTMLElement).style.zIndex < window.scribli.menus.menu.element.style.zIndex) {
-                // https://github.com/siyuan-note/siyuan/issues/6783
+                // 
                 window.scribli.menus.menu.remove();
             }
             this.element.remove();
@@ -110,7 +110,7 @@ left:${left || "auto"};top:${top || "auto"}">
                     return true;
                 }
             });
-            // https://github.com/siyuan-note/siyuan/issues/10475
+            // 
             document.getElementById("drag")?.classList.remove("fn__hidden");
         }, Constants.TIMEOUT_DBLCLICK);
     }

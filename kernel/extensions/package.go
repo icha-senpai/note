@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -203,8 +203,8 @@ func packageContainsKeywords(pkg *Package, keywords []string) bool {
 }
 
 func packageContainsKeyword(pkg *Package, kw string) bool {
-	if strings.Contains(strings.ToLower(pkg.Name), kw) || // https://github.com/siyuan-note/siyuan/issues/10515
-		strings.Contains(strings.ToLower(pkg.Author), kw) { // https://github.com/siyuan-note/siyuan/issues/11673
+	if strings.Contains(strings.ToLower(pkg.Name), kw) || //
+		strings.Contains(strings.ToLower(pkg.Author), kw) { //
 		return true
 	}
 	for _, s := range pkg.DisplayName {

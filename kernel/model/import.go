@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -184,7 +184,7 @@ func importSY(zipPath, boxID, toPath string, createNotebook, autoDetect bool) (c
 		return
 	}
 	var importedBoxConf *conf.BoxConf
-	importedConfPath := filepath.Join(unzipRootPath, ".siyuan", "conf.json")
+	importedConfPath := filepath.Join(unzipRootPath, ".scribli", "conf.json")
 	hasImportedBoxConf := filelock.IsExist(importedConfPath)
 	var importedMetadataErr error
 	if hasImportedBoxConf {
@@ -206,7 +206,7 @@ func importSY(zipPath, boxID, toPath string, createNotebook, autoDetect bool) (c
 		}
 	}
 	var importedBoxDocID string
-	importedBoxDocPath := filepath.Join(unzipRootPath, ".siyuan", boxDocMetaName)
+	importedBoxDocPath := filepath.Join(unzipRootPath, ".scribli", boxDocMetaName)
 	hasImportedBoxDocMeta := filelock.IsExist(importedBoxDocPath)
 	if hasImportedBoxDocMeta {
 		metaData, readErr := filelock.ReadFile(importedBoxDocPath)
@@ -309,7 +309,7 @@ func importSY(zipPath, boxID, toPath string, createNotebook, autoDetect bool) (c
 				return ast.WalkContinue
 			}
 
-			// Keep original creation time when importing .sy.zip https://github.com/siyuan-note/siyuan/issues/9923
+			// Keep original creation time when importing .sy.zip
 			newNodeID := util.TimeFromID(n.ID) + "-" + util.RandString(7)
 			if createNotebook && oldRootID == importedBoxDocID && n.ID == importedBoxDocID {
 				newNodeID = boxID
@@ -319,7 +319,7 @@ func importSY(zipPath, boxID, toPath string, createNotebook, autoDetect bool) (c
 			n.SetIALAttr("id", newNodeID)
 
 			if icon := n.IALAttr("icon"); "" != icon {
-				// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+				// XSS through emoji name
 				icon = util.FilterUploadEmojiFileName(icon)
 				n.SetIALAttr("icon", icon)
 			}
@@ -357,7 +357,7 @@ func importSY(zipPath, boxID, toPath string, createNotebook, autoDetect bool) (c
 					n.TextMarkBlockRefID = newDefID
 				}
 			} else if ast.NodeTextMark == n.Type && n.IsTextMarkType("a") {
-				// Block hyperlinks do not point to regenerated block IDs when importing .sy.zip https://github.com/siyuan-note/siyuan/issues/9083
+				// Block hyperlinks do not point to regenerated block IDs when importing .sy.zip
 				defID, ok := cutBlockProtocolURL(n.TextMarkAHref)
 				if !ok {
 					return ast.WalkContinue
@@ -396,7 +396,7 @@ func importSY(zipPath, boxID, toPath string, createNotebook, autoDetect bool) (c
 				return nil
 			}
 
-			if ".json" == d.Name() { // https://github.com/siyuan-note/siyuan/issues/16637
+			if ".json" == d.Name() { //
 				if removeErr := os.RemoveAll(path); nil != removeErr {
 					logging.LogErrorf("remove empty av file [%s] failed: %s", path, removeErr)
 				}
@@ -584,7 +584,7 @@ func importSY(zipPath, boxID, toPath string, createNotebook, autoDetect bool) (c
 	sortIDs := map[string]int{}
 	var sortData []byte
 	var sortErr error
-	sortPath := filepath.Join(unzipRootPath, ".siyuan", "sort.json")
+	sortPath := filepath.Join(unzipRootPath, ".scribli", "sort.json")
 	if filelock.IsExist(sortPath) {
 		sortData, sortErr = filelock.ReadFile(sortPath)
 		if nil != sortErr {
@@ -595,7 +595,7 @@ func importSY(zipPath, boxID, toPath string, createNotebook, autoDetect bool) (c
 			logging.LogErrorf("unmarshal sort conf failed: %s", sortErr)
 		}
 
-		boxSortPath := filepath.Join(util.DataDir, boxID, ".siyuan", "sort.json")
+		boxSortPath := filepath.Join(util.DataDir, boxID, ".scribli", "sort.json")
 		if filelock.IsExist(boxSortPath) {
 			sortData, sortErr = filelock.ReadFile(boxSortPath)
 			if nil != sortErr {
@@ -777,7 +777,7 @@ func importSY(zipPath, boxID, toPath string, createNotebook, autoDetect bool) (c
 		if !util.IsValidUploadFileName(d.Name()) {
 			emojiFullName := path
 			fullPathFilteredName := filepath.Join(filepath.Dir(path), util.FilterUploadEmojiFileName(d.Name()))
-			// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+			// XSS through emoji name
 			logging.LogWarnf("renaming invalid custom emoji file [%s] to [%s]", d.Name(), fullPathFilteredName)
 			if removeErr := filelock.Rename(emojiFullName, fullPathFilteredName); nil != removeErr {
 				logging.LogErrorf("renaming invalid custom emoji file to [%s] failed: %s", fullPathFilteredName, removeErr)
@@ -1024,7 +1024,7 @@ func ImportData(zipPath string) (err error) {
 		if !util.IsValidUploadFileName(d.Name()) {
 			emojiFullName := path
 			fullPathFilteredName := filepath.Join(filepath.Dir(path), util.FilterUploadEmojiFileName(d.Name()))
-			// XSS through emoji name https://github.com/siyuan-note/siyuan/issues/15034
+			// XSS through emoji name
 			logging.LogWarnf("renaming invalid custom emoji file [%s] to [%s]", d.Name(), fullPathFilteredName)
 			if removeErr := filelock.Rename(emojiFullName, fullPathFilteredName); nil != removeErr {
 				logging.LogErrorf("renaming invalid custom emoji file to [%s] failed: %s", fullPathFilteredName, removeErr)
@@ -1274,7 +1274,7 @@ func ImportFromLocalPath(boxID, localPath string, toPath string) (err error) {
 				if strings.HasSuffix(absolutePath, ".md") || strings.HasSuffix(absolutePath, ".markdown") {
 					if !strings.Contains(filepath.ToSlash(absolutePath), "/assets/") {
 
-						// Supports converting relative path hyperlinks into document block references after importing Markdown https://github.com/siyuan-note/siyuan/issues/13817
+						// Supports converting relative path hyperlinks into document block references after importing Markdown
 						return ast.WalkContinue
 					}
 				}
@@ -1577,7 +1577,7 @@ func parseStdMd(markdown []byte) (ret *parse.Tree, yfmRootID, yfmTitle, yfmUpdat
 	return
 }
 
-// Improve Markdown import to parse audio/video tags https://github.com/siyuan-note/siyuan/issues/17985
+// Improve Markdown import to parse audio/video tags
 func htmlBlock2Media(tree *parse.Tree) {
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if !entering || ast.NodeHTMLBlock != n.Type {
@@ -1961,7 +1961,7 @@ func initSearchLinks() {
 }
 
 func convertMdHyperlinks2WikiLinks() {
-	// Supports converting relative path hyperlinks into document block references after importing Markdown https://github.com/siyuan-note/siyuan/issues/13817
+	// Supports converting relative path hyperlinks into document block references after importing Markdown
 
 	var unlinks []*ast.Node
 	for _, tree := range importTrees {

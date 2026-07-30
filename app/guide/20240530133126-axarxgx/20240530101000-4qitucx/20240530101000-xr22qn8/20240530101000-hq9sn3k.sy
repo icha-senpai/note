@@ -627,7 +627,7 @@
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
 									"TextMarkAHref": "https://github.com/scribli-note/icon-sample",
-									"TextMarkTextContent": "siyuan-note/icon-sample"
+									"TextMarkTextContent": "Scribli-note/icon-sample"
 								},
 								{
 									"Type": "NodeText",
@@ -1550,7 +1550,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "a",
-					"TextMarkAHref": "https://b3log.org/scribli/en/community.html",
+					"TextMarkAHref": "",
 					"TextMarkTextContent": "コミュニティマーケットプレイスのリポジトリ"
 				},
 				{

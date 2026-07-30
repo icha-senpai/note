@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import (
 )
 
 func flushTransaction(c *gin.Context) {
-	// Add internal kernel API `/api/sqlite/flushTransaction` https://github.com/siyuan-note/siyuan/issues/10005
+	// Add internal kernel API `/api/sqlite/flushTransaction`
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
 

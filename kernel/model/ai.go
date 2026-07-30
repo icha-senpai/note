@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ func ChatGPTWithAction(ids []string, action string) (ret string) {
 	}
 
 	if "Clear context" == action {
-		// AI clear context action https://github.com/siyuan-note/siyuan/issues/10255
+		// AI clear context action
 		cachedContextMsg = nil
 		return
 	}
@@ -57,7 +57,7 @@ var cachedContextMsg []string
 
 func chatGPT(msg string, cloud bool) (ret string) {
 	if "Clear context" == msg {
-		// AI clear context action https://github.com/siyuan-note/siyuan/issues/10255
+		// AI clear context action
 		cachedContextMsg = nil
 		return
 	}
@@ -119,7 +119,7 @@ func chatGPTComplete(msg string, contextMsgs []string, cloud bool) (ret string, 
 	// stop==false means finish_reason=length: the output was truncated at
 	// MaxCompletionTokens. Retrying the same prompt would almost certainly hit
 	// the same limit again, so we return whatever was produced and notify the
-	// user instead of silently looping. See https://github.com/siyuan-note/siyuan/issues/17797
+	// user instead of silently looping. See
 	if !stop {
 		util.PushMsg(Conf.Language(297), 5000)
 	}

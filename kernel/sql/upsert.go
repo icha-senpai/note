@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -488,7 +488,7 @@ func insertTree0(tx *sql.Tx, tree *parse.Tree, context map[string]any,
 	blocks []*Block, spans []*Span, assets []*Asset, attributes []*Attribute,
 	refs []*Ref, fileAnnotationRefs []*FileAnnotationRef) (err error) {
 	if ignoreLines := getIndexIgnoreLines(); 0 < len(ignoreLines) {
-		// Support ignore index https://github.com/siyuan-note/siyuan/issues/9198
+		// Support ignore index
 		matcher := ignore.CompileIgnoreLines(ignoreLines...)
 		if matcher.MatchesPath("/" + path.Join(tree.Box, tree.Path)) {
 			return
@@ -531,7 +531,7 @@ var (
 )
 
 func getIndexIgnoreLines() (ret []string) {
-	// Support ignore index https://github.com/siyuan-note/siyuan/issues/9198
+	// Support ignore index
 
 	if IndexIgnoreCached {
 		return indexIgnore
@@ -541,7 +541,7 @@ func getIndexIgnoreLines() (ret []string) {
 	defer indexIgnoreLock.Unlock()
 
 	IndexIgnoreCached = true
-	indexIgnorePath := filepath.Join(util.DataDir, ".siyuan", "indexignore")
+	indexIgnorePath := filepath.Join(util.DataDir, ".scribli", "indexignore")
 	err := os.MkdirAll(filepath.Dir(indexIgnorePath), 0755)
 	if err != nil {
 		return

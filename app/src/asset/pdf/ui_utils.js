@@ -151,7 +151,7 @@ function watchScroll(viewAreaElement, callback, abortSignal = undefined) {
       }
       state.lastY = currentY;
       callback(state);
-      // NOTE https://github.com/siyuan-note/siyuan/issues/12287 & https://github.com/siyuan-note/siyuan/issues/6890
+      // NOTE  & 
       viewAreaElement.dataset.scrolltop = viewAreaElement.scrollTop;
     });
   };

@@ -25,15 +25,15 @@ The main README is now the public Scribli surface. Keep it focused on Scribli's 
 
 ## 2. Scribli Product Rules
 
-1. Scribli is local-first. A fresh workspace must not contact official SiYuan, B3log, LiuYun, or LianDi services.
-2. Official SiYuan cloud, account login, account checks, subscriptions, payments, points, quotas, marketplace/bazaar, upstream update checks, and upstream release install flows are removed or disabled.
+1. Scribli is local-first. A fresh workspace must not contact official upstream hosted services.
+2. Official upstream cloud, account login, account checks, subscriptions, payments, points, quotas, marketplace/bazaar, upstream update checks, and upstream release install flows are removed or disabled.
 3. Keep user-controlled features working: S3 sync, WebDAV sync, local-folder sync, local snapshots, repository history, manual backups, import/export, API, MCP, AI provider configuration, plugins, and local server features.
 4. Sync provider `0` means disabled/no sync provider and must not perform network sync activity. Do not shift provider IDs unless a migration is implemented and tested.
-5. `scribli://` is the only active application protocol. Do not reintroduce `siyuan://`.
+5. `scribli://` is the only active application protocol. Do not reintroduce the old upstream protocol.
 6. Build-time mirrors and upstream publishing are disabled. Do not add `npmmirror`, Aliyun mirrors, upstream Docker publishing, upstream AUR publishing, upstream GitHub release publishing, or auto-update publishing until Scribli owns that pipeline.
 7. Electron builder config must keep `publish: null`, and package scripts must keep `--publish=never` unless a Scribli-owned signed release process exists.
 8. Do not claim Scribli LLC unless that legal entity exists. Use `Scribli contributors` or another accurate author value.
-9. Phase out inherited SiYuan identifiers in favor of Scribli. Do not use blind global replacement; follow `docs/INTERNAL-NAMING.md`, classify each name, and migrate risky compatibility or stored-data surfaces with tests.
+9. Phase out inherited upstream identifiers in favor of Scribli. Do not use blind global replacement; follow `docs/INTERNAL-NAMING.md`, classify each name, and migrate risky compatibility or stored-data surfaces with tests.
 
 ---
 
@@ -51,7 +51,7 @@ Default Windows app config root:
 %USERPROFILE%\.config\scribli
 ```
 
-Use `util.UserHomeConfDir()`-style helpers for home config paths. Mixed `.config\scribli` and `.config\siyuan` paths can break startup before Electron obtains the kernel port.
+Use `util.UserHomeConfDir()`-style helpers for home config paths. Mixed Scribli and legacy upstream config roots can break startup before Electron obtains the kernel port.
 
 Network-capable behavior must be explicit and user-controlled. Acceptable examples include S3/WebDAV endpoints configured by the user, user-supplied URLs for import/fetch tools, user-configured AI providers, and local API/MCP/plugin/server features. Any new network behavior must be documented and must not call upstream official services by default.
 
@@ -122,7 +122,6 @@ Do not call work verified if a build or test command failed because of a local c
 - `app/stage/build/**`
 - `app/src/types/dist/**`
 - `app/changelogs/**`
-- `app/kernel/SiYuan-Kernel*`
 - `app/kernel/Scribli-Kernel*`
 - `*.syso`
 - `kernel/kernel.aar`
@@ -187,8 +186,8 @@ Use `docs/INTERNAL-NAMING.md` as the policy for phasing out legacy names. In sho
 - Rename user-visible branding and private implementation names to Scribli.
 - Remove or disable upstream official service identifiers and calls.
 - Migrate Electron IPC channels, internal constants, and private helpers to Scribli names when both sides live in this repository.
-- Stored workspace names such as `.siyuan`, `siyuan.db`, and encrypted database names must be migrated with backup-safe, tested data migrations.
-- Public compatibility identifiers such as `window.siyuan`, inherited MIME types, plugin APIs, and public API fields are temporary legacy surfaces. Replace them with Scribli names only with aliases, deprecation notes, and tests first, then remove the old names in a later breaking pass when Boss approves.
+- Stored workspace names such as the inherited workspace metadata directory, database filenames, and encrypted database names must be migrated with backup-safe, tested data migrations.
+- Public compatibility identifiers such as inherited MIME types, plugin APIs, and public API fields are temporary legacy surfaces. Replace them with Scribli names only with aliases, deprecation notes, and tests first, then remove the old names in a later breaking pass when Boss approves.
 - Keep the Go module path `github.com/siyuan-note/siyuan/kernel` until a dedicated module detachment project is planned, implemented, and tested.
 
 ---

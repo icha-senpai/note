@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -151,7 +151,7 @@ func getAttributeViewAddingBlockDefaultValues(c *gin.Context) {
 }
 
 func batchReplaceAttributeViewBlocks(c *gin.Context) {
-	// Add kernel API `/api/av/batchReplaceAttributeViewBlocks` https://github.com/siyuan-note/siyuan/issues/15313
+	// Add kernel API `/api/av/batchReplaceAttributeViewBlocks`
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
 
@@ -441,7 +441,7 @@ func getAttributeViewPrimaryKeyValues(c *gin.Context) {
 }
 
 func appendAttributeViewDetachedBlocksWithValues(c *gin.Context) {
-	// Add an internal kernel API `/api/av/appendAttributeViewDetachedBlocksWithValues` https://github.com/siyuan-note/siyuan/issues/11608
+	// Add an internal kernel API `/api/av/appendAttributeViewDetachedBlocksWithValues`
 
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -1133,7 +1133,7 @@ func setAttributeViewBlockAttr(c *gin.Context) {
 		itemID = arg["itemID"].(string)
 	} else if _, ok := arg["rowID"]; ok {
 
-		msg := fmt.Sprintf("[%s] parameter [%s] is deprecated, visit [https://github.com/siyuan-note/siyuan/issues/15727] for details",
+		msg := fmt.Sprintf("[%s] parameter [%s] is deprecated, check Scribli documentation for details",
 			c.Request.RequestURI, "rowID")
 		logging.LogWarn(msg)
 		ret.Code = -1
@@ -1156,7 +1156,7 @@ func setAttributeViewBlockAttr(c *gin.Context) {
 }
 
 func batchSetAttributeViewBlockAttrs(c *gin.Context) {
-	// Add kernel API `/api/av/batchSetAttributeViewBlockAttrs` https://github.com/siyuan-note/siyuan/issues/15310
+	// Add kernel API `/api/av/batchSetAttributeViewBlockAttrs`
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
 

@@ -192,7 +192,7 @@
     <div class="ft__on-surface">
         {{.l2}}
     </div>
-    <button class="b3-button b3-button--white" onclick="exitSiYuan()">{{.l5}}</button>
+    <button class="b3-button b3-button--white" onclick="exitScribli()">{{.l5}}</button>
     <div class="ft__on-surface">
         {{.l7}}
     </div>
@@ -421,7 +421,7 @@
     const exitApp = () => {
         try {
             const {ipcRenderer} = require('electron')
-            ipcRenderer.send('siyuan-quit', window.location.port)
+            ipcRenderer.send('scribli-quit', window.location.port)
         } catch (e) {
             if (window.JSAndroid) {
                 window.JSAndroid.exit();
@@ -445,7 +445,7 @@
     const url = new URL(window.location)
     toPath = url.searchParams.get("to") || "/"
 
-    const exitSiYuan = () => {
+    const exitScribli = () => {
         if (toPath.indexOf("/stage/build/app/window.html") > -1) {
             const {ipcRenderer} = require('electron');
             ipcRenderer.send("scribli-cmd", "destroy");
@@ -557,16 +557,16 @@
 
         try {
             const {ipcRenderer} = require('electron')
-            ipcRenderer.send("siyuan-ready-to-show");
-            ipcRenderer.on('siyuan-save-close', (event, close) => {
-                exitSiYuan()
+            ipcRenderer.send("scribli-ready-to-show");
+            ipcRenderer.on('scribli-save-close', (event, close) => {
+                exitScribli()
             })
-            await ipcRenderer.invoke("siyuan-init", {
+            await ipcRenderer.invoke("scribli-init", {
                 languages: {{.trayMenuLangs}},
                 workspaceDir: '{{.workspaceDir}}',
                 port: location.port
             });
-            ipcRenderer.send("siyuan-hotkey", {
+            ipcRenderer.send("scribli-hotkey", {
                 languages: {{.trayMenuLangs}},
                 hotkeys: ['{{.keymapGeneralToggleWin}}']
             });
@@ -587,8 +587,8 @@
             this.src = `/api/system/getCaptcha?v=${new Date().getTime()}`
         })
 
-        // 用于授权页保持连接，避免非常驻内存内核自动退出 https://github.com/siyuan-note/insider/issues/1099
-        const ws = new WebSocket((window.location.protocol === 'https:' ? 'wss' : 'ws') + '://' + window.location.host + '/ws?app=siyuan' + Math.random().toString(36).substring(8) + '&id=auth&type=auth')
+        // 用于授权页保持连接，避免非常驻内存内核自动退出 
+        const ws = new WebSocket((window.location.protocol === 'https:' ? 'wss' : 'ws') + '://' + window.location.host + '/ws?app=scribli' + Math.random().toString(36).substring(8) + '&id=auth&type=auth')
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.cmd === "loginAuth") {

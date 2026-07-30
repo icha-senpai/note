@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -25,8 +25,8 @@ import (
 type Repo struct {
 	Key []byte `json:"key"`
 
-	// If the data repo indexing time is greater than 12s, prompt user to purge the data repo https://github.com/siyuan-note/siyuan/issues/9613
-	// Supports configuring data sync index time-consuming prompts https://github.com/siyuan-note/siyuan/issues/9698
+	// If the data repo indexing time is greater than 12s, prompt user to purge the data repo
+	// Supports configuring data sync index time-consuming prompts
 	SyncIndexTiming int64 `json:"syncIndexTiming"`
 
 	IndexRetentionDays    int `json:"indexRetentionDays"`

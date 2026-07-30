@@ -401,7 +401,7 @@ In `.sy` files, bold/italic/link/inline-code/block-ref etc. are **almost all** `
 Samples:
 
 ```json
-{ "Type": "NodeTextMark", "TextMarkType": "a", "TextMarkAHref": "https://ld246.com", "TextMarkTextContent": "hyperlink" }
+{ "Type": "NodeTextMark", "TextMarkType": "a", "TextMarkAHref": "", "TextMarkTextContent": "hyperlink" }
 { "Type": "NodeTextMark", "TextMarkType": "block-ref", "TextMarkBlockRefID": "20200812220555-lj3enxa", "TextMarkBlockRefSubtype": "s", "TextMarkTextContent": "block ref" }
 { "Type": "NodeTextMark", "TextMarkType": "inline-math", "TextMarkInlineMathContent": "a^2 + b^2 = c^2" }
 { "Type": "NodeTextMark", "TextMarkType": "inline-memo", "TextMarkInlineMemoContent": "an inline note", "TextMarkTextContent": "note" }

@@ -496,7 +496,7 @@ export class Files extends Model {
             this.parent.panelElement.classList.remove("sy__file--disablehover");
             this.element.querySelectorAll('.b3-list-item[style*="opacity: 0.38;"]').forEach((item: HTMLElement, index) => {
                 item.style.opacity = "";
-                // https://github.com/siyuan-note/siyuan/issues/11587
+                // 
                 if (index === 0 && hasClosestByClassName(document.elementFromPoint(event.clientX, event.clientY), "sy__file")) {
                     const ariaLabelElement = item.querySelector(".ariaLabel");
                     if (ariaLabelElement) {
@@ -562,7 +562,7 @@ export class Files extends Model {
                             return;
                         }
                     } else if (liElement.classList.contains("b3-list-item--focus")) {
-                        // 选中的文档不能拖拽到自己上，但允许标题拖拽到文档树的选中文档上 https://github.com/siyuan-note/siyuan/issues/6552
+                        // 选中的文档不能拖拽到自己上，但允许标题拖拽到文档树的选中文档上 
                         hideDragTip();
                         event.preventDefault();
                         return;
@@ -752,7 +752,7 @@ export class Files extends Model {
                         }
                     });
                     if (!isChild) {
-                        // 禁止父节点移动到子节点 https://github.com/siyuan-note/siyuan/issues/12539
+                        // 禁止父节点移动到子节点 
                         if (newElement.getAttribute("data-path").startsWith(item.dataset.path.replace(".sy", ""))) {
                             return;
                         }

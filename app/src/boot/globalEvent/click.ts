@@ -14,7 +14,7 @@ export const globalClickHideMenu = (element: HTMLElement) => {
     if (!window.scribli.menus.menu.element.contains(element) && !hasClosestByAttribute(element, "data-menu", "true")) {
         if (getSelection().rangeCount > 0 && window.scribli.menus.menu.element.contains(getSelection().getRangeAt(0).startContainer) &&
             window.scribli.menus.menu.element.contains(document.activeElement)) {
-            // https://ld246.com/article/1654567749834/comment/1654589171218#comments
+            // 
         } else {
             window.scribli.menus.menu.remove();
         }

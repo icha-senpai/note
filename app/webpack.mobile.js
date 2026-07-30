@@ -13,7 +13,7 @@ module.exports = (env, argv) => {
         watch: argv.mode !== "production",
         devtool: argv.mode !== "production" ? "eval-source-map" : false,
         output: {
-            // 不能使用 auto，否则 ios 导出图片获取不到 css。 https://github.com/siyuan-note/siyuan/issues/8532
+            // 不能使用 auto，否则 ios 导出图片获取不到 css。 
             publicPath: "/stage/build/mobile/",
             filename: "[name].[chunkhash].js",
             path: path.resolve(__dirname, "stage/build/mobile"),

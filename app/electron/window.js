@@ -724,7 +724,7 @@ const isCloudDrivePath = (absPath) => {
 };
 
 // Check whether a macOS workspace is placed under an iCloud path.
-// https://github.com/siyuan-note/siyuan/issues/7747
+// 
 const isICloudPath = (absPath) => {
     const os = require("os");
     if ("darwin" !== os.platform()) {
@@ -811,7 +811,7 @@ const chooseWorkspacePath = async (langData) => {
 
     let defaultWorkspace = path.join(decodeURIComponent(getSearch("home")), "Scribli");
     if ("darwin" === process.platform) {
-        // Change the initial workspace path to ~/Library/Application Support/Scribli on macOS https://github.com/siyuan-note/siyuan/issues/17095
+        // Change the initial workspace path to ~/Library/Application Support/Scribli on macOS 
         defaultWorkspace = path.join(decodeURIComponent(getSearch("home")), "Library", "Application Support", "Scribli");
     }
     if (!fs.existsSync(defaultWorkspace)) {

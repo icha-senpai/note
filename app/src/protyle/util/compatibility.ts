@@ -34,7 +34,7 @@ export const encodeBase64 = (text: string): string => {
 
 export const getTextScribliFromTextHTML = (html: string) => {
     const internalDataReg = /<!--data-scribli='[^']+'-->/g;
-    const legacyInternalDataReg = /<!--data-siyuan='[^']+'-->/g;
+    const legacyInternalDataReg = /<!--data-Scribli='[^']+'-->/g;
     if (html.trimStart().startsWith("<html") &&
         html.substring(0, html.indexOf(">")).includes('xmlns:x="urn:schemas-microsoft-com:office:excel"')) {
         // 移除 Microsoft Excel 中的内部剪贴板标记。
@@ -43,7 +43,7 @@ export const getTextScribliFromTextHTML = (html: string) => {
             textHtml: html.replace(internalDataReg, "").replace(legacyInternalDataReg, "")
         };
     }
-    const scribliMatch = html.match(/<!--data-scribli='([^']+)'-->/) || html.match(/<!--data-siyuan='([^']+)'-->/);
+    const scribliMatch = html.match(/<!--data-scribli='([^']+)'-->/) || html.match(/<!--data-Scribli='([^']+)'-->/);
     let textScribli = "";
     let textHtml = html;
     if (scribliMatch) {
@@ -173,7 +173,7 @@ export const readText = () => {
 
 /// #if !BROWSER
 export const getLocalFiles = async () => {
-    // 不再支持 PC 浏览器 https://github.com/siyuan-note/siyuan/issues/7206
+    // 不再支持 PC 浏览器 
     let localFiles: ILocalFiles[] = [];
     if ("darwin" === window.scribli.config.system.os) {
         const xmlString = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
@@ -304,7 +304,7 @@ export const writeText = (text: string) => {
 };
 
 export const copyPlainText = (text: string) => {
-    text = text.replace(new RegExp(Constants.ZWSP, "g"), ""); // `复制纯文本` 时移除所有零宽空格 https://github.com/siyuan-note/siyuan/issues/6674
+    text = text.replace(new RegExp(Constants.ZWSP, "g"), ""); // `复制纯文本` 时移除所有零宽空格 
     writeText(text);
 };
 
@@ -587,7 +587,7 @@ export const getLocalStorage = (cb: () => void) => {
                 try {
                     const parseData = JSON.parse(response.data[key]);
                     if (typeof parseData === "number") {
-                        // https://github.com/siyuan-note/siyuan/issues/8852 Object.assign 会导致 number to Number
+                        //  Object.assign 会导致 number to Number
                         window.scribli.storage[key] = parseData;
                     } else {
                         window.scribli.storage[key] = Object.assign(defaultStorage[key], parseData);

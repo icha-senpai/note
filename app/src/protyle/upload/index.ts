@@ -111,12 +111,12 @@ const genUploadedLabel = async (responseText: string, protyle: IProtyle) => {
     let insertBlock = true;
     const range = getEditorRange(protyle.wysiwyg.element);
     if (range.toString() === "" && range.startContainer.nodeType === 3 && protyle.toolbar.getCurrentType(range).length > 0) {
-        // 防止链接插入其他元素中 https://ld246.com/article/1676003478664
+        // 防止链接插入其他元素中 
         range.setEndAfter(range.startContainer.parentElement);
         range.collapse(false);
     }
     const keys = Object.keys(response.data.succMap);
-    // https://github.com/siyuan-note/siyuan/issues/7624
+    // 
     const nodeElement = hasClosestBlock(range.startContainer);
     if (nodeElement) {
         if (nodeElement.classList.contains("table")) {
@@ -130,7 +130,7 @@ const genUploadedLabel = async (responseText: string, protyle: IProtyle) => {
         }
     }
     let successFileText = "";
-    // 插入多个资源文件时按文件名自然升序排列 Use natural ascending order when inserting multiple assets https://github.com/siyuan-note/siyuan/issues/14643
+    // 插入多个资源文件时按文件名自然升序排列 Use natural ascending order when inserting multiple assets 
     keys.sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
     const avAssets: IAVCellAssetValue[] = [];
     let hasImage = false;
@@ -247,9 +247,9 @@ const genUploadedLabel = async (responseText: string, protyle: IProtyle) => {
         }
         return;
     }
-    // 避免插入代码块中，其次因为都要独立成块 https://github.com/siyuan-note/siyuan/issues/7607
+    // 避免插入代码块中，其次因为都要独立成块 
     insertHTML(successFileText, protyle, insertBlock);
-    // 粘贴图片后定位不准确 https://github.com/siyuan-note/siyuan/issues/13336
+    // 粘贴图片后定位不准确 
     setTimeout(() => {
         scrollCenter(protyle, undefined, "nearest", "smooth");
     }, hasImage ? 0 : Constants.TIMEOUT_LOAD);

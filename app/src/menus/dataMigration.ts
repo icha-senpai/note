@@ -115,7 +115,7 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
         <label class="b3-list-item">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconScribli"></use></svg>
             <span class="b3-list-item__text">Scribli .sy.zip</span>
-            <input class="b3-form__upload" data-type="siyuan" type="file" accept="application/zip">
+            <input class="b3-form__upload" data-type="Scribli" type="file" accept="application/zip">
         </label>
         <div class="b3-list-item b3-list-item--warning fn__flex-wrap data-migration__item">
             <svg class="b3-list-item__graphic"><use xlink:href="#iconDatabase"></use></svg>
@@ -232,7 +232,7 @@ export const openDataMigration = (options: IDataMigrationOptions = {}) => {
         });
     };
 
-    bindFileInput("siyuan", (file, input) => {
+    bindFileInput("Scribli", (file, input) => {
         input.value = "";
         postFile("/api/import/importSYAuto", file, {notebook: "", toPath: "/"}, (response) => {
             const token = response.data?.token as string | undefined;

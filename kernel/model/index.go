@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -330,7 +330,7 @@ func autoIndexEmbedBlock() {
 
 		stmt = strings.TrimSpace(stmt)
 		if strings.HasPrefix(stmt, "//!js") {
-			// https://github.com/siyuan-note/siyuan/issues/9648
+			//
 
 			continue
 		}

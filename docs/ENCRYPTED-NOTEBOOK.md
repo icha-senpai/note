@@ -97,7 +97,7 @@ User master password
 
 MasterSalt is the global root of KEK derivation — the master password + MasterSalt derive the KEK via Argon2id, and the KEK then unwraps each notebook's WrappedDEK. **Losing MasterSalt permanently locks the data**: even with the same master password, a changed salt derives a different KEK, so old WrappedDEKs cannot be unwrapped. A backup-and-recovery mechanism is therefore introduced.
 
-**Backup**: `<DataDir>/.siyuan/notebook-crypto-backup.json`, holding the full NotebookCrypto (MasterSalt/KEKVerifier/KDFParams). Located inside DataDir, it **enters the dejavu sync scope**. It is refreshed when enabling encrypted notebooks and when changing the master password. It may be deleted on disable only after confirming that no live encrypted notebook and no kernel-enumerable history or recovery snapshot depends on it, or after the user explicitly chooses to purge those recovery artifacts permanently. Stored as plaintext JSON (salt is not secret, verifier is ciphertext — identical to how they are stored in `conf/conf.json`).
+**Backup**: `<DataDir>/.scribli/notebook-crypto-backup.json`, holding the full NotebookCrypto (MasterSalt/KEKVerifier/KDFParams). Located inside DataDir, it **enters the dejavu sync scope**. It is refreshed when enabling encrypted notebooks and when changing the master password. It may be deleted on disable only after confirming that no live encrypted notebook and no kernel-enumerable history or recovery snapshot depends on it, or after the user explicitly chooses to purge those recovery artifacts permanently. Stored as plaintext JSON (salt is not secret, verifier is ciphertext — identical to how they are stored in `conf/conf.json`).
 
 **Recovery triggers** (covering scenarios such as conf.json loss, sync to a new device, importing Data.zip):
 
@@ -115,7 +115,7 @@ MasterSalt is the global root of KEK derivation — the master password + Master
 | Operation | Entry | Notes |
 |---|---|---|
 | Export key | Shown when enabled | Copies `notebook-crypto-backup.json` to the export directory for download; the user keeps it (API: `/api/notebook/exportNotebookCryptoBackup`) |
-| Import key | Shown when not enabled | Uploads a local backup file; after validation it is written back to `<DataDir>/.siyuan/` and the local config is restored (`Enabled=true`). Use the master password matching that key to unlock afterwards (API: `/api/notebook/importNotebookCryptoBackup`) |
+| Import key | Shown when not enabled | Uploads a local backup file; after validation it is written back to `<DataDir>/.scribli/` and the local config is restored (`Enabled=true`). Use the master password matching that key to unlock afterwards (API: `/api/notebook/importNotebookCryptoBackup`) |
 
 Import guard: when the local machine is already enabled, import is rejected (to avoid overwriting the existing salt and orphaning WrappedDEKs); the import entry is shown only when not enabled. The backup file itself does not contain the master password (salt is not secret, verifier is ciphertext), so export/import does not leak plaintext data; unlocking still requires the master password.
 
@@ -130,10 +130,10 @@ Import guard: when the local machine is already enabled, import is rejected (to 
 ├── conf/conf.json                          ← global encryption config (MasterSalt/KEKVerifier)
 ├── storage/av/                             ← normal-notebook database files (plaintext)
 ├── data/
-│   ├── .siyuan/
+│   ├── .scribli/
 │   │   └── notebook-crypto-backup.json     ← NotebookCrypto backup (MasterSalt/KEKVerifier, synced; see §4.1)
 │   ├── <boxID>/                            ← encrypted notebook directory
-│   │   ├── .siyuan/conf.json               ← BoxConf (Encrypted=true + WrappedDEK)
+│   │   ├── .scribli/conf.json               ← BoxConf (Encrypted=true + WrappedDEK)
 │   │   ├── *.sy                            ← AES-256-GCM ciphertext
 │   │   ├── assets/
 │   │   │   ├── <uuid>-<blockID>.ext        ← AES-256-GCM ciphertext, filename desensitized
@@ -521,7 +521,7 @@ Sync recovery can validate backup integrity but cannot prove that a backup is th
 
 ### Recovering from a lost key backup
 
-If both `conf/conf.json` and the key backup in the sync directory are lost (an extreme case), re-enabling the encrypted-notebook feature will be rejected with a prompt to restore the backup file. As long as you can recover `notebook-crypto-backup.json` from another synced device or a previously exported key file, you can import it via the "Import key" button (shown when not enabled), or manually put it back at `<workspace>/data/.siyuan/` and re-enable, then unlock with the master password matching that key.
+If both `conf/conf.json` and the key backup in the sync directory are lost (an extreme case), re-enabling the encrypted-notebook feature will be rejected with a prompt to restore the backup file. As long as you can recover `notebook-crypto-backup.json` from another synced device or a previously exported key file, you can import it via the "Import key" button (shown when not enabled), or manually put it back at `<workspace>/data/.scribli/` and re-enable, then unlock with the master password matching that key.
 
 Restoring deleted encrypted-notebook history also requires the global key backup matching its WrappedDEK and the master password. While you still need that local recovery path, do not permanently purge either the history or its matching key backup; disabling must refuse to proceed when it discovers such a dependency.
 

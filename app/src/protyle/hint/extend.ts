@@ -564,7 +564,7 @@ export const hintRenderTemplate = (value: string, protyle: IProtyle, nodeElement
         } else {
             insertHTML(response.data.content, protyle);
         }
-        // https://github.com/siyuan-note/siyuan/issues/4488
+        // 
         protyle.wysiwyg.element.querySelectorAll('[status="temp"]').forEach(item => {
             item.remove();
         });
@@ -579,7 +579,7 @@ export const hintRenderTemplate = (value: string, protyle: IProtyle, nodeElement
 export const hintRenderWidget = (value: string, protyle: IProtyle) => {
     focusByRange(protyle.toolbar.range);
     // src 地址以 / 结尾
-    // Use the path ending with `/` when loading the widget https://github.com/siyuan-note/siyuan/issues/10520
+    // Use the path ending with `/` when loading the widget 
     insertHTML(protyle.lute.SpinBlockDOM(`<iframe src="/widgets/${value}/" data-subtype="widget" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>`), protyle, true);
     hideElements(["util"], protyle);
 };

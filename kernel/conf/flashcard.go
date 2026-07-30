@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ type Flashcard struct {
 	Deck            bool `json:"deck"`
 	ReviewMode      int  `json:"reviewMode"`
 
-	// Apply result optimized by FSRS optimizer https://github.com/siyuan-note/siyuan/issues/9309
+	// Apply result optimized by FSRS optimizer
 	RequestRetention float64 `json:"requestRetention"`
 	MaximumInterval  int     `json:"maximumInterval"`
 	Weights          string  `json:"weights"`

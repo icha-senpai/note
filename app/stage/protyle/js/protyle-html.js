@@ -6,7 +6,7 @@ class ProtyleHtml extends HTMLElement {
         super()
         const shadowRoot = this.attachShadow({mode: 'open'})
         this.display = this.shadowRoot
-        // https://github.com/siyuan-note/siyuan/issues/11321
+        // 
         const content = Lute.EscapeHTMLStr(this.getAttribute('data-content'))
         this.setAttribute('data-content', content)
         this.display.innerHTML = content
@@ -20,8 +20,8 @@ class ProtyleHtml extends HTMLElement {
         if (name === 'data-content') {
             let dataContent = Lute.UnEscapeHTMLStr(this.getAttribute('data-content'))
 
-            if (!window.siyuan.config.editor.allowHTMLBLockScript) {
-                // Do not execute scripts in HTML blocks by default to prevent XSS https://github.com/siyuan-note/siyuan/issues/11172
+            if (!window.scribli.config.editor.allowHTMLBLockScript) {
+                // Do not execute scripts in HTML blocks by default to prevent XSS 
                 dataContent = DOMPurify.sanitize(dataContent);
             }
 
@@ -33,7 +33,7 @@ class ProtyleHtml extends HTMLElement {
             let fatalHTML = ''
             for (const script of scripts) {
                 if (script.textContent.indexOf('document.write') > -1) {
-                    fatalHTML += `<div style="color:var(--b3-theme-error);font-size: 12px">${window.siyuan.languages.htmlBlockError}</div>
+                    fatalHTML += `<div style="color:var(--b3-theme-error);font-size: 12px">${window.scribli.languages.htmlBlockError}</div>
 <textarea style="width: 100%;box-sizing: border-box;height: 120px"><script>${script.textContent}</script></textarea>`
                 } else {
                     const s = document.createElement('script')

@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -62,7 +62,7 @@ func moveLocalShorthands(c *gin.Context) {
 }
 
 func listDocTree(c *gin.Context) {
-	// Add kernel API `/api/filetree/listDocTree` https://github.com/siyuan-note/siyuan/issues/10482
+	// Add kernel API `/api/filetree/listDocTree`
 
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
@@ -820,7 +820,7 @@ func createDailyNote(c *gin.Context) {
 
 	if !existed {
 
-		// Creating a dailynote existed no longer expands the doc tree https://github.com/siyuan-note/siyuan/issues/9959
+		// Creating a dailynote existed no longer expands the doc tree
 		appArg := arg["app"]
 		app := ""
 		if nil != appArg {
@@ -1129,7 +1129,7 @@ func listDocsByPath(c *gin.Context) {
 	}
 	maxListCount := model.Conf.FileTree.MaxListCount
 	if arg["maxListCount"] != nil {
-		// API `listDocsByPath` add an optional parameter `maxListCount` https://github.com/siyuan-note/siyuan/issues/7993
+		// API `listDocsByPath` add an optional parameter `maxListCount`
 		maxListCount = int(arg["maxListCount"].(float64))
 		if 0 >= maxListCount {
 			maxListCount = math.MaxInt
@@ -1159,7 +1159,7 @@ func listDocsByPath(c *gin.Context) {
 		files = tempFiles
 	}
 	if maxListCount < totals {
-		// API `listDocsByPath` add an optional parameter `ignoreMaxListHint` https://github.com/siyuan-note/siyuan/issues/10290
+		// API `listDocsByPath` add an optional parameter `ignoreMaxListHint`
 		ignoreMaxListHintArg := arg["ignoreMaxListHint"]
 		if nil == ignoreMaxListHintArg || !ignoreMaxListHintArg.(bool) {
 			var app string

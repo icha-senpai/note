@@ -933,7 +933,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "SIYUAN\\_TESSERACT\\_ENABLED=false"
+									"TextMarkTextContent": "Scribli\\_TESSERACT\\_ENABLED=false"
 								},
 								{
 									"Type": "NodeText",
@@ -1037,7 +1037,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "SIYUAN_TESSERACT_LANGS"
+									"TextMarkTextContent": "Scribli_TESSERACT_LANGS"
 								},
 								{
 									"Type": "NodeText",
@@ -1046,7 +1046,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "SIYUAN_TESSERACT_LANGS=chi_sim+eng"
+									"TextMarkTextContent": "Scribli_TESSERACT_LANGS=chi_sim+eng"
 								},
 								{
 									"Type": "NodeText",
@@ -1110,7 +1110,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "SIYUAN_TESSERACT_MAX_SIZE"
+									"TextMarkTextContent": "Scribli_TESSERACT_MAX_SIZE"
 								},
 								{
 									"Type": "NodeText",
@@ -1119,7 +1119,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "SIYUAN_TESSERACT_MAX_SIZE=4000000"
+									"TextMarkTextContent": "Scribli_TESSERACT_MAX_SIZE=4000000"
 								},
 								{
 									"Type": "NodeText",

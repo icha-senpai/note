@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -311,7 +311,7 @@ func rewritePortJSON(pid, port string) {
 }
 
 func serveExport(ginServer *gin.Engine) {
-	// Potential data export disclosure security vulnerability https://github.com/siyuan-note/siyuan/issues/12213
+	// Potential data export disclosure security vulnerability
 	exportGroup := ginServer.Group("/export/", model.CheckAuth)
 	exportBaseDir := filepath.Join(util.TempDir, "export")
 
@@ -419,7 +419,7 @@ func serveTemplates(ginServer *gin.Engine) {
 }
 
 func servePublic(ginServer *gin.Engine) {
-	// Support directly access `data/public/*` contents via URL link https://github.com/siyuan-note/siyuan/issues/8593
+	// Support directly access `data/public/*` contents via URL link
 	ginServer.Static("/public/", filepath.Join(util.DataDir, "public"))
 }
 
@@ -500,7 +500,7 @@ func serveAppearance(ginServer *gin.Engine) {
 			location.Path = "/stage/build/app/"
 		} else if strings.Contains(userAgentHeader, "Pad") ||
 			(strings.ContainsAny(userAgentHeader, "Android") && !strings.Contains(userAgentHeader, "Mobile")) {
-			// Improve detecting Pad device, treat it as desktop device https://github.com/siyuan-note/siyuan/issues/8435 https://github.com/siyuan-note/siyuan/issues/8497
+			// Improve detecting Pad device, treat it as desktop device
 			location.Path = "/stage/build/desktop/"
 		} else {
 			if idx := strings.Index(userAgentHeader, "Mozilla/"); 0 < idx {
@@ -643,7 +643,7 @@ func serveAuthPage(c *gin.Context) {
 		"keymapGeneralToggleWin": keymapHideWindow,
 		"trayMenuLangs":          util.TrayMenuLangs[util.Lang],
 
-		// REF: https://github.com/siyuan-note/siyuan/issues/17410
+		// REF:
 		"workspaceDir": util.WorkspaceDir,
 	}
 	if util.IsBrowserRequest(c) {
@@ -971,7 +971,7 @@ func serveRepoDiff(ginServer *gin.Engine) {
 
 func serveDebug(ginServer *gin.Engine) {
 	if "prod" == util.Mode {
-		// The production environment will no longer register `/debug/pprof/` https://github.com/siyuan-note/siyuan/issues/10152
+		// The production environment will no longer register `/debug/pprof/`
 		return
 	}
 
@@ -1029,7 +1029,7 @@ func serveWebSocket(ginServer *gin.Engine) {
 			}
 		}
 
-		// REF: https://github.com/siyuan-note/siyuan/issues/11364
+		// REF:
 		if !authOk {
 			if token := model.ParseXAuthToken(s.Request); token != nil {
 				authOk = token.Valid && model.IsValidRole(model.GetClaimRole(model.GetTokenClaims(token)), []model.Role{
@@ -1380,7 +1380,7 @@ func corsMiddleware() gin.HandlerFunc {
 }
 
 // jwtMiddleware is a middleware to check jwt token
-// REF: https://github.com/siyuan-note/siyuan/issues/11364
+// REF:
 func jwtMiddleware(c *gin.Context) {
 	if token := model.ParseXAuthToken(c.Request); token != nil {
 		// c.Request.Header.Del(model.XAuthTokenKey)

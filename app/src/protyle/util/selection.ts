@@ -38,7 +38,7 @@ export const fixTableRange = (range: Range) => {
                 range.setStart(cellElement.firstChild, 0);
                 range.setEnd(cellElement.lastChild, cellElement.lastChild.textContent.length);
             } else if (startCellElement &&
-                // 不能包含自身元素，否则对 cell 中的部分文字两次高亮后就会选中整个 cell。 https://github.com/siyuan-note/siyuan/issues/3649 第二点
+                // 不能包含自身元素，否则对 cell 中的部分文字两次高亮后就会选中整个 cell。  第二点
                 !startCellElement.contains(range.endContainer)) {
                 setLastNodeRange(startCellElement, range, false);
             }
@@ -65,7 +65,7 @@ export const selectAll = (protyle: IProtyle, nodeElement: Element, range: Range)
         } else {
             position = getSelectionOffset(editElement, nodeElement, range);
             if (position.start !== 0 || position.end !== editElement.textContent.length) {
-                // 全选后 rang 不对 https://ld246.com/article/1654848722251
+                // 全选后 rang 不对 
                 let firstChild = editElement.firstChild;
                 while (firstChild) {
                     if (firstChild.nodeType === 3) {
@@ -126,7 +126,7 @@ export const selectAll = (protyle: IProtyle, nodeElement: Element, range: Range)
     countBlockWord(ids, protyle.block.rootID);
 };
 
-// https://github.com/siyuan-note/siyuan/issues/8196
+// 
 export const getRangeByPoint = (x: number, y: number) => {
     const range = document.caretRangeFromPoint(x, y);
     const imgElement = hasClosestByAttribute(range.startContainer, "data-type", "img");
@@ -150,7 +150,7 @@ export const getEditorRange = (element: Element): Range => {
                         return focusRange;
                     }
                 }
-                // 移动端获取有偏差 https://github.com/siyuan-note/siyuan/issues/15998
+                // 移动端获取有偏差 
                 if ((range.startContainer as Element).getAttribute("contenteditable") !== "true" &&
                     getContenteditableElement(range.startContainer as Element)) {
                     const blockElement = hasClosestBlock(range.startContainer);
@@ -181,7 +181,7 @@ export const getEditorRange = (element: Element): Range => {
 
     let targetElement;
     if (element.classList.contains("table")) {
-        // 当光标不在表格区域中时表格无法被复制 https://ld246.com/article/1650510736504
+        // 当光标不在表格区域中时表格无法被复制 
         targetElement = element.querySelector("th") || element.querySelector("td");
     } else {
         targetElement = getContenteditableElement(element);
@@ -199,7 +199,7 @@ export const getEditorRange = (element: Element): Range => {
                 targetElement = element.firstElementChild.lastChild;
             }
         } else if (targetElement.tagName === "TABLE") {
-            // 文档中开头为表格，获取错误 https://ld246.com/article/1663408335459?r=88250
+            // 文档中开头为表格，获取错误 
             targetElement = targetElement.querySelector("th") || element.querySelector("td");
         }
     }
@@ -301,7 +301,7 @@ export const getSelectionPosition = (nodeElement: Element, range?: Range, useDir
             }
         }
     } else {
-        const rects = range.getClientRects(); // 由于长度过长折行，光标在行首时有多个 rects https://github.com/siyuan-note/siyuan/issues/6156
+        const rects = range.getClientRects(); // 由于长度过长折行，光标在行首时有多个 rects 
         if (range.toString()) {
             if (useDirect) {
                 const selection = window.getSelection() as Selection & {
@@ -320,13 +320,13 @@ export const getSelectionPosition = (nodeElement: Element, range?: Range, useDir
                     isBottom
                 };
             } else {
-                return {    // 选中多行不应遮挡第一行 https://github.com/siyuan-note/siyuan/issues/7541
+                return {    // 选中多行不应遮挡第一行 
                     left: rects[rects.length - 1].left,
                     top: rects[0].top
                 };
             }
         } else {
-            return {    // 代码块首 https://github.com/siyuan-note/siyuan/issues/13113
+            return {    // 代码块首 
                 left: rects[rects.length - 1].left,
                 top: rects[rects.length - 1].top
             };
@@ -459,14 +459,14 @@ export const setLastNodeRange = (editElement: Element, range: Range, setStart = 
     }
     let lastNode = editElement.lastChild as Element;
     while (lastNode && lastNode.nodeType !== 3) {
-        // https://github.com/siyuan-note/siyuan/issues/12792
+        // 
         if (!lastNode.lastChild) {
             break;
         }
         // 最后一个为多种行内元素嵌套
         lastNode = lastNode.lastChild as Element;
     }
-    // https://github.com/siyuan-note/siyuan/issues/12753
+    // 
     if (!lastNode) {
         lastNode = editElement;
     }
@@ -492,7 +492,7 @@ export const setFirstNodeRange = (editElement: Element, range: Range) => {
     }
     let firstChild = editElement.firstChild as HTMLElement;
     while (firstChild && firstChild.nodeType !== 3 && !firstChild.classList.contains("render-node")) {
-        if (firstChild.classList.contains("img")) { // https://ld246.com/article/1665360254842
+        if (firstChild.classList.contains("img")) { // 
             range.setStartBefore(firstChild);
             return range;
         }
@@ -619,7 +619,7 @@ export const setInsertWbrHTML = (nodeElement: HTMLElement, range: Range, protyle
         if (cellElement) {
             const offset = getSelectionOffset(cellElement, nodeElement, range);
             const cloneNode = nodeElement.cloneNode(true) as HTMLElement;
-            // 通过单元格在行内的索引在克隆树中定位对应单元格，避免在原 DOM 上增删 class 残留 class="" https://github.com/siyuan-note/siyuan/issues/18084
+            // 通过单元格在行内的索引在克隆树中定位对应单元格，避免在原 DOM 上增删 class 残留 class="" 
             const cellIndex = Array.from(cellElement.parentElement.children).indexOf(cellElement);
             const rowIndex = Array.from(nodeElement.querySelector("table").rows).indexOf(cellElement.parentElement as HTMLTableRowElement);
             const cloneCellElement = cloneNode.querySelector("table").rows[rowIndex].cells[cellIndex];
@@ -717,7 +717,7 @@ export const focusBlock = (element: Element, parentElement?: HTMLElement, toStar
         return false;
     }
 
-    // hr、嵌入块、数学公式、iframe、音频、视频、图表渲染块等，删除段落块后，光标位置矫正 https://github.com/siyuan-note/siyuan/issues/4143
+    // hr、嵌入块、数学公式、iframe、音频、视频、图表渲染块等，删除段落块后，光标位置矫正 
     if (element.classList.contains("render-node") || element.classList.contains("iframe") || element.classList.contains("hr") || element.classList.contains("av")) {
         const range = document.createRange();
         const type = element.getAttribute("data-type");
@@ -798,14 +798,14 @@ export const focusBlock = (element: Element, parentElement?: HTMLElement, toStar
         }
         let range;
         if (toStart) {
-            // 需要定位到第一个 child https://github.com/siyuan-note/siyuan/issues/5930
+            // 需要定位到第一个 child 
             range = setFirstNodeRange(cursorElement, getEditorRange(cursorElement));
             range.collapse(true);
         } else {
             let focusHljs = false;
-            // 定位到末尾 https://github.com/siyuan-note/siyuan/issues/5982
+            // 定位到末尾 
             if (element.getAttribute("data-type") === "NodeCodeBlock") {
-                // 代码块末尾定位需在 /n 之前 https://github.com/siyuan-note/siyuan/issues/9141，https://github.com/siyuan-note/siyuan/issues/9189
+                // 代码块末尾定位需在 /n 之前 ，
                 let lastNode = cursorElement.lastChild;
                 if (!lastNode) {
                     // 粘贴 ``` 报错
@@ -816,7 +816,7 @@ export const focusBlock = (element: Element, parentElement?: HTMLElement, toStar
                     lastNode = hasPreviousSibling(cursorElement.lastChild) as HTMLElement;
                 }
                 if (lastNode && lastNode.textContent.endsWith("\n")) {
-                    // https://github.com/siyuan-note/siyuan/issues/11362
+                    // 
                     if (lastNode.nodeType === 1) {
                         lastNode = lastNode.lastChild;
                         while (lastNode && lastNode.textContent.indexOf("\n") === -1) {
@@ -851,7 +851,7 @@ export const focusSideBlock = (updateElement: Element) => {
         let sideBlockElement;
         let collapse;
         if (updateElement.nextElementSibling &&
-            !updateElement.nextElementSibling.classList.contains("protyle-attr") // 用例 https://ld246.com/article/1661928364696
+            !updateElement.nextElementSibling.classList.contains("protyle-attr") // 用例 
         ) {
             collapse = true;
             sideBlockElement = getNextBlock(updateElement) as HTMLElement;

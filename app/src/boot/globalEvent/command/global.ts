@@ -350,7 +350,7 @@ export const globalCommand = (command: string, app: App) => {
             tab.parent.removeTab(tab.id);
             return true;
         }
-        // https://github.com/siyuan-note/siyuan/issues/14729
+        // 
         if (window.scribli.blockPanels.length > 0) {
             window.scribli.blockPanels[window.scribli.blockPanels.length - 1]?.destroy();
             return true;

@@ -285,7 +285,7 @@ func FileURLToLocalPath(fileURL string) string {
 		p = p[:strings.Index(p, "?")]
 	}
 	if unescaped, err := url.PathUnescape(p); err == nil && unescaped != p {
-		// `Convert network images/assets to local` supports URL-encoded local file names https://github.com/siyuan-note/siyuan/issues/9929
+		// `Convert network images/assets to local` supports URL-encoded local file names
 		p = unescaped
 	}
 	return p

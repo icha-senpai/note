@@ -369,7 +369,7 @@ export class MobileFiles extends Model {
                     selectRootElements.push(state.selectedElement);
                 } else {
                     const dataPath = state.selectedElement.getAttribute("data-path");
-                    // 禁止父节点移动到子节点 https://github.com/siyuan-note/siyuan/issues/12539
+                    // 禁止父节点移动到子节点 
                     if (newElement.getAttribute("data-path").startsWith(dataPath.replace(".sy", ""))) {
                         this.clearDragIndicators();
                         this.touchDragState = null;

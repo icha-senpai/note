@@ -46,7 +46,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "B3log Open Source"
+									"TextMarkTextContent": "Scribli contributors"
 								},
 								{
 									"Type": "NodeText",
@@ -55,8 +55,8 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "a",
-									"TextMarkAHref": "https://x.com/b3logos",
-									"TextMarkTextContent": "https://x.com/b3logos"
+									"TextMarkAHref": "https://x.com/Scribli contributorsos",
+									"TextMarkTextContent": "https://x.com/Scribli contributorsos"
 								}
 							]
 						}

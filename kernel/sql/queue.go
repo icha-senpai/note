@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -230,7 +230,7 @@ func FlushQueue() {
 		logging.LogInfof("database op tx [%dms]", elapsed)
 	}
 
-	// Push database index commit event https://github.com/siyuan-note/siyuan/issues/8814
+	// Push database index commit event
 	util.BroadcastByType("main", "databaseIndexCommit", 0, "", nil)
 
 	eventbus.Publish(eventbus.EvtSQLIndexFlushed)

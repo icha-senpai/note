@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -47,7 +47,7 @@ type boxDocMeta struct {
 }
 
 func boxDocMetaPath(boxID string) string {
-	return filepath.Join(util.DataDir, boxID, ".siyuan", boxDocMetaName)
+	return filepath.Join(util.DataDir, boxID, ".scribli", boxDocMetaName)
 }
 
 func boxDocPath(boxID string) string {

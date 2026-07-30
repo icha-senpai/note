@@ -111,7 +111,7 @@ export class Wnd {
                             capture: true,
                             once: true
                         });
-                        // TODO 保持原有焦点？https://github.com/siyuan-note/siyuan/pull/13395/files#r1877004077
+                        // TODO 保持原有焦点？
                         if (activeElement instanceof HTMLElement) {
                             activeElement.focus();
                         }
@@ -329,7 +329,7 @@ export class Wnd {
                 }
             }
         });
-        //  dragElement dragleave 后还会触发 dragenter https://github.com/siyuan-note/siyuan/issues/13753
+        //  dragElement dragleave 后还会触发 dragenter 
         this.element.addEventListener("dragleave", () => {
             elementDragCounter--;
             if (elementDragCounter === 0) {
@@ -468,7 +468,7 @@ export class Wnd {
         this.children.forEach((item) => {
             if (target === item.headElement) {
                 if (item.headElement && item.headElement.classList.contains("fn__none")) {
-                    // https://github.com/siyuan-note/siyuan/issues/267
+                    // 
                 } else {
                     if (item.headElement) {
                         item.headElement.classList.add("item--focus");
@@ -489,7 +489,7 @@ export class Wnd {
             } else {
                 item.headElement?.classList.remove("item--focus");
                 if (!item.panelElement.classList.contains("fn__none")) {
-                    // 必须现判断，否则会触发 observer.observe(this.element, {attributeFilter: ["class"]}); 导致 https://ld246.com/article/1641198819303
+                    // 必须现判断，否则会触发 observer.observe(this.element, {attributeFilter: ["class"]}); 导致 
                     item.panelElement.classList.add("fn__none");
                 }
             }
@@ -514,7 +514,7 @@ export class Wnd {
             if (currentTab.model instanceof Graph) {
                 currentTab.model.onGraph(false);
             } else if (currentTab.model instanceof Asset && currentTab.model.pdfObject && currentTab.model.pdfObject.pdfViewer) {
-                // https://github.com/siyuan-note/siyuan/issues/5655
+                // 
                 currentTab.model.pdfObject.pdfViewer.container.focus();
             }
         }
@@ -826,7 +826,7 @@ export class Wnd {
                     let latestHeadElement: HTMLElement;
                     Array.from(item.headElement.parentElement.children).forEach((headItem: HTMLElement) => {
                         if (headItem !== item.headElement &&
-                            headItem.style.maxWidth !== "0px"   // 不对比已移除但还在动画效果中的元素 https://github.com/siyuan-note/siyuan/issues/7878
+                            headItem.style.maxWidth !== "0px"   // 不对比已移除但还在动画效果中的元素 
                         ) {
                             if (!latestHeadElement) {
                                 latestHeadElement = headItem;
@@ -855,7 +855,7 @@ export class Wnd {
             resizeTabs(false);
             return true;
         });
-        // 初始化移除窗口，但 centerLayout 还没有赋值 https://ld246.com/article/1658718634416
+        // 初始化移除窗口，但 centerLayout 还没有赋值 
         if (window.scribli.layout.centerLayout) {
             const wnd = getWndByLayout(window.scribli.layout.centerLayout);
             if (!wnd) {
@@ -927,7 +927,7 @@ export class Wnd {
             }
         }
         if (nextId) {
-            // 只能用 find https://github.com/siyuan-note/siyuan/issues/3455
+            // 只能用 find 
             this.children.find((item, index) => {
                 if (item.id === nextId) {
                     this.children.splice(index, 0, tab);
@@ -968,7 +968,7 @@ export class Wnd {
             }
         }
 
-        // https://github.com/siyuan-note/siyuan/issues/13551
+        // 
         this.switchTab(tab.headElement);
 
         tab.parent = this;
@@ -1066,7 +1066,7 @@ export class Wnd {
                         previous.resize = undefined;
                         previous.element.classList.add("fn__flex-1");
                     }
-                    // https://github.com/siyuan-note/siyuan/issues/5844
+                    // 
                     if (layout.children.length > 2 && index === 0) {
                         layout.children[1].resize = undefined;
                     }
