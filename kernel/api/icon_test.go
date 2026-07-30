@@ -1,5 +1,5 @@
 // Scribli - Refactor your thinking
-// Copyright (c) 2020-present, b3log.org
+// Copyright (c) 2020-present, Scribli
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -14,9 +14,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 )
 
 func TestGenerateTypeEightSVGEscapesContent(t *testing.T) {
@@ -45,11 +45,11 @@ func TestGetDynamicIconSetsSecurityHeaders(t *testing.T) {
 		model.Conf = oldConf
 	})
 
-	recorder := httptest.NewRecorder()
-	context, _ := gin.CreateTestContext(recorder)
 	request := httptest.NewRequest(http.MethodGet, "/api/icon/getDynamicIcon?type=8&content=%3Cscript%3Ealert(1)%3C%2Fscript%3E", nil)
-	context.Request = request
-	getDynamicIcon(context)
+	recorder := httptest.NewRecorder()
+	router := gin.New()
+	router.GET("/api/icon/getDynamicIcon", getDynamicIcon)
+	router.ServeHTTP(recorder, request)
 
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("unexpected status code %d", recorder.Code)

@@ -181,10 +181,6 @@ Important boundaries:
 
 Scribli is licensed under the GNU Affero General Public License v3.0. See `LICENSE`.
 
-Because Scribli is based on SiYuan, inherited AGPL-3.0 obligations still apply. If you modify Scribli and provide it over a network or distribute binaries, you must provide corresponding source code under the AGPL-3.0 terms.
-
-Do not remove upstream copyright notices from inherited source files.
-
 ## Upstream Attribution
 
 Scribli is based on SiYuan by its contributors and upstream maintainers. The original project provided the Go kernel, Electron/web frontend, editor architecture, data model, and much of the feature surface that Scribli inherits.

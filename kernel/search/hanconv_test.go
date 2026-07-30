@@ -1,5 +1,5 @@
 // Scribli - Refactor your thinking
-// Copyright (c) 2020-present, b3log.org
+// Copyright (c) 2020-present, Scribli
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -24,49 +24,68 @@ import (
 )
 
 func TestHanInsensitiveRegexp(t *testing.T) {
-	re, err := regexp.Compile("^" + hanInsensitiveRegexp("诗经") + "$")
+	const (
+		poetryClassicSimplified  = "\u8bd7\u7ecf"
+		poetryClassicTraditional = "\u8a69\u7d93"
+		poetryMixedOne           = "\u8bd7\u7d93"
+		poetryMixedTwo           = "\u8a69\u7ecf"
+		poetryBookDifferent      = "\u8bd7\u4e66"
+		hairTraditionalVariant   = "\u9aee"
+		hairSimplified           = "\u53d1"
+		hairTraditional          = "\u767c"
+		middleA1                 = "\u4e2da1"
+	)
+
+	re, err := regexp.Compile("^" + hanInsensitiveRegexp(poetryClassicSimplified) + "$")
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, s := range []string{"诗经", "詩經", "诗經", "詩经"} {
+	for _, s := range []string{poetryClassicSimplified, poetryClassicTraditional, poetryMixedOne, poetryMixedTwo} {
 		if !re.MatchString(s) {
-			t.Errorf("hanInsensitiveRegexp(诗经) should match %q", s)
+			t.Errorf("hanInsensitiveRegexp(%q) should match %q", poetryClassicSimplified, s)
 		}
 	}
-	if re.MatchString("诗书") {
-		t.Errorf("hanInsensitiveRegexp(诗经) should not match 诗书")
+	if re.MatchString(poetryBookDifferent) {
+		t.Errorf("hanInsensitiveRegexp(%q) should not match %q", poetryClassicSimplified, poetryBookDifferent)
 	}
 
-	re2 := regexp.MustCompile("^" + hanInsensitiveRegexp("髮") + "$")
-	for _, s := range []string{"髮", "发", "發"} {
+	re2 := regexp.MustCompile("^" + hanInsensitiveRegexp(hairTraditionalVariant) + "$")
+	for _, s := range []string{hairTraditionalVariant, hairSimplified, hairTraditional} {
 		if !re2.MatchString(s) {
-			t.Errorf("hanInsensitiveRegexp(髮) should match %q as an equivalent form of 发", s)
+			t.Errorf("hanInsensitiveRegexp(%q) should match %q as an equivalent form of %q", hairTraditionalVariant, s, hairSimplified)
 		}
 	}
 
-	if got := hanInsensitiveRegexp("中a1"); "中a1" != got {
-		t.Errorf("hanInsensitiveRegexp(中a1) = %q, should be unchanged", got)
+	if got := hanInsensitiveRegexp(middleA1); middleA1 != got {
+		t.Errorf("hanInsensitiveRegexp(%q) = %q, should be unchanged", middleA1, got)
 	}
 }
 
 func TestEncloseHighlightingHanInsensitive(t *testing.T) {
+	const (
+		poetryClassicSimplified  = "\u8bd7\u7ecf"
+		poetryClassicTraditional = "\u8a69\u7d93"
+		poetryResearch           = "\u8a69\u7d93\u7814\u7a76"
+		research                 = "\u7814\u7a76"
+	)
+
 	old := util.SearchHanSensitive
 	defer func() { util.SearchHanSensitive = old }()
 
 	util.SearchHanSensitive = false
-	got := EncloseHighlighting("詩經研究", []string{"诗经"}, "<mark>", "</mark>", false, false)
-	if want := "<mark>詩經</mark>研究"; want != got {
+	got := EncloseHighlighting(poetryResearch, []string{poetryClassicSimplified}, "<mark>", "</mark>", false, false)
+	if want := "<mark>" + poetryClassicTraditional + "</mark>" + research; want != got {
 		t.Errorf("Han-insensitive highlighting = %q, want %q", got, want)
 	}
 
-	got = EncloseHighlighting("ABC 詩經", []string{"abc"}, "<mark>", "</mark>", false, false)
-	if want := "<mark>ABC</mark> 詩經"; want != got {
+	got = EncloseHighlighting("ABC "+poetryClassicTraditional, []string{"abc"}, "<mark>", "</mark>", false, false)
+	if want := "<mark>ABC</mark> " + poetryClassicTraditional; want != got {
 		t.Errorf("case-insensitive and Han-insensitive highlighting = %q, want %q", got, want)
 	}
 
 	util.SearchHanSensitive = true
-	got = EncloseHighlighting("詩經研究", []string{"诗经"}, "<mark>", "</mark>", false, false)
-	if want := "詩經研究"; want != got {
+	got = EncloseHighlighting(poetryResearch, []string{poetryClassicSimplified}, "<mark>", "</mark>", false, false)
+	if want := poetryResearch; want != got {
 		t.Errorf("default Han-sensitive highlighting should not mark the text, got %q", got)
 	}
 }

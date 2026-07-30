@@ -1,5 +1,5 @@
 // Scribli - Refactor your thinking
-// Copyright (c) 2020-present, b3log.org
+// Copyright (c) 2020-present, Scribli
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 )
 
 func TestServeSVGSanitizesAndSetsSecurityHeaders(t *testing.T) {
@@ -36,11 +36,13 @@ func TestServeSVGSanitizesAndSetsSecurityHeaders(t *testing.T) {
 	}
 
 	recorder := httptest.NewRecorder()
-	context, _ := gin.CreateTestContext(recorder)
-	context.Request = httptest.NewRequest(http.MethodGet, "/assets/test.svg", nil)
-	if !serveSVG(context, assetPath) {
-		t.Fatal("SVG asset was not handled")
-	}
+	router := gin.New()
+	router.GET("/assets/test.svg", func(context *gin.Context) {
+		if !serveSVG(context, assetPath) {
+			t.Fatal("SVG asset was not handled")
+		}
+	})
+	router.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/assets/test.svg", nil))
 
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("unexpected status code %d", recorder.Code)
@@ -72,11 +74,13 @@ func TestServeSVGPreservesAllowSVGScriptBehavior(t *testing.T) {
 	}
 
 	recorder := httptest.NewRecorder()
-	context, _ := gin.CreateTestContext(recorder)
-	context.Request = httptest.NewRequest(http.MethodGet, "/assets/test.svg", nil)
-	if !serveSVG(context, assetPath) {
-		t.Fatal("SVG asset was not handled")
-	}
+	router := gin.New()
+	router.GET("/assets/test.svg", func(context *gin.Context) {
+		if !serveSVG(context, assetPath) {
+			t.Fatal("SVG asset was not handled")
+		}
+	})
+	router.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/assets/test.svg", nil))
 
 	if !strings.Contains(recorder.Body.String(), `<script>`) {
 		t.Fatalf("enabled SVG script was unexpectedly removed: %s", recorder.Body.String())

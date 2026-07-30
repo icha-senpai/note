@@ -1,5 +1,5 @@
 // Scribli - Refactor your thinking
-// Copyright (c) 2020-present, b3log.org
+// Copyright (c) 2020-present, Scribli
 //
 
 package av

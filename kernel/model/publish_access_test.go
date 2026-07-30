@@ -1,5 +1,5 @@
 // Scribli - Refactor your thinking
-// Copyright (c) 2020-present, b3log.org
+// Copyright (c) 2020-present, Scribli
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +26,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 )
 
+func newPublishAccessTestContext() *gin.Context {
+	return &gin.Context{Request: httptest.NewRequest(http.MethodGet, "/", nil)}
+}
+
 func TestCheckBlockTreeAccessableByPublishAccess(t *testing.T) {
 	const (
 		boxID             = "20260721000000-boxid01"
@@ -37,8 +41,7 @@ func TestCheckBlockTreeAccessableByPublishAccess(t *testing.T) {
 		BoxID: boxID,
 		Path:  "/" + docID + ".sy",
 	}
-	c, _ := gin.CreateTestContext(httptest.NewRecorder())
-	c.Request = httptest.NewRequest(http.MethodGet, "/", nil)
+	c := newPublishAccessTestContext()
 
 	if checkBlockTreeAccessableByPublishAccess(c, PublishAccess{{ID: docID, Disable: true}}, bt) {
 		t.Fatal("publish-disabled document should not be accessible")
@@ -83,8 +86,7 @@ func TestFilterSearchDocsByPublishAccess(t *testing.T) {
 		{"box": boxID, "path": ""},
 	}
 
-	c, _ := gin.CreateTestContext(httptest.NewRecorder())
-	c.Request = httptest.NewRequest(http.MethodGet, "/", nil)
+	c := newPublishAccessTestContext()
 	filtered := FilterSearchDocsByPublishAccess(c, publishAccess, docs)
 	if len(filtered) != 1 || filtered[0]["path"] != docs[0]["path"] {
 		t.Fatalf("unexpected unauthenticated search docs: %v", filtered)
@@ -101,8 +103,7 @@ func TestFilterSearchDocsByPublishAccess(t *testing.T) {
 }
 
 func TestFilterEmbedBlocksByPublishAccessRemovesInternalFields(t *testing.T) {
-	c, _ := gin.CreateTestContext(httptest.NewRecorder())
-	c.Request = httptest.NewRequest(http.MethodGet, "/", nil)
+	c := newPublishAccessTestContext()
 	embedBlocks := []*EmbedBlock{{
 		Block: &Block{
 			Box:      "20260720000000-boxid01",
@@ -149,8 +150,7 @@ func TestFilterEmbedBlocksByPublishAccessDropsInaccessibleResults(t *testing.T) 
 		{Block: &Block{ID: "20260720000005-protect", Box: boxID, Path: "/" + protectedDocID + ".sy", Content: "protected"}},
 	}
 
-	c, _ := gin.CreateTestContext(httptest.NewRecorder())
-	c.Request = httptest.NewRequest(http.MethodGet, "/", nil)
+	c := newPublishAccessTestContext()
 	if filtered := FilterEmbedBlocksByPublishAccess(c, publishAccess, embedBlocks); 0 != len(filtered) {
 		t.Fatalf("inaccessible embedded block results should not be returned: %+v", filtered)
 	}

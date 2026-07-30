@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 )
 
 func TestGetFileAllowsWorkspaceTemp(t *testing.T) {
@@ -33,13 +33,15 @@ func TestGetFileAllowsWorkspaceTemp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	recorder := httptest.NewRecorder()
-	context, _ := gin.CreateTestContext(recorder)
-	context.Set(model.RoleContextKey, model.RoleAdministrator)
 	request := httptest.NewRequest(http.MethodPost, "/api/file/getFile", strings.NewReader(`{"path":"temp/export/plugin-package.zip"}`))
 	request.Header.Set("Content-Type", "application/json")
-	context.Request = request
-	getFile(context)
+	recorder := httptest.NewRecorder()
+	router := gin.New()
+	router.POST("/api/file/getFile", func(context *gin.Context) {
+		context.Set(model.RoleContextKey, model.RoleAdministrator)
+		getFile(context)
+	})
+	router.ServeHTTP(recorder, request)
 
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("workspace temp file should be accessible, got status %d: %s", recorder.Code, recorder.Body.String())
