@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/88250/lute/ast"
-	"github.com/siyuan-note/siyuan/kernel/av"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/kernel/av"
 )
 
 func TestNewItemParentPathTemplate(t *testing.T) {

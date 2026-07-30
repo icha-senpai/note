@@ -24,10 +24,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dop251/goja"
-	"github.com/gin-gonic/gin"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 const (
@@ -94,7 +94,7 @@ type RequestContent struct {
 
 	/* Request Headers */
 	Headers map[string][]string `json:"headers"` // e.g. {"Content-Type": ["application/json"], "Accept": ["*/*"]}
-	Cookies map[string][]string `json:"cookies"` // e.g. {"siyuan": ["abc123"]}
+	Cookies map[string][]string `json:"cookies"` // e.g. {"scribli": ["abc123"]}
 
 	ContentType   string `json:"contentType"`   // e.g. "application/json"
 	ContentLength int64  `json:"contentLength"` // e.g. 123

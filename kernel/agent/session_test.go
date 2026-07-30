@@ -14,8 +14,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/88250/gulu"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 const testSessionID = "20260715120000-abcdefg"

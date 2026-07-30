@@ -17,7 +17,7 @@
 package tools
 
 import (
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 var WebFetchTool = &Tool{

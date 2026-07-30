@@ -25,13 +25,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute"
-	"github.com/gofrs/flock"
-	"github.com/siyuan-note/eventbus"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/filesys"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/github/gofrs/flock"
+	"github.com/icha-senpai/note/kernel/filesys"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 var (

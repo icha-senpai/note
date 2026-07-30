@@ -21,9 +21,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/siyuan-note/siyuan/kernel/filesys"
-	"github.com/siyuan-note/siyuan/kernel/treenode"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/filesys"
+	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 func TestBoxDocMetadataMatchesBoxID(t *testing.T) {

@@ -1,0 +1,34 @@
+name: Build
+on: 
+  push:
+    # only build master
+    branches: 
+      - master
+    paths-ignore:
+    - '**.md'
+  pull_request:
+    paths-ignore:
+    - '**.md'     
+        
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+
+    - name: Test
+      run: go test ./... -timeout 5m -race -coverprofile=coverage.txt -covermode=atomic
+
+    - name: Sumbit code cov
+      if: success()
+      run: bash <(curl -s https://codecov.io/bash)

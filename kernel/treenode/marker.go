@@ -17,8 +17,8 @@
 package treenode
 
 import (
-	"github.com/88250/gulu"
-	"github.com/88250/lute/lex"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 )
 
 func ContainsMarker(str string) (ret string) {

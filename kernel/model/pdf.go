@@ -19,7 +19,7 @@ package model
 import (
 	"strings"
 
-	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
+	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 )
 
 func PdfListLinks(ctx *model.Context) (assets, others []model.LinkAnnotation, err error) {

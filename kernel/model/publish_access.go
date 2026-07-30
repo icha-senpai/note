@@ -29,16 +29,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute/ast"
-	"github.com/gin-gonic/gin"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/av"
-	"github.com/siyuan-note/siyuan/kernel/conf"
-	"github.com/siyuan-note/siyuan/kernel/sql"
-	"github.com/siyuan-note/siyuan/kernel/treenode"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/kernel/av"
+	"github.com/icha-senpai/note/kernel/conf"
+	"github.com/icha-senpai/note/kernel/sql"
+	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 type PublishAccessItem struct {

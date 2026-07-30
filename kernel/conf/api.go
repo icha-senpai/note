@@ -16,7 +16,7 @@
 
 package conf
 
-import "github.com/88250/gulu"
+import "github.com/icha-senpai/note/third_party/forks/gulu"
 
 type API struct {
 	Token string `json:"token"`

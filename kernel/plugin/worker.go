@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"runtime/debug"
 
-	"github.com/dop251/goja"
-	"github.com/dop251/goja_nodejs/eventloop"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja_nodejs/eventloop"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 type TaskExecutor func(rt *goja.Runtime) (result any, err error)

@@ -27,13 +27,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute/parse"
-	"github.com/emirpasic/gods/sets/hashset"
-	ignore "github.com/sabhiram/go-gitignore"
-	"github.com/siyuan-note/eventbus"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/github/emirpasic/gods/sets/hashset"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	ignore "github.com/icha-senpai/note/third_party/forks/github/sabhiram/go-gitignore"
 )
 
 var luteEngine = util.NewLute()

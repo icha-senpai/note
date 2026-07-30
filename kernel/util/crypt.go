@@ -23,7 +23,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 var SK = []byte("696D897C9AA0611B")

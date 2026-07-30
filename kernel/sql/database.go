@@ -35,17 +35,17 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute/ast"
-	"github.com/88250/lute/editor"
-	"github.com/88250/lute/html"
-	"github.com/88250/lute/parse"
-	"github.com/mattn/go-sqlite3"
-	_ "github.com/mattn/go-sqlite3"
-	"github.com/siyuan-note/eventbus"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/treenode"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/editor"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/go-sqlite3"
+	_ "github.com/icha-senpai/note/third_party/forks/go-sqlite3"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 var (
@@ -347,7 +347,7 @@ func initHistoryDBConnection() {
 
 func initHistoryDBTables() {
 	historyDB.Exec("DROP TABLE histories_fts_case_insensitive")
-	_, err := historyDB.Exec("CREATE VIRTUAL TABLE histories_fts_case_insensitive USING fts5(id UNINDEXED, type UNINDEXED, op UNINDEXED, title, content, path UNINDEXED, created UNINDEXED, tokenize=\"siyuan case_insensitive\")")
+	_, err := historyDB.Exec("CREATE VIRTUAL TABLE histories_fts_case_insensitive USING fts5(id UNINDEXED, type UNINDEXED, op UNINDEXED, title, content, path UNINDEXED, created UNINDEXED, tokenize=\"scribli case_insensitive\")")
 	if err != nil {
 		if isRecoverableDBFileError(err) {
 			logging.LogWarnf("create history fts table failed: %s, retrying with clean database...", err)
@@ -359,7 +359,7 @@ func initHistoryDBTables() {
 			time.Sleep(time.Second)
 			initHistoryDBConnection()
 			historyDB.Exec("DROP TABLE histories_fts_case_insensitive")
-			_, err = historyDB.Exec("CREATE VIRTUAL TABLE histories_fts_case_insensitive USING fts5(id UNINDEXED, type UNINDEXED, op UNINDEXED, title, content, path UNINDEXED, created UNINDEXED, tokenize=\"siyuan case_insensitive\")")
+			_, err = historyDB.Exec("CREATE VIRTUAL TABLE histories_fts_case_insensitive USING fts5(id UNINDEXED, type UNINDEXED, op UNINDEXED, title, content, path UNINDEXED, created UNINDEXED, tokenize=\"scribli case_insensitive\")")
 		}
 		if err != nil {
 			logging.LogFatalf(logging.ExitCodeUnavailableDatabase, "create table [histories_fts_case_insensitive] failed: %s", err)
@@ -421,7 +421,7 @@ func initAssetContentDBConnection() {
 
 func initAssetContentDBTables() {
 	assetContentDB.Exec("DROP TABLE asset_contents_fts_case_insensitive")
-	_, err := assetContentDB.Exec("CREATE VIRTUAL TABLE asset_contents_fts_case_insensitive USING fts5(id UNINDEXED, name, ext, path, size UNINDEXED, updated UNINDEXED, content, tokenize=\"siyuan case_insensitive\")")
+	_, err := assetContentDB.Exec("CREATE VIRTUAL TABLE asset_contents_fts_case_insensitive USING fts5(id UNINDEXED, name, ext, path, size UNINDEXED, updated UNINDEXED, content, tokenize=\"scribli case_insensitive\")")
 	if err != nil {
 		if isRecoverableDBFileError(err) {
 			logging.LogWarnf("create asset content fts table failed: %s, retrying with clean database...", err)
@@ -433,7 +433,7 @@ func initAssetContentDBTables() {
 			time.Sleep(time.Second)
 			initAssetContentDBConnection()
 			assetContentDB.Exec("DROP TABLE asset_contents_fts_case_insensitive")
-			_, err = assetContentDB.Exec("CREATE VIRTUAL TABLE asset_contents_fts_case_insensitive USING fts5(id UNINDEXED, name, ext, path, size UNINDEXED, updated UNINDEXED, content, tokenize=\"siyuan case_insensitive\")")
+			_, err = assetContentDB.Exec("CREATE VIRTUAL TABLE asset_contents_fts_case_insensitive USING fts5(id UNINDEXED, name, ext, path, size UNINDEXED, updated UNINDEXED, content, tokenize=\"scribli case_insensitive\")")
 		}
 		if err != nil {
 			logging.LogFatalf(logging.ExitCodeUnavailableDatabase, "create table [asset_contents_fts_case_insensitive] failed: %s", err)
@@ -469,7 +469,7 @@ func SetHanSensitive(b bool) {
 }
 
 func ftsTokenize() string {
-	ret := "siyuan"
+	ret := "scribli"
 	if !caseSensitive {
 		ret += " case_insensitive"
 	}

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Scribli repository guide. Scribli is a local-first fork of SiYuan. The inherited Go module path is still `github.com/siyuan-note/siyuan/kernel` until a dedicated module-path migration is implemented and tested. License: AGPL-3.0.
+Scribli repository guide. Scribli is a local-first fork of SiYuan. The owned Go module path is `github.com/icha-senpai/note/kernel`. License: AGPL-3.0.
 
 Scribli must present itself as Scribli in public project surfaces and application metadata while preserving inherited upstream copyright notices in source files.
 
@@ -17,6 +17,7 @@ Scribli is a desktop knowledge workspace built from:
 | `app/appearance/` | Themes, icons, and i18n resources |
 | `app/stage/` | Generated frontend output served by the kernel |
 | `scripts/` | Packaging and helper scripts |
+| `third_party/forks/` | Local Scribli-owned Go module forks used by the kernel |
 | `.github/` | Repository metadata and disabled publishing placeholders |
 
 The main README is now the public Scribli surface. Keep it focused on Scribli's local-first behavior, user-controlled sync, AGPL-3.0 license, upstream attribution, and known limitations.
@@ -68,6 +69,7 @@ Network-capable behavior must be explicit and user-controlled. Acceptable exampl
 Prefer repo-local Go caches for Windows work:
 
 ```powershell
+$env:GOPATH=(Resolve-Path "..\.tools").Path + "\go-path"
 $env:GOCACHE=(Resolve-Path "..\.tools").Path + "\go-build-cache"
 $env:GOMODCACHE=(Resolve-Path "..\.tools").Path + "\go-mod-cache"
 ```
@@ -103,6 +105,7 @@ Kernel tests on Windows with `w64devkit`:
 ```powershell
 cd kernel
 $env:PATH=(Resolve-Path "..\.tools\w64devkit\bin").Path + ";" + $env:PATH
+$env:GOPATH=(Resolve-Path "..\.tools").Path + "\go-path"
 $env:GOCACHE=(Resolve-Path "..\.tools").Path + "\go-build-cache"
 $env:GOMODCACHE=(Resolve-Path "..\.tools").Path + "\go-mod-cache"
 $env:CGO_ENABLED="1"
@@ -169,13 +172,25 @@ Generated build outputs may change when running build/package commands, but do n
 
 ## 10. Upstream And Dependencies
 
-Scribli still inherits core architecture and dependencies from SiYuan. Related upstream projects such as Lute, Dejavu, Riff, Gulu, eventbus, filelock, httpclient, logging, go-sqlite3, pdfcpu, epub, clipboard, and others are Go module dependencies, not Scribli-owned sibling repos.
+Scribli still inherits core architecture and dependencies from SiYuan. The kernel module has been detached to `github.com/icha-senpai/note/kernel`.
 
-If a dependency must be tested locally, use a temporary `replace` in `kernel/go.mod`, but do not commit that `replace`.
+The following upstream-owned Go modules are copied into this repository as local Scribli fork modules under `third_party/forks/` and resolved by committed local `replace` rules:
+
+- `dataparser`
+- `dejavu`
+- `encryption`
+- `eventbus`
+- `filelock`
+- `go-sqlite3`
+- `httpclient`
+- `logging`
+- `riff`
+
+Do not point these modules back to upstream module paths. If a fork needs upstream fixes, pull or cherry-pick intentionally into the matching `third_party/forks/<name>` directory and preserve upstream copyright notices. The sqlite fork owns the `scribli` FTS tokenizer used by kernel search indexes.
 
 Rebuilding `lute.min.js` requires the upstream Lute build process; do not edit the generated file in this repo.
 
-Do not fork every `github.com/siyuan-note/*` dependency just because of its namespace. First determine whether it performs network requests, whether it is a general local library, whether it is maintained and secure, and whether Scribli needs independent behavior. Fork only for a concrete behavior, security, or service-coupling reason.
+Do not fork every remaining upstream dependency just because of its namespace. First determine whether it performs network requests, whether it is a general local library, whether it is maintained and secure, and whether Scribli needs independent behavior. Fork only for a concrete behavior, security, or service-coupling reason.
 
 ---
 
@@ -188,7 +203,7 @@ Use `docs/INTERNAL-NAMING.md` as the policy for phasing out legacy names. In sho
 - Migrate Electron IPC channels, internal constants, and private helpers to Scribli names when both sides live in this repository.
 - Stored workspace names such as the inherited workspace metadata directory, database filenames, and encrypted database names must be migrated with backup-safe, tested data migrations.
 - Public compatibility identifiers such as inherited MIME types, plugin APIs, and public API fields are temporary legacy surfaces. Replace them with Scribli names only with aliases, deprecation notes, and tests first, then remove the old names in a later breaking pass when Boss approves.
-- Keep the Go module path `github.com/siyuan-note/siyuan/kernel` until a dedicated module detachment project is planned, implemented, and tested.
+- Keep new Go imports under `github.com/icha-senpai/note/kernel` or `github.com/icha-senpai/note/third_party/forks/<name>`.
 
 ---
 

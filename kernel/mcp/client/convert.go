@@ -17,7 +17,7 @@
 package client
 
 import (
-	"github.com/siyuan-note/siyuan/kernel/mcp/tools"
+	"github.com/icha-senpai/note/kernel/mcp/tools"
 )
 
 func convertMCPSchema(inputSchema any) tools.ToolSchema {

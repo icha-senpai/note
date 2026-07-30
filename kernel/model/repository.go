@@ -38,31 +38,31 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/88250/go-humanize"
-	"github.com/88250/gulu"
-	"github.com/88250/lute"
-	"github.com/88250/lute/ast"
-	"github.com/88250/lute/html"
-	"github.com/88250/lute/parse"
-	"github.com/88250/lute/render"
-	"github.com/emirpasic/gods/sets/hashset"
-	"github.com/siyuan-note/dataparser"
-	"github.com/siyuan-note/dejavu"
-	"github.com/siyuan-note/dejavu/cloud"
-	"github.com/siyuan-note/dejavu/entity"
-	"github.com/siyuan-note/encryption"
-	"github.com/siyuan-note/eventbus"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/httpclient"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/av"
-	"github.com/siyuan-note/siyuan/kernel/cache"
-	"github.com/siyuan-note/siyuan/kernel/conf"
-	"github.com/siyuan-note/siyuan/kernel/sql"
-	"github.com/siyuan-note/siyuan/kernel/task"
-	"github.com/siyuan-note/siyuan/kernel/treenode"
-	"github.com/siyuan-note/siyuan/kernel/util"
-	"github.com/studio-b12/gowebdav"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/lute/render"
+	"github.com/icha-senpai/note/third_party/forks/github/emirpasic/gods/sets/hashset"
+	"github.com/icha-senpai/note/kernel/av"
+	"github.com/icha-senpai/note/kernel/cache"
+	"github.com/icha-senpai/note/kernel/conf"
+	"github.com/icha-senpai/note/kernel/sql"
+	"github.com/icha-senpai/note/kernel/task"
+	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/dataparser"
+	"github.com/icha-senpai/note/third_party/forks/dejavu"
+	"github.com/icha-senpai/note/third_party/forks/dejavu/cloud"
+	"github.com/icha-senpai/note/third_party/forks/dejavu/entity"
+	"github.com/icha-senpai/note/third_party/forks/encryption"
+	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/httpclient"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/studio-b12/gowebdav"
 )
 
 func AutoPurgeRepoJob() {
@@ -2497,9 +2497,7 @@ func buildCloudConf() (ret *cloud.Conf, err error) {
 	ret = &cloud.Conf{
 		Dir:           Conf.Sync.CloudName,
 		UserID:        "0",
-		Token:         "",
 		AvailableSize: int64(1024 * 1024 * 1024 * 1024 * 2),
-		Server:        "",
 	}
 
 	switch Conf.Sync.Provider {

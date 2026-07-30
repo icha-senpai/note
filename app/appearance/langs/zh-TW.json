@@ -950,7 +950,7 @@
 	"semanticSearchTip": "設定並啟用嵌入模型後，可在全文搜尋中使用語意搜尋（實驗性功能，速度可能較慢，花費可能較大）",
 	"keywordsLimit": "關鍵字數量限制",
 	"exportAsImage": "導出為圖片",
-	"syncThirdPartyProviderS3Intro": "當前選擇的是 Amazon S3 協議兼容的第三方雲端存儲服務（比如<a href=\"https://s.qiniu.com/VbQfeu\" target=\"_blank\">七牛雲</a>、<a href=\"https://www.aliyun.com/product/oss?userCode=yqovuas2\" target=\"_blank\">阿里雲 OSS</a>、<a href=\"https://www.cloudflare.com/\" target=\"_blank\">Cloudflare R2</a>）",
+    "syncThirdPartyProviderS3Intro": "The selected provider is an Amazon S3-compatible storage service. Use an endpoint and credentials you control.",
 	"syncThirdPartyProviderWebDAVIntro": "當前選擇的是 WebDAV 協議的第三方雲端存儲服務。由於該協議性能較差且穩定性不足，建議優先選擇 S3 服務",
 	"syncThirdPartyProviderLocalIntro": "目前選擇的是本地文件系統提供的儲存服務。請在 <code class='fn__code'>Endpoint</code> 欄位中輸入本地資料夾的完整路徑",
 	"syncThirdPartyProviderTip": "在使用該特性前，請注意第三方雲端存儲服務的技術限制和計費項目等條款：<div class=\"b3-label__text\"><ul class='fn__list'><li>接口調用頻率、頻寬等技術限制</li><li>存儲空間和流量等計費項目</li><li>使用條款和可用性保障等條款</li></ul></div><div class='fn__hr'></div>免責聲明：詳見Scribli所使用的開源許可證 AGPLv3 中的相關條款",

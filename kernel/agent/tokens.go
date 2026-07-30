@@ -20,10 +20,10 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/pkoukk/tiktoken-go"
-	loader "github.com/pkoukk/tiktoken-go-loader"
-	"github.com/sashabaranov/go-openai"
-	tools "github.com/siyuan-note/siyuan/kernel/mcp/tools"
+	tools "github.com/icha-senpai/note/kernel/mcp/tools"
+	"github.com/icha-senpai/note/third_party/forks/github/pkoukk/tiktoken-go"
+	loader "github.com/icha-senpai/note/third_party/forks/github/pkoukk/tiktoken-go-loader"
+	"github.com/icha-senpai/note/third_party/forks/github/sashabaranov/go-openai"
 )
 
 type tokenCounter struct {

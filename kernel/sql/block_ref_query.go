@@ -22,11 +22,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute/parse"
-	"github.com/emirpasic/gods/sets/hashset"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/search"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/github/emirpasic/gods/sets/hashset"
+	"github.com/icha-senpai/note/kernel/search"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 func GetRefDuplicatedDefRootIDs() (ret []string) {

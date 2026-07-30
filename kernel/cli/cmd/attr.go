@@ -24,10 +24,10 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/sql"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/sql"
 
-	"github.com/spf13/cobra"
+	"github.com/icha-senpai/note/third_party/forks/github/spf13/cobra"
 )
 
 var attrCmd = &cobra.Command{

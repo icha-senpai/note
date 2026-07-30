@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/sql"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/sql"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 var AttrTool = &Tool{

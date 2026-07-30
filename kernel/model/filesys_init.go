@@ -17,11 +17,11 @@
 package model
 
 import (
-	"github.com/siyuan-note/siyuan/kernel/av"
-	"github.com/siyuan-note/siyuan/kernel/filesys"
-	"github.com/siyuan-note/siyuan/kernel/sql"
-	"github.com/siyuan-note/siyuan/kernel/treenode"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/av"
+	"github.com/icha-senpai/note/kernel/filesys"
+	"github.com/icha-senpai/note/kernel/sql"
+	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 func init() {

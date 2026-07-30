@@ -3,7 +3,7 @@
 //
 // 2959 traditional -> simplified single-character mappings (BMP only,
 // identity mappings omitted, first candidate taken for multi-candidate
-// entries). Must stay consistent with the "siyuan" FTS5 tokenizer's
+// entries). Must stay consistent with the "scribli" FTS5 tokenizer's
 // han_insensitive table in the go-sqlite3 fork.
 
 package search

@@ -24,9 +24,9 @@ import (
 	"syscall"
 	"time"
 
-	goPS "github.com/mitchellh/go-ps"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	goPS "github.com/icha-senpai/note/third_party/forks/github/mitchellh/go-ps"
 )
 
 func HandleSignal() {

@@ -20,7 +20,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/88250/gulu"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 func I18nTerm(language, key string) (ret string) {

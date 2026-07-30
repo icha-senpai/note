@@ -22,16 +22,16 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/88250/gulu"
-	"github.com/gin-gonic/gin"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/conf"
-	mcpclient "github.com/siyuan-note/siyuan/kernel/mcp/client"
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/server/proxy"
-	"github.com/siyuan-note/siyuan/kernel/sql"
-	"github.com/siyuan-note/siyuan/kernel/task"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/kernel/conf"
+	mcpclient "github.com/icha-senpai/note/kernel/mcp/client"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/server/proxy"
+	"github.com/icha-senpai/note/kernel/sql"
+	"github.com/icha-senpai/note/kernel/task"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 func setEditorReadOnly(c *gin.Context) {

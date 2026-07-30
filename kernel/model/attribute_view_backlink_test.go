@@ -4,8 +4,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/siyuan-note/siyuan/kernel/av"
-	"github.com/siyuan-note/siyuan/kernel/treenode"
+	"github.com/icha-senpai/note/kernel/av"
+	"github.com/icha-senpai/note/kernel/treenode"
 )
 
 func TestGetAttributeViewBacklinkMatches(t *testing.T) {

@@ -25,9 +25,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/88250/gulu"
-	"github.com/siyuan-note/eventbus"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 var ErrPandocNotFound = errors.New("not found executable pandoc")

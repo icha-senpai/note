@@ -31,12 +31,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/88250/go-humanize"
-	"github.com/88250/gulu"
-	"github.com/88250/lute/ast"
-	"github.com/88250/lute/html"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 var (

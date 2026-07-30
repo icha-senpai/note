@@ -21,9 +21,9 @@ import (
 	"io"
 	"strings"
 
-	"github.com/facette/natsort"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
+	"github.com/icha-senpai/note/third_party/forks/github/facette/natsort"
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/simplifiedchinese"
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/transform"
 )
 
 func NaturalCompare(str1, str2 string) bool {

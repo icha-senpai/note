@@ -19,10 +19,10 @@ package plugin
 import (
 	"testing"
 
-	"github.com/dop251/goja"
-	"github.com/dop251/goja_nodejs/eventloop"
-	"github.com/siyuan-note/siyuan/kernel/mcp/tools"
-	"github.com/siyuan-note/siyuan/kernel/model"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja_nodejs/eventloop"
+	"github.com/icha-senpai/note/kernel/mcp/tools"
+	"github.com/icha-senpai/note/kernel/model"
 )
 
 func TestRegisterMcpToolOptionalReadOnly(t *testing.T) {
@@ -33,21 +33,21 @@ func TestRegisterMcpToolOptionalReadOnly(t *testing.T) {
 
 	var scriptErr error
 	loop.Run(func(rt *goja.Runtime) {
-		siyuan := rt.NewObject()
-		if err := injectMcp(p, rt, siyuan); err != nil {
+		scribli := rt.NewObject()
+		if err := injectMcp(p, rt, scribli); err != nil {
 			scriptErr = err
 			return
 		}
-		if err := rt.Set("siyuan", siyuan); err != nil {
+		if err := rt.Set("scribli", scribli); err != nil {
 			scriptErr = err
 			return
 		}
 		_, scriptErr = rt.RunString(`
-			siyuan.mcp.registerTool("default", {
+			scribli.mcp.registerTool("default", {
 				description: "Default mutability",
 				inputSchema: {type: "object"}
 			}, (input) => input);
-			siyuan.mcp.registerTool("read-only", {
+			scribli.mcp.registerTool("read-only", {
 				description: "Read-only tool",
 				inputSchema: {type: "object"},
 				readOnly: true

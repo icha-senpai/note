@@ -23,7 +23,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/88250/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
 )
 
 func IsTimeStr(str string) bool {

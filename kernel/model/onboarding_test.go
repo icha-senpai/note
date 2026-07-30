@@ -19,7 +19,7 @@ package model
 import (
 	"testing"
 
-	"github.com/siyuan-note/siyuan/kernel/conf"
+	"github.com/icha-senpai/note/kernel/conf"
 )
 
 func TestPrepareOnboardingForEmptyWorkspace(t *testing.T) {

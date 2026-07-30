@@ -17,16 +17,16 @@
 package cmd
 
 import (
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/cache"
-	"github.com/siyuan-note/siyuan/kernel/job"
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/plugin"
-	"github.com/siyuan-note/siyuan/kernel/server"
-	"github.com/siyuan-note/siyuan/kernel/sql"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/cache"
+	"github.com/icha-senpai/note/kernel/job"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/plugin"
+	"github.com/icha-senpai/note/kernel/server"
+	"github.com/icha-senpai/note/kernel/sql"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 
-	"github.com/spf13/cobra"
+	"github.com/icha-senpai/note/third_party/forks/github/spf13/cobra"
 )
 
 var (

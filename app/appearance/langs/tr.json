@@ -950,7 +950,7 @@
 	"semanticSearchTip": "Tam metin aramada anlamsal arama kullanmak için gömme modelini yapılandırın ve etkinleştirin (deneysel özellik, yavaş ve maliyetli olabilir)",
 	"keywordsLimit": "Anahtar kelime sınırı",
 	"exportAsImage": "Görsel olarak dışa aktar",
-	"syncThirdPartyProviderS3Intro": "Şu anda Amazon S3 protokolüyle uyumlu üçüncü taraf bulut depolama hizmeti seçili (örnek: <a href=\"https://s.qiniu.com/VbQfeu\" target=\"_blank\">Qiniu</a>, <a href=\"https://www.aliyun.com/product/oss?userCode=yqovuas2\" target=\"_blank\">Aliyun OSS</a>, <a href=\"https://www.cloudflare.com/\" target=\"_blank\">Cloudflare R2</a>)",
+    "syncThirdPartyProviderS3Intro": "The selected provider is an Amazon S3-compatible storage service. Use an endpoint and credentials you control.",
 	"syncThirdPartyProviderWebDAVIntro": "Şu anda WebDAV protokolüne sahip üçüncü taraf bulut depolama seçili. Bu protokol düşük performans ve kararsızlık sorunları yaşatabilir; S3 hizmeti önerilir",
 	"syncThirdPartyProviderLocalIntro": "Şu anda yerel dosya sistemi tarafından sağlanan depolama servisi seçili. <code class='fn__code'>Endpoint</code> alanına yerel klasörün tam yolunu gir",
 	"syncThirdPartyProviderTip": "Bu özelliği kullanmadan önce, üçüncü taraf bulut depolama hizmetinin teknik sınırlamalarına ve ücretlendirme maddelerine dikkat et:<div class=\"b3-label__text\"><ul class='fn__list'><li>Arayüz çağrı sıklığı ve bant genişliği gibi teknik kısıtlamalar</li><li>Depolama alanı ve trafik gibi ücretlendirme kalemleri</li><li>Kullanım koşulları ve erişilebilirlik garantileri</li></ul></div><div class='fn__hr'></div>Sorumluluk reddi: Ayrıntılar için Scribli’ın kullandığı AGPLv3 açık kaynak lisansındaki hükümlere bak",

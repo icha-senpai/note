@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/88250/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 func (av *AttributeView) SetNewItemTemplates(config *NewItemTemplatesConfig) error {

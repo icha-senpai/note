@@ -21,9 +21,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/88250/gulu"
-	appconf "github.com/siyuan-note/siyuan/kernel/conf"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	appconf "github.com/icha-senpai/note/kernel/conf"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 func TestSaveUsesEncryptedSnapshot(t *testing.T) {

@@ -950,7 +950,7 @@
 	"semanticSearchTip": "Налаштуйте модель вкладень та увімкніть її, щоб використовувати семантичний пошук у повнотекстовому пошуку (експериментальна функція, може бути повільною та витратною)",
 	"keywordsLimit": "Ліміт ключових слів",
 	"exportAsImage": "Експортувати як зображення",
-	"syncThirdPartyProviderS3Intro": "Зараз вибрано сторонній хмарний сервіс зберігання, сумісний із протоколом Amazon S3 (наприклад, <a href=\"https://s.qiniu.com/VbQfeu\" target=\"_blank\">Qiniu</a>, <a href=\"https://www.aliyun.com/product/oss?userCode=yqovuas2\" target=\"_blank\">Aliyun OSS</a>, <a href=\"https://www.cloudflare.com/\" target=\"_blank\">Cloudflare R2</a>)",
+    "syncThirdPartyProviderS3Intro": "The selected provider is an Amazon S3-compatible storage service. Use an endpoint and credentials you control.",
 	"syncThirdPartyProviderWebDAVIntro": "Зараз вибрано сторонній хмарний сервіс зберігання з протоколом WebDAV. Через низьку продуктивність і нестабільність цього протоколу рекомендується спершу обирати S3",
 	"syncThirdPartyProviderLocalIntro": "Зараз вибрано сервіс зберігання, який надає локальна файлова система. Введіть повний шлях до локальної папки в полі <code class='fn__code'>Endpoint</code>",
 	"syncThirdPartyProviderTip": "Перед використанням цієї функції зверніть увагу на технічні обмеження та тарифікацію стороннього хмарного сервісу зберігання: <div class=\"b3-label__text\"><ul class='fn__list'><li>Технічні обмеження, як-от частота викликів API та пропускна здатність</li><li>Платні пункти, як-от обсяг сховища та трафік</li><li>Умови використання та гарантії доступності</li></ul></div><div class='fn__hr'></div>Відмова від відповідальності: подробиці дивіться у відповідних умовах ліцензії AGPLv3, яку використовує Scribli",

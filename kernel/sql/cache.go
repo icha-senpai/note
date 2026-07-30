@@ -21,13 +21,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/88250/lute/ast"
-	"github.com/88250/lute/parse"
-	"github.com/dgraph-io/ristretto"
-	"github.com/jinzhu/copier"
-	gcache "github.com/patrickmn/go-cache"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/search"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/github/dgraph-io/ristretto"
+	"github.com/icha-senpai/note/kernel/search"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/jinzhu/copier"
+	gcache "github.com/icha-senpai/note/third_party/forks/github/patrickmn/go-cache"
 )
 
 var cacheDisabled = true

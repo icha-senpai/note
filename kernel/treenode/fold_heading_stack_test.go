@@ -20,9 +20,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/88250/lute"
-	"github.com/88250/lute/ast"
-	"github.com/88250/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
 func TestFoldHeadingStackHidesChildren(t *testing.T) {

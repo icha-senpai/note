@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"os"
 
-	mmap "github.com/edsrzf/mmap-go"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/logging"
+	mmap "github.com/icha-senpai/note/third_party/forks/github/edsrzf/mmap-go"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 //

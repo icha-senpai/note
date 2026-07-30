@@ -23,10 +23,10 @@ import (
 	"path/filepath"
 	"text/tabwriter"
 
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/util"
 
-	"github.com/spf13/cobra"
+	"github.com/icha-senpai/note/third_party/forks/github/spf13/cobra"
 )
 
 var assetCmd = &cobra.Command{

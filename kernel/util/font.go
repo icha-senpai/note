@@ -24,11 +24,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ConradIrwin/font/sfnt"
-	"github.com/flopp/go-findfont"
-	"github.com/siyuan-note/logging"
-	textUnicode "golang.org/x/text/encoding/unicode"
-	"golang.org/x/text/transform"
+	"github.com/icha-senpai/note/third_party/forks/github/ConradIrwin/font/sfnt"
+	"github.com/icha-senpai/note/third_party/forks/github/flopp/go-findfont"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	textUnicode "github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/unicode"
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/transform"
 )
 
 var (

@@ -21,8 +21,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 func ParseInstalledPlugin(name, frontend string) (found bool, version, displayName string, incompatible, disabledInPublish, disallowInstall, kernelIncompatible bool) {

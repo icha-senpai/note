@@ -19,7 +19,7 @@ package mcp
 import (
 	"sync"
 
-	"github.com/88250/gulu"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 type Session struct {

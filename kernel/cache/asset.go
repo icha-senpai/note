@@ -23,9 +23,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 type AssetHash struct {

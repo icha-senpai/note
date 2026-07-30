@@ -19,9 +19,9 @@ package model
 import (
 	"sync"
 
-	"github.com/88250/lute"
-	"github.com/88250/lute/parse"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 var md2HTMLLutePool sync.Pool

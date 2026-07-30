@@ -10,7 +10,7 @@ These families are not permanent exceptions. They need staged migrations because
 | --- | --- |
 | Legacy frontend global | Removed from Scribli-owned frontend startup and export HTML. Plugins/snippets should use `window.scribli`; do not reintroduce the old global without a deliberate compatibility decision. |
 | Scribli MIME and clipboard markers | MIME, clipboard, export, and paste formats can affect copied content and external integrations. The app writes Scribli clipboard formats now and keeps read fallback only where deliberately tested. |
-| `github.com/siyuan-note/siyuan/kernel` | Current Go module path and import root. Renaming it is a broad module detachment project. |
+| `github.com/icha-senpai/note/kernel` | Current Scribli Go module path and import root. Keep new kernel imports under this path. |
 | Inherited workspace metadata paths | Workspace and notebook metadata folders. Migrate only with backups, upgrade code, downgrade expectations, and tests. |
 | `/api/*` endpoint names inherited from upstream | Public API and plugin compatibility surface. Add Scribli endpoints or payload aliases before removing old names. |
 | Plugin event/API names | Third-party plugins can depend on them. Scribli-owned plugin APIs should use Scribli names; old names require an explicit compatibility reason and tests before being kept. |
@@ -39,17 +39,35 @@ Classify every legacy name before changing it.
 
 ## Go Module Path
 
-The Go module path may remain:
+The kernel module path is detached from upstream and owned by this repository:
 
 ```text
-github.com/siyuan-note/siyuan/kernel
+github.com/icha-senpai/note/kernel
 ```
 
-Do not pretend the module path has already been detached. Renaming the module and every internal import should be handled as a separate project because it creates broad merge conflicts with upstream history and may affect Go tooling, generated code, release scripts, and downstream consumers.
+New kernel imports should use `github.com/icha-senpai/note/kernel/...`. Do not reintroduce the inherited upstream kernel import root.
 
-## Upstream-Owned Go Dependencies
+## Local Go Forks
 
-Do not fork every inherited upstream dependency solely because of its namespace. For each dependency, classify it first:
+The following upstream-owned Go modules have local Scribli forks under `third_party/forks/`:
+
+| Fork | Module path |
+| --- | --- |
+| `dataparser` | `github.com/icha-senpai/note/third_party/forks/dataparser` |
+| `dejavu` | `github.com/icha-senpai/note/third_party/forks/dejavu` |
+| `encryption` | `github.com/icha-senpai/note/third_party/forks/encryption` |
+| `eventbus` | `github.com/icha-senpai/note/third_party/forks/eventbus` |
+| `filelock` | `github.com/icha-senpai/note/third_party/forks/filelock` |
+| `go-sqlite3` | `github.com/icha-senpai/note/third_party/forks/go-sqlite3` |
+| `httpclient` | `github.com/icha-senpai/note/third_party/forks/httpclient` |
+| `logging` | `github.com/icha-senpai/note/third_party/forks/logging` |
+| `riff` | `github.com/icha-senpai/note/third_party/forks/riff` |
+
+The kernel resolves these forks with committed local `replace` rules. Do not point them back to inherited upstream module paths unless Boss explicitly asks for an upstream comparison or temporary diagnostic. The sqlite fork owns the `scribli` FTS tokenizer used by kernel search indexes.
+
+## Remaining Upstream-Owned Go Dependencies
+
+Do not fork every remaining inherited upstream dependency solely because of its namespace. For each dependency, classify it first:
 
 | Question | Action |
 | --- | --- |
@@ -58,7 +76,7 @@ Do not fork every inherited upstream dependency solely because of its namespace.
 | Is it stale, unmaintained, or vulnerable? | Upgrade, replace, or fork based on the specific risk. |
 | Does Scribli need independent behavior? | Fork with a clear reason and document the local divergence. |
 
-Temporary local dependency testing can use `replace` in `kernel/go.mod`, but do not commit a local-path `replace`.
+Temporary local dependency testing for modules that are not already under `third_party/forks/` can use `replace` in `kernel/go.mod`, but do not commit that temporary replace.
 
 ## Review Checklist
 

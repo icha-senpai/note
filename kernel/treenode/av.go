@@ -17,7 +17,7 @@
 package treenode
 
 import (
-	"github.com/siyuan-note/siyuan/kernel/av"
+	"github.com/icha-senpai/note/kernel/av"
 )
 
 func GetMirrorAttrViewBlockIDs(avID string) (ret []string) {

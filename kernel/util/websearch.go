@@ -23,8 +23,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/siyuan-note/httpclient"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/httpclient"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 const (

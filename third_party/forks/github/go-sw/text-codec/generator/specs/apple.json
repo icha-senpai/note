@@ -1,0 +1,34 @@
+{
+  "packageName": "apple",
+  "vendorName": "Apple",
+  "encodingPrefix": "Mac",
+  "mappingFiles": [
+    "CENTEURO",
+    "CROATIAN",
+    "GREEK",
+    "ICELAND",
+    "ROMANIAN",
+    "TURKISH",
+    "CELTIC",
+    "GAELIC",
+    "UKRAINE",
+    "ARABIC",
+    "FARSI",
+    "HEBREW",
+    "DEVANAGA",
+    "GUJARATI",
+    "GURMUKHI",
+    "THAI",
+    "INUIT",
+    "DINGBATS",
+    "SYMBOL",
+    "KEYBOARD"
+  ],
+  "nameReplacements": {
+    "centeuro": "CentralEuropean",
+    "chinsimp": "ChineseSimplified",
+    "chintrad": "ChineseTraditional",
+    "corpchar": "CorporateCharacters",
+    "devanaga": "Devanagari"
+  }
+}

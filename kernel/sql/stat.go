@@ -20,8 +20,8 @@ import (
 	"database/sql"
 	"strings"
 
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 type Stat struct {
@@ -30,7 +30,7 @@ type Stat struct {
 }
 
 func getDatabaseVer() (ret string) {
-	key := "siyuan_database_ver"
+	key := "scribli_database_ver"
 	stmt := "SELECT value FROM stat WHERE `key` = ?"
 	row := db.QueryRow(stmt, key)
 	if err := row.Scan(&ret); err != nil {
@@ -42,7 +42,7 @@ func getDatabaseVer() (ret string) {
 }
 
 func setDatabaseVer() {
-	key := "siyuan_database_ver"
+	key := "scribli_database_ver"
 	tx, err := beginTx()
 	if err != nil {
 		return

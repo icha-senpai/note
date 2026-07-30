@@ -26,13 +26,13 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/dop251/goja"
-	"github.com/lxzan/gws"
-	sse "github.com/r3labs/sse/v2"
-	"github.com/samber/lo"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/lxzan/gws"
+	sse "github.com/icha-senpai/note/third_party/forks/github/r3labs/sse/v2"
+	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
 )
 
 // injectClient adds scribli.client to the goja context.

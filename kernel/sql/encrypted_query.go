@@ -23,7 +23,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 func GetBlockInBox(id, boxID string) (ret *Block) {

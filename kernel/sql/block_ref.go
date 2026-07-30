@@ -19,7 +19,7 @@ package sql
 import (
 	"database/sql"
 
-	"github.com/88250/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
 type Ref struct {

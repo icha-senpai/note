@@ -21,11 +21,11 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/88250/gulu"
-	figure "github.com/common-nighthawk/go-figure"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/httpclient"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	figure "github.com/icha-senpai/note/third_party/forks/github/common-nighthawk/go-figure"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/httpclient"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 func BootMobile(container, appDir, workspaceBaseDir, lang string) {

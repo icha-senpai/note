@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siyuan-note/eventbus"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 type History struct {

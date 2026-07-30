@@ -6,8 +6,8 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/siyuan-note/logging"
-	"github.com/soheilhy/cmux"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/soheilhy/cmux"
 )
 
 //

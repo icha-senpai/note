@@ -23,9 +23,9 @@ import (
 	"sort"
 	"text/tabwriter"
 
-	"github.com/siyuan-note/siyuan/kernel/sql"
+	"github.com/icha-senpai/note/kernel/sql"
 
-	"github.com/spf13/cobra"
+	"github.com/icha-senpai/note/third_party/forks/github/spf13/cobra"
 )
 
 var sqlCmd = &cobra.Command{

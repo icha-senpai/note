@@ -29,12 +29,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/siyuan-note/httpclient"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/conf"
-	"github.com/siyuan-note/siyuan/kernel/mcp/tools"
-	"github.com/siyuan-note/siyuan/kernel/model"
+	"github.com/icha-senpai/note/kernel/conf"
+	"github.com/icha-senpai/note/kernel/mcp/tools"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/third_party/forks/httpclient"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/modelcontextprotocol/go-sdk/mcp"
 )
 
 const (
@@ -366,7 +366,7 @@ func closeConnections(connections []Connection) {
 }
 
 func connectServer(ctx context.Context, server conf.MCPServer, interactive bool) (*mcp.ClientSession, *exec.Cmd, *mcpOAuthHandler, error) {
-	c := mcp.NewClient(&mcp.Implementation{Name: "siyuan", Version: "3.0"}, nil)
+	c := mcp.NewClient(&mcp.Implementation{Name: "scribli", Version: "3.0"}, nil)
 
 	switch server.Type {
 	case "stdio":

@@ -17,8 +17,8 @@
 package treenode
 
 import (
-	"github.com/88250/lute/ast"
-	"github.com/88250/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
 func MoveFoldHeading(updateNode, oldNode *ast.Node) {

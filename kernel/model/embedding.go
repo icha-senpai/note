@@ -30,13 +30,13 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/88250/gulu"
-	ignore "github.com/sabhiram/go-gitignore"
-	"github.com/siyuan-note/eventbus"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/sql"
-	"github.com/siyuan-note/siyuan/kernel/task"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/kernel/sql"
+	"github.com/icha-senpai/note/kernel/task"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	ignore "github.com/icha-senpai/note/third_party/forks/github/sabhiram/go-gitignore"
 )
 
 const (

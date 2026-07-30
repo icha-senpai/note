@@ -21,14 +21,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/88250/gulu"
-	"github.com/gin-gonic/gin"
-	goccyJSON "github.com/goccy/go-json"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/av"
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/treenode"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	goccyJSON "github.com/icha-senpai/note/third_party/forks/github/goccy/go-json"
+	"github.com/icha-senpai/note/kernel/av"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 func removeUnusedAttributeView(c *gin.Context) {

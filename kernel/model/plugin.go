@@ -24,12 +24,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/88250/gulu"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/extensions"
-	"github.com/siyuan-note/siyuan/kernel/util"
-	"golang.org/x/sync/singleflight"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/kernel/extensions"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/sync/singleflight"
 )
 
 // Petal represents a plugin's management status.

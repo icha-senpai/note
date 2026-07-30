@@ -26,12 +26,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute/ast"
-	"github.com/emersion/go-vcard"
-	"github.com/emersion/go-webdav/carddav"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-vcard"
+	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-webdav/carddav"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 const (

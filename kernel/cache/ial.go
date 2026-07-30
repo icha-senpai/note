@@ -20,7 +20,7 @@ import (
 	"maps"
 	"sync"
 
-	"github.com/dgraph-io/ristretto"
+	"github.com/icha-senpai/note/third_party/forks/github/dgraph-io/ristretto"
 )
 
 var docIALCache, _ = ristretto.NewCache(&ristretto.Config{

@@ -23,10 +23,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/util"
 
-	"github.com/88250/gulu"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 var FileTool = &Tool{

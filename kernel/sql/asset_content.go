@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siyuan-note/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/eventbus"
 )
 
 type AssetContent struct {

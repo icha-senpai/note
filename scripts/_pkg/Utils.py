@@ -21,7 +21,6 @@ def find_milestone(repo, title, len=0):
     else:
         version = ".".join(pat.group(1).split(".")[:])
 
-    # REF https://docs.github.com/en/rest/issues/milestones?apiVersion=2022-11-28#list-milestones
     for milestone in repo.get_milestones(state="all"):
         if version in milestone.title:
             return milestone
@@ -50,12 +49,4 @@ def generate_header_from_repo(repo_name, tag_name, lastestRelease, electron_vers
     if not pat:
         return None
 
-    return f'''
-<p align="center">
-<a href="https://github.com/{repo_name}/actions/workflows/{action_file}"><img src="https://img.shields.io/github/actions/workflow/status/{repo_name}/{action_file}?logo=github&label={action_file}%20Action" style="cursor:pointer;height: 30px;margin: 3px auto;"/></a>
-<a href="https://github.com/{repo_name}/releases/{thisRelease}/"><img src="https://img.shields.io/github/downloads/{repo_name}/{thisRelease}/total?logo=github" style="cursor:pointer;height: 30px;margin: 3px auto;"/></a>
-<img alt="GitHub commits difference between two branches/tags/commits" src="https://img.shields.io/github/commits-difference/{repo_name}?base={lastestRelease}&head={thisRelease}&logo=git" style="cursor:pointer;height: 30px;margin: 3px auto;"/>
-<img src="https://img.shields.io/badge/Electron {electron_version}-47848F.svg?style=flat&logo=Electron&logoColor=white" alt="Electron">
-</p>
-
-{HEADER}'''
+    return HEADER

@@ -101,11 +101,6 @@ set GOPROXY=https://proxy.golang.org,direct
 set CGO_ENABLED=1
 set GOOS=windows
 
-echo Setting up goversioninfo
-go install github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest
-if errorlevel 1 (
-    exit /b %errorlevel%
-)
 set "GO_BIN="
 for /f "delims=" %%I in ('go env GOBIN') do set "GO_BIN=%%I"
 if not defined GO_BIN (
@@ -114,9 +109,14 @@ if not defined GO_BIN (
 
 @REM you can use `go mod tidy` to update kernel dependency before build
 @REM you can use `go generate` instead (need add something in main.go)
-"%GO_BIN%\goversioninfo.exe" -platform-specific=true -icon=resource/icon.ico -manifest=resource/goversioninfo.exe.manifest
-if errorlevel 1 (
-    exit /b %errorlevel%
+if exist "%GO_BIN%\goversioninfo.exe" (
+    echo Generating Windows version resource
+    "%GO_BIN%\goversioninfo.exe" -platform-specific=true -icon=resource/icon.ico -manifest=resource/goversioninfo.exe.manifest
+    if errorlevel 1 (
+        exit /b %errorlevel%
+    )
+) else (
+    echo Skipping Windows version resource: goversioninfo.exe was not found locally
 )
 
 if defined BUILD_AMD64 (

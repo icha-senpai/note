@@ -25,14 +25,14 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute/ast"
-	"github.com/goccy/go-json"
-	jsoniter "github.com/json-iterator/go"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/cache"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/github/goccy/go-json"
+	"github.com/icha-senpai/note/kernel/cache"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	jsoniter "github.com/icha-senpai/note/third_party/forks/github/json-iterator/go"
 )
 
 type AttributeView struct {

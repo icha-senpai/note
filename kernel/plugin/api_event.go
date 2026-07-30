@@ -19,9 +19,9 @@ package plugin
 import (
 	"fmt"
 
-	"github.com/dop251/goja"
-	"github.com/samber/lo"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
 )
 
 // injectEvent adds siyuan.event to the goja context.

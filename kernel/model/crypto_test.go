@@ -26,9 +26,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/88250/gulu"
-	"github.com/siyuan-note/siyuan/kernel/conf"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/kernel/conf"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 func setDEKForTest(boxID string, dek []byte) {

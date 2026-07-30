@@ -1,0 +1,75 @@
+version: "3"
+
+tasks:
+  default:
+    desc: Default target (generate + test)
+    cmds:
+      - task: generate
+      - task: test
+
+  all:
+    desc: Alias for default
+    cmds:
+      - task: default
+
+  generate:
+    desc: Generate encoding tables from Unicode mapping files
+    cmds:
+      - cmd: go run ./cmd/textcodec-generator -output=apple -unicode-base-url=https://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/ -spec=./generator/specs/apple.json
+      - cmd: go fmt ./apple/...
+
+      - cmd: go run ./cmd/johab-mapgen -url=https://www.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/KSC/JOHAB.TXT -output=korean/tables_generated.go
+      - cmd: go fmt ./korean/...
+
+      - cmd: go run ./cmd/textcodec-generator -output=next -unicode-base-url=https://www.unicode.org/Public/MAPPINGS/VENDORS/NEXT/ -spec=./generator/specs/next.json
+      - cmd: go fmt ./next/...
+
+      - cmd: go run ./cmd/textcodec-generator -output=atari -unicode-base-url=https://www.unicode.org/Public/MAPPINGS/VENDORS/MISC/ -spec=./generator/specs/atari.json
+      - cmd: go fmt ./atari/...
+
+  test:
+    desc: Run tests
+    cmds:
+      - cmd: go test -v ./...
+
+  test-cover:
+    desc: Run tests with coverage
+    cmds:
+      - cmd: go test -v -cover -coverprofile=coverage.out ./...
+      - cmd: go tool cover -html=coverage.out -o coverage.html
+
+  clean:
+    desc: Clean generated files
+    cmds:
+      - cmd: cmd.exe /c "del /f /q apple\tables_generated.go apple\encodings_generated.go korean\tables_generated.go next\tables_generated.go next\encodings_generated.go atari\tables_generated.go atari\encodings_generated.go coverage.out coverage.html 2>nul"
+        platforms: [windows]
+      - cmd: rm -f apple/tables_generated.go apple/encodings_generated.go korean/tables_generated.go next/tables_generated.go next/encodings_generated.go atari/tables_generated.go atari/encodings_generated.go coverage.out coverage.html
+        platforms: [linux, darwin]
+
+  fmt:
+    desc: Format code
+    cmds:
+      - cmd: go fmt ./...
+
+  vet:
+    desc: Run go vet
+    cmds:
+      - cmd: go vet ./...
+
+  build:
+    desc: Build the generator (for development)
+    cmds:
+      - cmd: go build -o bin/generator ./cmd/textcodec-generator
+
+  verify:
+    desc: Verify the module
+    cmds:
+      - cmd: go mod verify
+      - cmd: go mod tidy
+
+  check:
+    desc: Run fmt, vet, test
+    cmds:
+      - task: fmt
+      - task: vet
+      - task: test

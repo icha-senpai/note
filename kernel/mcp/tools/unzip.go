@@ -19,7 +19,7 @@ package tools
 import (
 	"fmt"
 
-	"github.com/88250/gulu"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 var UnzipTool = &Tool{

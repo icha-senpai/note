@@ -23,8 +23,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/88250/vitess-sqlparser/sqlparser"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/sqlparser"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 func QueryAssetContentNoLimit(stmt string) (ret []map[string]any, err error) {

@@ -19,9 +19,9 @@ package plugin
 import (
 	"fmt"
 
-	"github.com/dop251/goja"
-	"github.com/samber/lo"
-	"github.com/siyuan-note/siyuan/kernel/extensions"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
+	"github.com/icha-senpai/note/kernel/extensions"
+	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
 )
 
 // injectPlugin adds siyuan.plugin to the goja context.

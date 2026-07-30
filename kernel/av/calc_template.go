@@ -25,8 +25,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/Masterminds/sprig/v3"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/Masterminds/sprig/v3"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 func buildRollupTemplateContext(values []float64, strs []string, raw []*Value) map[string]any {

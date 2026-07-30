@@ -8,7 +8,7 @@
 
 Scribli is a local-first desktop knowledge workspace for writing, linking, outlining, querying, exporting, and maintaining long-lived personal notes. It is based on SiYuan, keeps the inherited AGPL-3.0 license, and is being reshaped into a self-contained application that does not depend on official upstream hosted services.
 
-This repository contains the Scribli desktop/web frontend and Go kernel. The application stores user data in a local workspace first. Optional sync is controlled by the user and points only at user-configured S3, WebDAV, or local-folder storage.
+This repository contains the Scribli desktop/web frontend, Go kernel, and selected local Go dependency forks under `third_party/forks`. The application stores user data in a local workspace first. Optional sync is controlled by the user and points only at user-configured S3, WebDAV, or local-folder storage.
 
 ## Project Status
 
@@ -124,11 +124,15 @@ Run kernel tests from the kernel directory. On Windows with repo-local caches an
 ```powershell
 cd C:\Users\(user)\Documents\GitHub\note\kernel
 $env:PATH=(Resolve-Path "..\.tools\w64devkit\bin").Path + ";" + $env:PATH
+$env:GOPATH=(Resolve-Path "..\.tools").Path + "\go-path"
 $env:GOCACHE=(Resolve-Path "..\.tools").Path + "\go-build-cache"
+$env:GOMODCACHE=(Resolve-Path "..\.tools").Path + "\go-mod-cache"
 $env:CGO_ENABLED="1"
 $env:CC=(Resolve-Path "..\.tools\w64devkit\bin\gcc.exe").Path
 go test ./...
 ```
+
+The kernel module path is `github.com/icha-senpai/note/kernel`. Scribli-owned local Go forks use `github.com/icha-senpai/note/third_party/forks/<name>` and are resolved by local `replace` rules in `kernel/go.mod`.
 
 ## Build Instructions
 

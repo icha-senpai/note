@@ -24,10 +24,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/siyuan-note/eventbus"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/task"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/task"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 var (

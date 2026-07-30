@@ -29,15 +29,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute/ast"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 
-	"github.com/sashabaranov/go-openai"
-	mcpclient "github.com/siyuan-note/siyuan/kernel/mcp/client"
-	mcptools "github.com/siyuan-note/siyuan/kernel/mcp/tools"
-	kernelModel "github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	mcpclient "github.com/icha-senpai/note/kernel/mcp/client"
+	mcptools "github.com/icha-senpai/note/kernel/mcp/tools"
+	kernelModel "github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/sashabaranov/go-openai"
 )
 
 const systemPrompt = `You are a Scribli AI assistant. You help users manage their notes, documents, and knowledge base through the tools provided.

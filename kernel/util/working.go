@@ -31,14 +31,14 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/88250/go-humanize"
-	"github.com/88250/gulu"
-	figure "github.com/common-nighthawk/go-figure"
-	"github.com/gofrs/flock"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/httpclient"
-	"github.com/siyuan-note/logging"
-	"golang.org/x/mod/semver"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	figure "github.com/icha-senpai/note/third_party/forks/github/common-nighthawk/go-figure"
+	"github.com/icha-senpai/note/third_party/forks/github/gofrs/flock"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/httpclient"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/mod/semver"
 )
 
 // var Mode = "dev"

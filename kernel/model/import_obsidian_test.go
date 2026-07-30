@@ -17,8 +17,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/88250/lute/ast"
-	"github.com/siyuan-note/siyuan/kernel/treenode"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/kernel/treenode"
 )
 
 func TestAnalyzeObsidianVault(t *testing.T) {

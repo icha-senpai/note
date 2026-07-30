@@ -19,9 +19,9 @@ import (
 	"testing"
 	"time"
 
-	openai "github.com/sashabaranov/go-openai"
-	kernelConf "github.com/siyuan-note/siyuan/kernel/conf"
-	kernelModel "github.com/siyuan-note/siyuan/kernel/model"
+	kernelConf "github.com/icha-senpai/note/kernel/conf"
+	kernelModel "github.com/icha-senpai/note/kernel/model"
+	openai "github.com/icha-senpai/note/third_party/forks/github/sashabaranov/go-openai"
 )
 
 func TestStreamIdleTimeoutResetsAfterEachChunk(t *testing.T) {

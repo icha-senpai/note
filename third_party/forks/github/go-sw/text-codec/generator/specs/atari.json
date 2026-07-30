@@ -1,0 +1,11 @@
+{
+  "packageName": "atari",
+  "vendorName": "Atari",
+  "encodingPrefix": "Atari",
+  "mappingFiles": [
+    "ATARIST"
+  ],
+  "nameReplacements": {
+    "atarist": "ST"
+  }
+}

@@ -16,7 +16,7 @@
 
 package conf
 
-import "github.com/siyuan-note/siyuan/kernel/util"
+import "github.com/icha-senpai/note/kernel/util"
 
 type NotebookCrypto struct {
 	Enabled         bool              `json:"enabled"`

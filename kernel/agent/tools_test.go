@@ -21,8 +21,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/sashabaranov/go-openai"
-	"github.com/siyuan-note/siyuan/kernel/mcp/tools"
+	"github.com/icha-senpai/note/kernel/mcp/tools"
+	"github.com/icha-senpai/note/third_party/forks/github/sashabaranov/go-openai"
 )
 
 func TestConvertSchemaZodOptionalFields(t *testing.T) {

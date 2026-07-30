@@ -22,12 +22,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/88250/gulu"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
-	"golang.org/x/mod/semver"
-	"golang.org/x/sync/singleflight"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/mod/semver"
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/sync/singleflight"
 )
 
 func isBelowRequiredAppVersion(pkg *Package) bool {

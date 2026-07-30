@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/siyuan-note/siyuan/kernel/model"
+	"github.com/icha-senpai/note/kernel/model"
 )
 
 var TodoWriteTool = &Tool{

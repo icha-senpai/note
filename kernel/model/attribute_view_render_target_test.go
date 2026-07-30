@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 
-	"github.com/siyuan-note/siyuan/kernel/av"
+	"github.com/icha-senpai/note/kernel/av"
 )
 
 func TestGetAttributeViewRenderRange(t *testing.T) {

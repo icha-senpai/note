@@ -21,15 +21,15 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/88250/go-humanize"
-	"github.com/88250/lute/parse"
-	util2 "github.com/88250/lute/util"
-	"github.com/Masterminds/sprig/v3"
-	"github.com/araddon/dateparse"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/treenode"
-	"github.com/siyuan-note/siyuan/kernel/util"
-	"github.com/spf13/cast"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	util2 "github.com/icha-senpai/note/third_party/forks/lute/util"
+	"github.com/icha-senpai/note/third_party/forks/github/Masterminds/sprig/v3"
+	"github.com/icha-senpai/note/third_party/forks/github/araddon/dateparse"
+	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/spf13/cast"
 )
 
 func BuiltInTemplateFuncs() (ret template.FuncMap) {

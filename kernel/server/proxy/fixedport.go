@@ -23,9 +23,9 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
-	"github.com/soheilhy/cmux"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/soheilhy/cmux"
 )
 
 func InitFixedPortService(host string, certPath, keyPath string) {

@@ -17,7 +17,7 @@
 package av
 
 import (
-	"github.com/88250/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 type LayoutKanban struct {

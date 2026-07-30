@@ -21,7 +21,7 @@ package main
 import (
 	"os"
 
-	"github.com/siyuan-note/siyuan/kernel/cli/cmd"
+	"github.com/icha-senpai/note/kernel/cli/cmd"
 )
 
 func main() {

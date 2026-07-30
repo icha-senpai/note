@@ -19,8 +19,8 @@ package treenode
 import (
 	"testing"
 
-	"github.com/88250/lute/ast"
-	"github.com/88250/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
 )
 
 func TestGetDocTitleImgPath(t *testing.T) {

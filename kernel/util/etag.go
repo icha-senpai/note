@@ -23,7 +23,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/siyuan-note/filelock"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
 )
 
 func GetEtagByHandle(f io.Reader, size int64) (etag string, err error) {

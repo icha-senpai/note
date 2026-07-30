@@ -1,0 +1,12 @@
+[run]
+timeout = "1m"
+
+[linters]
+disable-all = true
+enable = [
+    "gofumpt",
+    "govet",
+]
+
+[issues]
+exclude-use-default = false

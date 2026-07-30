@@ -21,9 +21,9 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/golang-jwt/jwt/v5"
+	"github.com/icha-senpai/note/third_party/forks/github/google/uuid"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 type Account struct {

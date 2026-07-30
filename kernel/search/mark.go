@@ -22,9 +22,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute/lex"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/lex"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 func MarkText(text string, keyword string, beforeLen int, caseSensitive bool) (pos int, marked string) {

@@ -25,8 +25,8 @@ import (
 	"errors"
 	"io"
 
-	"golang.org/x/crypto/argon2"
-	"golang.org/x/crypto/hkdf"
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/crypto/argon2"
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/crypto/hkdf"
 )
 
 var encryptionMagic = [4]byte{'S', 'E', 'N', 'C'}

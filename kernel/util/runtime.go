@@ -31,13 +31,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/88250/gulu"
-	"github.com/denisbrodbeck/machineid"
-	"github.com/go-ole/go-ole"
-	"github.com/go-ole/go-ole/oleutil"
-	"github.com/jaypipes/ghw"
-	"github.com/siyuan-note/httpclient"
-	"github.com/siyuan-note/logging"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/github/denisbrodbeck/machineid"
+	"github.com/icha-senpai/note/third_party/forks/github/go-ole/go-ole"
+	"github.com/icha-senpai/note/third_party/forks/github/go-ole/go-ole/oleutil"
+	"github.com/icha-senpai/note/third_party/forks/httpclient"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/jaypipes/ghw"
 )
 
 var DisabledFeatures []string

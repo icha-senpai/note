@@ -19,8 +19,8 @@ package tools
 import (
 	"path/filepath"
 
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 var ImportTool = &Tool{

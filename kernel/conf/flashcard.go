@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/open-spaced-repetition/go-fsrs/v3"
+	"github.com/icha-senpai/note/third_party/forks/github/open-spaced-repetition/go-fsrs/v3"
 )
 
 type Flashcard struct {

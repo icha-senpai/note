@@ -27,9 +27,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute"
-	"github.com/siyuan-note/httpclient"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/httpclient"
 )
 
 const (

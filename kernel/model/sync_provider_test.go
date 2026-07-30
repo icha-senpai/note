@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 
-	appconf "github.com/siyuan-note/siyuan/kernel/conf"
+	appconf "github.com/icha-senpai/note/kernel/conf"
 )
 
 func TestDisabledSyncProviderIsNeverOnline(t *testing.T) {

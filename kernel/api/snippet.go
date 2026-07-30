@@ -20,12 +20,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/88250/gulu"
-	"github.com/88250/lute/ast"
-	"github.com/gin-gonic/gin"
-	"github.com/siyuan-note/siyuan/kernel/conf"
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/kernel/conf"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/util"
 )
 
 func getSnippet(c *gin.Context) {

@@ -10,11 +10,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/88250/lute/ast"
-	"github.com/siyuan-note/filelock"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
-	"github.com/vmihailenco/msgpack/v5"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/vmihailenco/msgpack/v5"
 )
 
 var AVDEKProvider func(boxID string) ([]byte, error)

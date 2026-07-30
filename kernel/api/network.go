@@ -29,12 +29,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/88250/gulu"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"github.com/imroc/req/v3"
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/third_party/forks/github/gorilla/websocket"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/imroc/req/v3"
 )
 
 type File struct {

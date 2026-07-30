@@ -950,7 +950,7 @@
 	"semanticSearchTip": "임베딩 Embedding 모델을 구성하고 활성화하면 전체 텍스트 검색에서 의미 검색을 사용할 수 있습니다 (실험적 기능, 속도가 느리고 비용이 들 수 있습니다)",
 	"keywordsLimit": "키워드 제한",
 	"exportAsImage": "이미지로 내보내기",
-	"syncThirdPartyProviderS3Intro": "현재 선택된 것은 Amazon S3 프로토콜과 호환되는 타사 클라우드 저장소 서비스입니다 (예: <a href=\"https://s.qiniu.com/VbQfeu\" target=\"_blank\">Qiniu</a>, <a href=\"https://www.aliyun.com/product/oss?userCode=yqovuas2\" target=\"_blank\">Aliyun OSS</a>, <a href=\"https://www.cloudflare.com/\" target=\"_blank\">Cloudflare R2</a>)",
+    "syncThirdPartyProviderS3Intro": "The selected provider is an Amazon S3-compatible storage service. Use an endpoint and credentials you control.",
 	"syncThirdPartyProviderWebDAVIntro": "현재 선택된 것은 WebDAV 프로토콜을 사용하는 타사 클라우드 저장소 서비스입니다. 이 프로토콜의 성능 저하 및 불안정성으로 인해 S3 서비스를 먼저 선택하는 것이 좋습니다",
 	"syncThirdPartyProviderLocalIntro": "현재 로컬 파일 시스템에서 제공하는 저장소 서비스가 선택되었습니다. <code class='fn__code'>Endpoint</code> 필드에 로컬 폴더의 전체 경로를 입력하세요",
 	"syncThirdPartyProviderTip": "이 기능을 사용하기 전에 타사 클라우드 저장소 서비스의 기술적 제한 및 청구 항목에 주의하세요: <div class=\"b3-label__text\"><ul class='fn__list'><li>인터페이스 호출 빈도 및 대역폭과 같은 기술적 제한</li><li>저장 공간 및 트래픽과 같은 청구 항목</li><li>사용 약관 및 가용성 보장</li></ul></div><div class='fn__hr'></div>면책 조항: 자세한 내용은 Scribli에서 사용하는 오픈 소스 라이선스 AGPLv3의 관련 약관을 참조하세요",

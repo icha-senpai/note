@@ -1,0 +1,11 @@
+{
+  "packageName": "next",
+  "vendorName": "NeXT",
+  "encodingPrefix": "",
+  "mappingFiles": [
+    "NEXTSTEP"
+  ],
+  "nameReplacements": {
+    "nextstep": "NeXTSTEP"
+  }
+}

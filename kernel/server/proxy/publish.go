@@ -26,10 +26,10 @@ import (
 	"net/http/httputil"
 	"time"
 
-	"github.com/siyuan-note/logging"
-	"github.com/siyuan-note/siyuan/kernel/model"
-	"github.com/siyuan-note/siyuan/kernel/util"
-	"github.com/soheilhy/cmux"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/soheilhy/cmux"
 )
 
 type PublishServiceTransport struct{}

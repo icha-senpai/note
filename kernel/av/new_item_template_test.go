@@ -11,7 +11,7 @@ package av
 import (
 	"testing"
 
-	"github.com/88250/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 func TestSetNewItemTemplates(t *testing.T) {
