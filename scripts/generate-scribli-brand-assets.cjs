@@ -227,7 +227,7 @@ const appxTargets = [
   await write("app/nsis/uninstallerSidebar.bmp", await makeBmp24(await renderLogoPng(164, 314), 164, 314));
 
   const guideLogoFiles = await findFiles(path.join(root, "app", "guide"), (filePath) =>
-    /[\\/]assets[\\/]siyuan-128-.*\.png$/i.test(filePath)
+    /[\\/]assets[\\/]scribli-128-.*\.png$/i.test(filePath)
   );
   for (const filePath of guideLogoFiles) {
     await fs.promises.writeFile(filePath, await renderIconPng(128));

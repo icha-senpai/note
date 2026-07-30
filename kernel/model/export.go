@@ -361,11 +361,11 @@ func ExportSystemLog() (zipPath string) {
 		}
 	}
 
-	siyuanLog := filepath.Join(util.TempDir, "siyuan.log")
-	if gulu.File.IsExist(siyuanLog) {
-		to := filepath.Join(exportFolder, "siyuan.log")
-		if err := filelock.Copy(siyuanLog, to); err != nil {
-			logging.LogErrorf("copy kernel log from [%s] to [%s] failed: %s", err, siyuanLog, to)
+	scribliLog := filepath.Join(util.TempDir, "scribli.log")
+	if gulu.File.IsExist(scribliLog) {
+		to := filepath.Join(exportFolder, "scribli.log")
+		if err := filelock.Copy(scribliLog, to); err != nil {
+			logging.LogErrorf("copy kernel log from [%s] to [%s] failed: %s", err, scribliLog, to)
 		}
 	}
 

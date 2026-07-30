@@ -1,4 +1,4 @@
-docmap_siyuan = {
+docmap_scribli = {
     "Breaking": "Breaking",
     "Feature": "Feature",
     "Enhancement": "Enhancement",
@@ -9,12 +9,6 @@ docmap_siyuan = {
     "Development": "Development",
 }
 
-repo_siyuan = "siyuan-note/siyuan"
 hostname = "api.github.com"
 
-HEADER_siyuan = '''
-'''
-
-HEADER = {
-  "siyuan-note/siyuan": HEADER_siyuan,
-}
+HEADER = {}

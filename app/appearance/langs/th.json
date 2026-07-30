@@ -1815,8 +1815,6 @@
 		"hideWindow": "ซ่อนหน้าต่าง",
 		"setWindowTop": "ตั้งหน้าบน",
 		"cancelWindowTop": "ยกเลิกบน",
-		"officialWebsite": "เว็บไซต์ทางการ",
-		"openSource": "GitHub",
 		"resetWindow": "รีเซ็ตและออก",
 		"quit": "ออก"
 	},

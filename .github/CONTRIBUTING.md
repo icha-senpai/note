@@ -1,9 +1,11 @@
-**English**
+# Contributing
+
+<!-- markdownlint-disable MD013 -->
 
 ## Get the source code
 
-* `git clone git@github.com:siyuan-note/siyuan.git`
-* Switch to dev branch `git checkout dev`
+* Clone the Scribli repository.
+* Work from the active Scribli development branch unless a maintainer asks for another branch.
 
 ## NPM dependencies
 
@@ -18,7 +20,7 @@ Enter the app folder and execute:
 
 Note: Electron 42 no longer downloads its binary automatically during `pnpm install`. Run `pnpm run install:electron` to fetch the binary before `pnpm run start`.
 
-Note: In the development environment, the kernel process will not be automatically started, and you need to manually start the kernel process first.
+Note: `pnpm run start` launches the Electron shell, which starts the packaged Scribli kernel from `app/kernel`. If the kernel is missing, run the repository build script for your platform first.
 
 ## Kernel
 
@@ -32,11 +34,11 @@ Note: In the development environment, the kernel process will not be automatical
 * Windows:
   * `go install github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest`
   * `goversioninfo -platform-specific=true -icon=resource/icon.ico -manifest=resource/goversioninfo.exe.manifest`
-  * `go build -tags "fts5 sqlcipher" -o "../app/kernel/SiYuan-Kernel.exe"`
-* Linux/macOS: `go build -tags "fts5 sqlcipher" -o "../app/kernel/SiYuan-Kernel"`
+  * `go build -tags "fts5 sqlcipher" -o "../app/kernel/Scribli-Kernel.exe"`
+* Linux/macOS: `go build -tags "fts5 sqlcipher" -o "../app/kernel/Scribli-Kernel"`
 * `cd ../app/kernel`
-* Windows: `./SiYuan-Kernel.exe serve --mode=dev`
-* Linux/macOS: `./SiYuan-Kernel serve --mode=dev`
+* Windows: `./Scribli-Kernel.exe serve --mode=dev`
+* Linux/macOS: `./Scribli-Kernel serve --mode=dev`
 
 ### iOS
 
@@ -75,6 +77,7 @@ Modify Go source code:
      return;
    }
    ```
+
 3. go/src/net/cgo_resold.go
    `C.size_t(len(b))` to `C.socklen_t(len(b))`
 

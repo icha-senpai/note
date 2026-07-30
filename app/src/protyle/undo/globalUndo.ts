@@ -91,10 +91,14 @@ export const getActiveProtyle = (): IProtyle => {
     }
     // 兜底：搜索/反链/自定义编辑器中聚焦的那个
     /// #if !MOBILE
-    const allProtyle = (window as any).siyuan?.blockPanels || [];
+    const allProtyle = window.scribli?.blockPanels || [];
     for (const panel of allProtyle) {
-        if (panel.element && document.activeElement && panel.element.contains(document.activeElement)) {
-            return panel.editor?.protyle;
+        if (!panel.element || !document.activeElement || !panel.element.contains(document.activeElement)) {
+            continue;
+        }
+        const editor = panel.editors.find(item => item.protyle.element.contains(document.activeElement));
+        if (editor?.protyle) {
+            return editor.protyle;
         }
     }
     /// #endif

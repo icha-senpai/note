@@ -49,8 +49,8 @@ func print(name, s string, logf func(format string, v ...any)) {
 	}
 }
 
-// injectLogger adds siyuan.logger to the goja context.
-func injectLogger(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
+// injectLogger adds scribli.logger to the goja context.
+func injectLogger(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("injectLogger: %v", r)
@@ -67,7 +67,7 @@ func injectLogger(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 
 	lo.Must0(ObjectFreeze(rt, logger))
 
-	lo.Must0(siyuan.Set("logger", logger))
+	lo.Must0(scribli.Set("logger", logger))
 	return
 }
 

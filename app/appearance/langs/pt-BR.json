@@ -1815,8 +1815,6 @@
 		"hideWindow": "Ocultar janela",
 		"setWindowTop": "Definir janela no topo",
 		"cancelWindowTop": "Cancelar janela no topo",
-		"officialWebsite": "Visitar site oficial",
-		"openSource": "Visitar projeto no GitHub",
 		"resetWindow": "Redefinir janela e sair",
 		"quit": "Sair do aplicativo"
 	},

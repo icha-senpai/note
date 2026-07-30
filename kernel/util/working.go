@@ -121,7 +121,7 @@ func InitWorkspace(workspacePath, wdPath string) {
 		IconsPath = filepath.Join(AppearancePath, "icons")
 	}
 
-	LogPath = filepath.Join(TempDir, "siyuan.log")
+	LogPath = filepath.Join(TempDir, "scribli.log")
 }
 
 func Boot() {
@@ -274,7 +274,7 @@ var (
 	TempDir            string
 	QueueDir           string
 	LogPath            string
-	DBName             = "siyuan.db"
+	DBName             = "scribli.db"
 	DBPath             string
 	HistoryDBPath      string
 	AssetContentDBPath string
@@ -594,11 +594,11 @@ func GetDataAssetsAbsPath() (ret string) {
 }
 
 func EncryptedDBPath(boxID string) string {
-	return filepath.Join(TempDir, "siyuan-encrypted-"+boxID+".db")
+	return filepath.Join(TempDir, "scribli-encrypted-"+boxID+".db")
 }
 
 func EncryptedBlockTreeDBPath(boxID string) string {
-	return filepath.Join(TempDir, "siyuan-encrypted-"+boxID+"-blocktree.db")
+	return filepath.Join(TempDir, "scribli-encrypted-"+boxID+"-blocktree.db")
 }
 
 func tryLockWorkspace() {

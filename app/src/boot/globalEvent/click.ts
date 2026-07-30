@@ -21,27 +21,28 @@ export const globalClickHideMenu = (element: HTMLElement) => {
     }
 };
 
-export const globalClick = (event: MouseEvent & { target: HTMLElement }) => {
+export const globalClick = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
     cancelDrag();
 
-    globalClickHideMenu(event.target);
+    globalClickHideMenu(target);
 
-    const protyleElement = hasClosestByClassName(event.target, "protyle", true);
+    const protyleElement = hasClosestByClassName(target, "protyle", true);
     if (protyleElement) {
         const wysiwygElement = protyleElement.querySelector(".protyle-wysiwyg");
-        if (wysiwygElement.getAttribute("data-readonly") === "true" || !wysiwygElement.contains(event.target)) {
+        if (wysiwygElement.getAttribute("data-readonly") === "true" || !wysiwygElement.contains(target)) {
             wysiwygElement.dispatchEvent(new Event("focusin"));
         }
     }
 
-    if (!hasTopClosestByClassName(event.target, "protyle-util") &&
-        !hasTopClosestByClassName(event.target, "protyle-toolbar")) {
+    if (!hasTopClosestByClassName(target, "protyle-util") &&
+        !hasTopClosestByClassName(target, "protyle-toolbar")) {
         document.querySelectorAll(".protyle-font").forEach((item: HTMLElement) => {
             item.parentElement.classList.add("fn__none");
         });
     }
 
-    const copyElement = hasTopClosestByClassName(event.target, "protyle-action__copy");
+    const copyElement = hasTopClosestByClassName(target, "protyle-action__copy");
     if (copyElement) {
         writeText(removeZWJ(nbsp2space(copyElement.parentElement.nextElementSibling.textContent.replace(/\n$/, ""))));
         showMessage(window.scribli.languages.copied, 2000);
@@ -52,18 +53,18 @@ export const globalClick = (event: MouseEvent & { target: HTMLElement }) => {
     /// #if !MOBILE
     // dock float 时，点击空白处，隐藏 dock。场景：文档树上重命名后
     if (!isWindow() && window.scribli.layout.leftDock &&
-        !hasClosestByClassName(event.target, "b3-dialog--open", true) &&
-        !hasClosestByClassName(event.target, "b3-menu") &&
-        !hasClosestByClassName(event.target, "block__popover") &&
-        !hasClosestByClassName(event.target, "dock") &&
-        !hasClosestByClassName(event.target, "layout--float", true)
+        !hasClosestByClassName(target, "b3-dialog--open", true) &&
+        !hasClosestByClassName(target, "b3-menu") &&
+        !hasClosestByClassName(target, "block__popover") &&
+        !hasClosestByClassName(target, "dock") &&
+        !hasClosestByClassName(target, "layout--float", true)
     ) {
         window.scribli.layout.bottomDock.hideDock();
         window.scribli.layout.leftDock.hideDock();
         window.scribli.layout.rightDock.hideDock();
     }
     // Dock item click
-    const dockItemElement = hasClosestByClassName(event.target as HTMLElement, "dock__item");
+    const dockItemElement = hasClosestByClassName(target, "dock__item");
     if (dockItemElement) {
         const type = dockItemElement.getAttribute("data-type") as TDock;
         if (type) {
@@ -71,14 +72,14 @@ export const globalClick = (event: MouseEvent & { target: HTMLElement }) => {
         }
     }
 
-    if (!hasClosestByClassName(event.target, "pdf__outer")) {
+    if (!hasClosestByClassName(target, "pdf__outer")) {
         hideAllElements(["pdfutil"]);
     }
 
     // 点击空白，pdf 搜索、更多消失
-    if (hasClosestByAttribute(event.target, "id", "secondaryToolbarToggleButton") ||
-        hasClosestByAttribute(event.target, "id", "viewFindButton") ||
-        hasClosestByAttribute(event.target, "id", "findbar")) {
+    if (hasClosestByAttribute(target, "id", "secondaryToolbarToggleButton") ||
+        hasClosestByAttribute(target, "id", "viewFindButton") ||
+        hasClosestByAttribute(target, "id", "findbar")) {
         return;
     }
     let currentPDFViewerObject: any;

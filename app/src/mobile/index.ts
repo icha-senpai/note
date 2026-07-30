@@ -94,13 +94,13 @@ class App {
             },
             ws: mainWs
         };
-        window.siyuan = window.scribli;
         // 不能使用 touchstart，否则会被 event.stopImmediatePropagation() 阻塞
-        window.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
-            if (!window.scribli.menus.menu.element.contains(event.target) && !hasClosestByAttribute(event.target, "data-menu", "true")) {
+        window.addEventListener("click", (event) => {
+            const target = event.target as HTMLElement;
+            if (!window.scribli.menus.menu.element.contains(target) && !hasClosestByAttribute(target, "data-menu", "true")) {
                 window.scribli.menus.menu.remove();
             }
-            const copyElement = hasTopClosestByClassName(event.target, "protyle-action__copy");
+            const copyElement = hasTopClosestByClassName(target, "protyle-action__copy");
             if (copyElement) {
                 let text = copyElement.parentElement.nextElementSibling.textContent.trimEnd();
                 text = nbsp2space(text); // Replace non-breaking spaces with normal spaces when copying https://github.com/siyuan-note/siyuan/issues/9382
@@ -108,14 +108,14 @@ class App {
                 showMessage(window.scribli.languages.copied, 2000);
                 event.preventDefault();
             }
-            if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) {
+            if (["INPUT", "TEXTAREA"].includes(target.tagName)) {
                 setTimeout(() => {
-                    event.target.scrollIntoView({
+                    target.scrollIntoView({
                         block: "center",
                     });
                 }, Constants.TIMEOUT_TRANSITION);
             }
-            if (canInput(event.target)) {
+            if (canInput(target)) {
                 // 原生 App 通过桥接主动唤起键盘；移动端浏览器没有桥接，但点击可编辑区域后也会立刻触发 resize，
                 // 进而调用 activeBlur 关闭键盘（比如三星键盘 https://github.com/siyuan-note/siyuan/issues/18078），所以此处也需要上锁
                 if (window.JSAndroid && window.JSAndroid.showKeyboard || window.JSHarmony && window.JSHarmony.showKeyboard) {
@@ -124,7 +124,7 @@ class App {
                     armKeyboardLock();
                 }
             }
-            if (document.contains(event.target) && !hasClosestByClassName(event.target as Element, "protyle-util")) {
+            if (document.contains(target) && !hasClosestByClassName(target, "protyle-util")) {
                 hideAllElements(["util"]);
             }
         });

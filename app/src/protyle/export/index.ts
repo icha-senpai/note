@@ -547,7 +547,6 @@ ${getIconScript(servePath)}
           },
           languages: {copy:"${window.scribli.languages.copy}"}
         };
-        window.siyuan = window.scribli;
         previewElement.addEventListener("click", (event) => {
             let target = event.target;
             while (target && !target.isEqualNode(previewElement)) {
@@ -845,7 +844,6 @@ ${getIconScript(servePath)}
       },
       languages: {copy:"${window.scribli.languages.copy}"}
     };
-    window.siyuan = window.scribli;
     const previewElement = document.getElementById('preview');
     Protyle.highlightRender(previewElement, "stage/protyle");
     Protyle.mathRender(previewElement, "stage/protyle", ${exportOption.type === "pdf"});

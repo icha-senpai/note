@@ -43,7 +43,7 @@ import {
     getTopAloneElement,
     isNotEditBlock
 } from "../wysiwyg/getBlock";
-import * as dayjs from "dayjs";
+import dayjs = require("dayjs");
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
 import {cancelSB, genEmptyElement, getLangByType, insertEmptyBlock, jumpToParent,} from "../../block/util";
 import {transparentImgSrc} from "../util/dragTip";
@@ -125,10 +125,11 @@ export class Gutter {
         }
         this.element = document.createElement("div");
         this.element.className = "protyle-gutters";
-        this.element.addEventListener("dragstart", (event: DragEvent & { target: HTMLElement }) => {
+        this.element.addEventListener("dragstart", (event: DragEvent) => {
             hideTooltip();
             window.scribli.menus.menu.remove();
-            const buttonElement = event.target.parentElement;
+            const target = event.target as HTMLElement;
+            const buttonElement = target.parentElement;
             if (buttonElement.dataset.embedId) {
                 event.preventDefault();
                 return;
@@ -137,7 +138,7 @@ export class Gutter {
             let selectElements: Element[] = [];
             let avElement: Element;
             if (buttonElement.dataset.rowId) {
-                avElement = Array.from(protyle.wysiwyg.element.querySelectorAll(`.av[data-node-id="${buttonElement.dataset.nodeId}"]`)).find((item: HTMLElement) => {
+                avElement = Array.from(protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`.av[data-node-id="${buttonElement.dataset.nodeId}"]`)).find((item) => {
                     if (!isInEmbedBlock(item) && !isInAVBlock(item)) {
                         return true;
                     }
@@ -183,7 +184,7 @@ export class Gutter {
                 }));
                 if (!selectedIncludeGutter) {
                     let gutterNodeElement: HTMLElement;
-                    Array.from(protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${gutterId}"]`)).find((item: HTMLElement) => {
+                    Array.from(protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`[data-node-id="${gutterId}"]`)).find((item) => {
                         if (!isInEmbedBlock(item) && this.isMatchNode(item)) {
                             gutterNodeElement = item;
                             return true;
@@ -256,8 +257,8 @@ export class Gutter {
             window.scribli.dragElement = undefined;
             window.scribli.dragTitle = "";
         });
-        this.element.addEventListener("click", (event: MouseEvent & { target: HTMLInputElement }) => {
-            const buttonElement = hasClosestByTag(event.target, "BUTTON");
+        this.element.addEventListener("click", (event: MouseEvent) => {
+            const buttonElement = hasClosestByTag(event.target as Node, "BUTTON");
             if (!buttonElement) {
                 return;
             }
@@ -365,7 +366,7 @@ export class Gutter {
                 return;
             }
             if (buttonElement.dataset.type === "NodeAttributeViewRowMenu" || buttonElement.dataset.type === "NodeAttributeViewRow") {
-                const rowElement = Array.from(protyle.wysiwyg.element.querySelectorAll(`.av[data-node-id="${buttonElement.dataset.nodeId}"] .av__row[data-id="${buttonElement.dataset.rowId}"]`)).find((item: HTMLElement) => {
+                const rowElement = Array.from(protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`.av[data-node-id="${buttonElement.dataset.nodeId}"] .av__row[data-id="${buttonElement.dataset.rowId}"]`)).find((item) => {
                     if (!isInEmbedBlock(item)) {
                         return true;
                     }
@@ -519,8 +520,8 @@ export class Gutter {
                 /// #endif
             }
         });
-        this.element.addEventListener("contextmenu", (event: MouseEvent & { target: HTMLInputElement }) => {
-            const buttonElement = hasClosestByTag(event.target, "BUTTON");
+        this.element.addEventListener("contextmenu", (event: MouseEvent) => {
+            const buttonElement = hasClosestByTag(event.target as Node, "BUTTON");
             if (!buttonElement || buttonElement.getAttribute("data-type") === "fold") {
                 return;
             }
@@ -529,7 +530,7 @@ export class Gutter {
                 clearSelect(["cell", "img"], protyle.wysiwyg.element);
                 const gutterRect = buttonElement.getBoundingClientRect();
                 if (buttonElement.dataset.type === "NodeAttributeViewRowMenu") {
-                    const rowElement = Array.from(protyle.wysiwyg.element.querySelectorAll(`.av[data-node-id="${buttonElement.dataset.nodeId}"] .av__row[data-id="${buttonElement.dataset.rowId}"]`)).find((item: HTMLElement) => {
+                    const rowElement = Array.from(protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`.av[data-node-id="${buttonElement.dataset.nodeId}"] .av__row[data-id="${buttonElement.dataset.rowId}"]`)).find((item) => {
                         if (!isInEmbedBlock(item)) {
                             return true;
                         }
@@ -573,7 +574,7 @@ export class Gutter {
                 (item as HTMLElement).style.display = "none";
             });
         };
-        this.element.addEventListener("mouseleave", (event: MouseEvent & { target: HTMLInputElement }) => {
+        this.element.addEventListener("mouseleave", (event: MouseEvent) => {
             // 鼠标移向框线或+号时不隐藏（它们定位在容器外侧，移出容器几何范围会触发 mouseleave）
             const related = event.relatedTarget as HTMLElement;
             if (related && (related.classList.contains("protyle-gutters__line") || related.classList.contains("protyle-gutters__plus"))) {
@@ -589,7 +590,7 @@ export class Gutter {
             event.stopPropagation();
         });
         // 双元素交互：悬浮块标显示框线（贴边不动），悬浮框线显示+号（独立元素外偏定位）
-        this.element.addEventListener("mousemove", (event: MouseEvent & { target: HTMLElement }) => {
+        this.element.addEventListener("mousemove", (event: MouseEvent) => {
             const lineBefore = this.element.querySelector('.protyle-gutters__line[data-type="gutterLineBefore"]') as HTMLElement;
             const lineAfter = this.element.querySelector('.protyle-gutters__line[data-type="gutterLineAfter"]') as HTMLElement;
             const plusBefore = this.element.querySelector('.protyle-gutters__plus[data-type="gutterPlusBefore"]') as HTMLElement;
@@ -598,8 +599,8 @@ export class Gutter {
                 return;
             }
             // 情况A：鼠标在框线或+号上 → 显示对应+号，框线设透明（视觉隐藏但保留命中区，避免 display:none 导致脱离触发重置闪烁）
-            const lineEl = hasClosestByClassName(event.target, "protyle-gutters__line");
-            const plusEl = hasClosestByClassName(event.target, "protyle-gutters__plus");
+            const lineEl = hasClosestByClassName(event.target as Node, "protyle-gutters__line");
+            const plusEl = hasClosestByClassName(event.target as Node, "protyle-gutters__plus");
             const hoverEl = lineEl || plusEl;
             if (hoverEl) {
                 window.clearTimeout(hidePlusTimeout);
@@ -620,7 +621,7 @@ export class Gutter {
                 lineAfter.style.opacity = "0";
                 return;
             }
-            const buttonElement = hasClosestByTag(event.target, "BUTTON");
+            const buttonElement = hasClosestByTag(event.target as Node, "BUTTON");
             if (!buttonElement || buttonElement.classList.contains("protyle-gutters__line") || buttonElement.classList.contains("protyle-gutters__plus")) {
                 return;
             }
@@ -996,8 +997,8 @@ export class Gutter {
             accelerator: window.scribli.config.keymap.editor.general.copyPlainText.custom,
             click() {
                 let html = "";
-                selectsElement.forEach((item: HTMLElement) => {
-                    html += getPlainText(item) + "\n";
+                selectsElement.forEach((item) => {
+                    html += getPlainText(item as HTMLElement) + "\n";
                 });
                 copyPlainText(html.trimEnd());
                 focusBlock(selectsElement[0]);
@@ -1714,9 +1715,9 @@ export class Gutter {
                     label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.scribli.languages.md31}</span><span class="fn__space fn__flex-1"></span>
 <input type="checkbox" class="b3-switch fn__flex-center"${linewrap === "true" ? " checked" : ((window.scribli.config.editor.codeLineWrap && linewrap !== "false") ? " checked" : "")}></div>`,
                     bind(element) {
-                        element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
+                        element.addEventListener("click", (event: MouseEvent) => {
                             const inputElement = element.querySelector("input");
-                            if (event.target.tagName !== "INPUT") {
+                            if ((event.target as HTMLElement).tagName !== "INPUT") {
                                 inputElement.checked = !inputElement.checked;
                             }
                             nodeElement.setAttribute("linewrap", inputElement.checked.toString());
@@ -1736,9 +1737,9 @@ export class Gutter {
                     label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.scribli.languages.md2}</span><span class="fn__space fn__flex-1"></span>
 <input type="checkbox" class="b3-switch fn__flex-center"${ligatures === "true" ? " checked" : ((window.scribli.config.editor.codeLigatures && ligatures !== "false") ? " checked" : "")}></div>`,
                     bind(element) {
-                        element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
+                        element.addEventListener("click", (event: MouseEvent) => {
                             const inputElement = element.querySelector("input");
-                            if (event.target.tagName !== "INPUT") {
+                            if ((event.target as HTMLElement).tagName !== "INPUT") {
                                 inputElement.checked = !inputElement.checked;
                             }
                             nodeElement.setAttribute("ligatures", inputElement.checked.toString());
@@ -1758,9 +1759,9 @@ export class Gutter {
                     label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.scribli.languages.md27}</span><span class="fn__space fn__flex-1"></span>
 <input type="checkbox" class="b3-switch fn__flex-center"${linenumber === "true" ? " checked" : ((window.scribli.config.editor.codeSyntaxHighlightLineNum && linenumber !== "false") ? " checked" : "")}></div>`,
                     bind(element) {
-                        element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
+                        element.addEventListener("click", (event: MouseEvent) => {
                             const inputElement = element.querySelector("input");
-                            if (event.target.tagName !== "INPUT") {
+                            if ((event.target as HTMLElement).tagName !== "INPUT") {
                                 inputElement.checked = !inputElement.checked;
                             }
                             nodeElement.setAttribute("linenumber", inputElement.checked.toString());
@@ -1929,9 +1930,9 @@ export class Gutter {
                     label: `<div class="fn__flex" style="margin-bottom: 4px"><span>${window.scribli.languages.embedBlockBreadcrumb}</span><span class="fn__space fn__flex-1"></span>
 <input type="checkbox" class="b3-switch fn__flex-center"${breadcrumb === "true" ? " checked" : ((window.scribli.config.editor.embedBlockBreadcrumb && breadcrumb !== "false") ? " checked" : "")}></div>`,
                     bind(element) {
-                        element.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
+                        element.addEventListener("click", (event: MouseEvent) => {
                             const inputElement = element.querySelector("input");
-                            if (event.target.tagName !== "INPUT") {
+                            if ((event.target as HTMLElement).tagName !== "INPUT") {
                                 inputElement.checked = !inputElement.checked;
                             }
                             nodeElement.setAttribute("breadcrumb", inputElement.checked.toString());
@@ -2050,13 +2051,9 @@ export class Gutter {
                         const textHTML = protyle.lute.BlockDOM2HTML(response.data).trimEnd();
                         const scribliHTML = response.data + Constants.ZWSP;
                         if (isInAndroid()) {
-                            const writeClipboard = window.JSAndroid.writeScribliHTMLClipboard ||
-                                window.JSAndroid.writeSiYuanHTMLClipboard;
-                            writeClipboard?.(textPlain, textHTML, scribliHTML);
+                            window.JSAndroid.writeScribliHTMLClipboard?.(textPlain, textHTML, scribliHTML);
                         } else if (isInHarmony()) {
-                            const writeClipboard = window.JSHarmony.writeScribliHTMLClipboard ||
-                                window.JSHarmony.writeSiYuanHTMLClipboard;
-                            writeClipboard?.(textPlain, textHTML, scribliHTML);
+                            window.JSHarmony.writeScribliHTMLClipboard?.(textPlain, textHTML, scribliHTML);
                         } else {
                             writeText(scribliHTML);
                         }
@@ -2084,7 +2081,7 @@ export class Gutter {
                                 id,
                             }, (deleteResponse) => {
                                 deleteResponse.data.doOperations.forEach((operation: IOperation) => {
-                                    protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.id}"]`).forEach((itemElement: HTMLElement) => {
+                                    protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`[data-node-id="${operation.id}"]`).forEach((itemElement) => {
                                         itemElement.remove();
                                     });
                                 });
@@ -2118,7 +2115,7 @@ export class Gutter {
                             id,
                         }, (response) => {
                             response.data.doOperations.forEach((operation: IOperation) => {
-                                protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.id}"]`).forEach((itemElement: HTMLElement) => {
+                                protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`[data-node-id="${operation.id}"]`).forEach((itemElement) => {
                                     itemElement.remove();
                                 });
                             });
@@ -2371,11 +2368,11 @@ export class Gutter {
                     level
                 }, (response) => {
                     response.data.doOperations.forEach((operation: IOperation, index: number) => {
-                        protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.id}"]`).forEach((itemElement: HTMLElement) => {
+                        protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`[data-node-id="${operation.id}"]`).forEach((itemElement) => {
                             itemElement.outerHTML = operation.data;
                         });
                         // 使用 outer 后元素需要重新查询
-                        protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.id}"]`).forEach((itemElement: HTMLElement) => {
+                        protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`[data-node-id="${operation.id}"]`).forEach((itemElement) => {
                             mathRender(itemElement);
                         });
                         if (index === 0) {
@@ -2530,19 +2527,20 @@ export class Gutter {
             });
         });
         inputElement.addEventListener(inputElement.type === "number" ? "blur" : "change", () => {
-            nodeElements.forEach((e: HTMLElement) => {
-                e.setAttribute(Constants.ATTRIBUTE_EDITING, "true");
+            nodeElements.forEach((e) => {
+                const element = e as HTMLElement;
+                element.setAttribute(Constants.ATTRIBUTE_EDITING, "true");
                 operations.push({
                     action: "update",
-                    id: e.getAttribute("data-node-id"),
-                    data: e.outerHTML
+                    id: element.getAttribute("data-node-id"),
+                    data: element.outerHTML
                 });
-                if (e.getAttribute("data-subtype") === "echarts") {
-                    const chartInstance = window.echarts.getInstanceById(e.querySelector("[_echarts_instance_]").getAttribute("_echarts_instance_"));
+                if (element.getAttribute("data-subtype") === "echarts") {
+                    const chartInstance = window.echarts.getInstanceById(element.querySelector("[_echarts_instance_]").getAttribute("_echarts_instance_"));
                     if (chartInstance) {
                         chartInstance.resize();
                     }
-                    chartRender(e);
+                    chartRender(element);
                 }
             });
             transaction(protyle, operations, undoOperations);
@@ -2553,8 +2551,9 @@ export class Gutter {
 
     private genWidths(nodeElements: Element[], protyle: IProtyle) {
         let isInSb = false;
-        nodeElements.find((e: HTMLElement) => {
-            if (e.parentElement.classList.contains("sb")) {
+        nodeElements.find((e) => {
+            const element = e as HTMLElement;
+            if (element.parentElement.classList.contains("sb")) {
                 isInSb = true;
                 return true;
             }
@@ -2572,9 +2571,10 @@ export class Gutter {
             bind: (element) => {
                 const inputElement = element.querySelector("input");
                 inputElement.addEventListener("input", () => {
-                    nodeElements.forEach((item: HTMLElement) => {
-                        item.style.width = inputElement.value + "px";
-                        item.style.flex = "none";
+                    nodeElements.forEach((item) => {
+                        const element = item as HTMLElement;
+                        element.style.width = inputElement.value + "px";
+                        element.style.flex = "none";
                     });
                     rangeElement.value = "0";
                     rangeElement.parentElement.setAttribute("aria-label", inputElement.value + "px");
@@ -2618,9 +2618,10 @@ export class Gutter {
                 bind: (element) => {
                     rangeElement = element.querySelector("input");
                     rangeElement.addEventListener("input", () => {
-                        nodeElements.forEach((e: HTMLElement) => {
-                            e.style.width = rangeElement.value + "%";
-                            e.style.flex = "none";
+                        nodeElements.forEach((e) => {
+                            const element = e as HTMLElement;
+                            element.style.width = rangeElement.value + "%";
+                            element.style.flex = "none";
                         });
                         rangeElement.parentElement.setAttribute("aria-label", `${rangeElement.value}%`);
                     });
@@ -2671,9 +2672,10 @@ export class Gutter {
             bind: (element) => {
                 const inputElement = element.querySelector("input");
                 inputElement.addEventListener("input", () => {
-                    nodeElements.forEach((item: HTMLElement) => {
-                        item.style.height = inputElement.value + "px";
-                        item.style.flex = "none";
+                    nodeElements.forEach((item) => {
+                        const element = item as HTMLElement;
+                        element.style.height = inputElement.value + "px";
+                        element.style.flex = "none";
                     });
                     rangeElement.value = "0";
                     rangeElement.parentElement.setAttribute("aria-label", inputElement.value + "px");
@@ -2708,9 +2710,10 @@ export class Gutter {
                 bind: (element) => {
                     rangeElement = element.querySelector("input");
                     rangeElement.addEventListener("input", () => {
-                        nodeElements.forEach((e: HTMLElement) => {
-                            e.style.height = rangeElement.value + "%";
-                            e.style.flex = "none";
+                        nodeElements.forEach((e) => {
+                            const element = e as HTMLElement;
+                            element.style.height = rangeElement.value + "%";
+                            element.style.flex = "none";
                         });
                         rangeElement.parentElement.setAttribute("aria-label", `${rangeElement.value}%`);
                     });

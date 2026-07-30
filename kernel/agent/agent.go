@@ -109,7 +109,7 @@ When asked whether/how Scribli supports a feature: notebook.list to check it's o
 For multi-step tasks (3+ distinct steps), use todo_write to track progress. Each call replaces the whole list; statuses are pending / in_progress / completed / cancelled. Set in_progress before starting a step, completed when done, and update on every status change. Skip todo_write for single-step requests.
 
 ## Debugging
-When the user reports an error, first read "temp/siyuan.log" (relative to workspace) with the file tool using offset=-200 and limit=200 to get the last 200 lines. Summarize the relevant errors before attempting fixes.
+When the user reports an error, first read "temp/scribli.log" (relative to workspace) with the file tool using offset=-200 and limit=200 to get the last 200 lines. Summarize the relevant errors before attempting fixes.
 
 ## Tool Output Limits
 file list/find/grep/read default to limit 200; use the limit parameter to change it, and for file.read always pass offset+limit instead of reading the whole file. When a tool output is truncated to a file path, use file.read with offset/limit to fetch more.

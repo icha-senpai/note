@@ -5,6 +5,12 @@ import {ipcRenderer} from "electron";
 import {processMessage} from "./processMessage";
 import {kernelError} from "./kernelFault";
 
+const getFetchErrorResponse = (response: Response): IWebSocketData => ({
+    data: null,
+    msg: response.statusText,
+    code: -response.status,
+});
+
 export const fetchPost = (
     url: string,
     data?: any,
@@ -46,21 +52,13 @@ export const fetchPost = (
         switch (response.status) {
             case 403:
             case 404:
-                return {
-                    data: null,
-                    msg: response.statusText,
-                    code: -response.status,
-                };
+                return getFetchErrorResponse(response);
             case 401:
                 // 返回鉴权失败的话直接刷新页面，避免用户在当前页面操作 https://github.com/siyuan-note/siyuan/issues/15163
                 setTimeout(() => {
                     window.location.reload();
                 }, 3000);
-                return {
-                    data: null,
-                    msg: response.statusText,
-                    code: -response.status,
-                };
+                return getFetchErrorResponse(response);
             default:
                 // /api/file/getFile 接口返回202时表示文件没有正常读取
                 if (response.status === 202 && url === "/api/file/getFile") {
@@ -143,7 +141,7 @@ export const fetchSyncPost = async (url: string, data?: any, headers?: Record<st
     return res2;
 };
 
-export const fetchGet = (url: string, cb: (response: IWebSocketData | IObject | string) => void) => {
+export const fetchGet = <T extends IWebSocketData | IObject | string = IWebSocketData | IObject | string>(url: string, cb: (response: T) => void) => {
     fetch(url).then((response) => {
         if (response.headers.get("content-type")?.indexOf("application/json") > -1) {
             return response.json();
@@ -151,6 +149,6 @@ export const fetchGet = (url: string, cb: (response: IWebSocketData | IObject | 
             return response.text();
         }
     }).then((response) => {
-        cb(response);
+        cb(response as T);
     });
 };

@@ -14,8 +14,7 @@ import {getAllEditor} from "../layout/getAll";
 
 const requireFunc = (key: string) => {
     const modules = {
-        scribli: API,
-        siyuan: API
+        scribli: API
     };
     // @ts-ignore
     return modules[key]

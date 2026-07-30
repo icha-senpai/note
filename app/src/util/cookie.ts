@@ -35,13 +35,13 @@ const refreshCookie = (name: string, value: string, maxAge: number = COOKIE_MAX_
 
 export const desktopModeCookie = {
     read: () => {
-        const raw = readCookieValue("siyuan-desktop-mode");
+        const raw = readCookieValue("scribli-desktop-mode");
         return raw === "true" || (raw !== "false" && !isMobile()); // 考虑存在 cookie 和不存在 cookie 的情况
     },
     set: (enabled: boolean) => {
-        document.cookie = "siyuan-desktop-mode=" + (enabled ? "true" : "false") + ";path=/;max-age=" + COOKIE_MAX_AGE;
+        document.cookie = "scribli-desktop-mode=" + (enabled ? "true" : "false") + ";path=/;max-age=" + COOKIE_MAX_AGE;
     },
     remove: () => {
-        document.cookie = "siyuan-desktop-mode=;path=/;max-age=0";
+        document.cookie = "scribli-desktop-mode=;path=/;max-age=0";
     },
 };

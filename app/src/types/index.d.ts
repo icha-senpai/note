@@ -178,6 +178,8 @@ interface CSSStyleDeclarationElectron extends CSSStyleDeclaration {
     WebkitAppRegion: string;
 }
 
+declare module "*.scss";
+
 interface Window {
     DOMPurify: {
         sanitize(dirty: string, options?: any): string;
@@ -274,7 +276,6 @@ interface Window {
         toBlob: (element: Element, options?: IHtmlToImageOptions) => Promise<Blob>
     };
     scribli: IScribli;
-    siyuan: IScribli;
     JSAndroid: {
         returnDesktop(): void
         openExternal(url: string): void
@@ -284,12 +285,10 @@ interface Window {
         writeClipboard(text: string): void
         writeHTMLClipboard(text: string, html: string): void
         writeScribliHTMLClipboard?(text: string, html: string, scribliHTML: string): void
-        writeSiYuanHTMLClipboard?(text: string, html: string, siyuanHTML: string): void
         writeImageClipboard(uri: string): void
         readClipboard(): string
         readHTMLClipboard(): string
         readScribliHTMLClipboard?(): string
-        readSiYuanHTMLClipboard?(): string
         getBlockURL(): string
         hideKeyboard(): void
         showKeyboard(): void
@@ -310,11 +309,9 @@ interface Window {
         writeClipboard(text: string): void
         writeHTMLClipboard(text: string, html: string): void
         writeScribliHTMLClipboard?(text: string, html: string, scribliHTML: string): void
-        writeSiYuanHTMLClipboard?(text: string, html: string, siyuanHTML: string): void
         readClipboard(): string
         readHTMLClipboard(): string
         readScribliHTMLClipboard?(): string
-        readSiYuanHTMLClipboard?(): string
         returnDesktop(): void
         print(title: string, html: string): void
         getScreenWidthPx(): number
@@ -354,7 +351,6 @@ interface IClipboardData {
     textHTML?: string,
     textPlain?: string,
     scribliHTML?: string,
-    siyuanHTML?: string,
     files?: File[],
     localFiles?: ILocalFiles[],
 }

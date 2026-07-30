@@ -54,7 +54,7 @@ export const initWindowEvent = (app: App) => {
         }
     });
 
-    window.addEventListener("mousemove", (event: MouseEvent & { target: HTMLElement }) => {
+    window.addEventListener("mousemove", (event: MouseEvent) => {
         windowMouseMove(event, mouseIsEnter);
     });
 
@@ -79,9 +79,10 @@ export const initWindowEvent = (app: App) => {
     }, true);
 
     let scrollTarget: HTMLElement | false;
-    window.addEventListener("dragover", (event: DragEvent & { target: HTMLElement }) => {
+    window.addEventListener("dragover", (event: DragEvent) => {
+        const target = event.target as HTMLElement;
         if (event.dataTransfer.types.includes(Constants.SCRIBLI_DROP_TAB)) {
-            if (!hasClosestByClassName(event.target, "layout-tab-bar")) {
+            if (!hasClosestByClassName(target, "layout-tab-bar")) {
                 stopScrollAnimation();
             }
             return;
@@ -130,8 +131,8 @@ export const initWindowEvent = (app: App) => {
                 }
             }
         }
-        const fileElement = hasClosestByClassName(event.target, "sy__file");
-        const protyleElement = hasClosestByClassName(event.target, "protyle", true);
+        const fileElement = hasClosestByClassName(target, "sy__file");
+        const protyleElement = hasClosestByClassName(target, "protyle", true);
         // 光标不在编辑器也不在文档树内时，隐藏拖拽提示（避免卡在无效区域）
         if (!fileElement && !protyleElement) {
             document.querySelector(".drag-tip")?.remove();
@@ -148,7 +149,7 @@ export const initWindowEvent = (app: App) => {
         } else if (scrollTarget && scrollTarget.classList.contains("protyle") && fileElement) {
             scrollTarget = fileElement;
         }
-        if (hasClosestByClassName(event.target, "layout-tab-container__drag")) {
+        if (hasClosestByClassName(target, "layout-tab-container__drag")) {
             stopScrollAnimation();
             return;
         }
@@ -159,9 +160,9 @@ export const initWindowEvent = (app: App) => {
             scrollElement = scrollTarget.querySelector(".protyle-content");
         }
         if (scrollTarget && scrollElement) {
-            if ((event.dataTransfer.types.includes(Constants.SCRIBLI_DROP_FILE) && hasClosestByClassName(event.target, "layout-tab-bar")) ||
+            if ((event.dataTransfer.types.includes(Constants.SCRIBLI_DROP_FILE) && hasClosestByClassName(target, "layout-tab-bar")) ||
                 (event.dataTransfer.types.includes("Files") && scrollTarget.classList.contains("sy__file")) ||
-                (scrollTarget.classList.contains("protyle") && hasClosestByClassName(event.target, "dockPanel"))) {
+                (scrollTarget.classList.contains("protyle") && hasClosestByClassName(target, "dockPanel"))) {
                 stopScrollAnimation();
             } else {
                 dragOverScroll(event, scrollElement.getBoundingClientRect(), scrollElement);
@@ -214,7 +215,7 @@ export const initWindowEvent = (app: App) => {
         /// #endif
     });
 
-    window.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
+    window.addEventListener("click", (event) => {
         globalClick(event);
     });
 

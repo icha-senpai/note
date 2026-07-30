@@ -53,7 +53,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan [全域旗標] &lt;命令&gt; [參數]"
+					"TextMarkTextContent": "scribli [全域旗標] &lt;命令&gt; [參數]"
 				},
 				{
 					"Type": "NodeText",
@@ -100,7 +100,7 @@
 				{
 					"Type": "NodeTextMark",
 					"TextMarkType": "code",
-					"TextMarkTextContent": "siyuan"
+					"TextMarkTextContent": "scribli"
 				},
 				{
 					"Type": "NodeText",
@@ -158,7 +158,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "siyuan"
+									"TextMarkTextContent": "scribli"
 								},
 								{
 									"Type": "NodeText",
@@ -207,7 +207,7 @@
 								},
 								{
 									"Type": "NodeCodeBlockCode",
-									"Data": "# 僅適用於 Microsoft Store 版 —— 在 PowerShell 中執行一次\n$shimDir = \"$env:LOCALAPPDATA\\Microsoft\\WindowsApps\"   # 該目錄預設已在 PATH 中\n@(\n    '@echo off'\n    'setlocal'\n    'set \"ROOT=\"'\n    'for /f \"delims=\" %%i in (''powershell -NoProfile -Command \"(Get-AppxPackage *Scribli*).InstallLocation\"'') do set \"ROOT=%%i\"'\n    'if not defined ROOT goto :noshim'\n    '\"%ROOT%\\app\\resources\\kernel\\Scribli-Kernel.exe\" %*'\n    'exit /b %ERRORLEVEL%'\n    ':noshim'\n    '1>&2 echo siyuan: 找不到 Microsoft Store 版本'\n    'exit /b 1'\n) | Set-Content \"$shimDir\\scribli.cmd\"\n"
+									"Data": "# 僅適用於 Microsoft Store 版 —— 在 PowerShell 中執行一次\n$shimDir = \"$env:LOCALAPPDATA\\Microsoft\\WindowsApps\"   # 該目錄預設已在 PATH 中\n@(\n    '@echo off'\n    'setlocal'\n    'set \"ROOT=\"'\n    'for /f \"delims=\" %%i in (''powershell -NoProfile -Command \"(Get-AppxPackage *Scribli*).InstallLocation\"'') do set \"ROOT=%%i\"'\n    'if not defined ROOT goto :noshim'\n    '\"%ROOT%\\app\\resources\\kernel\\Scribli-Kernel.exe\" %*'\n    'exit /b %ERRORLEVEL%'\n    ':noshim'\n    '1>&2 echo scribli: 找不到 Microsoft Store 版本'\n    'exit /b 1'\n) | Set-Content \"$shimDir\\scribli.cmd\"\n"
 								},
 								{
 									"Type": "NodeCodeBlockFenceCloseMarker",
@@ -493,7 +493,7 @@
 								{
 									"Type": "NodeTextMark",
 									"TextMarkType": "code",
-									"TextMarkTextContent": "SIYUAN_WORKSPACE_PATH"
+									"TextMarkTextContent": "SCRIBLI_WORKSPACE_PATH"
 								},
 								{
 									"Type": "NodeText",
@@ -1558,7 +1558,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan --help           # 列出所有可用命令\nsiyuan block --help     # 檢視 block 子命令的參數說明\n"
+					"Data": "scribli --help           # 列出所有可用命令\nscribli block --help     # 檢視 block 子命令的參數說明\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -1750,7 +1750,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan workspace list\nsiyuan workspace info\n"
+					"Data": "scribli workspace list\nscribli workspace info\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -2290,7 +2290,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan notebook list\nsiyuan notebook create --name \"我的筆記本\"\nsiyuan notebook remove --id notebook-id\nsiyuan notebook rename --id notebook-id --name \"新名稱\"\nsiyuan notebook open --id notebook-id\nsiyuan notebook close --id notebook-id\nsiyuan notebook set-icon --id notebook-id --icon \"1f4ca\"\nsiyuan notebook random-icon --id notebook-id\nsiyuan notebook random-icon\n"
+					"Data": "scribli notebook list\nscribli notebook create --name \"我的筆記本\"\nscribli notebook remove --id notebook-id\nscribli notebook rename --id notebook-id --name \"新名稱\"\nscribli notebook open --id notebook-id\nscribli notebook close --id notebook-id\nscribli notebook set-icon --id notebook-id --icon \"1f4ca\"\nscribli notebook random-icon --id notebook-id\nscribli notebook random-icon\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -3086,7 +3086,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan document list --notebook notebook-id\nsiyuan document list --notebook notebook-id --hpath \"/資料夾\"\n\nsiyuan document create --notebook notebook-id --title \"新文件\"\nsiyuan document create --notebook notebook-id --title \"新文件\" --path \"/資料夾\"\nsiyuan document create --notebook notebook-id --title \"新文件\" --markdown \"# 標題\"\n\nsiyuan document get --id doc-id\nsiyuan document remove --id doc-id\nsiyuan document rename --id doc-id --title \"新標題\"\nsiyuan document duplicate --id doc-id\nsiyuan document info --id doc-id\nsiyuan document search \"關鍵字\"\n\nsiyuan document move --id doc-id --notebook target-nb\nsiyuan document move --id doc-id --notebook target-nb --hpath \"/目標資料夾\"\n"
+					"Data": "scribli document list --notebook notebook-id\nscribli document list --notebook notebook-id --hpath \"/資料夾\"\n\nscribli document create --notebook notebook-id --title \"新文件\"\nscribli document create --notebook notebook-id --title \"新文件\" --path \"/資料夾\"\nscribli document create --notebook notebook-id --title \"新文件\" --markdown \"# 標題\"\n\nscribli document get --id doc-id\nscribli document remove --id doc-id\nscribli document rename --id doc-id --title \"新標題\"\nscribli document duplicate --id doc-id\nscribli document info --id doc-id\nscribli document search \"關鍵字\"\n\nscribli document move --id doc-id --notebook target-nb\nscribli document move --id doc-id --notebook target-nb --hpath \"/目標資料夾\"\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -4113,7 +4113,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan block get --id block-id\nsiyuan block children --id block-id\nsiyuan block breadcrumb --id block-id\nsiyuan block dom --id block-id\nsiyuan block kramdown --id block-id\nsiyuan block kramdown --id block-id --mode md\nsiyuan block stat --id doc-id\n\nsiyuan block insert --parent parent-id --data \"# 新標題\"\nsiyuan block insert --parent parent-id --file ./content.md\nsiyuan block insert --parent parent-id --data \"段落\" --previous sibling-id\n\nsiyuan block append --parent parent-id --data \"- 列表項\"\nsiyuan block append --parent parent-id --file ./content.md\n\nsiyuan block prepend --parent parent-id --data \"> 引用\"\n\nsiyuan block update --id block-id --data \"修改後內容\"\nsiyuan block update --id block-id --file ./content.md\n\nsiyuan block delete --id block-id\n\nsiyuan block move --id block-id --parent target-id\nsiyuan block move --id block-id --parent target-id --previous sibling-id\n\nsiyuan block batch-get --ids \"id1,id2,id3\"\nsiyuan block batch-kramdown --ids \"id1,id2,id3\"\n"
+					"Data": "scribli block get --id block-id\nscribli block children --id block-id\nscribli block breadcrumb --id block-id\nscribli block dom --id block-id\nscribli block kramdown --id block-id\nscribli block kramdown --id block-id --mode md\nscribli block stat --id doc-id\n\nscribli block insert --parent parent-id --data \"# 新標題\"\nscribli block insert --parent parent-id --file ./content.md\nscribli block insert --parent parent-id --data \"段落\" --previous sibling-id\n\nscribli block append --parent parent-id --data \"- 列表項\"\nscribli block append --parent parent-id --file ./content.md\n\nscribli block prepend --parent parent-id --data \"> 引用\"\n\nscribli block update --id block-id --data \"修改後內容\"\nscribli block update --id block-id --file ./content.md\n\nscribli block delete --id block-id\n\nscribli block move --id block-id --parent target-id\nscribli block move --id block-id --parent target-id --previous sibling-id\n\nscribli block batch-get --ids \"id1,id2,id3\"\nscribli block batch-kramdown --ids \"id1,id2,id3\"\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -4281,7 +4281,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan outline get --id doc-id\n"
+					"Data": "scribli outline get --id doc-id\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -4869,7 +4869,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan search \"關鍵字\"\nsiyuan search \"關鍵字\" --notebook box1 --notebook box2\nsiyuan search \"關鍵字\" --path \"/目錄\"\nsiyuan search \"關鍵字\" --type document --type heading\nsiyuan search \"關鍵字\" --subtype o --subtype u\nsiyuan search \"關鍵字\" --method 2\nsiyuan search \"關鍵字\" --order-by 4 --page 1 --page-size 20\nsiyuan search \"關鍵字\" --group-by 1\n"
+					"Data": "scribli search \"關鍵字\"\nscribli search \"關鍵字\" --notebook box1 --notebook box2\nscribli search \"關鍵字\" --path \"/目錄\"\nscribli search \"關鍵字\" --type document --type heading\nscribli search \"關鍵字\" --subtype o --subtype u\nscribli search \"關鍵字\" --method 2\nscribli search \"關鍵字\" --order-by 4 --page 1 --page-size 20\nscribli search \"關鍵字\" --group-by 1\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -4910,7 +4910,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan search \"關鍵字\" --asset\nsiyuan search \"關鍵字\" --asset --ext pdf --ext docx\nsiyuan search \"關鍵字\" --asset --method 3 --order-by 3\n"
+					"Data": "scribli search \"關鍵字\" --asset\nscribli search \"關鍵字\" --asset --ext pdf --ext docx\nscribli search \"關鍵字\" --asset --method 3 --order-by 3\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -4951,7 +4951,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan search \"assets/report.pdf\" --get-asset\nsiyuan search \"assets/report.pdf\" --get-asset --format json\n"
+					"Data": "scribli search \"assets/report.pdf\" --get-asset\nscribli search \"assets/report.pdf\" --get-asset --format json\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -5124,7 +5124,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan sql \"SELECT * FROM blocks WHERE type='d'\"\nsiyuan sql \"SELECT id, content FROM blocks WHERE type='h'\" --limit 50\n"
+					"Data": "scribli sql \"SELECT * FROM blocks WHERE type='d'\"\nscribli sql \"SELECT id, content FROM blocks WHERE type='h'\" --limit 50\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -5355,7 +5355,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan sync push\nsiyuan sync pull\nsiyuan sync status\n"
+					"Data": "scribli sync push\nscribli sync pull\nscribli sync status\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -5910,7 +5910,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan export md --id doc-id\nsiyuan export md --id doc-id --output ./output.md\nsiyuan export html --id doc-id --output ./output.html\nsiyuan export preview --id doc-id --output ./preview.html\nsiyuan export docx --id doc-id --output ./output.docx\nsiyuan export sy --id doc-id --output ./backup.sy.zip\nsiyuan export md-zip --id doc-id --output ./archive.zip\nsiyuan export data --output ./full-backup.zip\n"
+					"Data": "scribli export md --id doc-id\nscribli export md --id doc-id --output ./output.md\nscribli export html --id doc-id --output ./output.html\nscribli export preview --id doc-id --output ./preview.html\nscribli export docx --id doc-id --output ./output.docx\nscribli export sy --id doc-id --output ./backup.sy.zip\nscribli export md-zip --id doc-id --output ./archive.zip\nscribli export data --output ./full-backup.zip\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -6328,7 +6328,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan import md --file ./notes --notebook notebook-id\nsiyuan import md --file ./doc.md --notebook notebook-id --hpath \"/匯入目錄\"\nsiyuan import sy --file ./backup.sy.zip --notebook notebook-id\nsiyuan import data --file ./full-backup.zip\n"
+					"Data": "scribli import md --file ./notes --notebook notebook-id\nscribli import md --file ./doc.md --notebook notebook-id --hpath \"/匯入目錄\"\nscribli import sy --file ./backup.sy.zip --notebook notebook-id\nscribli import data --file ./full-backup.zip\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -6691,7 +6691,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan inbox list\nsiyuan inbox list --page 2\n\nsiyuan inbox get --id shorthand-id\n\nsiyuan inbox convert --ids \"id1,id2\" --notebook notebook-id\nsiyuan inbox convert --ids \"id1,id2\" --notebook notebook-id --path \"/資料夾\"\nsiyuan inbox convert --ids \"id1\" --notebook notebook-id --remove-after=false\n"
+					"Data": "scribli inbox list\nscribli inbox list --page 2\n\nscribli inbox get --id shorthand-id\n\nscribli inbox convert --ids \"id1,id2\" --notebook notebook-id\nscribli inbox convert --ids \"id1,id2\" --notebook notebook-id --path \"/資料夾\"\nscribli inbox convert --ids \"id1\" --notebook notebook-id --remove-after=false\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -7241,7 +7241,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan history list\nsiyuan history list --notebook notebook-id --op delete --type 0 --page 1\nsiyuan history search \"關鍵字\" --notebook notebook-id --op update\nsiyuan history get --path \"history/...\"\nsiyuan history rollback --path \"history/...\"\nsiyuan history clear\n"
+					"Data": "scribli history list\nscribli history list --notebook notebook-id --op delete --type 0 --page 1\nscribli history search \"關鍵字\" --notebook notebook-id --op update\nscribli history get --path \"history/...\"\nscribli history rollback --path \"history/...\"\nscribli history clear\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -8035,7 +8035,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan repo list\nsiyuan repo list --tag --page 1\nsiyuan repo create --memo \"升級前備份\"\nsiyuan repo tag --id snapshot-id --name \"v1.0\"\nsiyuan repo untag --name \"v1.0\"\nsiyuan repo checkout --id snapshot-id\nsiyuan repo diff --left id1 --right id2\nsiyuan repo search \"關鍵字\"\nsiyuan repo purge\nsiyuan repo file get --id file-id\nsiyuan repo file rollback --id file-id\nsiyuan repo file open --id file-id\nsiyuan repo file export --id file-id\n"
+					"Data": "scribli repo list\nscribli repo list --tag --page 1\nscribli repo create --memo \"升級前備份\"\nscribli repo tag --id snapshot-id --name \"v1.0\"\nscribli repo untag --name \"v1.0\"\nscribli repo checkout --id snapshot-id\nscribli repo diff --left id1 --right id2\nscribli repo search \"關鍵字\"\nscribli repo purge\nscribli repo file get --id file-id\nscribli repo file rollback --id file-id\nscribli repo file open --id file-id\nscribli repo file export --id file-id\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -8442,7 +8442,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan ref backlinks --id block-id\nsiyuan ref backlinks --id block-id --keyword \"過濾詞\" --sort 4\nsiyuan ref mentions --id block-id\nsiyuan ref refresh --id block-id\n"
+					"Data": "scribli ref backlinks --id block-id\nscribli ref backlinks --id block-id --keyword \"過濾詞\" --sort 4\nscribli ref mentions --id block-id\nscribli ref refresh --id block-id\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -8718,7 +8718,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan tag list\nsiyuan tag list --keyword \"專案\"\nsiyuan tag remove --label \"待辦\"\nsiyuan tag rename --old \"舊\" --new \"新\"\n"
+					"Data": "scribli tag list\nscribli tag list --keyword \"專案\"\nscribli tag remove --label \"待辦\"\nscribli tag rename --old \"舊\" --new \"新\"\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -9003,7 +9003,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan attr get --id block-id\nsiyuan attr set --id block-id --attr icon=1f4ca\nsiyuan attr set --id block-id --attr tags=\"標籤1, 標籤2\" --attr custom-key=custom-value\nsiyuan attr batch-get --ids \"id1,id2,id3\"\n"
+					"Data": "scribli attr get --id block-id\nscribli attr set --id block-id --attr icon=1f4ca\nscribli attr set --id block-id --attr tags=\"標籤1, 標籤2\" --attr custom-key=custom-value\nscribli attr batch-get --ids \"id1,id2,id3\"\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -9327,7 +9327,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan asset upload --id doc-id --file ./image.png --file ./doc.pdf\nsiyuan asset unused\nsiyuan asset clean\nsiyuan asset clean --path \"assets/xxx.png\"\nsiyuan asset stat --path \"assets/image/xxx.png\"\n"
+					"Data": "scribli asset upload --id doc-id --file ./image.png --file ./doc.pdf\nscribli asset unused\nscribli asset clean\nscribli asset clean --path \"assets/xxx.png\"\nscribli asset stat --path \"assets/image/xxx.png\"\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -9627,7 +9627,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan bookmark list\nsiyuan bookmark labels\nsiyuan bookmark remove --label \"書籤名\"\nsiyuan bookmark rename --old \"舊\" --new \"新\"\n"
+					"Data": "scribli bookmark list\nscribli bookmark labels\nscribli bookmark remove --label \"書籤名\"\nscribli bookmark rename --old \"舊\" --new \"新\"\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -11009,7 +11009,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan database search \"關鍵字\"\nsiyuan database get --av db-id\nsiyuan database render --av db-id --view view-id --query \"篩選\" --page 1 --size 50\nsiyuan database keys --av db-id\n\nsiyuan database key add --av db-id --name \"狀態\" --type select\nsiyuan database key add --av db-id --name \"金額\" --type number --icon 1f4b0\nsiyuan database key add --av db-id --name \"備註\" --type text --prev previous-key-id\nsiyuan database key remove --av db-id --key key-id --remove-relation-dest\n\nsiyuan database unused\nsiyuan database clean\nsiyuan database clean --av db-id\n\nsiyuan database item add --av db-id\nsiyuan database item add --av db-id --block block-id --content \"文字\"\nsiyuan database item add --av db-id --view view-id --previous prev-id\nsiyuan database item remove --av db-id --ids \"item1,item2\"\nsiyuan database item update --av db-id --key key-id --item item-id --value '{\"content\": \"新值\"}'\n"
+					"Data": "scribli database search \"關鍵字\"\nscribli database get --av db-id\nscribli database render --av db-id --view view-id --query \"篩選\" --page 1 --size 50\nscribli database keys --av db-id\n\nscribli database key add --av db-id --name \"狀態\" --type select\nscribli database key add --av db-id --name \"金額\" --type number --icon 1f4b0\nscribli database key add --av db-id --name \"備註\" --type text --prev previous-key-id\nscribli database key remove --av db-id --key key-id --remove-relation-dest\n\nscribli database unused\nscribli database clean\nscribli database clean --av db-id\n\nscribli database item add --av db-id\nscribli database item add --av db-id --block block-id --content \"文字\"\nscribli database item add --av db-id --view view-id --previous prev-id\nscribli database item remove --av db-id --ids \"item1,item2\"\nscribli database item update --av db-id --key key-id --item item-id --value '{\"content\": \"新值\"}'\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -11341,7 +11341,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan dailynote create --notebook notebook-id\nsiyuan dailynote append --notebook notebook-id --data \"- [ ] 待辦\"\nsiyuan dailynote append --notebook notebook-id --file ./content.md\nsiyuan dailynote prepend --notebook notebook-id --data \"## 今日重點\"\n"
+					"Data": "scribli dailynote create --notebook notebook-id\nscribli dailynote append --notebook notebook-id --data \"- [ ] 待辦\"\nscribli dailynote append --notebook notebook-id --file ./content.md\nscribli dailynote prepend --notebook notebook-id --data \"## 今日重點\"\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -11834,7 +11834,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan template search\nsiyuan template search \"會議\"\nsiyuan template get --path templates/週報.md\nsiyuan template create --name \"週報\" --data \"# 週報\"\nsiyuan template create --name \"週報\" --file ./weekly.md\nsiyuan template create --name \"週報\" --data \"# 週報\" --overwrite\nsiyuan template render --path templates/週報.md --id doc-id\nsiyuan template save-as --id doc-id --name \"會議紀錄\"\nsiyuan template save-as --id doc-id --name \"會議紀錄\" --overwrite\nsiyuan template remove --path templates/週報.md\n"
+					"Data": "scribli template search\nscribli template search \"會議\"\nscribli template get --path templates/週報.md\nscribli template create --name \"週報\" --data \"# 週報\"\nscribli template create --name \"週報\" --file ./weekly.md\nscribli template create --name \"週報\" --data \"# 週報\" --overwrite\nscribli template render --path templates/週報.md --id doc-id\nscribli template save-as --id doc-id --name \"會議紀錄\"\nscribli template save-as --id doc-id --name \"會議紀錄\" --overwrite\nscribli template remove --path templates/週報.md\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -12508,7 +12508,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan file list /temp\nsiyuan file read /temp/readme.md\nsiyuan file write /temp/new.txt --file ./localfile.txt\nsiyuan file delete /temp/temp\nsiyuan file rename /temp/old /temp/new\nsiyuan file copy /temp/src /temp/dst\nsiyuan file grep --pattern \"TODO\" --path /temp\nsiyuan file grep --pattern \"func \" --path /temp --include \"*.go\" --context 2\nsiyuan file find /temp --include \"*.md\"\nsiyuan file stat /temp/readme.md\n"
+					"Data": "scribli file list /temp\nscribli file read /temp/readme.md\nscribli file write /temp/new.txt --file ./localfile.txt\nscribli file delete /temp/temp\nscribli file rename /temp/old /temp/new\nscribli file copy /temp/src /temp/dst\nscribli file grep --pattern \"TODO\" --path /temp\nscribli file grep --pattern \"func \" --path /temp --include \"*.go\" --context 2\nscribli file find /temp --include \"*.md\"\nscribli file stat /temp/readme.md\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",
@@ -12661,7 +12661,7 @@
 				},
 				{
 					"Type": "NodeCodeBlockCode",
-					"Data": "siyuan system current-time\n"
+					"Data": "scribli system current-time\n"
 				},
 				{
 					"Type": "NodeCodeBlockFenceCloseMarker",

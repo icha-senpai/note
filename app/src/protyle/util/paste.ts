@@ -66,7 +66,7 @@ export const getTextStar = (blockElement: HTMLElement, contentOnly = false) => {
         // 需在嵌入块后，代码块前
         refText += blockElement.dataset.subtype || Lute.UnEscapeHTMLStr(blockElement.getAttribute("data-content"));
     } else if (["NodeBlockquote", "NodeList", "NodeSuperBlock", "NodeListItem"].includes(dataType)) {
-        Array.from(blockElement.querySelectorAll("[data-node-id]")).find((item: HTMLElement) => {
+        Array.from(blockElement.querySelectorAll<HTMLElement>("[data-node-id]")).find((item) => {
             if (!["NodeBlockquote", "NodeList", "NodeSuperBlock", "NodeListItem"].includes(item.getAttribute("data-type"))) {
                 // 获取子块内容，使用容器块本身的 ID
                 refText = getTextStar(item, true);
@@ -89,7 +89,7 @@ export const getPlainText = (blockElement: HTMLElement, isNested = false) => {
         text += Lute.UnEscapeHTMLStr(blockElement.querySelector("protyle-html").getAttribute("data-content"));
     } else if ("NodeAttributeView" === dataType) {
         blockElement.querySelectorAll(".av__row").forEach(rowElement => {
-            rowElement.querySelectorAll(".av__cell").forEach((cellElement: HTMLElement) => {
+            rowElement.querySelectorAll<HTMLElement>(".av__cell").forEach((cellElement) => {
                 text += getCellText(cellElement) + " ";
             });
             text += "\n";
@@ -122,7 +122,7 @@ export const getPlainText = (blockElement: HTMLElement, isNested = false) => {
         if (dataType === "NodeCallout") {
             text += `${getCalloutInfo(blockElement)}\n`;
         }
-        blockElement.querySelectorAll("[data-node-id]").forEach((item: HTMLElement) => {
+        blockElement.querySelectorAll<HTMLElement>("[data-node-id]").forEach((item) => {
             const nestedText = getPlainText(item, true);
             text += nestedText ? nestedText + "\n" : "";
         });
@@ -257,7 +257,6 @@ const readLocalFile = async (protyle: IProtyle, localFiles: ILocalFiles[]) => {
                     textHTML: "",
                     textPlain: "",
                     scribliHTML: "",
-                    siyuanHTML: "",
                     localFiles
                 });
                 if (emitResult) {
@@ -302,7 +301,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         }
         textHTML = event.textHTML;
         textPlain = event.textPlain;
-        scribliHTML = event.scribliHTML || event.siyuanHTML;
+        scribliHTML = event.scribliHTML;
         files = event.files;
     }
 
@@ -359,7 +358,6 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                     textHTML,
                     textPlain,
                     scribliHTML,
-                    siyuanHTML: scribliHTML,
                     files
                 });
                 if (emitResult) {
@@ -375,8 +373,6 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             }
             if (response?.scribliHTML) {
                 scribliHTML = response.scribliHTML;
-            } else if (response?.siyuanHTML) {
-                scribliHTML = response.siyuanHTML;
             }
             if (response?.files) {
                 files = response.files as FileList;

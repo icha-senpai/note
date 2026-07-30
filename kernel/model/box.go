@@ -805,10 +805,10 @@ func VacuumDataIndex() {
 	util.PushEndlessProgress(Conf.language(270))
 	defer util.PushClearProgress()
 
-	var oldsyDbSize, newSyDbSize, oldHistoryDbSize, newHistoryDbSize, oldAssetContentDbSize, newAssetContentDbSize int64
+	var oldScribliDbSize, newScribliDbSize, oldHistoryDbSize, newHistoryDbSize, oldAssetContentDbSize, newAssetContentDbSize int64
 	info, _ := os.Stat(util.DBPath)
 	if nil != info {
-		oldsyDbSize = info.Size()
+		oldScribliDbSize = info.Size()
 	}
 	info, _ = os.Stat(util.HistoryDBPath)
 	if nil != info {
@@ -823,7 +823,7 @@ func VacuumDataIndex() {
 
 	info, _ = os.Stat(util.DBPath)
 	if nil != info {
-		newSyDbSize = info.Size()
+		newScribliDbSize = info.Size()
 	}
 	info, _ = os.Stat(util.HistoryDBPath)
 	if nil != info {
@@ -834,12 +834,12 @@ func VacuumDataIndex() {
 		newAssetContentDbSize = info.Size()
 	}
 
-	logging.LogInfof("vacuum database [siyuan.db: %s -> %s, history.db: %s -> %s, asset_content.db: %s -> %s]",
-		humanize.BytesCustomCeil(uint64(oldsyDbSize), 2), humanize.BytesCustomCeil(uint64(newSyDbSize), 2),
+	logging.LogInfof("vacuum database [scribli.db: %s -> %s, history.db: %s -> %s, asset_content.db: %s -> %s]",
+		humanize.BytesCustomCeil(uint64(oldScribliDbSize), 2), humanize.BytesCustomCeil(uint64(newScribliDbSize), 2),
 		humanize.BytesCustomCeil(uint64(oldHistoryDbSize), 2), humanize.BytesCustomCeil(uint64(newHistoryDbSize), 2),
 		humanize.BytesCustomCeil(uint64(oldAssetContentDbSize), 2), humanize.BytesCustomCeil(uint64(newAssetContentDbSize), 2))
 
-	releaseSize := max((oldsyDbSize-newSyDbSize)+(oldHistoryDbSize-newHistoryDbSize)+(oldAssetContentDbSize-newAssetContentDbSize), 0)
+	releaseSize := max((oldScribliDbSize-newScribliDbSize)+(oldHistoryDbSize-newHistoryDbSize)+(oldAssetContentDbSize-newAssetContentDbSize), 0)
 	msg := fmt.Sprintf(Conf.language(271), humanize.BytesCustomCeil(uint64(releaseSize), 2))
 	util.PushMsg(msg, 7000)
 }

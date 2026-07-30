@@ -1815,8 +1815,6 @@
 		"hideWindow": "Скрыть окно",
 		"setWindowTop": "Установить окно сверху",
 		"cancelWindowTop": "Отменить окно сверху",
-		"officialWebsite": "Посетить официальный сайт",
-		"openSource": "Посетить проект на GitHub",
 		"resetWindow": "Сбросить окно и выйти",
 		"quit": "Выйти из приложения"
 	},

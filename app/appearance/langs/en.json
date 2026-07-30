@@ -1815,8 +1815,6 @@
 		"hideWindow": "Hide Window",
 		"setWindowTop": "Set Window top",
 		"cancelWindowTop": "Cancel Window top",
-		"officialWebsite": "Visit official website",
-		"openSource": "Visit project on GitHub",
 		"resetWindow": "Reset window and exit",
 		"quit": "Quit application"
 	},

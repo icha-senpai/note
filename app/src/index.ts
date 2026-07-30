@@ -1,3 +1,6 @@
+/* eslint-disable-next-line @typescript-eslint/triple-slash-reference */
+/// <reference path="./types/index.d.ts" />
+
 import {Constants} from "./constants";
 import {Menus} from "./menus";
 import {Model} from "./layout/Model";
@@ -243,7 +246,6 @@ export class App {
             altIsPressed: false,
             ws: mainWs,
         };
-        window.siyuan = window.scribli;
 
         fetchPost("/api/system/getConf", {}, async (response) => {
             addScriptSync(`${Constants.PROTYLE_CDN}/js/lute/lute.min.js?v=${Constants.SCRIBLI_VERSION}`, "protyleLuteScript");
@@ -253,8 +255,8 @@ export class App {
             setBodyHighlight();
             await loadPlugins(this);
             getLocalStorage(() => {
-                fetchGet(`/appearance/langs/${window.scribli.config.appearance.lang}.json?v=${Constants.SCRIBLI_VERSION}`, (lauguages: IObject) => {
-                    window.scribli.languages = lauguages;
+                fetchGet<IObject>(`/appearance/langs/${window.scribli.config.appearance.lang}.json?v=${Constants.SCRIBLI_VERSION}`, (languages) => {
+                    window.scribli.languages = languages;
                     window.scribli.menus = new Menus(this);
                     bootSync();
                     ensureOnboarding().then(() => {

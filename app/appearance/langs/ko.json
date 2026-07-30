@@ -1815,8 +1815,6 @@
 		"hideWindow": "창 숨기기",
 		"setWindowTop": "창 맨 위에 고정",
 		"cancelWindowTop": "창 맨 위에 고정 취소",
-		"officialWebsite": "공식 웹사이트 방문",
-		"openSource": "GitHub 프로젝트 방문",
 		"resetWindow": "창 재설정 및 종료",
 		"quit": "애플리케이션 종료"
 	},

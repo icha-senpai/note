@@ -1,87 +1,90 @@
-**English**
-| [日本語](API.ja.md)
+# Scribli API
 
-* [Specification](#Specification)
-    * [Parameters and return values](#Parameters-and-return-values)
-    * [Authentication](#Authentication)
-* [Notebooks](#Notebooks)
-    * [List notebooks](#List-notebooks)
-    * [Open a notebook](#Open-a-notebook)
-    * [Close a notebook](#Close-a-notebook)
-    * [Rename a notebook](#Rename-a-notebook)
-    * [Create a notebook](#Create-a-notebook)
-    * [Remove a notebook](#Remove-a-notebook)
-    * [Get notebook configuration](#Get-notebook-configuration)
-    * [Save notebook configuration](#Save-notebook-configuration)
-* [Documents](#Documents)
-    * [Create a document with Markdown](#Create-a-document-with-Markdown)
-    * [Rename a document](#Rename-a-document)
-    * [Remove a document](#Remove-a-document)
-    * [Move documents](#Move-documents)
-    * [Get human-readable path based on path](#Get-human-readable-path-based-on-path)
-    * [Get human-readable path based on ID](#Get-human-readable-path-based-on-ID)
-    * [Get storage path based on ID](#Get-storage-path-based-on-ID)
-    * [Get IDs based on human-readable path](#Get-IDs-based-on-human-readable-path)
-* [Assets](#Assets)
-    * [Upload assets](#Upload-assets)
-* [Blocks](#Blocks)
-    * [Insert blocks](#Insert-blocks)
-    * [Prepend blocks](#Prepend-blocks)
-    * [Append blocks](#Append-blocks)
-    * [Update a block](#Update-a-block)
-    * [Delete a block](#Delete-a-block)
-    * [Move a block](#Move-a-block)
-    * [Fold a block](#Fold-a-block)
-    * [Unfold a block](#Unfold-a-block)
-    * [Get a block kramdown](#Get-a-block-kramdown)
-    * [Get child blocks](#get-child-blocks)
-    * [Transfer block ref](#transfer-block-ref)
-* [Attributes](#Attributes)
-    * [Set block attributes](#Set-block-attributes)
-    * [Get block attributes](#Get-block-attributes)
-* [Database](#Database)
-    * [Render](#Render)
-    * [Get](#Get)
-    * [Get primary key values](#Get-primary-key-values)
-    * [Search](#Search)
-    * [Set a cell value](#Set-a-cell-value)
-    * [Add items](#Add-items)
-    * [Remove items](#Remove-items)
-    * [Change layout](#Change-layout)
-    * [Set grouping](#Set-grouping)
-    * [Get filter and sort](#Get-filter-and-sort)
-    * [Set filter](#Set-filter)
-    * [Set sort](#Set-sort)
-    * [Add a field](#Add-a-field)
-    * [Remove a field](#Remove-a-field)
-    * [Set global field sort](#Set-global-field-sort)
-    * [Set per-view field sort](#Set-per-view-field-sort)
-* [SQL](#SQL)
-    * [Execute SQL query](#Execute-SQL-query)
-    * [Flush transaction](#Flush-transaction)
-* [Templates](#Templates)
-    * [Render a template](#Render-a-template)
-    * [Render Sprig](#Render-Sprig)
-* [File](#File)
-    * [Get file](#Get-file)
-    * [Put file](#Put-file)
-    * [Remove file](#Remove-file)
-    * [Rename file](#Rename-file)
-    * [List files](#List-files)
-* [Export](#Export)
-    * [Export Markdown](#Export-Markdown)
-    * [Export Files and Folders](#Export-files-and-folders)
-* [Conversion](#Conversion)
-    * [Pandoc](#Pandoc)
-* [Notification](#Notification)
-    * [Push message](#Push-message)
-    * [Push error message](#Push-error-message)
-* [Network](#Network)
-    * [Forward proxy](#Forward-proxy)
-* [System](#System)
-    * [Get boot progress](#Get-boot-progress)
-    * [Get system version](#Get-system-version)
-    * [Get the current time of the system](#Get-the-current-time-of-the-system)
+<!-- markdownlint-disable MD013 MD031 MD033 MD060 -->
+
+**English** | [日本語](API.ja.md)
+
+* [Specification](#specification)
+  * [Parameters and return values](#parameters-and-return-values)
+  * [Authentication](#authentication)
+* [Notebooks](#notebooks)
+  * [List notebooks](#list-notebooks)
+  * [Open a notebook](#open-a-notebook)
+  * [Close a notebook](#close-a-notebook)
+  * [Rename a notebook](#rename-a-notebook)
+  * [Create a notebook](#create-a-notebook)
+  * [Remove a notebook](#remove-a-notebook)
+  * [Get notebook configuration](#get-notebook-configuration)
+  * [Save notebook configuration](#save-notebook-configuration)
+* [Documents](#documents)
+  * [Create a document with Markdown](#create-a-document-with-markdown)
+  * [Rename a document](#rename-a-document)
+  * [Remove a document](#remove-a-document)
+  * [Move documents](#move-documents)
+  * [Get human-readable path based on path](#get-human-readable-path-based-on-path)
+  * [Get human-readable path based on ID](#get-human-readable-path-based-on-id)
+  * [Get storage path based on ID](#get-storage-path-based-on-id)
+  * [Get IDs based on human-readable path](#get-ids-based-on-human-readable-path)
+* [Assets](#assets)
+  * [Upload assets](#upload-assets)
+* [Blocks](#blocks)
+  * [Insert blocks](#insert-blocks)
+  * [Prepend blocks](#prepend-blocks)
+  * [Append blocks](#append-blocks)
+  * [Update a block](#update-a-block)
+  * [Delete a block](#delete-a-block)
+  * [Move a block](#move-a-block)
+  * [Fold a block](#fold-a-block)
+  * [Unfold a block](#unfold-a-block)
+  * [Get a block kramdown](#get-a-block-kramdown)
+  * [Get child blocks](#get-child-blocks)
+  * [Transfer block ref](#transfer-block-ref)
+* [Attributes](#attributes)
+  * [Set block attributes](#set-block-attributes)
+  * [Get block attributes](#get-block-attributes)
+* [Database](#database)
+  * [Render](#render)
+  * [Get](#get)
+  * [Get primary key values](#get-primary-key-values)
+  * [Search](#search)
+  * [Set a cell value](#set-a-cell-value)
+  * [Add items](#add-items)
+  * [Remove items](#remove-items)
+  * [Change layout](#change-layout)
+  * [Set grouping](#set-grouping)
+  * [Get filter and sort](#get-filter-and-sort)
+  * [Set filter](#set-filter)
+  * [Set sort](#set-sort)
+  * [Add a field](#add-a-field)
+  * [Remove a field](#remove-a-field)
+  * [Set global field sort](#set-global-field-sort)
+  * [Set per-view field sort](#set-per-view-field-sort)
+* [SQL](#sql)
+  * [Execute SQL query](#execute-sql-query)
+  * [Flush transaction](#flush-transaction)
+* [Templates](#templates)
+  * [Render a template](#render-a-template)
+  * [Render Sprig](#render-sprig)
+* [File](#file)
+  * [Get file](#get-file)
+  * [Put file](#put-file)
+  * [Remove file](#remove-file)
+  * [Rename file](#rename-file)
+  * [List files](#list-files)
+* [Export](#export)
+  * [Export Markdown](#export-markdown)
+  * [Export Files and Folders](#export-files-and-folders)
+* [Conversion](#conversion)
+  * [Pandoc](#pandoc)
+* [Notification](#notification)
+  * [Push message](#push-message)
+  * [Push error message](#push-error-message)
+* [Network](#network)
+  * [Forward proxy](#forward-proxy)
+* [System](#system)
+  * [Get boot progress](#get-boot-progress)
+  * [Get system version](#get-system-version)
+  * [Get the current time of the system](#get-the-current-time-of-the-system)
 
 ---
 
@@ -103,9 +106,9 @@
    }
    ````
 
-    * `code`: non-zero for exceptions
-    * `msg`: an empty string under normal circumstances, an error text will be returned under abnormal conditions
-    * `data`: may be `{}`, `[]` or `NULL`, depending on the interface
+  * `code`: non-zero for exceptions
+  * `msg`: an empty string under normal circumstances, an error text will be returned under abnormal conditions
+  * `data`: may be `{}`, `[]` or `NULL`, depending on the interface
 
 ### Authentication
 
@@ -155,7 +158,7 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
   }
   ```
 
-    * `notebook`: Notebook ID
+  * `notebook`: Notebook ID
 * Return value
 
   ```json
@@ -177,7 +180,7 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
   }
   ```
 
-    * `notebook`: Notebook ID
+  * `notebook`: Notebook ID
 * Return value
 
   ```json
@@ -200,7 +203,7 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
   }
   ```
 
-    * `notebook`: Notebook ID
+  * `notebook`: Notebook ID
 * Return value
 
   ```json
@@ -250,7 +253,7 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
   }
   ```
 
-    * `notebook`: Notebook ID
+  * `notebook`: Notebook ID
 * Return value
 
   ```json
@@ -272,7 +275,7 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
   }
   ```
 
-    * `notebook`: Notebook ID
+  * `notebook`: Notebook ID
 * Return value
 
   ```json
@@ -313,7 +316,7 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
   }
   ```
 
-    * `notebook`: Notebook ID
+  * `notebook`: Notebook ID
 * Return value
 
   ```json
@@ -346,10 +349,10 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
   }
   ```
 
-    * `notebook`: Notebook ID
-    * `path`: Document path, which needs to start with / and separate levels with / (path here corresponds to the
+  * `notebook`: Notebook ID
+  * `path`: Document path, which needs to start with / and separate levels with / (path here corresponds to the
       database hpath field)
-    * `markdown`: GFM Markdown content
+  * `markdown`: GFM Markdown content
 * Return value
 
   ```json
@@ -360,8 +363,8 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
   }
   ```
 
-    * `data`: Created document ID
-    * If you use the same `path` to call this interface repeatedly, the existing document will not be overwritten
+  * `data`: Created document ID
+  * If you use the same `path` to call this interface repeatedly, the existing document will not be overwritten
 
 ### Rename a document
 
@@ -376,9 +379,9 @@ View API token in <kbd>Settings - About</kbd>, request header: `Authorization: T
   }
   ```
 
-    * `notebook`: Notebook ID
-    * `path`: Document path
-    * `title`: New document title
+  * `notebook`: Notebook ID
+  * `path`: Document path
+  * `title`: New document title
 * Return value
 
   ```json
@@ -401,8 +404,8 @@ Rename a document by `id`:
   }
   ```
 
-    * `id`: Document ID
-    * `title`: New document title
+  * `id`: Document ID
+  * `title`: New document title
 * Return value
 
   ```json
@@ -425,8 +428,8 @@ Rename a document by `id`:
   }
   ```
 
-    * `notebook`: Notebook ID
-    * `path`: Document path
+  * `notebook`: Notebook ID
+  * `path`: Document path
 * Return value
 
   ```json
@@ -448,7 +451,7 @@ Remove a document by `id`:
   }
   ```
 
-    * `id`: Document ID
+  * `id`: Document ID
 * Return value
 
   ```json
@@ -472,9 +475,9 @@ Remove a document by `id`:
   }
   ```
 
-    * `fromPaths`: Source paths
-    * `toNotebook`: Target notebook ID
-    * `toPath`: Target path
+  * `fromPaths`: Source paths
+  * `toNotebook`: Target notebook ID
+  * `toPath`: Target path
 * Return value
 
   ```json
@@ -497,8 +500,8 @@ Move documents by `id`:
   }
   ```
 
-    * `fromIDs`: Source docs' IDs
-    * `toID`: Target parent doc's ID or notebook ID
+  * `fromIDs`: Source docs' IDs
+  * `toID`: Target parent doc's ID or notebook ID
 * Return value
 
   ```json
@@ -521,8 +524,8 @@ Move documents by `id`:
   }
   ```
 
-    * `notebook`: Notebook ID
-    * `path`: Document path
+  * `notebook`: Notebook ID
+  * `path`: Document path
 * Return value
 
   ```json
@@ -544,7 +547,7 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: Block ID
+  * `id`: Block ID
 * Return value
 
   ```json
@@ -566,7 +569,7 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: Block ID
+  * `id`: Block ID
 * Return value
 
   ```json
@@ -592,8 +595,8 @@ Move documents by `id`:
   }
   ```
 
-    * `path`: Human-readable path
-    * `notebook`: Notebook ID
+  * `path`: Human-readable path
+  * `notebook`: Notebook ID
 * Return value
 
   ```json
@@ -613,13 +616,13 @@ Move documents by `id`:
 * `/api/asset/upload`
 * The parameter is an HTTP Multipart form
 
-    * `assetsDirPath`: The folder path where assets are stored, with the data folder as the root path, for example:
-        * `"/assets/"`: workspace/data/assets/ folder
-        * `"/assets/sub/"`: workspace/data/assets/sub/ folder
+  * `assetsDirPath`: The folder path where assets are stored, with the data folder as the root path, for example:
+    * `"/assets/"`: workspace/data/assets/ folder
+    * `"/assets/sub/"`: workspace/data/assets/sub/ folder
 
       Under normal circumstances, it is recommended to use the first method, which is stored in the assets folder of the
       workspace, putting in a subdirectory has some side effects, please refer to the assets chapter of the user guide.
-    * `file[]`: Uploaded file list
+  * `file[]`: Uploaded file list
 * Return value
 
   ```json
@@ -635,8 +638,8 @@ Move documents by `id`:
   }
   ```
 
-    * `errFiles`: List of filenames with errors in upload processing
-    * `succMap`: For successfully processed files, the key is the file name when uploading, and the value is
+  * `errFiles`: List of filenames with errors in upload processing
+  * `succMap`: For successfully processed files, the key is the file name when uploading, and the value is
       assets/foo-id.png, which is used to replace the asset link address in the existing Markdown content with the
       uploaded address
 
@@ -657,11 +660,11 @@ Move documents by `id`:
   }
   ```
 
-    * `dataType`: The data type to be inserted, the value can be `markdown` or `dom`
-    * `data`: Data to be inserted
-    * `nextID`: The ID of the next block, used to anchor the insertion position
-    * `previousID`: The ID of the previous block, used to anchor the insertion position
-    * `parentID`: The ID of the parent block, used to anchor the insertion position
+  * `dataType`: The data type to be inserted, the value can be `markdown` or `dom`
+  * `data`: Data to be inserted
+  * `nextID`: The ID of the next block, used to anchor the insertion position
+  * `previousID`: The ID of the previous block, used to anchor the insertion position
+  * `parentID`: The ID of the parent block, used to anchor the insertion position
 
   `nextID`, `previousID`, and `parentID` must have at least one value, using priority: `nextID` > `previousID` >
   `parentID`
@@ -689,8 +692,8 @@ Move documents by `id`:
   }
   ```
 
-    * `action.data`: DOM generated by the newly inserted block
-    * `action.id`: ID of the newly inserted block
+  * `action.data`: DOM generated by the newly inserted block
+  * `action.id`: ID of the newly inserted block
 
 ### Prepend blocks
 
@@ -705,9 +708,9 @@ Move documents by `id`:
   }
   ```
 
-    * `dataType`: The data type to be inserted, the value can be `markdown` or `dom`
-    * `data`: Data to be inserted
-    * `parentID`: The ID of the parent block, used to anchor the insertion position
+  * `dataType`: The data type to be inserted, the value can be `markdown` or `dom`
+  * `data`: Data to be inserted
+  * `parentID`: The ID of the parent block, used to anchor the insertion position
 * Return value
 
   ```json
@@ -732,8 +735,8 @@ Move documents by `id`:
   }
   ```
 
-    * `action.data`: DOM generated by the newly inserted block
-    * `action.id`: ID of the newly inserted block
+  * `action.data`: DOM generated by the newly inserted block
+  * `action.id`: ID of the newly inserted block
 
 ### Append blocks
 
@@ -748,9 +751,9 @@ Move documents by `id`:
   }
   ```
 
-    * `dataType`: The data type to be inserted, the value can be `markdown` or `dom`
-    * `data`: Data to be inserted
-    * `parentID`: The ID of the parent block, used to anchor the insertion position
+  * `dataType`: The data type to be inserted, the value can be `markdown` or `dom`
+  * `data`: Data to be inserted
+  * `parentID`: The ID of the parent block, used to anchor the insertion position
 * Return value
 
   ```json
@@ -775,8 +778,8 @@ Move documents by `id`:
   }
   ```
 
-    * `action.data`: DOM generated by the newly inserted block
-    * `action.id`: ID of the newly inserted block
+  * `action.data`: DOM generated by the newly inserted block
+  * `action.id`: ID of the newly inserted block
 
 ### Update a block
 
@@ -791,9 +794,9 @@ Move documents by `id`:
   }
   ```
 
-    * `dataType`: The data type to be updated, the value can be `markdown` or `dom`
-    * `data`: Data to be updated
-    * `id`: ID of the block to be updated
+  * `dataType`: The data type to be updated, the value can be `markdown` or `dom`
+  * `data`: Data to be updated
+  * `id`: ID of the block to be updated
 * Return value
 
   ```json
@@ -818,7 +821,7 @@ Move documents by `id`:
   }
   ```
 
-    * `action.data`: DOM generated by the updated block
+  * `action.data`: DOM generated by the updated block
 
 ### Delete a block
 
@@ -831,7 +834,7 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: ID of the block to be deleted
+  * `id`: ID of the block to be deleted
 * Return value
 
   ```json
@@ -869,9 +872,9 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: Block ID to move
-    * `previousID`: The ID of the previous block, used to anchor the insertion position
-    * `parentID`: The ID of the parent block, used to anchor the insertion position, `previousID` and `parentID` cannot
+  * `id`: Block ID to move
+  * `previousID`: The ID of the previous block, used to anchor the insertion position
+  * `parentID`: The ID of the parent block, used to anchor the insertion position, `previousID` and `parentID` cannot
       be empty at the same time, if they exist at the same time, `previousID` will be used first
 * Return value
 
@@ -912,7 +915,7 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: Block ID to fold
+  * `id`: Block ID to fold
 * Return value
 
   ```json
@@ -934,7 +937,7 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: Block ID to unfold
+  * `id`: Block ID to unfold
 * Return value
 
   ```json
@@ -956,7 +959,7 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: ID of the block to be got
+  * `id`: ID of the block to be got
 * Return value
 
   ```json
@@ -981,8 +984,8 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: Parent block ID
-    * The blocks below a heading are also counted as child blocks
+  * `id`: Parent block ID
+  * The blocks below a heading are also counted as child blocks
 * Return value
 
   ```json
@@ -1021,9 +1024,9 @@ Move documents by `id`:
   }
   ```
 
-    * `fromID`: Def block ID
-    * `toID`: Target block ID
-    * `refIDs`: Ref block IDs point to def block ID, optional, if not specified, all ref block IDs will be transferred
+  * `fromID`: Def block ID
+  * `toID`: Target block ID
+  * `refIDs`: Ref block IDs point to def block ID, optional, if not specified, all ref block IDs will be transferred
 * Return value
 
   ```json
@@ -1050,8 +1053,8 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: Block ID
-    * `attrs`: Block attributes, custom attributes must be prefixed with `custom-`
+  * `id`: Block ID
+  * `attrs`: Block attributes, custom attributes must be prefixed with `custom-`
 * Return value
 
   ```json
@@ -1073,7 +1076,7 @@ Move documents by `id`:
   }
   ```
 
-    * `id`: Block ID
+  * `id`: Block ID
 * Return value
 
   ```json
@@ -1103,7 +1106,7 @@ Move documents by `id`:
   }
   ```
 
-    * `stmt`: SQL statement
+  * `stmt`: SQL statement
 * Return value
 
   ```json
@@ -1146,8 +1149,8 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   }
   ```
 
-    * `id`: The ID of the document where the rendering is called
-    * `path`: Template file absolute path
+  * `id`: The ID of the document where the rendering is called
+  * `path`: Template file absolute path
 * Return value
 
   ```json
@@ -1171,7 +1174,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     "template": "/daily note/{{now | date \"2006/01\"}}/{{now | date \"2006-01-02\"}}"
   }
   ```
-    * `template`: template content
+  * `template`: template content
 * Return value
 
   ```json
@@ -1193,11 +1196,11 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   "path": "/data/20210808180117-6v0mkxr/20200923234011-ieuun1p.sy"
   }
   ``
-    * `path`: the file path under the workspace path
+  * `path`: the file path under the workspace path
 * Return value
 
-    * Response status code `200`: File content
-    * Response status code `202`: Exception information
+  * Response status code `200`: File content
+  * Response status code `202`: Exception information
 
       ```json
       {
@@ -1207,24 +1210,24 @@ Note: To ensure data security, access to this interface is prohibited in Publish
       }
       ```
 
-        * `code`: non-zero for exceptions
+    * `code`: non-zero for exceptions
 
-            * `-1`: Parameter parsing error
-            * `403`: Permission denied (file is not in the workspace)
-            * `404`: Not Found (file doesn't exist)
-            * `405`: Method Not Allowed (it's a directory)
-            * `500`: Server Error (stat file failed / read file failed)
-        * `msg`: a piece of text describing the error
+      * `-1`: Parameter parsing error
+      * `403`: Permission denied (file is not in the workspace)
+      * `404`: Not Found (file doesn't exist)
+      * `405`: Method Not Allowed (it's a directory)
+      * `500`: Server Error (stat file failed / read file failed)
+    * `msg`: a piece of text describing the error
 
 ### Put file
 
 * `/api/file/putFile`
 * The parameter is an HTTP Multipart form
 
-    * `path`: the file path under the workspace path
-    * `isDir`: whether to create a folder, when `true` only create a folder, ignore `file`
-    * `modTime`: last access and modification time, Unix time
-    * `file`: the uploaded file
+  * `path`: the file path under the workspace path
+  * `isDir`: whether to create a folder, when `true` only create a folder, ignore `file`
+  * `modTime`: last access and modification time, Unix time
+  * `file`: the uploaded file
 * Return value
 
    ```json
@@ -1245,7 +1248,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     "path": "/data/20210808180117-6v0mkxr/20200923234011-ieuun1p.sy"
   }
   ```
-    * `path`: the file path under the workspace path
+  * `path`: the file path under the workspace path
 * Return value
 
   ```json
@@ -1267,8 +1270,8 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     "newPath": "/data/assets/test-20230523085812-k3o9t32.png"
   }
   ```
-    * `path`: the file path under the workspace path
-    * `newPath`: the new file path under the workspace path
+  * `path`: the file path under the workspace path
+  * `newPath`: the new file path under the workspace path
 * Return value
 
   ```json
@@ -1289,7 +1292,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     "path": "/data/20210808180117-6v0mkxr/20200923234011-ieuun1p"
   }
   ```
-    * `path`: the dir path under the workspace path
+  * `path`: the dir path under the workspace path
 * Return value
 
   ```json
@@ -1326,7 +1329,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   }
   ```
 
-    * `id`: ID of the doc block to export
+  * `id`: ID of the doc block to export
 * Return value
 
   ```json
@@ -1340,8 +1343,8 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   }
   ```
 
-    * `hPath`: human-readable path
-    * `content`: Markdown content
+  * `hPath`: human-readable path
+  * `content`: Markdown content
 
 ### Export files and folders
 
@@ -1360,8 +1363,8 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   }
   ```
 
-    * `paths`: A list of file or folder paths to be exported, the same filename/folder name will be overwritten
-    * `name`: (Optional) The exported file name, which defaults to `export-YYYY-MM-DD_hh-mm-ss.zip` when not set
+  * `paths`: A list of file or folder paths to be exported, the same filename/folder name will be overwritten
+  * `name`: (Optional) The exported file name, which defaults to `export-YYYY-MM-DD_hh-mm-ss.zip` when not set
 * Return value
 
   ```json
@@ -1374,13 +1377,13 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   }
   ```
 
-    * `path`: The path of `*.zip` file created
-        * The directory structure in `zip-file-name.zip` is as follows:
-            * `zip-file-name`
-                * `boot`
-                * `langs`
-                * `conf.json`
-                * `index.html`
+  * `path`: The path of `*.zip` file created
+    * The directory structure in `zip-file-name.zip` is as follows:
+      * `zip-file-name`
+        * `boot`
+        * `langs`
+        * `conf.json`
+        * `index.html`
 
 ## Conversion
 
@@ -1388,12 +1391,12 @@ Note: To ensure data security, access to this interface is prohibited in Publish
 
 * `/api/convert/pandoc`
 * Working directory
-    * Executing the pandoc command will set the working directory to `workspace/temp/convert/pandoc/${dir}`
-    * API [`Put file`](#put-file) can be used to write the file to be converted to this directory first
-    * Then call the API for conversion, and the converted file will also be written to this directory
-    * Finally, call the API [`Get file`](#get-file) to get the converted file
-        * Or call the API [Create a document with Markdown](#Create-a-document-with-Markdown)
-        * Or call the internal API `importStdMd` to import the converted folder directly
+  * Executing the pandoc command will set the working directory to `workspace/temp/convert/pandoc/${dir}`
+  * API [`Put file`](#put-file) can be used to write the file to be converted to this directory first
+  * Then call the API for conversion, and the converted file will also be written to this directory
+  * Finally, call the API [`Get file`](#get-file) to get the converted file
+    * Or call the API [Create a document with Markdown](#create-a-document-with-markdown)
+    * Or call the internal API `importStdMd` to import the converted folder directly
 * Parameters
 
   ```json
@@ -1407,7 +1410,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   }
   ```
 
-    * `args`: Pandoc command line parameters
+  * `args`: Pandoc command line parameters
 * Return value
 
   ```json
@@ -1419,7 +1422,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     }
   }
   ```
-    * `path`: the path under the workspace
+  * `path`: the path under the workspace
 
 ## Notification
 
@@ -1434,7 +1437,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     "timeout": 7000
   }
   ```
-    * `timeout`: The duration of the message display in milliseconds. This field can be omitted, the default is 7000
+  * `timeout`: The duration of the message display in milliseconds. This field can be omitted, the default is 7000
       milliseconds
 * Return value
 
@@ -1447,7 +1450,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     }
   }
   ```
-    * `id`: Message ID
+  * `id`: Message ID
 
 ### Push error message
 
@@ -1460,7 +1463,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     "timeout": 7000
   }
   ```
-    * `timeout`: The duration of the message display in milliseconds. This field can be omitted, the default is 7000
+  * `timeout`: The duration of the message display in milliseconds. This field can be omitted, the default is 7000
       milliseconds
 * Return value
 
@@ -1473,7 +1476,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
     }
   }
   ```
-    * `id`: Message ID
+  * `id`: Message ID
 
 ## Network
 
@@ -1484,7 +1487,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
 
   ```json
   {
-    "url": "https://b3log.org/siyuan/",
+    "url": "https://example.com/",
     "method": "GET",
     "timeout": 7000,
     "contentType": "text/html",
@@ -1499,29 +1502,29 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   }
   ```
 
-    * `url`: URL to forward
-    * `method`: HTTP method, default is `POST`
-    * `timeout`: timeout in milliseconds, default is `7000`
-    * `contentType`: Content-Type, default is `application/json`
-    * `headers`: HTTP headers
-    * `payload`: HTTP payload, object or string
-    * `payloadEncoding`: The encoding scheme used by `pyaload`, default is `text`, optional values are as follows
+  * `url`: URL to forward
+  * `method`: HTTP method, default is `POST`
+  * `timeout`: timeout in milliseconds, default is `7000`
+  * `contentType`: Content-Type, default is `application/json`
+  * `headers`: HTTP headers
+  * `payload`: HTTP payload, object or string
+  * `payloadEncoding`: The encoding scheme used by `pyaload`, default is `text`, optional values are as follows
 
-        * `text`
-        * `base64` | `base64-std`
-        * `base64-url`
-        * `base32` | `base32-std`
-        * `base32-hex`
-        * `hex`
-    * `responseEncoding`: The encoding scheme used by `body` in response data, default is `text`, optional values are as
+    * `text`
+    * `base64` | `base64-std`
+    * `base64-url`
+    * `base32` | `base32-std`
+    * `base32-hex`
+    * `hex`
+  * `responseEncoding`: The encoding scheme used by `body` in response data, default is `text`, optional values are as
       follows
 
-        * `text`
-        * `base64` | `base64-std`
-        * `base64-url`
-        * `base32` | `base32-std`
-        * `base32-hex`
-        * `hex`
+    * `text`
+    * `base64` | `base64-std`
+    * `base64-url`
+    * `base32` | `base32-std`
+    * `base32-hex`
+    * `hex`
 * Return value
 
   ```json
@@ -1536,20 +1539,20 @@ Note: To ensure data security, access to this interface is prohibited in Publish
       "headers": {
       },
       "status": 200,
-      "url": "https://b3log.org/siyuan"
+      "url": "https://example.com"
     }
   }
   ```
 
-    * `bodyEncoding`: The encoding scheme used by `body`, is consistent with field `responseEncoding` in request,
+  * `bodyEncoding`: The encoding scheme used by `body`, is consistent with field `responseEncoding` in request,
       default is `text`, optional values are as follows
 
-        * `text`
-        * `base64` | `base64-std`
-        * `base64-url`
-        * `base32` | `base32-std`
-        * `base32-hex`
-        * `hex`
+    * `text`
+    * `base64` | `base64-std`
+    * `base64-url`
+    * `base32` | `base32-std`
+    * `base32-hex`
+    * `hex`
 
 ## System
 
@@ -1598,7 +1601,7 @@ Note: To ensure data security, access to this interface is prohibited in Publish
   }
   ```
 
-    * `data`: Precision in milliseconds
+  * `data`: Precision in milliseconds
 
 ## Database
 
@@ -1644,14 +1647,14 @@ The field types (`keyType`) are:
   }
   ```
 
-    * `id`: Database ID
-    * `blockID`: The database block that embeds this database. Used to resolve the active view and publish access. Omit when rendering a detached database.
-    * `viewID`: The view to render. When omitted, the current view (`viewID` field) is used
-    * `page`: Page number, 1-based. Defaults to `1`
-    * `pageSize`: Items per page. `-1` or omitted means use the view's default (`50`)
-    * `query`: Optional full-text filter for the primary-key values
-    * `groupPaging`: Optional paging configuration for grouped (kanban) views
-    * `createIfNotExist`: When `true` (default), create a default view if the database has none
+  * `id`: Database ID
+  * `blockID`: The database block that embeds this database. Used to resolve the active view and publish access. Omit when rendering a detached database.
+  * `viewID`: The view to render. When omitted, the current view (`viewID` field) is used
+  * `page`: Page number, 1-based. Defaults to `1`
+  * `pageSize`: Items per page. `-1` or omitted means use the view's default (`50`)
+  * `query`: Optional full-text filter for the primary-key values
+  * `groupPaging`: Optional paging configuration for grouped (kanban) views
+  * `createIfNotExist`: When `true` (default), create a default view if the database has none
 * Return value (real response, table layout, one row shown):
 
   ```json
@@ -1738,12 +1741,12 @@ The field types (`keyType`) are:
   }
   ```
 
-    * `data.view`: The rendered viewable instance. Shape depends on `viewType` — `table` returns `columns`/`rows`/`rowCount`, `gallery` returns `columns`/`rows`, `kanban` returns `columns`/`groups` (each group is itself a view instance with `groupKey`/`groupValue`). `view` also carries `filters`, `sorts`, `group`, `showIcon`, `wrapField`, `groupFolded`, `groupHidden`. Note: active filters/grouping can make `rows` empty even when `rowCount` > 0
-    * `data.view.columns[]`: Each has `id`, `name`, `type`, `icon`, `wrap`, `hidden`, `desc`, `calc`, `numberFormat`, `template`, `pin`, `width`; `select`/`mSelect` columns additionally carry `options`
-    * `data.view.rows[].id`: The **row ID** (an item ID). For a bound row this is the same as the bound block ID; for a detached row it is a generated item ID distinct from any block
-    * `data.view.rows[].cells[].value`: A `Value` object — see [Set a cell value](#Set-a-cell-value) for all value shapes. `createdAt`/`updatedAt` are int64 millisecond timestamps
-    * `data.views`: Metadata of every view (no rows)
-    * `data.isMirror`: `true` when the database block is a mirror (read-only copy) of the database
+  * `data.view`: The rendered viewable instance. Shape depends on `viewType` — `table` returns `columns`/`rows`/`rowCount`, `gallery` returns `columns`/`rows`, `kanban` returns `columns`/`groups` (each group is itself a view instance with `groupKey`/`groupValue`). `view` also carries `filters`, `sorts`, `group`, `showIcon`, `wrapField`, `groupFolded`, `groupHidden`. Note: active filters/grouping can make `rows` empty even when `rowCount` > 0
+  * `data.view.columns[]`: Each has `id`, `name`, `type`, `icon`, `wrap`, `hidden`, `desc`, `calc`, `numberFormat`, `template`, `pin`, `width`; `select`/`mSelect` columns additionally carry `options`
+  * `data.view.rows[].id`: The **row ID** (an item ID). For a bound row this is the same as the bound block ID; for a detached row it is a generated item ID distinct from any block
+  * `data.view.rows[].cells[].value`: A `Value` object — see [Set a cell value](#set-a-cell-value) for all value shapes. `createdAt`/`updatedAt` are int64 millisecond timestamps
+  * `data.views`: Metadata of every view (no rows)
+  * `data.isMirror`: `true` when the database block is a mirror (read-only copy) of the database
 
 ### Get
 
@@ -1756,7 +1759,7 @@ The field types (`keyType`) are:
   }
   ```
 
-    * `id`: Database ID
+  * `id`: Database ID
 * Return value (real response, trimmed — `keyValues`/`views` arrays truncated):
 
   ```json
@@ -1837,7 +1840,7 @@ The field types (`keyType`) are:
   }
   ```
 
-    * `data.av`: The full `AttributeView` definition — fields (`keyValues`), field ordering (`keyIDs`, may be `null`), current view (`viewID`), and all views with their raw layout config (`table`/`gallery`/`kanban`) and item ordering (`itemIds`). Returns the raw definition (no rendered rows or pagination); use [Render](#Render) for computed rows
+  * `data.av`: The full `AttributeView` definition — fields (`keyValues`), field ordering (`keyIDs`, may be `null`), current view (`viewID`), and all views with their raw layout config (`table`/`gallery`/`kanban`) and item ordering (`itemIds`). Returns the raw definition (no rendered rows or pagination); use [Render](#render) for computed rows
 
 ### Get primary key values
 
@@ -1853,10 +1856,10 @@ The field types (`keyType`) are:
   }
   ```
 
-    * `id`: Database ID
-    * `keyword`: Optional substring filter against primary-key text (case-insensitive)
-    * `page`: Page number, 1-based. Defaults to `1`
-    * `pageSize`: Items per page. `-1` or omitted means `16`. Values are sorted by `block.updated` descending
+  * `id`: Database ID
+  * `keyword`: Optional substring filter against primary-key text (case-insensitive)
+  * `page`: Page number, 1-based. Defaults to `1`
+  * `pageSize`: Items per page. `-1` or omitted means `16`. Values are sorted by `block.updated` descending
 * Return value (real response, one value shown):
 
   ```json
@@ -1897,8 +1900,8 @@ The field types (`keyType`) are:
   }
   ```
 
-    * `data.rows`: A `KeyValues` object holding the primary-key (`block`) field and its paginated values
-    * `data.blockIDs`: IDs of all database blocks (mirrors) that reference this database
+  * `data.rows`: A `KeyValues` object holding the primary-key (`block`) field and its paginated values
+  * `data.blockIDs`: IDs of all database blocks (mirrors) that reference this database
 
 ### Search
 
@@ -1912,8 +1915,8 @@ The field types (`keyType`) are:
   }
   ```
 
-    * `keyword`: Search keyword (matches database name)
-    * `excludes`: Optional list of database IDs to exclude from the results
+  * `keyword`: Search keyword (matches database name)
+  * `excludes`: Optional list of database IDs to exclude from the results
 * Return value (real response):
 
   ```json
@@ -1947,7 +1950,7 @@ The field types (`keyType`) are:
   }
   ```
 
-    * `data.results[]`: Each top-level result groups a database by `avID`; its `children[]` list the individual views (`viewName`/`viewID`/`viewLayout`)
+  * `data.results[]`: Each top-level result groups a database by `avID`; its `children[]` list the individual views (`viewName`/`viewID`/`viewLayout`)
 
 ### Set a cell value
 
@@ -1961,12 +1964,12 @@ Updates a single cell (one field of one row). This is the primary write endpoint
 | `date`     | `{"date": {"content": 1676042451000, "isNotEmpty": true}}` (millisecond timestamp)                                  |
 | `select`   | `{"mSelect": [{"content": "Done", "color": "1"}]}` (at most one option)                                             |
 | `mSelect`  | `{"mSelect": [{"content": "A", "color": "1"}, {"content": "B", "color": "2"}]}`                                      |
-| `url`      | `{"url": {"content": "https://siyuan.com"}}`                                                                         |
+| `url`      | `{"url": {"content": "https://example.com"}}`                                                                        |
 | `email`    | `{"email": {"content": "a@b.com"}}`                                                                                  |
 | `phone`    | `{"phone": {"content": "1234567890"}}`                                                                               |
 | `checkbox` | `{"checkbox": {"checked": true}}`                                                                                    |
 
-> ⚠️ `itemID` is the **row ID** (`rows[].id` from [Render](#Render)). For a bound row the row ID equals the bound block ID; for a detached row it is a generated item ID. Passing the wrong ID stores the value as an orphan that does not appear in the rendered cell.
+> ⚠️ `itemID` is the **row ID** (`rows[].id` from [Render](#render)). For a bound row the row ID equals the bound block ID; for a detached row it is a generated item ID. Passing the wrong ID stores the value as an orphan that does not appear in the rendered cell.
 
 * `/api/av/setAttributeViewBlockAttr`
 * Parameters
@@ -1986,10 +1989,10 @@ Updates a single cell (one field of one row). This is the primary write endpoint
   }
   ```
 
-    * `avID`: Database ID
-    * `keyID`: Field ID (the column being updated)
-    * `itemID`: **Row ID** (`rows[].id` from [Render](#Render)). The legacy `rowID` parameter is deprecated and will be removed after 2026-12-01; use `itemID` instead
-    * `value`: Partial `Value` object (see the table above). Unknown or unsupported keys are ignored
+  * `avID`: Database ID
+  * `keyID`: Field ID (the column being updated)
+  * `itemID`: **Row ID** (`rows[].id` from [Render](#render)). The legacy `rowID` parameter is deprecated and will be removed after 2026-12-01; use `itemID` instead
+  * `value`: Partial `Value` object (see the table above). Unknown or unsupported keys are ignored
 * Return value (real response, number value):
 
   ```json
@@ -2015,7 +2018,7 @@ Updates a single cell (one field of one row). This is the primary write endpoint
   }
   ```
 
-    * `data.value`: The fully-normalized value after the update (with computed fields such as `number.formattedContent`). Use this to refresh the UI rather than re-sending the request payload
+  * `data.value`: The fully-normalized value after the update (with computed fields such as `number.formattedContent`). Use this to refresh the UI rather than re-sending the request payload
 
 ### Add items
 
@@ -2042,16 +2045,16 @@ Adds one or more items (rows). Each source can either bind an existing block (`i
   }
   ```
 
-    * `avID`: Database ID
-    * `blockID`: The database block that owns this database (resolves target view/group)
-    * `viewID`: Target view. When omitted, the current view is used
-    * `groupID`: Target group ID for kanban views. Omit for table/gallery
-    * `previousID`: Insert after this item ID. Empty means append to the end
-    * `srcs[].id`: For bound blocks (`isDetached: false`), the block ID to bind. Must match the node ID pattern
-    * `srcs[].isDetached`: `true` to create a detached row; `false` to bind an existing block
-    * `srcs[].content`: Display text for the primary key (used when `isDetached: true`, or to override the bound block's content)
-    * `srcs[].itemID`: Optional explicit item ID. Auto-generated when omitted
-    * `ignoreDefaultFill`: When `true`, skip auto-filling default values into filter/group fields
+  * `avID`: Database ID
+  * `blockID`: The database block that owns this database (resolves target view/group)
+  * `viewID`: Target view. When omitted, the current view is used
+  * `groupID`: Target group ID for kanban views. Omit for table/gallery
+  * `previousID`: Insert after this item ID. Empty means append to the end
+  * `srcs[].id`: For bound blocks (`isDetached: false`), the block ID to bind. Must match the node ID pattern
+  * `srcs[].isDetached`: `true` to create a detached row; `false` to bind an existing block
+  * `srcs[].content`: Display text for the primary key (used when `isDetached: true`, or to override the bound block's content)
+  * `srcs[].itemID`: Optional explicit item ID. Auto-generated when omitted
+  * `ignoreDefaultFill`: When `true`, skip auto-filling default values into filter/group fields
 * Return value
 
   ```json
@@ -2062,7 +2065,7 @@ Adds one or more items (rows). Each source can either bind an existing block (`i
   }
   ```
 
-    * The endpoint returns `null`; after it succeeds, call [Render](#Render) to fetch the updated rows (including the new row IDs needed for cell updates)
+  * The endpoint returns `null`; after it succeeds, call [Render](#render) to fetch the updated rows (including the new row IDs needed for cell updates)
 
 ### Remove items
 
@@ -2078,8 +2081,8 @@ Removes one or more items (rows). Detached rows are deleted; bound blocks are un
   }
   ```
 
-    * `avID`: Database ID
-    * `srcIDs`: Row IDs (`rows[].id` from [Render](#Render)) to remove
+  * `avID`: Database ID
+  * `srcIDs`: Row IDs (`rows[].id` from [Render](#render)) to remove
 * Return value
 
   ```json
@@ -2092,7 +2095,7 @@ Removes one or more items (rows). Detached rows are deleted; bound blocks are un
 
 ### Change layout
 
-Switches the layout type of the current view between `table`, `gallery`, and `kanban`. On success the server re-renders the view and returns it (same shape as [Render](#Render)).
+Switches the layout type of the current view between `table`, `gallery`, and `kanban`. On success the server re-renders the view and returns it (same shape as [Render](#render)).
 
 * `/api/av/changeAttrViewLayout`
 * Parameters
@@ -2105,10 +2108,10 @@ Switches the layout type of the current view between `table`, `gallery`, and `ka
   }
   ```
 
-    * `avID`: Database ID
-    * `blockID`: The database block that owns the view
-    * `layoutType`: Target layout — one of `table`, `gallery`, `kanban`
-* Return value: same shape as [Render](#Render). When switching to `kanban` and a group is configured, `data.view` carries a `groups[]` array; each group is a view instance with `groupKey`, `groupValue`, plus kanban-specific fields (`coverFrom`, `cardAspectRatio`, `cardSize`, `fitImage`, `displayFieldName`, `fillColBackgroundColor`, `fields`)
+  * `avID`: Database ID
+  * `blockID`: The database block that owns the view
+  * `layoutType`: Target layout — one of `table`, `gallery`, `kanban`
+* Return value: same shape as [Render](#render). When switching to `kanban` and a group is configured, `data.view` carries a `groups[]` array; each group is a view instance with `groupKey`, `groupValue`, plus kanban-specific fields (`coverFrom`, `cardAspectRatio`, `cardSize`, `fitImage`, `displayFieldName`, `fillColBackgroundColor`, `fields`)
 
 ### Set grouping
 
@@ -2130,15 +2133,15 @@ Sets or clears the grouping rule for a kanban view. When `group.field` is empty,
   }
   ```
 
-    * `avID`: Database ID
-    * `blockID`: The database block that owns the view
-    * `group`: Grouping rule
-    * `group.field`: Field (column) ID to group by. Empty string removes grouping
-    * `group.method`: Group method — `0` by value, `1` by number range, `2` by relative date, `3` by day, `4` by week, `5` by month, `6` by year
-    * `group.range`: Optional. Required when `method` is `1` (number range): `{ "numStart": 0, "numEnd": 100, "numStep": 10 }`
-    * `group.order`: Group ordering — `0` ascending, `1` descending, `2` manual, `3` follow select-option order
-    * `group.hideEmpty`: Whether to hide empty groups
-* Return value: same shape as [Render](#Render)
+  * `avID`: Database ID
+  * `blockID`: The database block that owns the view
+  * `group`: Grouping rule
+  * `group.field`: Field (column) ID to group by. Empty string removes grouping
+  * `group.method`: Group method — `0` by value, `1` by number range, `2` by relative date, `3` by day, `4` by week, `5` by month, `6` by year
+  * `group.range`: Optional. Required when `method` is `1` (number range): `{ "numStart": 0, "numEnd": 100, "numStep": 10 }`
+  * `group.order`: Group ordering — `0` ascending, `1` descending, `2` manual, `3` follow select-option order
+  * `group.hideEmpty`: Whether to hide empty groups
+* Return value: same shape as [Render](#render)
 
 ### Get filter and sort
 
@@ -2154,8 +2157,8 @@ Returns the current filter and sort rules of the view bound to a database block.
   }
   ```
 
-    * `id`: Database ID
-    * `blockID`: The database block that owns the view
+  * `id`: Database ID
+  * `blockID`: The database block that owns the view
 * Return value (real response, no filters/sorts configured):
 
   ```json
@@ -2198,16 +2201,16 @@ Returns the current filter and sort rules of the view bound to a database block.
   }
   ```
 
-    * `data.filters`: Array of `ViewFilter`. The top level holds a single root group node `{ "combination": "and"|"or", "filters": [...] }`; the array elements are either leaf filters or nested group nodes, enabling recursive AND/OR combinations.
-    * `data.filters[].column`: Field (column) ID the filter applies to (leaf node only)
-    * `data.filters[].operator`: Filter operator (see the operator table below; leaf node only)
-    * `data.filters[].value`: Filter value, a `Value` object (see [Set a cell value](#Set-a-cell-value) for the value shapes; leaf node only)
-    * `data.filters[].relativeDate`: Optional relative-date descriptor used by date filters (`{ "count": 7, "unit": 0, "direction": -1 }`; `unit`: `0` day, `1` week, `2` month, `3` year; `direction`: `-1` before, `0` this, `1` after; leaf node only)
-    * `data.filters[].combination`: Group combinator, `"and"` or `"or"` (group node only)
-    * `data.filters[].filters`: Child filter nodes, recursively `ViewFilter` (group node only)
-    * `data.sorts`: Array of `ViewSort`
-    * `data.sorts[].column`: Field (column) ID the sort applies to
-    * `data.sorts[].order`: `ASC` or `DESC`
+  * `data.filters`: Array of `ViewFilter`. The top level holds a single root group node `{ "combination": "and"|"or", "filters": [...] }`; the array elements are either leaf filters or nested group nodes, enabling recursive AND/OR combinations.
+  * `data.filters[].column`: Field (column) ID the filter applies to (leaf node only)
+  * `data.filters[].operator`: Filter operator (see the operator table below; leaf node only)
+  * `data.filters[].value`: Filter value, a `Value` object (see [Set a cell value](#set-a-cell-value) for the value shapes; leaf node only)
+  * `data.filters[].relativeDate`: Optional relative-date descriptor used by date filters (`{ "count": 7, "unit": 0, "direction": -1 }`; `unit`: `0` day, `1` week, `2` month, `3` year; `direction`: `-1` before, `0` this, `1` after; leaf node only)
+  * `data.filters[].combination`: Group combinator, `"and"` or `"or"` (group node only)
+  * `data.filters[].filters`: Child filter nodes, recursively `ViewFilter` (group node only)
+  * `data.sorts`: Array of `ViewSort`
+  * `data.sorts[].column`: Field (column) ID the sort applies to
+  * `data.sorts[].order`: `ASC` or `DESC`
 
   Filter operators:
 
@@ -2253,9 +2256,9 @@ Returns the current filter and sort rules of the view bound to a database block.
   }
   ```
 
-    * `avID`: Database ID
-    * `blockID`: The database block that owns the view
-    * `data`: Full new array of `ViewFilter` objects that **replaces** the view's existing filters entirely (see [Get filter and sort](#Get-filter-and-sort)). Pass `[]` to clear all filters. The top level holds a single root group node `{ "combination": "and"|"or", "filters": [...] }`; the array elements are either leaf filters or nested group nodes, enabling recursive AND/OR combinations
+  * `avID`: Database ID
+  * `blockID`: The database block that owns the view
+  * `data`: Full new array of `ViewFilter` objects that **replaces** the view's existing filters entirely (see [Get filter and sort](#get-filter-and-sort)). Pass `[]` to clear all filters. The top level holds a single root group node `{ "combination": "and"|"or", "filters": [...] }`; the array elements are either leaf filters or nested group nodes, enabling recursive AND/OR combinations
 * Return value
 
   ```json
@@ -2284,9 +2287,9 @@ Returns the current filter and sort rules of the view bound to a database block.
   }
   ```
 
-    * `avID`: Database ID
-    * `blockID`: The database block that owns the view
-    * `data`: Full new array of `ViewSort` objects that **replaces** the view's existing sorts entirely (see [Get filter and sort](#Get-filter-and-sort)). Pass `[]` to clear all sorts
+  * `avID`: Database ID
+  * `blockID`: The database block that owns the view
+  * `data`: Full new array of `ViewSort` objects that **replaces** the view's existing sorts entirely (see [Get filter and sort](#get-filter-and-sort)). Pass `[]` to clear all sorts
 * Return value
 
   ```json
@@ -2297,7 +2300,7 @@ Returns the current filter and sort rules of the view bound to a database block.
   }
   ```
 
-    * After a successful call, verify persistence via [Get filter and sort](#Get-filter-and-sort)
+  * After a successful call, verify persistence via [Get filter and sort](#get-filter-and-sort)
 
 ### Add a field
 
@@ -2317,12 +2320,12 @@ Adds a new field (column). The field is appended to every view (table/gallery/ka
   }
   ```
 
-    * `avID`: Database ID
-    * `keyID`: ID for the new field. Must be a valid node ID generated by `Lute.NewNodeID()` (14-digit timestamp + `-` + 7-char random alphanumerics, e.g. `20240118120204-abc1234`)
-    * `keyName`: Field display name
-    * `keyType`: Field type — one of `text`, `number`, `date`, `select`, `mSelect`, `url`, `email`, `phone`, `mAsset`, `template`, `created`, `updated`, `checkbox`, `relation`, `rollup`, `lineNumber`. `block` (primary key) cannot be added through this endpoint
-    * `keyIcon`: Optional field icon (emoji or empty string)
-    * `previousKeyID`: Insert the new column after this field ID. Empty string uses the layout default (first column for table, last for gallery/kanban)
+  * `avID`: Database ID
+  * `keyID`: ID for the new field. Must be a valid node ID generated by `Lute.NewNodeID()` (14-digit timestamp + `-` + 7-char random alphanumerics, e.g. `20240118120204-abc1234`)
+  * `keyName`: Field display name
+  * `keyType`: Field type — one of `text`, `number`, `date`, `select`, `mSelect`, `url`, `email`, `phone`, `mAsset`, `template`, `created`, `updated`, `checkbox`, `relation`, `rollup`, `lineNumber`. `block` (primary key) cannot be added through this endpoint
+  * `keyIcon`: Optional field icon (emoji or empty string)
+  * `previousKeyID`: Insert the new column after this field ID. Empty string uses the layout default (first column for table, last for gallery/kanban)
 * Return value
 
   ```json
@@ -2348,9 +2351,9 @@ Removes a field (column) and all of its values. Returns `code: -1` with `msg: "k
   }
   ```
 
-    * `avID`: Database ID
-    * `keyID`: Field ID to remove
-    * `removeRelationDest`: When `true` and the field is a relation, also remove the corresponding back-relation field from the destination database. Defaults to `false`
+  * `avID`: Database ID
+  * `keyID`: Field ID to remove
+  * `removeRelationDest`: When `true` and the field is a relation, also remove the corresponding back-relation field from the destination database. Defaults to `false`
 * Return value
 
   ```json
@@ -2376,9 +2379,9 @@ Reorders a field (column) globally — moves `keyID` to the position after `prev
   }
   ```
 
-    * `avID`: Database ID
-    * `keyID`: Field ID to move
-    * `previousKeyID`: Field ID after which `keyID` should be placed. Empty string moves it to the first position
+  * `avID`: Database ID
+  * `keyID`: Field ID to move
+  * `previousKeyID`: Field ID after which `keyID` should be placed. Empty string moves it to the first position
 * Return value
 
   ```json
@@ -2405,10 +2408,10 @@ Reorders a column within a single view's layout (e.g. a table's column order), w
   }
   ```
 
-    * `avID`: Database ID
-    * `viewID`: Target view. When empty, uses the current view
-    * `keyID`: Field ID to move
-    * `previousKeyID`: Field ID after which `keyID` should be placed. Empty string moves it to the first position
+  * `avID`: Database ID
+  * `viewID`: Target view. When empty, uses the current view
+  * `keyID`: Field ID to move
+  * `previousKeyID`: Field ID after which `keyID` should be placed. Empty string moves it to the first position
 * Return value
 
   ```json

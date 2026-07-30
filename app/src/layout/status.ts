@@ -81,13 +81,6 @@ export const initStatus = (isWindow = false) => {
                     }
                 }).element);
                 /// #endif
-                window.scribli.menus.menu.append(new MenuItem({
-                    label: window.scribli.languages["_trayMenu"].openSource,
-                    icon: "iconGithub",
-                    click: () => {
-                        window.open("https://github.com/siyuan-note/siyuan");
-                    }
-                }).element);
                 const rect = target.getBoundingClientRect();
                 window.scribli.menus.menu.popup({x: rect.right, y: rect.top, isLeft: true});
                 event.stopPropagation();

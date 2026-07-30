@@ -1,8 +1,10 @@
-# SiYuan `.sy` File JSON Structure — AI Read/Write Guide
+# Scribli `.sy` File JSON Structure — AI Read/Write Guide
+
+<!-- markdownlint-disable MD013 MD060 -->
 
 > Spec baseline: `2` (current across all files).
 > Verified against samples: `20200825162036-4dx365o.sy` (formatting elements), `20200905090211-2vixtlf.sy` (block types).
-> All conclusions are based on real samples and the Lute / SiYuan kernel source. Fields marked `【inferred】` were not directly observed in the samples — re-verify against a real sample before generating them.
+> All conclusions are based on real samples and the Lute / Scribli kernel source. Fields marked `【inferred】` were not directly observed in the samples — re-verify against a real sample before generating them.
 > Companion document: [`WORKSPACE.md`](./WORKSPACE.md) covers the overall on-disk layout of the workspace (how notebooks, parent/child documents, and assets are organized); this document focuses on the **internal** JSON structure of a `.sy` file.
 
 ## 0. In one sentence
@@ -13,9 +15,10 @@ A `.sy` file is a Lute AST tree serialized to JSON. The root node is always `Nod
 
 ## 0.5 When to read/write `.sy` directly (priority order)
 
-SiYuan offers three official paths to mutate data: **HTTP API, MCP, and CLI**. **Prefer them by default.** The kernel handles AST serialization, block-ID allocation, and synchronization of two indexes: the block-tree index (`blocktree.db`, the block-ID → file-path map that block refs and breadcrumbs depend on) and the full-text search index (`siyuan.db` + FTS5). Writing the files directly bypasses all of this and easily leaves the indexes out of sync.
+Scribli offers three official paths to mutate data: **HTTP API, MCP, and CLI**. **Prefer them by default.** The kernel handles AST serialization, block-ID allocation, and synchronization of two indexes: the block-tree index (`blocktree.db`, the block-ID → file-path map that block refs and breadcrumbs depend on) and the full-text search index (`scribli.db` + FTS5). Writing the files directly bypasses all of this and easily leaves the indexes out of sync.
 
 **Only read/write `.sy` as JSON when the official paths are inconvenient.** Applicable scenarios:
+
 - Bulk offline migration (cold-init a workspace, import external data; for the workspace's on-disk layout see [`WORKSPACE.md`](./WORKSPACE.md))
 - Read-only statistics, analysis, custom export / format conversion
 - Repairing low-level structural issues (legacy files, illegal nodes)
@@ -30,7 +33,7 @@ Division of labor among the four paths:
 | **CLI** | Batch / ops | Import, export, sync, SQL, and other command-line tasks |
 | **Read/write `.sy` directly** | The scope of this guide | Offline, bulk, low-level structural work |
 
-> ⚠️ After writing files directly you usually need a "rebuild index" pass before search/block-refs become effective. If SiYuan is running, prefer the HTTP API and let the kernel handle serialization and index sync.
+> ⚠️ After writing files directly you usually need a "rebuild index" pass before search/block-refs become effective. If Scribli is running, prefer the HTTP API and let the kernel handle serialization and index sync.
 
 ---
 
@@ -101,7 +104,7 @@ Division of labor among the four paths:
 
 `NodeText`, `NodeTextMark`, `NodeImage`, `NodeKramdownSpanIAL`, `NodeHeadingC8hMarker`, `NodeBlockquoteMarker`, `NodeTaskListItemMarker`, `NodeBang`, `NodeOpenBracket`, `NodeCloseBracket`, `NodeOpenParen`, `NodeCloseParen`, `NodeLinkText`, `NodeLinkDest`, `NodeCodeBlockCode`, `NodeCodeBlockFenceOpenMarker`, `NodeCodeBlockFenceInfoMarker`, `NodeCodeBlockFenceCloseMarker`, `NodeMathBlockContent`, `NodeMathBlockOpenMarker`, `NodeMathBlockCloseMarker`, `NodeSuperBlockOpenMarker`, `NodeSuperBlockLayoutMarker`, `NodeSuperBlockCloseMarker`, `NodeOpenBrace`, `NodeCloseBrace`, `NodeBlockQueryEmbedScript`, `NodeTableHead`, `NodeTableRow`, `NodeTableCell`
 
-> Types disabled by SiYuan (footnotes / ToC / YAML / LinkRef / HeadingID, etc.) are listed in §11 and never appear in a `.sy` — they are intentionally excluded from this catalog.
+> Types disabled by Scribli (footnotes / ToC / YAML / LinkRef / HeadingID, etc.) are listed in §11 and never appear in a `.sy` — they are intentionally excluded from this catalog.
 
 ---
 
@@ -124,13 +127,13 @@ Division of labor among the four paths:
 
 - `HeadingLevel` ranges `1`–`6`.
 - `NodeHeadingC8hMarker` (`Data` such as `"## "`) is **optional** — present or absent, both are legal. Recommend **omitting** it for brevity when generating.
-- SiYuan recommends using **level-2 headings at the top of the body**, not level 1.
+- Scribli recommends using **level-2 headings at the top of the body**, not level 1.
 
 ### 5.3 Lists (key: distinguish type via `ListData.Typ`)
 
 > **★ Hard structural constraint of lists:** direct children of `NodeList` can **only** be `NodeListItem` (enforced by Lute's `CanContain`, `ast/node.go:993` `return NodeListItem == nodeType`). Paragraphs, code blocks, sub-lists, or any other block **cannot** be attached directly under `NodeList` — they must be wrapped in a `NodeListItem` first.
 
-```
+```text
 ✅ Correct                       ❌ Wrong
 NodeList                         NodeList
 └─ NodeListItem                   ├─ NodeParagraph        ← illegal
@@ -139,7 +142,7 @@ NodeList                         NodeList
 
 **Nested lists** are written by wrapping another `NodeList` (`NodeListItem` falls into the default `CanContain` branch and cannot directly contain another `NodeListItem`):
 
-```
+```text
 ✅ Correct                       ❌ Wrong
 NodeList                         NodeList
 └─ NodeListItem                   └─ NodeListItem
@@ -211,7 +214,7 @@ NodeList                         NodeList
 { "Type": "NodeTaskListItemMarker" }
 ```
 
-> In real `.sy` files, `NodeTaskListItemMarker` **usually has no `Data` field** (SiYuan rebuilds the marker from the DOM `data-task` attribute and doesn't keep the `[X]`/`[ ]` source): checked items carry only `Type`+`TaskListItemChecked`, unchecked only `Type`. If you do write `Data` by hand, the checked form should be uppercase `[X]` (not `[x]`) — but that's only used for normalized Markdown export.
+> In real `.sy` files, `NodeTaskListItemMarker` **usually has no `Data` field** (Scribli rebuilds the marker from the DOM `data-task` attribute and doesn't keep the `[X]`/`[ ]` source): checked items carry only `Type`+`TaskListItemChecked`, unchecked only `Type`. If you do write `Data` by hand, the checked form should be uppercase `[X]` (not `[x]`) — but that's only used for normalized Markdown export.
 
 ### 5.6 Blockquote
 
@@ -289,10 +292,11 @@ NodeList                         NodeList
 ```
 
 Notes:
+
 - `NodeCodeBlockCode` carries the code content (in `Data`, raw text with `\n` escaped); it's an inline child of `NodeCodeBlock`.
 - The surrounding fence markers (Open/Info/Close) are likewise inline children.
 - `CodeBlockInfo` is the **base64-encoded language** (`"Z28="` = `go`). The parent's seven fields (`IsFencedCodeBlock`/`CodeBlockFenceChar`/`CodeBlockFenceLen`/`CodeBlockOpenFence`/`CodeBlockInfo`/`CodeBlockCloseFence`) all carry `omitempty` and may be omitted as needed — newer `.sy` files often write only `"IsFencedCodeBlock": true`.
-- SiYuan **does not support indented code blocks** (`SetIndentCodeBlock(false)`); all code blocks are fenced.
+- Scribli **does not support indented code blocks** (`SetIndentCodeBlock(false)`); all code blocks are fenced.
 
 ### 5.11 Math block (three-part structure)
 
@@ -488,9 +492,9 @@ A flat `map[string]string`.
 
 ---
 
-## 11. Markdown syntax disabled by SiYuan (must not appear in `.sy`)
+## 11. Markdown syntax disabled by Scribli (must not appear in `.sy`)
 
-SiYuan disables the following syntax via `SetXxx(false)` in `NewLute()` (`kernel/util/lute.go`). The corresponding node types **never** appear in `.sy` files — AI must not generate them:
+Scribli disables the following syntax via `SetXxx(false)` in `NewLute()` (`kernel/util/lute.go`). The corresponding node types **never** appear in `.sy` files — AI must not generate them:
 
 | Disabled item | Corresponding node types | Note |
 |---|---|---|
@@ -509,7 +513,7 @@ SiYuan disables the following syntax via `SetXxx(false)` in `NewLute()` (`kernel
 
 ## 12. AI write checklist
 
-When generating a `.sy` that SiYuan can load cleanly, verify item by item:
+When generating a `.sy` that Scribli can load cleanly, verify item by item:
 
 1. ☐ Root `Type` = `"NodeDocument"`, `Spec` = `"2"`; root `ID` = filename (without `.sy`) and equals `Properties.id`
 2. ☐ Root `Properties` contains `id`/`title`/`type:"doc"`/`updated`
@@ -546,7 +550,7 @@ When generating a `.sy` that SiYuan can load cleanly, verify item by item:
 | `inline-math` carrying `TextMarkTextContent` | It only has `TextMarkInlineMathContent` |
 | Fabricating block-ref / AV target IDs | Targets must really exist |
 | Hanging a paragraph directly under `NodeList` | `NodeList` can only contain `NodeListItem` — wrap first |
-| Generating footnotes/ToC/YAML, etc. | SiYuan disables these; they never appear in `.sy` |
+| Generating footnotes/ToC/YAML, etc. | Scribli disables these; they never appear in `.sy` |
 
 ---
 

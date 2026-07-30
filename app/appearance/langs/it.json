@@ -1815,8 +1815,6 @@
 		"hideWindow": "Nascondi Finestra",
 		"setWindowTop": "Imposta finestra in primo piano",
 		"cancelWindowTop": "Annulla finestra in primo piano",
-		"officialWebsite": "Visita sito ufficiale",
-		"openSource": "Visita progetto su GitHub",
 		"resetWindow": "Reimposta finestra ed esci",
 		"quit": "Esci dall'applicazione"
 	},

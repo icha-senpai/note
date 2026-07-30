@@ -156,7 +156,7 @@ func Serve(fastMode bool, cookieKey string) {
 
 		HttpOnly: true,
 	})
-	ginServer.Use(sessions.Sessions("siyuan", sessionStore))
+	ginServer.Use(sessions.Sessions("scribli", sessionStore))
 
 	serveDebug(ginServer)
 	serveAssets(ginServer)
@@ -467,9 +467,9 @@ func serveSnippets(ginServer *gin.Engine) {
 }
 
 func serveAppearance(ginServer *gin.Engine) {
-	siyuan := ginServer.Group("", model.CheckAuth)
+	scribli := ginServer.Group("", model.CheckAuth)
 
-	siyuan.Handle("GET", "/", func(c *gin.Context) {
+	scribli.Handle("GET", "/", func(c *gin.Context) {
 		userAgentHeader := c.GetHeader("User-Agent")
 		logging.LogInfof("serving [/] for user-agent [%s]", userAgentHeader)
 
@@ -479,9 +479,9 @@ func serveAppearance(ginServer *gin.Engine) {
 		queryParams.Set("r", gulu.Rand.String(7))
 		location.RawQuery = queryParams.Encode()
 
-		siyuanDesktopMode, desktopCookieErr := c.Request.Cookie("siyuan-desktop-mode")
+		scribliDesktopMode, desktopCookieErr := c.Request.Cookie("scribli-desktop-mode")
 		if nil == desktopCookieErr {
-			if "true" == siyuanDesktopMode.Value {
+			if "true" == scribliDesktopMode.Value {
 				if strings.Contains(userAgentHeader, "Electron") {
 					location.Path = "/stage/build/app/"
 				} else {
@@ -489,7 +489,7 @@ func serveAppearance(ginServer *gin.Engine) {
 				}
 				c.Redirect(302, location.String())
 				return
-			} else if "false" == siyuanDesktopMode.Value {
+			} else if "false" == scribliDesktopMode.Value {
 				location.Path = "/stage/build/mobile/"
 				c.Redirect(302, location.String())
 				return
@@ -521,7 +521,7 @@ func serveAppearance(ginServer *gin.Engine) {
 	if "dev" == util.Mode {
 		appearancePath = filepath.Join(util.WorkingDir, "appearance")
 	}
-	siyuan.GET("/appearance/*filepath", func(c *gin.Context) {
+	scribli.GET("/appearance/*filepath", func(c *gin.Context) {
 		filePath := filepath.Join(appearancePath, strings.TrimPrefix(c.Request.URL.Path, "/appearance/"))
 		if !gulu.File.IsSubPath(appearancePath, filePath) {
 			c.Status(http.StatusUnauthorized)
@@ -583,7 +583,7 @@ func serveAppearance(ginServer *gin.Engine) {
 		c.File(filePath)
 	})
 
-	siyuan.Static("/stage", filepath.Join(util.WorkingDir, "stage"))
+	scribli.Static("/stage", filepath.Join(util.WorkingDir, "stage"))
 }
 
 func serveCheckAuth(ginServer *gin.Engine) {
@@ -1007,7 +1007,7 @@ func serveWebSocket(ginServer *gin.Engine) {
 		authOk := true
 
 		if "" != model.Conf.AccessAuthCode {
-			session, err := sessionStore.Get(s.Request, "siyuan")
+			session, err := sessionStore.Get(s.Request, "scribli")
 			if err != nil {
 				authOk = false
 				logging.LogErrorf("get cookie failed: %s", err)
@@ -1042,7 +1042,7 @@ func serveWebSocket(ginServer *gin.Engine) {
 
 		if !authOk {
 
-			authOk = strings.Contains(s.Request.RequestURI, "/ws?app=siyuan") && strings.Contains(s.Request.RequestURI, "&id=auth&type=auth")
+			authOk = strings.Contains(s.Request.RequestURI, "/ws?app=scribli") && strings.Contains(s.Request.RequestURI, "&id=auth&type=auth")
 		}
 
 		if !authOk {

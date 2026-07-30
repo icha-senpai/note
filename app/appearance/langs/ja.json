@@ -1815,8 +1815,6 @@
 		"hideWindow": "ウィンドウを非表示",
 		"setWindowTop": "ウィンドウを最前面に設定",
 		"cancelWindowTop": "ウィンドウの最前面設定を解除",
-		"officialWebsite": "公式サイトにアクセス",
-		"openSource": "GitHubでプロジェクトを見る",
 		"resetWindow": "ウィンドウをリセットして終了",
 		"quit": "アプリケーションを終了"
 	},

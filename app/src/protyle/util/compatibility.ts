@@ -206,9 +206,7 @@ export const readClipboard = async () => {
         text.textHTML = textObj.textHtml;
         text.scribliHTML = textObj.textScribli;
         if (!text.scribliHTML) {
-            text.scribliHTML = window.JSAndroid.readScribliHTMLClipboard?.() ||
-                window.JSAndroid.readSiYuanHTMLClipboard?.() ||
-                "";
+            text.scribliHTML = window.JSAndroid.readScribliHTMLClipboard?.() || "";
         }
         return text;
     }
@@ -219,9 +217,7 @@ export const readClipboard = async () => {
         text.textHTML = textObj.textHtml;
         text.scribliHTML = textObj.textScribli;
         if (!text.scribliHTML) {
-            text.scribliHTML = window.JSHarmony.readScribliHTMLClipboard?.() ||
-                window.JSHarmony.readSiYuanHTMLClipboard?.() ||
-                "";
+            text.scribliHTML = window.JSHarmony.readScribliHTMLClipboard?.() || "";
         }
         return text;
     }

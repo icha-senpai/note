@@ -1,19 +1,21 @@
-# SiYuan Workspace File-System Layout — Reference
+# Scribli Workspace File-System Layout — Reference
 
-> This document describes how a SiYuan workspace is organized on disk.
+<!-- markdownlint-disable MD013 -->
+
+> This document describes how a Scribli workspace is organized on disk.
 > It complements [`SY-FORMAT.md`](./SY-FORMAT.md): the latter covers the **internal** JSON structure of a `.sy` file, while this one covers the **overall** file-system layout of the workspace.
 > All conclusions are verified against a real workspace and the kernel source.
 
 ## 0. In one sentence
 
-A SiYuan workspace is a **self-describing** directory tree: notebooks, documents, and assets live on disk as files and directories. **The filename is the ID; the directory structure is the document hierarchy.** The file system contains the authoritative source content, while SQLite databases under `temp/` are rebuildable indexes and caches. Normal-notebook content is readable directly; encrypted-notebook content is ciphertext and must be accessed through the unlocked kernel.
+A Scribli workspace is a **self-describing** directory tree: notebooks, documents, and assets live on disk as files and directories. **The filename is the ID; the directory structure is the document hierarchy.** The file system contains the authoritative source content, while SQLite databases under `temp/` are rebuildable indexes and caches. Normal-notebook content is readable directly; encrypted-notebook content is ciphertext and must be accessed through the unlocked kernel.
 
 ---
 
 ## 1. Cheat-sheet tree (overview)
 
-```
-<workspace root>/   e.g. F:\SiYuan\
+```text
+<workspace root>/   e.g. F:\Scribli\
 ├── .lock                       # Runtime workspace lock
 ├── conf/
 │   ├── conf.json              # ★Workspace-level config (appearance/system/sync/editor...)
@@ -49,21 +51,21 @@ A SiYuan workspace is a **self-describing** directory tree: notebooks, documents
 ├── history/                    # Edit-history archive
 ├── corrupted/                  # Optional quarantine for corrupted data
 └── temp/                       # Rebuildable indexes, queues, caches, logs, and exports
-    ├── siyuan.db / blocktree.db / asset_content.db / history.db
-    ├── siyuan-encrypted-<boxID>.db / siyuan-encrypted-<boxID>-blocktree.db
-    └── queue/ / export/ / os/ / siyuan.log
+    ├── scribli.db / blocktree.db / asset_content.db / history.db
+    ├── scribli-encrypted-<boxID>.db / scribli-encrypted-<boxID>-blocktree.db
+    └── queue/ / export/ / os/ / scribli.log
 ```
 
 ---
 
 ## 2. Workspace root
 
-The workspace root is chosen by the user (e.g. `F:\SiYuan\`). Whether a directory is a valid workspace is decided by: `conf/conf.json` exists and contains a `kernelVersion` field.
+The workspace root is chosen by the user (e.g. `F:\Scribli\`). Whether a directory is a valid workspace is decided by: `conf/conf.json` exists and contains a `kernelVersion` field.
 
 Workspace-root entries:
 
 | Entry | Purpose |
-|---|---|
+| --- | --- |
 | `.lock` | Runtime lock preventing two kernels from opening the same workspace |
 | `conf/` | Workspace-level config, appearance resources, and TLS material |
 | `data/` | **All notebook data** (the core of this document) |
@@ -96,7 +98,7 @@ That is, the physical path segments `assets` / `templates` / `widgets` / `emojis
 
 ### Persistent data vs rebuildable indexes
 
-`data/storage/` contains persistent structured data such as attribute-view definitions and plugin state. The SQLite files in `temp/` are derived indexes and caches: normal notebooks use the global `siyuan.db` and `blocktree.db`, while each unlocked encrypted notebook uses independent SQLCipher databases. Deleting or rebuilding an index must not be confused with deleting the source `.sy`, asset, or database-definition files.
+`data/storage/` contains persistent structured data such as attribute-view definitions and plugin state. The SQLite files in `temp/` are derived indexes and caches: normal notebooks use the global `scribli.db` and `blocktree.db`, while each unlocked encrypted notebook uses independent SQLCipher databases. Deleting or rebuilding an index must not be confused with deleting the source `.sy`, asset, or database-definition files.
 
 ### How a notebook is recognized
 
@@ -117,7 +119,7 @@ This is the single most important convention in the whole layout:
 
 Real example (from `find` output):
 
-```
+```text
 20221126104620-m06prws/                            # parent document A's directory
 20221126104620-m06prws.sy                          # parent document A itself
 20221126104620-m06prws/20230928134805-z11t56h.sy   # A's child B
@@ -140,7 +142,7 @@ The switch is stored at `fileTree.boxDocEnabled` in `conf/conf.json`. It default
 
 The top-level notebook document is a virtual parent for every ordinary document stored directly under `<boxID>/`. Unlike an ordinary parent document, its children remain in the notebook directory and are **not** moved into a `<boxID>/<boxID>/` directory. For example:
 
-```
+```text
 data/<boxID>/
 ├── <boxID>.sy       # Top-level notebook document
 ├── <docA>.sy        # Logical child of <boxID>.sy
@@ -158,7 +160,7 @@ The kernel maps virtual paths beginning with `/<boxID>/` back to the notebook's 
 Each notebook directory contains a `.siyuan/` hidden folder, which can contain:
 
 | File | Purpose |
-|---|---|
+| --- | --- |
 | `conf.json` | Notebook config (BoxConf) |
 | `sort.json` | Optional custom sort mapping `{docID: order}` |
 | `boxDoc.json` | Optional; identifies the top-level notebook document in `.sy.zip` notebook exports/imports |
@@ -167,7 +169,7 @@ Each notebook directory contains a `.siyuan/` hidden folder, which can contain:
 The `BoxConf` struct:
 
 | Field | Type | Meaning |
-|---|---|---|
+| --- | --- | --- |
 | `name` | string | Notebook display name |
 | `sort` | int | Sort weight |
 | `icon` | string | Icon (emoji hex code, e.g. `"1f3af"`; or a custom-icon filename) |
@@ -197,7 +199,7 @@ Encrypted notebooks retain recovery metadata in `conf.json` and `notebook-crypt-
 Be careful to distinguish the two `conf.json` files:
 
 | File | Location | Scope |
-|---|---|---|
+| --- | --- | --- |
 | `conf/conf.json` | **Workspace root** | Workspace-level global config (appearance / langs / system / editor / sync / repo, etc.) |
 | `<boxID>/.siyuan/conf.json` | **Inside a notebook** | That notebook only (BoxConf) |
 
@@ -210,7 +212,7 @@ Be careful to distinguish the two `conf.json` files:
 `data/.siyuan/` is different from the per-notebook `.siyuan/` — the former holds **workspace-level** rules and state:
 
 | File | Purpose |
-|---|---|
+| --- | --- |
 | `syncignore` | Sync-ignore rules (gitignore style) |
 | `searchignore` | Search-ignore rules |
 | `embeddingignore` | AI-embedding ignore rules |
@@ -302,7 +304,7 @@ When writing files directly:
 ## 12. Relationship with SY-FORMAT
 
 | Document | Layer | Question answered |
-|---|---|---|
+| --- | --- | --- |
 | **This one (WORKSPACE)** | File-system layer | "What does a workspace look like on disk? How are notebooks/documents/assets organized?" |
 | **SY-FORMAT** | AST layer | "What does the JSON tree inside a `.sy` file look like? What node types/fields exist?" |
 
