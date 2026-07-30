@@ -31,14 +31,13 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/mod/semver"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/github/gofrs/flock"
 	"github.com/icha-senpai/note/third_party/forks/go-humanize"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
-	figure "github.com/icha-senpai/note/third_party/forks/github/common-nighthawk/go-figure"
-	"github.com/icha-senpai/note/third_party/forks/github/gofrs/flock"
-	"github.com/icha-senpai/note/third_party/forks/filelock"
 	"github.com/icha-senpai/note/third_party/forks/httpclient"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/mod/semver"
 )
 
 // var Mode = "dev"
@@ -197,8 +196,7 @@ func BootWithFlags(workspacePath, wdPath, port, readOnly, accessAuthCode, lang, 
 
 	tryLockWorkspace()
 
-	bootBanner := figure.NewColorFigure("Scribli", "isometric3", "green", true)
-	logging.LogInfo("\n" + bootBanner.String())
+	logging.LogInfo("\n" + bootBanner())
 	logBootInfo()
 }
 

@@ -69,6 +69,47 @@ func TestExtractPptxText(t *testing.T) {
 	}
 }
 
+func TestExtractXlsxText(t *testing.T) {
+	path := writeOfficeTestArchive(t, map[string]string{
+		"xl/workbook.xml": `<?xml version="1.0" encoding="UTF-8"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+	<sheets>
+		<sheet name="Sheet1" sheetId="1" r:id="rId1"/>
+	</sheets>
+</workbook>`,
+		"xl/_rels/workbook.xml.rels": `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+</Relationships>`,
+		"xl/sharedStrings.xml": `<?xml version="1.0" encoding="UTF-8"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+	<si><t>Shared Text</t></si>
+	<si><r><t>Rich</t></r><r><t> Text</t></r></si>
+</sst>`,
+		"xl/worksheets/sheet1.xml": `<?xml version="1.0" encoding="UTF-8"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+	<sheetData>
+		<row>
+			<c r="A1" t="s"><v>0</v></c>
+			<c r="B1" t="inlineStr"><is><t>Inline Text</t></is></c>
+			<c r="C1"><v>42</v></c>
+			<c r="D1" t="s"><v>1</v></c>
+		</row>
+	</sheetData>
+</worksheet>`,
+	})
+
+	text, err := extractXlsxText(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, expected := range []string{"Shared Text", "Inline Text", "42", "Rich Text"} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("missing extracted XLSX content %q in %q", expected, text)
+		}
+	}
+}
+
 func writeOfficeTestArchive(t *testing.T, files map[string]string) string {
 	t.Helper()
 

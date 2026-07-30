@@ -21,9 +21,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	figure "github.com/icha-senpai/note/third_party/forks/github/common-nighthawk/go-figure"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/httpclient"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
@@ -60,8 +59,7 @@ func BootMobile(container, appDir, workspaceBaseDir, lang string) {
 	initWorkspaceDirMobile(workspaceBaseDir)
 
 	initPathDir()
-	bootBanner := figure.NewFigure("Scribli", "", true)
-	logging.LogInfo("\n" + bootBanner.String())
+	logging.LogInfo("\n" + bootBanner())
 	logBootInfo()
 }
 

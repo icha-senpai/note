@@ -18,46 +18,25 @@ package agent
 
 import (
 	"encoding/json"
-	"sync"
 
 	tools "github.com/icha-senpai/note/kernel/mcp/tools"
-	"github.com/icha-senpai/note/third_party/forks/github/pkoukk/tiktoken-go"
-	loader "github.com/icha-senpai/note/third_party/forks/github/pkoukk/tiktoken-go-loader"
 	"github.com/icha-senpai/note/third_party/forks/github/sashabaranov/go-openai"
 )
 
 type tokenCounter struct {
-	enc *tiktoken.Tiktoken
 }
 
-var (
-	tokenCounterOnce sync.Once
-	globalCounter    *tokenCounter
-	tokenCounterErr  error
-)
+var globalCounter = &tokenCounter{}
 
-func getTokenCounter(modelName string) (*tokenCounter, error) {
-	tokenCounterOnce.Do(func() {
-		tiktoken.SetBpeLoader(loader.NewOfflineLoader())
-		enc, err := tiktoken.EncodingForModel(modelName)
-		if err != nil {
-
-			enc, err = tiktoken.GetEncoding("cl100k_base")
-			if err != nil {
-				tokenCounterErr = err
-				return
-			}
-		}
-		globalCounter = &tokenCounter{enc: enc}
-	})
-	return globalCounter, tokenCounterErr
+func getTokenCounter(_ string) (*tokenCounter, error) {
+	return globalCounter, nil
 }
 
 func (c *tokenCounter) count(text string) int {
-	if c == nil || c.enc == nil {
+	if c == nil {
 		return estimateTokensByChars(text)
 	}
-	return len(c.enc.Encode(text, nil, nil))
+	return estimateTokensByChars(text)
 }
 
 func estimateTokensByChars(text string) int {
@@ -73,7 +52,7 @@ func estimateTokensByChars(text string) int {
 			other++
 		}
 	}
-	return cjk*2/3 + other/4
+	return (cjk*2+2)/3 + (other+3)/4
 }
 
 func toolSource(name string) string {

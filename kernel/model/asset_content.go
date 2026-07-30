@@ -39,7 +39,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/github/klippa-app/go-pdfium"
 	"github.com/icha-senpai/note/third_party/forks/github/klippa-app/go-pdfium/requests"
 	"github.com/icha-senpai/note/third_party/forks/github/klippa-app/go-pdfium/webassembly"
-	"github.com/icha-senpai/note/third_party/forks/github/xuri/excelize/v2"
 	"github.com/icha-senpai/note/third_party/forks/go-humanize"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
@@ -684,29 +683,13 @@ func (parser *XlsxAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 	}
 	defer os.RemoveAll(tmp)
 
-	x, err := excelize.OpenFile(tmp)
+	data, err := extractXlsxText(tmp)
 	if err != nil {
-		logging.LogErrorf("open [%s] failed: [%s]", tmp, err)
+		logging.LogErrorf("convert [%s] failed: [%s]", tmp, err)
 		return
 	}
-	defer x.Close()
 
-	buf := bytes.Buffer{}
-	sheetMap := x.GetSheetMap()
-	for _, sheetName := range sheetMap {
-		rows, getErr := x.GetRows(sheetName)
-		if nil != getErr {
-			logging.LogErrorf("get rows from sheet [%s] failed: [%s]", sheetName, getErr)
-			return
-		}
-		for _, row := range rows {
-			for _, colCell := range row {
-				buf.WriteString(colCell + " ")
-			}
-		}
-	}
-
-	var content = normalizeNonTxtAssetContent(buf.String())
+	var content = normalizeNonTxtAssetContent(data)
 	ret = &AssetParseResult{
 		Content: content,
 	}
