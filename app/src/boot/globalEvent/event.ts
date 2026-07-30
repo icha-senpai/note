@@ -57,10 +57,8 @@ export const initWindowEvent = (app: App) => {
         windowMouseMove(event, mouseIsEnter);
     });
 
-    // 横向滚动表格时重新定位表格列宽调整手柄 
     window.addEventListener("scroll", (event: Event) => {
         const scrollElement = event.target as HTMLElement;
-        // 仅处理表格内容容器（.table 块的 firstElementChild）的滚动
         if (!scrollElement.parentElement || !scrollElement.parentElement.classList.contains("table")) {
             return;
         }
@@ -89,12 +87,9 @@ export const initWindowEvent = (app: App) => {
         if (event.dataTransfer.types.includes("text/plain")) {
             return;
         }
-        // 拖拽标题/列表项块标时，按浮窗模型控制文档树所在浮动 dock 的显隐：
-        // 鼠标在边缘触发区或面板内则展开，离开则收起 
         if (!isWindow() &&
             (!window.scribli.layout.leftDock.pin || !window.scribli.layout.rightDock.pin || !window.scribli.layout.bottomDock.pin)) {
             const fileDock = getDockByType("file");
-            // 文档树所在 dock 为浮动且文档树图标激活时才处理
             if (fileDock && !fileDock.pin &&
                 document.querySelector('.dock__items > .dock__item--active[data-type="file"]')) {
                 let gutterBlockType = "";
@@ -108,7 +103,6 @@ export const initWindowEvent = (app: App) => {
                     const statusHeight = document.getElementById("status")?.clientHeight || 0;
                     const toolbarHeight = document.getElementById("toolbar")?.clientHeight || 0;
                     const inYRange = event.clientY > toolbarHeight && event.clientY < window.innerHeight - statusHeight;
-                    // 通过 dock 容器类名判断位置，避免访问私有属性 position
                     const dockElement = fileDock.layout.element;
                     let onEdge = false;
                     if (dockElement.classList.contains("layout__dockl")) {
@@ -132,7 +126,6 @@ export const initWindowEvent = (app: App) => {
         }
         const fileElement = hasClosestByClassName(target, "sy__file");
         const protyleElement = hasClosestByClassName(target, "protyle", true);
-        // 光标不在编辑器也不在文档树内时，隐藏拖拽提示（避免卡在无效区域）
         if (!fileElement && !protyleElement) {
             document.querySelector(".drag-tip")?.remove();
             stopScrollAnimation();
@@ -190,7 +183,6 @@ export const initWindowEvent = (app: App) => {
     });
 
     window.addEventListener("mousedown", (event) => {
-        // protyle.toolbar 点击空白处时进行隐藏
         if (!hasClosestByClassName(event.target as Element, "protyle-toolbar")) {
             hideAllElements(["toolbar"]);
         }
@@ -239,7 +231,6 @@ export const initWindowEvent = (app: App) => {
     }, false);
 
     document.addEventListener("touchend", (event) => {
-        // 无条件前置取消手动桥接：触发各组件（如 Outline.bindSort）注册的 mouseup 清理回调，复位 document.onmousemove 等状态
         cancelManualTouch();
         if (window.scribli.touchDragActive) {
             return;
@@ -247,7 +238,6 @@ export const initWindowEvent = (app: App) => {
         if (Math.abs(startX - event.changedTouches[0].clientX) < Constants.SIZE_DRAG_THRESHOLD &&
             Math.abs(startY - event.changedTouches[0].clientY) < Constants.SIZE_DRAG_THRESHOLD &&
             Date.now() - time > Constants.TIMEOUT_LONGPRESS &&
-            // 鼠标长按不应合成右键菜单：触屏长按出菜单是手指专属手势，鼠标菜单由右键触发
             !isLastPointerMouse()) {
             event.target.dispatchEvent(new MouseEvent("contextmenu", {
                 bubbles: true,

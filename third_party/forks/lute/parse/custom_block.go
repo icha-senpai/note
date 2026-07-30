@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -20,7 +19,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 )
 
-// CustomBlockStart 判断围栏自定义块（;;;info）是否开始。
 func CustomBlockStart(t *Tree, container *ast.Node) int {
 	if t.Context.indented {
 		return 0
@@ -45,7 +43,6 @@ func CustomBlockContinue(customBlock *ast.Node, context *Context) int {
 		context.finalize(customBlock)
 		return 2
 	} else {
-		// 跳过围栏标记符 ; 之前可能存在的空格
 		i := customBlock.CustomBlockFenceOffset
 		var token byte
 		for i > 0 {
@@ -93,7 +90,6 @@ func (t *Tree) parseCustomBlock() (ok bool, fenceOffset int, info string) {
 
 	infoTokens := t.Context.currentLine[t.Context.nextNonspace+fenceLen:]
 	if 0 < bytes.IndexByte(infoTokens, lex.ItemSemicolon) {
-		// info 部分不能包含 ;
 		return
 	}
 

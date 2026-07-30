@@ -19,14 +19,14 @@ package plugin
 import (
 	"fmt"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
-// injectRpc adds siyuan.rpc method for RPC method registration.
-func injectRpc(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
+// injectRpc adds scribli.rpc method for RPC method registration.
+func injectRpc(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("injectRpc: %v", r)
@@ -78,18 +78,18 @@ func injectRpc(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err erro
 		}, func(rt *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.rpc.bind resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.rpc.bind resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.rpc.bind reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.rpc.bind reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.rpc.bind worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.rpc.bind worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.rpc.bind reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.rpc.bind reject: %v", p.Name, rejectErr)
 			}
 		}
 
@@ -119,18 +119,18 @@ func injectRpc(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err erro
 		}, func(rt *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.rpc.unbind resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.rpc.unbind resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.rpc.unbind reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.rpc.unbind reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.rpc.unbind worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.rpc.unbind worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.rpc.unbind reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.rpc.unbind reject: %v", p.Name, rejectErr)
 			}
 		}
 
@@ -179,18 +179,18 @@ func injectRpc(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err erro
 		}, func(rt *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.rpc.broadcast resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.rpc.broadcast resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.rpc.broadcast reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.rpc.broadcast reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.rpc.broadcast worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.rpc.broadcast worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.rpc.broadcast reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.rpc.broadcast reject: %v", p.Name, rejectErr)
 			}
 		}
 
@@ -199,6 +199,6 @@ func injectRpc(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err erro
 
 	lo.Must0(ObjectFreeze(rt, rpc))
 
-	lo.Must0(siyuan.Set("rpc", rpc))
+	lo.Must0(scribli.Set("rpc", rpc))
 	return
 }

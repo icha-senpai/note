@@ -1,7 +1,6 @@
 import {Constants} from "../constants";
 import {fetchPost, fetchSyncPost} from "../util/fetch";
 import {openDataMigration} from "../menus/dataMigration";
-import {mountHelp} from "../util/mount";
 import {syncGuide} from "../sync/syncGuide";
 import {setNoteBook} from "../util/pathName";
 import type {App} from "../index";
@@ -71,9 +70,6 @@ const renderOnboarding = (app: App) => {
 </button>
 <button class="b3-button b3-button--outline fn__block" data-type="sync">
     <svg><use xlink:href="#iconCloud"></use></svg>${window.scribli.languages.settingsAndSync}
-</button>
-<button class="b3-button b3-button--outline fn__block" data-type="guide">
-    <svg><use xlink:href="#iconHelp"></use></svg>${window.scribli.languages.userGuide}
 </button>`;
     element.addEventListener("click", (event) => {
         const target = (event.target as HTMLElement).closest("[data-type]") as HTMLElement;
@@ -93,10 +89,6 @@ const renderOnboarding = (app: App) => {
                 break;
             case "sync":
                 syncAndDismissOnSuccess(app);
-                break;
-            case "guide":
-                mountHelp();
-                dismissOnboarding();
                 break;
         }
     });

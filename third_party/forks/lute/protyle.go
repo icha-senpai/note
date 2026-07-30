@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -43,21 +42,17 @@ func (lute *Lute) SpinBlockDOM(ivHTML string) (ovHTML string) {
 	lastChildMaybeIAL := tree.Root.LastChild.Previous
 	if ast.NodeParagraph == firstChild.Type && "" == firstChild.ID && nil != lastChildMaybeIAL && firstChild != lastChildMaybeIAL.Previous &&
 		ast.NodeKramdownBlockIAL == lastChildMaybeIAL.Type {
-		// 软换行后生成多个块，需要把老 ID 调整到第一个块上
 		firstChild.ID, lastChildMaybeIAL.Previous.ID = lastChildMaybeIAL.Previous.ID, ""
 		firstChild.KramdownIAL, lastChildMaybeIAL.Previous.KramdownIAL = lastChildMaybeIAL.Previous.KramdownIAL, nil
 		firstChild.InsertAfter(lastChildMaybeIAL)
 	}
 	if ast.NodeKramdownBlockIAL == firstChild.Type && nil != firstChild.Next && ast.NodeKramdownBlockIAL == firstChild.Next.Type && util.IsDocIAL(firstChild.Next.Tokens) {
-		// 空段落块还原
 		ialArray := parse.Tokens2IAL(firstChild.Tokens)
 		ial := parse.IAL2Map(ialArray)
 		p := &ast.Node{Type: ast.NodeParagraph, ID: ial["id"], KramdownIAL: ialArray}
 		firstChild.InsertBefore(p)
 	}
 
-	// 使用 Markdown 标记符嵌套行级元素后被还原为纯文本 https://github.com/siyuan-note/siyuan/issues/7637
-	// 这里需要将混合嵌套（比如 <strong><span a></span></strong>）的行级元素拆分为多个平铺的行级元素（<span strong> 和 <span strong a>）
 	parse.NestedInlines2FlattedSpansHybrid(tree, false)
 
 	ovHTML = lute.Tree2BlockDOM(tree, lute.RenderOptions, lute.ParseOptions)
@@ -157,7 +152,7 @@ func (lute *Lute) Md2BlockDOMWithAutoLink(markdown string, reserveEmptyParagraph
 func (lute *Lute) Md2BlockDOMTree(markdown string, reserveEmptyParagraph bool) (vHTML string, tree *parse.Tree) {
 	tree = parse.Parse("", []byte(markdown), lute.ParseOptions)
 
-	parse.TextMarks2Inlines(tree) // 先将 TextMark 转换为 Inlines https://github.com/siyuan-note/siyuan/issues/13056
+	parse.TextMarks2Inlines(tree)
 	parse.NestedInlines2FlattedSpansHybrid(tree, false)
 	if reserveEmptyParagraph {
 		ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
@@ -212,10 +207,8 @@ func (lute *Lute) BlockDOM2StdMd(htmlStr string) (markdown string) {
 
 	htmlStr = strings.ReplaceAll(htmlStr, editor.Zwsp, "")
 
-	// DOM 转 AST
 	tree := lute.BlockDOM2Tree(htmlStr)
 
-	// 将 kramdown IAL 节点内容置空
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if !entering {
 			return ast.WalkContinue
@@ -293,7 +286,7 @@ func (lute *Lute) BlockDOM2Tree(htmlStr string) (ret *parse.Tree) {
 	htmlStr = strings.ReplaceAll(htmlStr, "\n<wbr>\n</u>", "</u>\n<wbr>\n")
 	htmlStr = strings.ReplaceAll(htmlStr, "\n<wbr>\n</span>", "</span>\n<wbr>\n")
 
-	// Improve `inline code` markdown editing https://github.com/siyuan-note/siyuan/issues/9978
+	// Improve `inline code` markdown editing
 	// spinBlockDOMTests #212
 	htmlStr = strings.ReplaceAll(htmlStr, "`<wbr></span>", "</span>`<wbr>")
 
@@ -317,7 +310,6 @@ func (lute *Lute) BlockDOM2Tree(htmlStr string) (ret *parse.Tree) {
 	htmlStr = strings.TrimSpace(htmlStr)
 	htmlStr = strings.Repeat("&nbsp;", startSpaces) + htmlStr + strings.Repeat("&nbsp;", endSpaces)
 
-	// 替换结尾空白，否则 HTML 解析会产生冗余节点导致生成空的代码块
 	for strings.HasSuffix(htmlStr, "\t\n") {
 		htmlStr = strings.TrimSuffix(htmlStr, "\t\n") + "\n"
 	}
@@ -325,30 +317,25 @@ func (lute *Lute) BlockDOM2Tree(htmlStr string) (ret *parse.Tree) {
 		htmlStr = strings.TrimSuffix(htmlStr, "    \n") + "\n"
 	}
 
-	// 将字符串解析为 DOM 树
 	htmlRoot := util.ParseHTML(htmlStr)
 	if nil == htmlRoot {
 		return
 	}
 
-	// 调整 DOM 结构
 	lute.adjustVditorDOM(htmlRoot)
 
-	// 将 HTML 树转换为 Markdown AST
 	ret = &parse.Tree{Name: "", Root: &ast.Node{Type: ast.NodeDocument}, Context: &parse.Context{ParseOption: lute.ParseOptions}}
 	ret.Context.Tip = ret.Root
 	for c := htmlRoot.FirstChild; nil != c; c = c.NextSibling {
 		lute.genASTByBlockDOM(c, ret)
 	}
 
-	// 调整树结构
 	ast.Walk(ret.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if entering {
 			switch n.Type {
 			case ast.NodeInlineHTML, ast.NodeHTMLBlock, ast.NodeCodeSpanContent, ast.NodeCodeBlockCode, ast.NodeInlineMathContent, ast.NodeMathBlockContent,
 				ast.NodeCodeSpan, ast.NodeInlineMath:
 				if nil != n.Next && ast.NodeCodeSpan == n.Next.Type && n.CodeMarkerLen == n.Next.CodeMarkerLen && nil != n.FirstChild && nil != n.FirstChild.Next {
-					// 合并代码节点 https://github.com/Vanessa219/vditor/issues/167
 					n.FirstChild.Next.Tokens = append(n.FirstChild.Next.Tokens, n.Next.FirstChild.Next.Tokens...)
 					n.Next.Unlink()
 				}
@@ -388,15 +375,14 @@ func (lute *Lute) MergeSameTextMark(n *ast.Node) {
 		mergeWithIAL = true
 	} else {
 		previewText := n.Previous.TokensStr()
-			if ast.NodeText == n.Previous.Type &&
-				!strings.Contains(previewText, "　") && !strings.Contains(previewText, " ") && !strings.Contains(previewText, "\n") && !strings.Contains(previewText, "\t") &&
-				"" == strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(previewText, editor.Zwsp, ""), editor.Caret, "")) &&
-				nil != n.Previous.Previous && n.IsSameTextMarkType(n.Previous.Previous) {
-				// 相邻标签之间如果没有插入符（光标位置），则不跨 ZWSP 合并，保留为两个独立的标签 https://github.com/siyuan-note/siyuan/issues/18191
-				if !strings.Contains(n.TextMarkType, "tag") || strings.Contains(previewText, editor.Caret) {
-					mergeWithZwsp = true
-				}
-			} else {
+		if ast.NodeText == n.Previous.Type &&
+			!strings.Contains(previewText, "　") && !strings.Contains(previewText, " ") && !strings.Contains(previewText, "\n") && !strings.Contains(previewText, "\t") &&
+			"" == strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(previewText, editor.Zwsp, ""), editor.Caret, "")) &&
+			nil != n.Previous.Previous && n.IsSameTextMarkType(n.Previous.Previous) {
+			if !strings.Contains(n.TextMarkType, "tag") || strings.Contains(previewText, editor.Caret) {
+				mergeWithZwsp = true
+			}
+		} else {
 			if n.Type != n.Previous.Type || !n.IsSameTextMarkType(n.Previous) {
 				return
 			}
@@ -831,7 +817,7 @@ func (lute *Lute) Blockquote2Callout(ivHTML string) (ovHTML string) {
 		firstIsType = true
 	}
 
-	bq.FirstChild.Unlink() // 标记符 >
+	bq.FirstChild.Unlink()
 	bq.Type = ast.NodeCallout
 	bq.CalloutType = typ
 	bq.CalloutTitle = ast.GetCalloutTitle(bq.CalloutType)
@@ -849,8 +835,8 @@ func (lute *Lute) Blockquote2Callout(ivHTML string) (ovHTML string) {
 
 		title := strings.TrimSpace(content[strings.Index(content, "]")+1:])
 		bq.CalloutTitle = title
-		bq.FirstChild.Unlink() // 第一个段落 [!TYPE]
-		bq.FirstChild.Unlink() // 第一个段落的 IAL
+		bq.FirstChild.Unlink()
+		bq.FirstChild.Unlink()
 	}
 
 	ovHTML = lute.Tree2BlockDOM(tree, lute.RenderOptions, lute.ParseOptions)
@@ -860,7 +846,6 @@ func (lute *Lute) Blockquote2Callout(ivHTML string) (ovHTML string) {
 func (lute *Lute) blockDOM2Md(htmlStr string) (markdown string) {
 	tree := lute.BlockDOM2Tree(htmlStr)
 
-	// 将 AST 进行 Markdown 格式化渲染
 	options := render.NewOptions()
 	options.AutoSpace = false
 	options.FixTermTypo = false
@@ -923,7 +908,7 @@ func (lute *Lute) genASTByBlockDOM(n *html.Node, tree *parse.Tree) {
 			}
 			tree.Context.Tip.AppendChild(&ast.Node{Type: ast.NodeCodeBlockCode, Tokens: buf.Bytes()})
 		} else if ast.NodeListItem == tree.Context.Tip.Type {
-			if 3 == tree.Context.Tip.ListData.Typ { // 任务列表
+			if 3 == tree.Context.Tip.ListData.Typ {
 				checked := strings.Contains(util.DomAttrValue(n.Parent, "class"), "protyle-task--done")
 				markerNode := &ast.Node{Type: ast.NodeTaskListItemMarker}
 				markerNode.ReviveFromDataTask(util.DomAttrValue(n.Parent, "data-task"), checked)
@@ -955,7 +940,6 @@ func (lute *Lute) genASTByBlockDOM(n *html.Node, tree *parse.Tree) {
 		node.AppendChild(&ast.Node{Type: ast.NodeOpenBrace})
 		node.AppendChild(&ast.Node{Type: ast.NodeOpenBrace})
 		content := util.DomAttrValue(n, "data-content")
-		// 嵌入块中存在换行 SQL 语句时会被转换为段落文本 https://github.com/siyuan-note/siyuan/issues/5728
 		content = strings.ReplaceAll(content, "\n", editor.IALValEscNewLine)
 		node.AppendChild(&ast.Node{Type: ast.NodeBlockQueryEmbedScript, Tokens: util.StrToBytes(content)})
 		node.AppendChild(&ast.Node{Type: ast.NodeCloseBrace})
@@ -1044,7 +1028,7 @@ func (lute *Lute) genASTByBlockDOM(n *html.Node, tree *parse.Tree) {
 		level := util.DomAttrValue(n, "data-subtype")[1:]
 		tmp := strings.TrimPrefix(text, " ")
 		if strings.HasPrefix(tmp, "#") {
-			// Allow changing headings with `#` https://github.com/siyuan-note/siyuan/issues/7924
+			// Allow changing headings with `#`
 			if idx := strings.Index(tmp, " "+editor.Caret); 0 < idx {
 				tmp = tmp[:idx]
 				if nil != n.FirstChild && nil != n.FirstChild.FirstChild {
@@ -1336,17 +1320,16 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 
 		if lute.parentIs(n, atom.Table) {
 			content = strings.TrimSuffix(content, "\n")
-			if (nil == n.NextSibling && !strings.Contains(content, "\n")) /* 外部内容粘贴到表格中后编辑导致换行丢失  https://github.com/siyuan-note/siyuan/issues/7501 */ ||
-				(nil != n.NextSibling && atom.Br == n.NextSibling.DataAtom && strings.HasPrefix(content, "\n")) /* 表格内存在行级公式时编辑会产生换行 https://github.com/siyuan-note/siyuan/issues/2279 */ {
+			if (nil == n.NextSibling && !strings.Contains(content, "\n"))  ||
+				(nil != n.NextSibling && atom.Br == n.NextSibling.DataAtom && strings.HasPrefix(content, "\n"))  {
 				content = strings.ReplaceAll(content, "\n", "")
 			}
 
 			if strings.Contains(content, "\\") {
-				// After entering `\` in the table, the next column is merged incorrectly https://github.com/siyuan-note/siyuan/issues/7817
+				// After entering `\` in the table, the next column is merged incorrectly
 				tmp := strings.ReplaceAll(content, "\\", "")
 				tmp = strings.TrimSpace(tmp)
 				if "" == tmp {
-					// 仅包含转义字符时转义自身 \
 					content = strings.ReplaceAll(content, "\\", "\\\\")
 				}
 			}
@@ -1362,11 +1345,10 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 			}
 		}
 		if ast.NodeCodeSpan == tree.Context.Tip.Type || ast.NodeInlineMath == tree.Context.Tip.Type {
-			if nil != tree.Context.Tip.Previous && tree.Context.Tip.Type == tree.Context.Tip.Previous.Type { // 合并相邻的代码
+			if nil != tree.Context.Tip.Previous && tree.Context.Tip.Type == tree.Context.Tip.Previous.Type {
 				tree.Context.Tip.FirstChild.Next.Tokens = util.StrToBytes(content)
-			} else { // 叠加代码
+			} else {
 				if nil != tree.Context.Tip.FirstChild.Next.Next && ast.NodeBackslash == tree.Context.Tip.FirstChild.Next.Next.Type {
-					// 表格单元格中使用代码和 `|` 的问题 https://github.com/siyuan-note/siyuan/issues/4717
 					content = util.BytesToStr(tree.Context.Tip.FirstChild.Next.Next.FirstChild.Tokens) + content
 					tree.Context.Tip.FirstChild.Next.Next.Unlink()
 				}
@@ -1377,7 +1359,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 		if ast.NodeTextMark == tree.Context.Tip.Type {
 			if "code" == tree.Context.Tip.TokensStr() {
 				if nil != tree.Context.Tip.FirstChild && nil != tree.Context.Tip.FirstChild.Next && nil != tree.Context.Tip.FirstChild.Next.Next && ast.NodeBackslash == tree.Context.Tip.FirstChild.Next.Next.Type {
-					// 表格单元格中使用代码和 `|` 的问题 https://github.com/siyuan-note/siyuan/issues/4717
 					content = util.BytesToStr(tree.Context.Tip.FirstChild.Next.Next.FirstChild.Tokens) + content
 					tree.Context.Tip.FirstChild.Next.Next.Unlink()
 					tree.Context.Tip.FirstChild.Next.Tokens = append(tree.Context.Tip.FirstChild.Next.Tokens, util.StrToBytes(content)...)
@@ -1387,12 +1368,10 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 		}
 
 		if ast.NodeKbd == tree.Context.Tip.Type {
-			// `<kbd>` 中反斜杠转义问题 https://github.com/siyuan-note/siyuan/issues/2242
 			node.Tokens = bytes.ReplaceAll(node.Tokens, []byte("\\\\"), []byte("\\"))
 			node.Tokens = bytes.ReplaceAll(node.Tokens, []byte("\\"), []byte("\\\\"))
 
 			if bytes.Equal(node.Tokens, editor.CaretTokens) {
-				// `<kbd>` 无法删除 https://github.com/siyuan-note/siyuan/issues/4162
 				parent := tree.Context.Tip.Parent
 				tree.Context.Tip.Unlink()
 				tree.Context.Tip = parent
@@ -1467,7 +1446,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 			dataType = "text"
 		}
 		if strings.Contains(dataType, "span") {
-			// 某些情况下复制过来的 DOM 是该情况，这里按纯文本解析
 			node.Type = ast.NodeText
 			node.Tokens = util.StrToBytes(util.DomText(n))
 			tree.Context.Tip.AppendChild(node)
@@ -1475,12 +1453,10 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 		}
 
 		if strings.Contains(dataType, "img") {
-			// 给文字和图片同时设置字体格式后图片丢失 https://github.com/siyuan-note/siyuan/issues/6297
 			dataType = "img"
 		}
 
 		if nil != tree.Context.Tip && nil != tree.Context.Tip.LastChild {
-			// 行级元素前输入转义符 `\` 导致异常 https://github.com/siyuan-note/siyuan/issues/6237
 			previousEndText := tree.Context.Tip.LastChild.Text()
 			backslashCaret := strings.HasSuffix(previousEndText, "\\"+editor.Caret)
 			if backslashCaret {
@@ -1528,7 +1504,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 			n.FirstChild.Data = strings.ReplaceAll(n.FirstChild.Data, editor.Zwsp, "")
 			node.Type = ast.NodeTag
 			node.AppendChild(&ast.Node{Type: ast.NodeTagOpenMarker})
-			// 开头结尾空格后会形成 * foo * 导致强调、加粗删除线标记失效，这里将空格移到右标记符前后 _*foo*_
 			processSpanMarkerSpace(n, node)
 			tree.Context.Tip.AppendChild(node)
 			tree.Context.Tip = node
@@ -1575,7 +1550,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 			return
 		} else if "a" == dataType {
 			if nil == n.FirstChild {
-				// 丢弃没有锚文本的链接
 				return
 			}
 
@@ -1691,7 +1665,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 			node.AppendChild(&ast.Node{Type: ast.NodeLinkDest, Tokens: util.StrToBytes(src)})
 			if title := util.DomAttrValue(img, "title"); "" != title {
 				node.AppendChild(&ast.Node{Type: ast.NodeLinkSpace})
-				// < 和 > 符号不用转义，可以符合 Markdown 规范 https://github.com/siyuan-note/siyuan/issues/15023
 				title = strings.ReplaceAll(title, "\"", "&quot;")
 				title = strings.ReplaceAll(title, "&lt;", "<")
 				title = strings.ReplaceAll(title, "&gt;", ">")
@@ -1707,7 +1680,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 				return
 			}
 			if n.FirstChild == n.LastChild && nil != n.FirstChild.FirstChild {
-				// 转义字符加行级样式后继续输入会出现标记符 https://github.com/siyuan-note/siyuan/issues/6134
 				return
 			}
 			if nil == n.FirstChild.NextSibling && html.TextNode == n.FirstChild.Type {
@@ -1723,7 +1695,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 			tree.Context.Tip.AppendChild(node)
 			return
 		} else {
-			// TextMark 节点
 			isCaret, isEmpty := lute.isCaret(n)
 			if isCaret {
 				node.Type = ast.NodeText
@@ -1848,7 +1819,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 			return
 		}
 		if ast.NodeParagraph == tree.Context.Tip.Type {
-			// 将硬换行转换为软换行 https://github.com/siyuan-note/siyuan/issues/14481
 			node.Type = ast.NodeText
 			node.Tokens = []byte("\n")
 			tree.Context.Tip.AppendChild(node)
@@ -1896,7 +1866,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			if "_" == marker {
 				node.AppendChild(&ast.Node{Type: ast.NodeEmU8eCloseMarker, Tokens: []byte(marker)})
@@ -1908,7 +1877,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 
 		n.FirstChild.Data = strings.ReplaceAll(n.FirstChild.Data, editor.Zwsp, "")
 
-		// 开头结尾空格后会形成 * foo * 导致强调、加粗删除线标记失效，这里将空格移到右标记符前后 _*foo*_
 		processSpanMarkerSpace(n, node)
 		lute.removeInnerMarker(n, "__")
 		tree.Context.Tip = node
@@ -1918,7 +1886,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 			return
 		}
 		if nil != tree.Context.Tip.LastChild {
-			// 转义符导致的行级元素样式属性暴露 https://github.com/siyuan-note/siyuan/issues/2969
 			if bytes.HasSuffix(tree.Context.Tip.LastChild.Tokens, []byte("\\"+editor.Caret)) {
 				// foo\‸**bar**
 				tree.Context.Tip.LastChild.Tokens = bytes.ReplaceAll(tree.Context.Tip.LastChild.Tokens, []byte("\\"+editor.Caret), []byte("\\\\"+editor.Caret))
@@ -1963,7 +1930,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			if "__" == marker {
 				node.AppendChild(&ast.Node{Type: ast.NodeStrongU8eCloseMarker, Tokens: []byte(marker)})
@@ -2013,7 +1979,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			if "~" == marker {
 				node.AppendChild(&ast.Node{Type: ast.NodeStrikethrough1CloseMarker, Tokens: []byte(marker)})
@@ -2062,7 +2027,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			if "=" == marker {
 				node.AppendChild(&ast.Node{Type: ast.NodeMark1CloseMarker, Tokens: []byte(marker)})
@@ -2117,7 +2081,6 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 			linkTitle := util.DomAttrValue(n, "data-title")
 			if "" != linkTitle {
 				node.AppendChild(&ast.Node{Type: ast.NodeLinkSpace})
-				// < 和 > 符号不用转义，可以符合 Markdown 规范 https://github.com/siyuan-note/siyuan/issues/15023
 				linkTitle = strings.ReplaceAll(linkTitle, "&lt;", "<")
 				linkTitle = strings.ReplaceAll(linkTitle, "&gt;", ">")
 				node.AppendChild(&ast.Node{Type: ast.NodeLinkTitle, Tokens: []byte(linkTitle)})
@@ -2303,7 +2266,6 @@ func (lute *Lute) setBlockIAL(n *html.Node, node *ast.Node) (ialTokens []byte) {
 	return ialTokens
 }
 
-// setBlockIAL2 设置块级 IAL，仅用于 h2m 中。
 func (lute *Lute) setBlockIAL2(n *html.Node, node *ast.Node) (ialTokens []byte) {
 	if bookmark := util.DomAttrValue(n, "bookmark"); "" != bookmark {
 		bookmark = html.UnescapeHTMLStr(bookmark)
@@ -2403,7 +2365,7 @@ func (lute *Lute) removeInnerMarker0(n *html.Node, marker string) {
 		return
 	}
 
-	if 0 == n.DataAtom && html.ElementNode == n.Type { // 自定义标签
+	if 0 == n.DataAtom && html.ElementNode == n.Type {
 		return
 	}
 

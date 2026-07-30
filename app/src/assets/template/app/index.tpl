@@ -15,7 +15,7 @@
     <img style="position: absolute;width: 24vh;" src="../../icon.svg">
     <button onclick="window.location.reload()" id="loadingRefresh"
             style="display: none;position: absolute;bottom: 16px;background: transparent;border: 1px solid #4285f4;color: #4285f4;border-radius: 6px;line-height: 20px;padding: 4px 8px;">
-        Click to Refresh<br>点　击　刷　新
+        Click to Refresh
     </button>
 </div>
 <div id="toolbar" class="toolbar fn__flex"></div>

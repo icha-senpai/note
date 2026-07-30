@@ -12,7 +12,7 @@
               Version="3.7.3.0"/>
     <Properties>
         <DisplayName>Scribli</DisplayName>
-        <PublisherDisplayName>云南链滴科技有限公司</PublisherDisplayName>
+        <PublisherDisplayName>Scribli contributors</PublisherDisplayName>
         <Description>Refactor your thinking</Description>
         <Logo>assets\StoreLogo.png</Logo>
     </Properties>
@@ -27,10 +27,7 @@
         <Resource Language="ja-JP"/>
         <Resource Language="pl-PL"/>
         <Resource Language="pt-BR"/>
-        <Resource Language="ru-RU"/>
-        <Resource Language="zh-TW"/>
-        <Resource Language="zh-CN"/>
-    </Resources>
+        <Resource Language="ru-RU"/>    </Resources>
     <Dependencies>
         <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14316.0" MaxVersionTested="10.0.14316.0"/>
     </Dependencies>

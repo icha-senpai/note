@@ -54,7 +54,6 @@ func (repo *Repo) Latest() (ret *entity.Index, err error) {
 	return
 }
 
-// FullIndex 描述了完整的索引结构。
 type FullIndex struct {
 	ID    string         `json:"id"`
 	Files []*entity.File `json:"files"`

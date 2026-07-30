@@ -1,4 +1,5 @@
 // Scribli - Refactor your thinking
+// Copyright (c) 2020-present Scribli
 // Copyright (c) 2020-present, b3log.org
 //
 // This program is free software: you can redistribute it and/or modify
@@ -159,7 +160,7 @@ try {
     }
 } catch (e) {
     console.error(e);
-    require("electron").dialog.showErrorBox("创建配置目录失败 Failed to create config directory", "Scribli需要在用户家目录下创建配置文件夹（~/.config/scribli），请确保该路径具有写入权限。\n\nScribli needs to create a configuration folder (~/.config/scribli) in the user's home directory. Please make sure that the path has write permissions.");
+    require("electron").dialog.showErrorBox("Failed to create config directory", "Scribli needs to create a configuration folder (~/.config/scribli) in the user's home directory. Please make sure that the path has write permissions.");
     app.exit();
 }
 
@@ -268,47 +269,11 @@ const hotKey2Electron = (key) => {
 };
 
 /**
- * Resolves RFC 5646 language tags to app-supported language codes.
- * https://www.rfc-editor.org/info/rfc5646
- * @param {string[]} languageTags - Language tag array, such as ["zh-Hans-CN", "en-US"].
+ * Scribli currently ships English interface text only.
  * @returns {string} App-supported language code.
  */
-const resolveAppLanguage = (languageTags) => {
-    if (!languageTags || languageTags.length === 0) {
-        return "en";
-    }
-
-    const tag = languageTags[0].toLowerCase();
-    const parts = tag.replace(/_/g, "-").split("-");
-    const language = parts[0];
-
-    if (language === "zh") {
-        return "en";
-    }
-
-    const languageMapping = {
-        "en": "en",
-        "ar": "ar",
-        "de": "de",
-        "es": "es",
-        "fr": "fr",
-        "he": "he",
-        "hi": "hi",
-        "id": "id",
-        "it": "it",
-        "ja": "ja",
-        "ko": "ko",
-        "nl": "nl",
-        "pl": "pl",
-        "pt": "pt-BR",
-        "ru": "ru",
-        "sk": "sk",
-        "th": "th",
-        "tr": "tr",
-        "uk": "uk",
-    };
-
-    return languageMapping[language] || "en";
+const resolveAppLanguage = () => {
+    return "en";
 };
 
 const markExpectedRendererExit = (window) => {
@@ -888,7 +853,7 @@ const initKernel = (workspace, port, lang, safeMode) => {
         const kernelName = "win32" === process.platform ? "Scribli-Kernel.exe" : "Scribli-Kernel";
         const kernelPath = path.join(appDir, "kernel", kernelName);
         if (!fs.existsSync(kernelPath)) {
-            showErrorWindow("内核程序丢失", "Kernel program is missing", `<div>内核程序丢失，请重新安装Scribli，并将Scribli 内核程序加入杀毒软件信任列表。</div><div>The kernel program is not found, please reinstall Scribli and add Scribli Kernel prgram into the trust list of your antivirus software.</div><div><i>${kernelPath}</i></div>`);
+            showErrorWindow("Kernel program is missing", "Kernel program is missing", `<div>The kernel program was not found. Please reinstall Scribli and add Scribli Kernel to your antivirus trust list if needed.</div><div><i>${kernelPath}</i></div>`);
             bootWindow.destroy();
             resolve(false);
             return;
@@ -957,28 +922,28 @@ const initKernel = (workspace, port, lang, safeMode) => {
                     let errorWindowId;
                     switch (code) {
                         case 20:
-                            errorWindowId = showErrorWindow("数据库不可用", "The database is unavailable", "<div>无法访问数据库文件，请查看 工作空间/temp/scribli.log 获取详细报错信息</div><div>Cannot access the database file. Please check workspace/temp/scribli.log for detailed error information.</div>");
+                            errorWindowId = showErrorWindow("The database is unavailable", "The database is unavailable", "<div>Cannot access the database file. Please check workspace/temp/scribli.log for detailed error information.</div>");
                             break;
                         case 21:
-                            errorWindowId = showErrorWindow("监听端口 " + currentKernelPort + " 失败", "Failed to listen to port " + currentKernelPort, "<div>监听 " + currentKernelPort + " 端口失败，请确保程序拥有网络权限并不受防火墙和杀毒软件阻止。</div><div>Failed to listen to port " + currentKernelPort + ", please make sure the program has network permissions and is not blocked by firewalls and antivirus software.</div>");
+                            errorWindowId = showErrorWindow("Failed to listen to port " + currentKernelPort, "Failed to listen to port " + currentKernelPort, "<div>Failed to listen to port " + currentKernelPort + ". Please make sure Scribli has network permissions and is not blocked by firewalls or antivirus software.</div>");
                             break;
                         case 24: // The workspace is locked; try switching to the first open workspace.
                             if (workspaces && 0 < workspaces.length) {
                                 showWindow(workspaces[0].browserWindow);
                             }
 
-                            errorWindowId = showErrorWindow("工作空间已被锁定", "The workspace is locked", "<div>该工作空间正在被使用，请尝试在任务管理器中结束 Scribli-Kernel 进程或者重启操作系统后再启动Scribli。</div><div>The workspace is being used, please try to end the Scribli-Kernel process in the task manager or restart the operating system and then start Scribli.</div>");
+                            errorWindowId = showErrorWindow("The workspace is locked", "The workspace is locked", "<div>The workspace is being used. End the Scribli-Kernel process in Task Manager or restart the operating system, then start Scribli again.</div>");
                             break;
                         case 25:
-                            errorWindowId = showErrorWindow("初始化工作空间失败", "Failed to create workspace directory", "<div>工作空间文件夹权限不足，请查看 工作空间/temp/scribli.log 获取详细报错信息</div><div>Insufficient permissions for the workspace folder. Please check workspace/temp/scribli.log for detailed error information.</div>");
+                            errorWindowId = showErrorWindow("Failed to create workspace directory", "Failed to create workspace directory", "<div>Insufficient permissions for the workspace folder. Please check workspace/temp/scribli.log for detailed error information.</div>");
                             break;
                         case 26:
-                            errorWindowId = showErrorWindow("已成功避免潜在的数据损坏", "Successfully avoid potential data corruption", "<div>工作空间下的文件正在被第三方软件（比如同步网盘、杀毒软件等）打开占用，继续使用会导致数据损坏，Scribli 内核已经安全退出。</div><div>请将工作空间移动到其他路径后再打开，停止同步盘同步工作空间，并将工作空间加入杀毒软件信任列表。如果以上步骤无法解决问题，请参考<a href=\"#\" target=\"_blank\">这里</a>或者<a href=\"#\" target=\"_blank\">发帖</a>寻求帮助。</div><div>The files in the workspace are being opened and occupied by third-party software (such as synchronized network disk, antivirus software, etc.), continuing to use it will cause data corruption, and the Scribli Kernel is already safe shutdown.</div><div>Move the workspace to another path and open it again, stop the network disk to sync the workspace, and add the workspace to the antivirus software trust list. If the above steps do not resolve the issue, please look for help or report bugs <a href=\"#\" target=\"_blank\">here</a>.</div>", "🚒");
+                            errorWindowId = showErrorWindow("Potential data corruption avoided", "Potential data corruption avoided", "<div>Files in the workspace are currently opened or locked by third-party software such as sync software or antivirus tools. Continuing could corrupt data, so Scribli Kernel shut down safely.</div><div>Move the workspace to another path, stop sync software from syncing the workspace, and add the workspace to your antivirus trust list if needed.</div>", "🚒");
                             break;
                         case 0:
                             break;
                         default:
-                            errorWindowId = showErrorWindow("内核因未知原因退出", "The kernel exited for unknown reasons", `<div>Scribli 内核因未知原因退出 [code=${code}]，请尝试重启操作系统后再启动Scribli。如果该问题依然发生，请检查杀毒软件是否阻止Scribli 内核启动。</div><div>Scribli Kernel exited for unknown reasons [code=${code}], please try to reboot your operating system and then start Scribli again. If occurs this problem still, please check your anti-virus software whether kill the Scribli Kernel.</div>`);
+                            errorWindowId = showErrorWindow("The kernel exited for unknown reasons", "The kernel exited for unknown reasons", `<div>Scribli Kernel exited for unknown reasons [code=${code}]. Try restarting the operating system, then start Scribli again. If the issue continues, check whether antivirus software is blocking Scribli Kernel.</div>`);
                             break;
                     }
 
@@ -1001,7 +966,7 @@ const initKernel = (workspace, port, lang, safeMode) => {
                 writeLog("get kernel version failed: " + e.message);
                 if (14 < ++count) {
                     writeLog("get kernel ver failed");
-                    showErrorWindow("获取内核服务端口失败", "Failed to Obtain Kernel Service Port", "<div>获取内核服务端口失败，请确保程序拥有网络权限并不受防火墙和杀毒软件阻止。</div><div>Failed to obtain kernel service port. Please ensure Scribli has network permissions and is not blocked by firewalls or antivirus software.</div>");
+                    showErrorWindow("Failed to obtain kernel service port", "Failed to obtain kernel service port", "<div>Failed to obtain kernel service port. Please ensure Scribli has network permissions and is not blocked by firewalls or antivirus software.</div>");
                     bootWindow.destroy();
                     resolve(false);
                     return;
@@ -1026,8 +991,7 @@ const initKernel = (workspace, port, lang, safeMode) => {
                 while (!progressing) {
                     if (Date.now() - bootShowStart > bootTimeout) {
                         writeLog("boot progress timeout after " + bootTimeout + "ms, exiting boot");
-                        showErrorWindow("启动超时", "Boot timeout",
-                            "<div>内核启动超时，请查看 工作空间/temp/scribli.log 获取详细报错信息，或尝试重启Scribli。</div>" +
+                        showErrorWindow("Boot timeout", "Boot timeout",
                             "<div>Kernel boot timed out. Please check workspace/temp/scribli.log for details, or try restarting Scribli.</div>");
                         requestKernelExit(currentKernelPort);
                         bootWindow.destroy();
@@ -1740,8 +1704,7 @@ app.whenReady().then(() => {
 
         // Improve the appearance language used during desktop initialization.
         // 
-        const languages = app.getPreferredSystemLanguages();
-        const language = getArg("--lang") || resolveAppLanguage(languages);
+        const language = resolveAppLanguage();
         firstOpenWindow.loadFile(initHTMLPath, {
             query: {
                 lang: language,
@@ -1781,8 +1744,7 @@ app.whenReady().then(() => {
 
         // Improve the appearance language used during desktop initialization.
         // 
-        const languages = app.getPreferredSystemLanguages();
-        const language = getArg("--lang") || resolveAppLanguage(languages);
+        const language = resolveAppLanguage();
         let crashWorkspace = appCrashInfo.workspaceDir || lastWorkspacePath;
         if (!appCrashInfo.workspaceDir && !isDirectory(crashWorkspace)) {
             crashWorkspace = availableWorkspaces[availableWorkspaces.length - 1] || lastWorkspacePath;
@@ -1834,8 +1796,7 @@ app.whenReady().then(() => {
 
         // Improve the appearance language used during desktop initialization.
         // 
-        const languages = app.getPreferredSystemLanguages();
-        const language = getArg("--lang") || resolveAppLanguage(languages);
+        const language = resolveAppLanguage();
         missingWorkspaceWindow.loadFile(missingWorkspaceHTMLPath, {
             query: {
                 lang: language,

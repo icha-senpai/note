@@ -7,10 +7,8 @@ export const kernelError = () => {
     if (document.querySelector("#errorLog")) {
         return;
     }
-    let title: string;
-    let content: string;
-    title = `💔 ${window.scribli.languages.kernelFault0} <small>v${Constants.SCRIBLI_VERSION}</small>`;
-    content = `<div class="b3-dialog__content">
+    const title = `💔 ${window.scribli.languages.kernelFault0} <small>v${Constants.SCRIBLI_VERSION}</small>`;
+    const content = `<div class="b3-dialog__content">
     <div>${window.scribli.languages.kernelFault1}</div>
     <div class="fn__hr"></div>
     <div><strong>${window.scribli.languages.kernelFault3}</strong></div>

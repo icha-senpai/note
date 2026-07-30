@@ -27,13 +27,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/dejavu/entity"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/github/studio-b12/gowebdav"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
-// WebDAV 描述了 WebDAV 云端存储服务实现。
 type WebDAV struct {
 	*BaseCloud
 	Client *gowebdav.Client
@@ -120,7 +119,7 @@ func (webdav *WebDAV) GetTags() (tags []*Ref, err error) {
 	tags, err = webdav.listRepoRefs("tags")
 	if nil != err {
 		err = webdav.parseErr(err)
-		if errors.Is(err, ErrCloudObjectNotFound) { // https://ld246.com/article/1749182255326
+		if errors.Is(err, ErrCloudObjectNotFound) { //
 			err = nil
 			tags = []*Ref{}
 			return

@@ -18,7 +18,6 @@ export const reloadProtyle = (protyle: IProtyle, focus: boolean, updateReadonly?
     } else {
         protyle.wysiwyg.element.classList.remove("protyle-wysiwyg--attr");
     }
-    // RTL 切换时同步 .protyle 元素的 .rtl 类名
     if (window.scribli.config.editor.rtl) {
         protyle.element.classList.add("rtl");
     } else {

@@ -159,13 +159,13 @@ export const isLocalPath = (link: string) => {
     }
 
     link = link.toLowerCase();
-    if (link.startsWith("assets/") || link.startsWith("file://") || link.startsWith("\\\\") /* Windows 网络共享路径 */) {
+    if (link.startsWith("assets/") || link.startsWith("file://") || link.startsWith("\\\\")) {
         return true;
     }
 
     if (isWindows()) {
         const colonIdx = link.indexOf(":");
-        return 1 === colonIdx; // 冒号前面只有一个字符认为是 Windows 盘符而不是网络协议
+        return 1 === colonIdx;
     }
     return link.startsWith("/");
 };
@@ -628,7 +628,7 @@ export const movePathTo = (options: {
                 }
                 if (options.title === window.scribli.languages.specifyPath && isOnlyMeta(event)) {
                     if (currentItemElements.length === 1 && currentItemElements[0] === target) {
-                        // 至少需选中一个
+                        // Intentionally empty.
                     } else {
                         target.classList.toggle("b3-list-item--focus");
                     }
@@ -763,9 +763,6 @@ export const setNoteBook = (cb?: (notebook: INotebook[]) => void, flashcard = fa
 };
 
 /**
- * 返回指定 boxID 是否为加密笔记本。
- * 用于前端在加密 box 上下文里给 getDoc / 反链 / 搜索请求带上 notebook 参数，
- * 让内核走 InBox 版（查加密 blocktree + content db）。
  */
 export const isEncryptedBox = (boxId: string): boolean => {
     if (!boxId) {
@@ -775,9 +772,6 @@ export const isEncryptedBox = (boxId: string): boolean => {
 };
 
 /**
- * 规范化并校验相对路径：允许子目录，但禁止通过 ".." 穿越到根外。
- * 用于插件存储，确保路径不逃出指定根目录。
- * @returns 规范化后的相对路径（使用 /），若路径非法则返回替换后的合法路径
  */
 export const normalizeStoragePath = (storageName: string): string | null => {
     const segments = storageName.replace(/\\/g, "/").split("/");

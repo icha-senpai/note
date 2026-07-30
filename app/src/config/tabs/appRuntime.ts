@@ -6,7 +6,6 @@ import {Constants} from "../../constants";
 import {exportLayout} from "../../layout/util";
 import {exitScribli} from "../../dialog/processSystem";
 
-/** 应用 / 关于 / 访问授权等 Tab 中的 system.* 设置项 save */
 export const sendAppSetting = (controlId: string, value: unknown) => {
     switch (controlId) {
         case "system.autoLaunch2": {

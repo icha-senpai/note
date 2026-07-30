@@ -30,7 +30,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
-// Local 描述了本地文件系统服务实现。
 type Local struct {
 	*BaseCloud
 }
@@ -142,7 +141,6 @@ func (local *Local) RemoveObject(filePath string) (err error) {
 
 func (local *Local) ListObjects(pathPrefix string) (objects map[string]*entity.ObjectInfo, err error) {
 	objects = map[string]*entity.ObjectInfo{}
-	// objects/ 为两级目录 objects/XX/<id>，需递归列出以匹配 PurgeCloud 与 S3 的路径格式
 	isObjectsDir := strings.HasPrefix(pathPrefix, "objects")
 	absPathPrefix := path.Join(local.getCurrentRepoDirPath(), pathPrefix)
 	entries, err := os.ReadDir(absPathPrefix)

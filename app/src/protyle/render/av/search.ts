@@ -43,7 +43,6 @@ export const bindAvSearch = (options: {
         options.onChange();
     };
     searchInputElement.addEventListener("input", searchInputChange);
-    // 剪切不会触发 input
     searchInputElement.addEventListener("cut", (event) => {
         setTimeout(() => {
             searchInputChange(event);

@@ -26,12 +26,11 @@ export const fetchPost = (
             "/api/block/getRecentUpdatedBlocks", "/api/search/fullTextSearchBlock"].includes(url)) {
             window.scribli.reqIds[url] = Date.now();
             if (data.type === "local" && url === "/api/graph/getLocalGraph") {
-                // 当打开文档A的关系图、关系图、文档A后刷新，由于防止请求重复处理，文档A关系图无法渲染。
+                // Intentionally empty.
             } else {
                 data.reqId = window.scribli.reqIds[url];
             }
         }
-        // 并发导出后端接受顺序不一致
         if (url === "/api/transactions") {
             data.reqId = Date.now();
         }
@@ -54,13 +53,11 @@ export const fetchPost = (
             case 404:
                 return getFetchErrorResponse(response);
             case 401:
-                // 返回鉴权失败的话直接刷新页面，避免用户在当前页面操作 
                 setTimeout(() => {
                     window.location.reload();
                 }, 3000);
                 return getFetchErrorResponse(response);
             default:
-                // /api/file/getFile 接口返回202时表示文件没有正常读取
                 if (response.status === 202 && url === "/api/file/getFile") {
                     isGetFile202 = true;
                 }
@@ -113,7 +110,7 @@ export const fetchPost = (
         }
         /// #if !BROWSER
         if (url === "/api/system/exit" || url === "/api/system/setWorkspaceDir" || (
-            ["/api/system/setUILayout"].includes(url) && data.errorExit // 内核中断，点关闭处理
+            ["/api/system/setUILayout"].includes(url) && data.errorExit
         )) {
             ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
         }

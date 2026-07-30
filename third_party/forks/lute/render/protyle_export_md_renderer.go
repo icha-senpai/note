@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -244,16 +243,13 @@ func (r *ProtyleExportMdRenderer) renderTextMark(node *ast.Node, entering bool) 
 			if node.IsTextMarkType("code") {
 				textContent = html.UnescapeString(textContent)
 				if node.ParentIs(ast.NodeTableCell) {
-					// 多加一个转义符 Improve the handling of inline-code containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9252
 					textContent = lex.RepeatBackslashBeforePipe(textContent)
 				}
 			}
 
 			if isStrongEm {
-				// 填充空格以满足 Markdown 语法 https://ld246.com/article/1597581380183
-				// https://github.com/siyuan-note/siyuan/issues/6472
-				// https://github.com/siyuan-note/siyuan/issues/9542
-				// 这里无法使用零宽空格，只能用空格，否则 Pandoc 导出会有问题
+				//
+				//
 				firstRune, _ := utf8.DecodeRuneInString(textContent)
 				beforeIsWhitespace := lex.IsUnicodeWhitespace(firstRune)
 				beforeIsPunct := unicode.IsPunct(firstRune) || unicode.IsSymbol(firstRune)
@@ -280,7 +276,7 @@ func (r *ProtyleExportMdRenderer) renderTextMark(node *ast.Node, entering bool) 
 		r.WriteString(marker)
 		if nil != node.Next {
 			if ast.NodeTextMark == node.Next.Type {
-				r.WriteString(editor.Zwsp) // 通过零宽空格来区隔相邻的 Markdown 标记符
+				r.WriteString(editor.Zwsp)
 			} else {
 				if isStrongEm {
 					textContent := node.TextMarkTextContent
@@ -304,7 +300,6 @@ func (r *ProtyleExportMdRenderer) renderMdMarker(node *ast.Node, entering bool) 
 		return r.renderMdMarker0(node, types[0], entering)
 	}
 
-	// 重新排序，将 a、inline-memo、block-ref、file-annotation-ref、inline-math 放在最前面，将 code 放在最后面
 	var tmp []string
 	var code string
 	for i, typ := range types {
@@ -330,7 +325,6 @@ func (r *ProtyleExportMdRenderer) renderMdMarker(node *ast.Node, entering bool) 
 	}
 
 	tmp = nil
-	// 过滤掉 text 类型
 	for _, typ := range types {
 		if "text" != typ {
 			tmp = append(tmp, typ)
@@ -400,7 +394,7 @@ func (r *ProtyleExportMdRenderer) renderMdMarker(node *ast.Node, entering bool) 
 			case "inline-math":
 				content := node.TextMarkInlineMathContent
 				if node.ParentIs(ast.NodeTableCell) {
-					// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+					// Improve the handling of inline-math containing `|` in the table
 					content = lex.RepeatBackslashBeforePipe(content)
 					content = strings.ReplaceAll(content, "\n", "<br/>")
 				}
@@ -440,13 +434,13 @@ func (r *ProtyleExportMdRenderer) renderMdMarker(node *ast.Node, entering bool) 
 		for i, typ := range types {
 			ret += r.renderMdMarker1(node, typ, entering)
 			if entering {
-				if "" != code && len(types)-2 == i { // 最内层是 code 时，需要在渲染 code 前添加零宽空格，然后再渲染 code 标记符
-					ret += editor.Zwsp // Improve exporting inline code markdown element https://github.com/siyuan-note/siyuan/issues/10988
+				if "" != code && len(types)-2 == i {
+					ret += editor.Zwsp // Improve exporting inline code markdown element
 				}
 			}
 
 			if !entering {
-				if "" != code && 0 == i { // 最内层是 code 时，需要在渲染 code 标记符后添加零宽空格，然后再渲染其他标记符
+				if "" != code && 0 == i {
 					ret += editor.Zwsp
 				}
 			}
@@ -478,7 +472,6 @@ func (r *ProtyleExportMdRenderer) renderMdMarker0(node *ast.Node, currentTextmar
 			ret += "[" + content + "](" + href
 			if "" != node.TextMarkATitle {
 				title := html.UnescapeHTMLStr(node.TextMarkATitle)
-				// < 和 > 符号不用转义，可以符合 Markdown 规范 https://github.com/siyuan-note/siyuan/issues/15023
 				title = strings.ReplaceAll(title, "&lt;", "<")
 				title = strings.ReplaceAll(title, "&gt;", ">")
 				ret += " \"" + title + "\""
@@ -526,7 +519,7 @@ func (r *ProtyleExportMdRenderer) renderMdMarker0(node *ast.Node, currentTextmar
 		if entering {
 			content := node.TextMarkInlineMathContent
 			if node.ParentIs(ast.NodeTableCell) {
-				// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+				// Improve the handling of inline-math containing `|` in the table
 				content = lex.RepeatBackslashBeforePipe(content)
 				content = strings.ReplaceAll(content, "\n", "<br/>")
 			}
@@ -1214,7 +1207,6 @@ func (r *ProtyleExportMdRenderer) renderTable(node *ast.Node, entering bool) ast
 	}
 
 	if entering {
-		// 遍历单元格算出最大宽度
 
 		var cells [][]*ast.Node
 		cells = append(cells, []*ast.Node{})
@@ -1241,15 +1233,12 @@ func (r *ProtyleExportMdRenderer) renderTable(node *ast.Node, entering bool) ast
 		for col := 0; col < len(cells[0]); col++ {
 			for row := 0; row < len(cells) && col < len(cells[row]); row++ {
 				cells[row][col].TableCellContentWidth = cells[row][col].TokenLen()
-				// 自动添加空格会导致单元格宽度发生变化
 				if r.Options.AutoSpace {
 					ret := 0
-					// 遍历字节点，将可能会多出来的空格计算出来
 					ast.Walk(cells[row][col], func(n *ast.Node, entering bool) ast.WalkStatus {
 						if !entering {
 							return ast.WalkContinue
 						}
-						// 空格仅一个字节，可以直接计算长度
 						ret += len(r.Space(n.Tokens)) - len(n.Tokens)
 						return ast.WalkContinue
 					})
@@ -1315,7 +1304,6 @@ func (r *ProtyleExportMdRenderer) renderStrikethrough2CloseMarker(node *ast.Node
 func (r *ProtyleExportMdRenderer) renderLinkTitle(node *ast.Node, entering bool) ast.WalkStatus {
 	if entering {
 		r.WriteByte(lex.ItemDoublequote)
-		// 这里不进行转义输出，仅转义双引号 https://github.com/siyuan-note/siyuan/issues/15023
 		tokens := node.Tokens
 		tokens = bytes.ReplaceAll(tokens, []byte("\""), []byte("&quot;"))
 		r.Write(tokens)
@@ -1544,8 +1532,6 @@ func (r *ProtyleExportMdRenderer) renderParagraph(node *ast.Node, entering bool)
 			if ast.NodeListItem == parent.Type { // ListItem.Paragraph
 				listItem := parent
 				if nil != listItem.Parent && nil != listItem.Parent.ListData {
-					// 必须通过列表（而非列表项）上的紧凑标识判断，因为在设置该标识时仅设置了 List.Tight
-					// 设置紧凑标识的具体实现可参考函数 List.Finalize()
 					inTightList = listItem.Parent.ListData.Tight
 
 					if nextItem := listItem.Next; nil == nextItem {
@@ -1569,8 +1555,7 @@ func (r *ProtyleExportMdRenderer) renderParagraph(node *ast.Node, entering bool)
 
 func (r *ProtyleExportMdRenderer) renderText(node *ast.Node, entering bool) ast.WalkStatus {
 	if entering {
-		// 去掉开头的零宽空格 Exported Markdown inline code no longer contains zero-width spaces after it https://github.com/siyuan-note/siyuan/issues/15328
-		// When exporting inline code to Markdown, try to remove the trailing zero-width space https://github.com/siyuan-note/siyuan/issues/15854
+		// When exporting inline code to Markdown, try to remove the trailing zero-width space
 		for bytes.HasPrefix(node.Tokens, []byte(editor.Zwsp)) && "" == node.NextNodeText() {
 			node.Tokens = bytes.TrimPrefix(node.Tokens, []byte(editor.Zwsp))
 		}
@@ -1602,7 +1587,6 @@ func (r *ProtyleExportMdRenderer) renderText(node *ast.Node, entering bool) ast.
 			}
 		}
 
-		// 导出 Markdown 时去掉图片节点左右的零宽空格 Remove zero-width spaces around image nodes when exporting Markdown https://github.com/siyuan-note/siyuan/issues/14263
 		if nil != node.Previous && ast.NodeImage == node.Previous.Type && editor.Zwsp == string(node.Tokens) {
 			return ast.WalkContinue
 		}
@@ -1715,7 +1699,7 @@ func (r *ProtyleExportMdRenderer) renderInlineMathContent(node *ast.Node, enteri
 		tokens := html.UnescapeHTML(node.Tokens)
 		content := string(tokens)
 		if node.ParentIs(ast.NodeTableCell) {
-			// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+			// Improve the handling of inline-math containing `|` in the table
 			content = lex.RepeatBackslashBeforePipe(content)
 			content = strings.ReplaceAll(content, "\n", "<br/>")
 		}
@@ -1917,7 +1901,7 @@ func (r *ProtyleExportMdRenderer) renderBlockquote(node *ast.Node, entering bool
 		if 2 < length && lex.IsBlank(lines[length-1]) && lex.IsBlank(lines[length-2]) {
 			lines = lines[:length-1]
 		}
-		if 1 == len(r.NodeWriterStack) { // 已经是根这一层
+		if 1 == len(r.NodeWriterStack) {
 			length = len(lines)
 			if 1 < length && lex.IsBlank(lines[length-1]) {
 				lines = lines[:length-1]
@@ -1947,7 +1931,7 @@ func (r *ProtyleExportMdRenderer) renderBlockquote(node *ast.Node, entering bool
 		buf = bytes.TrimSpace(r.Writer.Bytes())
 		r.Writer.Reset()
 		r.Write(buf)
-		if !node.ParentIs(ast.NodeTableCell) { // 在表格中不能换行，否则会破坏表格的排版 https://github.com/Vanessa219/vditor/issues/368
+		if !node.ParentIs(ast.NodeTableCell) {
 			if r.withoutKramdownBlockIAL(node) {
 				r.WriteString("\n\n")
 			}
@@ -2046,7 +2030,6 @@ func (r *ProtyleExportMdRenderer) renderListItem(node *ast.Node, entering bool) 
 		indentedLines := bytes.Buffer{}
 		buf := writer.Bytes()
 		if bytes.HasPrefix(buf, []byte("* ")) {
-			// 说明该列表项为空 https://github.com/siyuan-note/siyuan/issues/6206
 			buf = append([]byte(" \n\n"), buf...)
 		}
 		lines := bytes.Split(buf, []byte{lex.ItemNewline})

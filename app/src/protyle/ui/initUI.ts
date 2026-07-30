@@ -138,15 +138,11 @@ export const initUI = (protyle: IProtyle) => {
     }, {passive: true});
     protyle.contentElement.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
         hideElements(["hint", "util"], protyle);
-        // wysiwyg 元素下方点击无效果 
         if (protyle.disabled ||
-            // 选中块时，禁止添加空块 
             protyle.contentElement.querySelector(".protyle-wysiwyg--select") ||
             (!event.target.classList.contains("protyle-content") && !event.target.classList.contains("protyle-wysiwyg"))) {
             return;
         }
-        //  选中最后一个块末尾点击底部时，range 会有值，需使用 setTimeout，最新测试无需 setTimeout 了，且会影响移动端键盘弹起故移除
-        // 选中文本禁止添加空块 
         if (window.getSelection().rangeCount > 0) {
             const currentRange = window.getSelection().getRangeAt(0);
             if (currentRange.toString() !== "" && protyle.wysiwyg.element.contains(currentRange.startContainer)) {
@@ -184,7 +180,6 @@ export const initUI = (protyle: IProtyle) => {
                 range.selectNodeContents(emptyEditElement);
                 range.collapse(true);
                 focusByRange(range);
-                // 需等待 range 更新再次进行渲染
                 if (protyle.options.render.breadcrumb) {
                     setTimeout(() => {
                         protyle.breadcrumb.render(protyle);
@@ -226,7 +221,6 @@ export const initUI = (protyle: IProtyle) => {
         const nodeElement = hasClosestBlock(event.target);
         if (protyle.options.render.gutter && nodeElement) {
             if (nodeElement && (nodeElement.classList.contains("list") || nodeElement.classList.contains("li"))) {
-                // 光标在列表下部应显示右侧的元素，而不是列表本身。放在 windowEvent 中的 mousemove 下处理
                 return;
             }
             const embedElement = isInEmbedBlock(nodeElement);
@@ -271,7 +265,6 @@ export const initUI = (protyle: IProtyle) => {
             return;
         }
 
-        // 面包屑
         if (protyle.selectElement.classList.contains("fn__none")) {
             const svgElement = hasClosestByAttribute(event.target, "data-node-id", null);
             if (svgElement && svgElement.parentElement.classList.contains("protyle-breadcrumb__bar")) {
@@ -326,7 +319,6 @@ export const setPadding = (protyle: IProtyle) => {
         protyle.background.element.querySelector(".protyle-background__ia").setAttribute("style", `margin-left:${paddingLeft}px;margin-right:${paddingRight}px`);
     }
     if (protyle.options.render.title) {
-        // pc 端 文档名 attr 过长和添加标签等按钮重合
         protyle.title.element.style.margin = `16px ${paddingRight}px 0 ${paddingLeft}px`;
     }
     if (protyle.databaseAttributePanel) {
@@ -360,7 +352,6 @@ export const getPadding = (protyle: IProtyle) => {
         let padding = (protyle.element.clientWidth - Constants.SIZE_EDITOR_WIDTH) / 2;
         if (isFullWidth === "false" && padding > 96) {
             if (padding > Constants.SIZE_EDITOR_WIDTH) {
-                // 超宽屏调整 
                 padding = protyle.element.clientWidth * .382 / 1.382;
             }
             padding = Math.ceil(padding);

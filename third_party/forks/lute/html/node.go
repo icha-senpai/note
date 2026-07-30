@@ -46,7 +46,6 @@ type Node struct {
 	Attr      []*Attribute
 }
 
-// Unlink 用于将节点从树上移除，后一个兄弟节点会接替该节点。
 func (n *Node) Unlink() {
 	if nil != n.PrevSibling {
 		n.PrevSibling.NextSibling = n.NextSibling
@@ -63,7 +62,6 @@ func (n *Node) Unlink() {
 	n.PrevSibling = nil
 }
 
-// InsertBefore 在当前节点前插入一个兄弟节点。
 func (n *Node) InsertBefore(sibling *Node) {
 	sibling.Unlink()
 	sibling.PrevSibling = n.PrevSibling
@@ -78,7 +76,6 @@ func (n *Node) InsertBefore(sibling *Node) {
 	}
 }
 
-// InsertAfter 在当前节点后插入一个兄弟节点。
 func (n *Node) InsertAfter(sibling *Node) {
 	sibling.Unlink()
 	sibling.NextSibling = n.NextSibling

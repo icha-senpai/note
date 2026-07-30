@@ -80,13 +80,11 @@ export const openMenuPanel = (options: {
     blockElement: Element,
     type: "select" | "properties" | "config" | "sorts" | "filters" | "edit" | "date" | "asset" | "switcher" | "relation" | "rollup",
     colId?: string, // for edit, rollup
-    // 使用前端构造的数据
     editData?: {
         previousID: string,
         colData: IAVColumn,
     },
     cellElements?: HTMLElement[],   // for select & date & relation & asset
-    // 复用调用方已构造好的视图数据，跳过内部 fetch，避免与刚提交的事务产生读写时序竞争
     data?: IAV,
     cb?: (avPanelElement: Element) => void
 }) => {
@@ -97,7 +95,6 @@ export const openMenuPanel = (options: {
     }
     const avID = options.blockElement.getAttribute("data-av-id");
     const avPageSize = getPageSize(options.blockElement);
-    // config/properties/sorts/filters/switcher 菜单只需要字段/视图元数据，不需要行数据，跳过行渲染以提升大体量视图下的响应速度
     const ignoreRows = ["config", "properties", "sorts", "filters", "switcher"].includes(options.type);
     const fetchPayload = {
         id: avID,
@@ -107,7 +104,6 @@ export const openMenuPanel = (options: {
         viewID: options.blockElement.getAttribute(Constants.CUSTOM_SY_AV_VIEW),
         ignoreRows,
     };
-    // 接收视图数据并构建面板 DOM、绑定事件。fetch 回调与 options.data 复用两条路径都走这里
     const renderData = async (responseData: IAV) => {
         const response = {data: responseData} as IWebSocketData;
         avPanelElement = document.querySelector(".av__panel");
@@ -217,7 +213,7 @@ export const openMenuPanel = (options: {
                 });
                 setTimeout(() => {
                     setPosition(menuElement, cellRect.left, cellRect.bottom, cellRect.height, 0, true);
-                }, Constants.TIMEOUT_LOAD);  // 等待加载
+                }, Constants.TIMEOUT_LOAD);
             } else if (options.type === "relation") {
                 bindRelationEvent({
                     menuElement,
@@ -286,7 +282,6 @@ export const openMenuPanel = (options: {
             const isTop = targetElement.classList.contains("dragover__top");
             const sourceId = sourceElement.dataset.id;
             const targetId = targetElement.dataset.id;
-            // 排序条件拖拽排序
             if (targetElement.querySelector('[data-type="removeSort"]')) {
                 const changeData = data.view.sorts;
                 const oldData = Object.assign([], changeData);
@@ -322,7 +317,6 @@ export const openMenuPanel = (options: {
                 bindSortsEvent(options.protyle, menuElement, data, blockID);
                 return;
             }
-            // 视图切换拖拽排序
             if (targetElement.querySelector('[data-type="av-view-edit"]')) {
                 transaction(options.protyle, [{
                     action: "sortAttrViewView",
@@ -346,7 +340,6 @@ export const openMenuPanel = (options: {
                 }
                 return;
             }
-            // 资源拖拽排序
             if (targetElement.querySelector('[data-type="editAssetItem"]')) {
                 if (isTop) {
                     targetElement.before(sourceElement);
@@ -371,7 +364,6 @@ export const openMenuPanel = (options: {
                 });
                 return;
             }
-            // 选项拖拽排序
             if (targetElement.querySelector('[data-type="setColOption"]')) {
                 const colId = options.cellElements ? getColId(options.cellElements[0], data.viewType) : menuElement.querySelector(".b3-menu__item").getAttribute("data-col-id");
                 const changeData = fields.find((column) => column.id === colId).options;
@@ -420,7 +412,6 @@ export const openMenuPanel = (options: {
                 menuElement.querySelector(".b3-menu__items").scrollTop = oldScroll;
                 return;
             }
-            // 关联列拖拽排序
             if (targetElement.getAttribute("data-type") === "setRelationCell") {
                 if (isTop) {
                     targetElement.before(sourceElement);
@@ -448,7 +439,6 @@ export const openMenuPanel = (options: {
                 }, options.cellElements);
                 return;
             }
-            // 字段列表拖拽排序
             if (targetElement.getAttribute("data-type") === "editCol") {
                 const previousID = (isTop ? targetElement.previousElementSibling?.getAttribute("data-id") : targetElement.getAttribute("data-id")) || "";
                 const undoPreviousID = sourceElement.previousElementSibling?.getAttribute("data-id") || "";
@@ -487,7 +477,6 @@ export const openMenuPanel = (options: {
                 menuElement.innerHTML = getPropertiesHTML(fields);
                 return;
             }
-            // 分组项拖拽排序
             if (targetElement.querySelector('[data-type="hideGroup"]')) {
                 const previousID = (isTop ? targetElement.previousElementSibling?.getAttribute("data-id") : targetElement.getAttribute("data-id")) || "";
                 const undoPreviousID = sourceElement.previousElementSibling?.getAttribute("data-id") || "";
@@ -580,7 +569,6 @@ export const openMenuPanel = (options: {
                 window.scribli.dragElement = undefined;
             }
         });
-        // 过滤分组 AND/OR 切换（select 的 change 事件，不走 click 分发）
         avPanelElement.addEventListener("change", (event: Event) => {
             const select = event.target as HTMLElement;
             if (select.dataset.type !== "toggleCombination") {
@@ -605,13 +593,11 @@ export const openMenuPanel = (options: {
                 data: oldFilters,
                 blockID
             }]);
-            // 重渲染以同步所有只读且/或标签（index >= 2 的节点显示的是只读 span）
             menuElement.innerHTML = getFiltersHTML(data);
             bindInlineFilterEvents(avPanelElement as HTMLElement, data, options.protyle, blockID, avID);
             setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
             event.stopPropagation();
         });
-        // 多选排序
         avPanelElement.addEventListener("mousedown", (event: MouseEvent & { target: HTMLElement }) => {
             if (event.button === 1 && !hasClosestByClassName(event.target, "b3-menu")) {
                 document.querySelector(".av__panel").dispatchEvent(new CustomEvent("click", {detail: "close"}));
@@ -684,22 +670,20 @@ export const openMenuPanel = (options: {
             }
             while (target && target !== avPanelElement || type) {
                 type = target?.dataset.type || type;
-                // toggleCombination 由 change 事件处理，click 直接跳过避免空跑
                 if (type === "toggleCombination") {
                     break;
                 }
                 if (type === "close") {
                     if (!options.protyle.toolbar.subElement.classList.contains("fn__none")) {
-                        // 优先关闭资源文件搜索
                         hideElements(["util"], options.protyle);
                     } else if (!window.scribli.menus.menu.element.classList.contains("fn__none")) {
-                        // 过滤面板先关闭过滤条件
+                        // Intentionally empty.
                     } else {
                         closeCB?.();
                         avPanelElement.remove();
                         setTimeout(() => {
                             focusBlock(options.blockElement);
-                        }, Constants.TIMEOUT_TRANSITION);  // 单选使用 enter 修改选项后会滚动
+                        }, Constants.TIMEOUT_TRANSITION);
                     }
                     window.scribli.menus.menu.remove();
                     event.preventDefault();
@@ -715,7 +699,6 @@ export const openMenuPanel = (options: {
                     event.stopPropagation();
                     break;
                 } else if (type === "go-properties") {
-                    // 复制列后点击返回到属性面板，宽度不一致，需重新计算
                     tabRect = options.blockElement.querySelector(".av__views").getBoundingClientRect();
                     menuElement.classList.remove("av__filter-panel");
                     menuElement.innerHTML = getPropertiesHTML(fields);
@@ -820,7 +803,6 @@ export const openMenuPanel = (options: {
                         data: JSON.parse(JSON.stringify(data.view.filters)),
                         blockID
                     }]);
-                    // 本地状态保持“顶层单个空根组”不变量（后端会同样归一化），避免后续 addFilterGroup 误把新分组当成根组
                     data.view.filters = [{combination: "and", filters: []}];
                     menuElement.innerHTML = getFiltersHTML(data);
                     setPosition(menuElement, tabRect.right - menuElement.clientWidth, tabRect.bottom, tabRect.height, 0, true);
@@ -1232,7 +1214,6 @@ export const openMenuPanel = (options: {
                             type: target.dataset.oldType as TAVCol,
                         }]);
 
-                        // 需要取消行号列的筛选和排序
                         if (target.dataset.newType === "lineNumber") {
                             const sortExist = data.view.sorts.find((sort) => sort.column === colId);
                             if (sortExist) {
@@ -1255,8 +1236,6 @@ export const openMenuPanel = (options: {
                             const filterExist = hasFilterForColumn(data.view.filters, colId);
                             if (filterExist) {
                                 const oldFilters = JSON.parse(JSON.stringify(data.view.filters));
-                                // 递归移除引用该列的叶子并裁剪空分组。spec 5 下顶层为根组，操作其子节点；
-                                // 兜底旧扁平数据（无根组）时直接处理顶层。
                                 const root = data.view.filters[0] && data.view.filters[0].filters ? data.view.filters[0] : null;
                                 if (root) {
                                     root.filters = removeFiltersByColumn(root.filters, colId);
@@ -1886,7 +1865,6 @@ export const openMenuPanel = (options: {
                     event.stopPropagation();
                     break;
                 }
-                // 有错误日志，没找到重现步骤，需先判断一下
                 if (!target || !target.parentElement) {
                     break;
                 }
@@ -1894,7 +1872,6 @@ export const openMenuPanel = (options: {
             }
         });
     };
-    // 复用调用方传入的数据时直接渲染，跳过 fetch，避免与刚提交的事务产生读写竞争（拿到旧数据）
     if (options.data) {
         renderData(options.data);
     } else {

@@ -68,7 +68,6 @@ export class Tag extends Model {
             blockExtHTML: window.scribli.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
             topExtHTML: window.scribli.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>'
         });
-        // 为了快捷键的 dispatch
         this.element.querySelector('[data-type="collapse"]').addEventListener("click", () => {
             this.tree.collapseAll();
         });

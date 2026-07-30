@@ -32,7 +32,6 @@
 
     .textLayer,
     .pdf__resize {
-      /* dark 蓝色、紫色背景显示不清楚，文档位于  */
       mix-blend-mode: multiply;
     }
   }
@@ -97,7 +96,7 @@
 
   .textLayer,
   .pdf__resize {
-    z-index: 2; // pdf 缩放后 canvas 会出现在末尾，导致无法选中和查看标注
+    z-index: 2;
     mix-blend-mode: screen;
   }
 }
@@ -338,7 +337,6 @@
   top: 42px;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  // 需高于 pdf 中的链接
   z-index: 38;
 
   .b3-menu__items {

@@ -111,7 +111,6 @@ const genUploadedLabel = async (responseText: string, protyle: IProtyle) => {
     let insertBlock = true;
     const range = getEditorRange(protyle.wysiwyg.element);
     if (range.toString() === "" && range.startContainer.nodeType === 3 && protyle.toolbar.getCurrentType(range).length > 0) {
-        // 防止链接插入其他元素中 
         range.setEndAfter(range.startContainer.parentElement);
         range.collapse(false);
     }
@@ -130,7 +129,6 @@ const genUploadedLabel = async (responseText: string, protyle: IProtyle) => {
         }
     }
     let successFileText = "";
-    // 插入多个资源文件时按文件名自然升序排列 Use natural ascending order when inserting multiple assets 
     keys.sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
     const avAssets: IAVCellAssetValue[] = [];
     let hasImage = false;
@@ -247,9 +245,7 @@ const genUploadedLabel = async (responseText: string, protyle: IProtyle) => {
         }
         return;
     }
-    // 避免插入代码块中，其次因为都要独立成块 
     insertHTML(successFileText, protyle, insertBlock);
-    // 粘贴图片后定位不准确 
     setTimeout(() => {
         scrollCenter(protyle, undefined, "nearest", "smooth");
     }, hasImage ? 0 : Constants.TIMEOUT_LOAD);
@@ -296,7 +292,6 @@ export const uploadFiles = (protyle: IProtyle, files: FileList | DataTransferIte
             fileItem = fileItem.getAsFile();
         }
         if (0 === fileItem.size && "" === fileItem.type && -1 === fileItem.name.indexOf(".")) {
-            // 文件夹
             uploadLocalFiles([{path: (fileItem as FileWithPath).path, size: null}], protyle, false);
         } else {
             fileList.push(fileItem);
@@ -374,7 +369,6 @@ export const uploadFiles = (protyle: IProtyle, files: FileList | DataTransferIte
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 protyle.upload.isUploading = false;
                 if (!document.body.contains(protyle.element)) {
-                    // 网络较慢时，页签已经关闭
                     destroy(protyle);
                     return;
                 }

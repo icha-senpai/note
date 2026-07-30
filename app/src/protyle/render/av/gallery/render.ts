@@ -123,7 +123,6 @@ export const afterRenderGallery = (options: ITableOptions) => {
             itemElement.classList.add("av__gallery-item--select");
         }
     });
-    // 重渲后恢复的选中态需刷新计数器显示
     const restoredItem = options.blockElement.querySelector(".av__gallery-item--select") as HTMLElement;
     if (restoredItem) {
         updateHeader(restoredItem);
@@ -145,7 +144,6 @@ export const afterRenderGallery = (options: ITableOptions) => {
         }
     });
     if (getSelection().rangeCount > 0) {
-        // 修改表头后光标重新定位
         const range = getSelection().getRangeAt(0);
         if (!hasClosestByClassName(range.startContainer, "av__title")) {
             const blockElement = hasClosestBlock(range.startContainer);
@@ -208,8 +206,6 @@ export const renderGallery = async (options: {
         if (!item.querySelector(".av__gallery-item") || options.blockElement.getAttribute(Constants.ATTRIBUTE_V_SCROLL) !== "true") {
             return;
         }
-        // 守卫只保证至少 1 个 .av__gallery-item，但首行索引用 :not([data-type=ghost]) 过滤。
-        // body 内全是 ghost 占位行（插入动画进行中）时查询返回 null，需跳过避免解引用 null.getAttribute
         const firstItem = item.querySelector(".av__gallery-item:not([data-type=ghost])") as HTMLElement;
         if (!firstItem) {
             return;

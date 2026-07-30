@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -18,15 +17,12 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// TextBundleRenderer 描述了 TextBundle 渲染器。https://github.com/icha-senpai/note/third_party/forks/lute/issues/77
 //
-// 继承 FormatRenderer，覆写链接地址渲染函数 renderLinkDest，如果 URL 在指定的链接前缀列表中，则将其替换为 assets/xxx，比如对于 Markdown 原文：
 //
 //	[foo](https://img.hacpai.com/dir1/bar.zip)
 //
 //	![foo](https://b3logfile.com/dir2/baz.png)
 //
-// 指定链接前缀列表为：["https://img.hacpai.com", "https://b3logfile.com"]，处理后渲染为：
 //
 //	[foo](assets/dir1/bar.zip)
 //
@@ -34,11 +30,10 @@ import (
 type TextBundleRenderer struct {
 	*FormatRenderer
 
-	linkPrefixes []string // 链接前缀列表
-	originalLink []string // 原始链接列表
+	linkPrefixes []string
+	originalLink []string
 }
 
-// NewTextBundleRenderer 创建一个 TextBundle 渲染器。
 func NewTextBundleRenderer(tree *parse.Tree, linkPrefixes []string, options *Options, parseOptions *parse.Options) *TextBundleRenderer {
 	ret := &TextBundleRenderer{FormatRenderer: NewFormatRenderer(tree, options, parseOptions), linkPrefixes: linkPrefixes}
 	ret.RendererFuncs[ast.NodeLinkDest] = ret.renderLinkDest

@@ -4,7 +4,6 @@ import {Constants} from "../../constants";
 import type {SettingTabMountContext} from "./builder";
 import {getSettingTab, type TSettingTab} from "./tabs";
 
-/** 首次挂载：渲染全部注册项并执行 afterMount */
 export const mountSettingTab = async (tabId: string, root: HTMLElement) => {
     const {html, items} = buildGroupedItemsView(tabId);
     root.innerHTML = html;
@@ -14,7 +13,6 @@ export const mountSettingTab = async (tabId: string, root: HTMLElement) => {
     }
 };
 
-/** 设置面板已打开且对应 Tab 已挂载时，重新 register 并整页替换 */
 export const remountOpenSettingTab = async (tabId: TSettingTab) => {
     const dialogElement = window.scribli.dialogs.find((d) => d.element.getAttribute("data-key") === Constants.DIALOG_SETTING)?.element;
     if (!dialogElement) {
@@ -59,7 +57,6 @@ export const applySettingTabSearchVisibility = (
                 lastVisibleItem = itemEl;
             }
         });
-        // 标记每组最后一个未隐藏条目，不显示 border-bottom
         lastVisibleItem?.classList.add("config-item--last-visible");
     });
 };
@@ -70,7 +67,6 @@ export const clearSettingTabSearch = (root: HTMLElement) => {
     });
 };
 
-/** 面板型 SettingTab：根据全局搜索关键词切换 layout-tab-bar 子 Tab */
 export const switchSettingPanelSubTab = (
     root: HTMLElement,
     keywords: string,

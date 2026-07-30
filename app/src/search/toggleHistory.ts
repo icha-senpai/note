@@ -220,7 +220,6 @@ export const saveKeyList = (type: "keys" | "replaceKeys", value: string) => {
     if (list.length > window.scribli.config.search.limit) {
         list.splice(window.scribli.config.search.limit, list.length - window.scribli.config.search.limit);
     }
-    // new Set 后需重新赋值
     window.scribli.storage[Constants.LOCAL_SEARCHKEYS][type] = list;
     setStorageVal(Constants.LOCAL_SEARCHKEYS, window.scribli.storage[Constants.LOCAL_SEARCHKEYS]);
 };

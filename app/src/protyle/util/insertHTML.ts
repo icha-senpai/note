@@ -25,13 +25,8 @@ import {getAvBodyData} from "../render/av/virtualScroll";
 import {processClonePHElement} from "../render/util";
 import {setFold} from "./blockFold";
 
-// 粘贴时临时插入的占位行标记，遍历结束后统一移除，避免污染虚拟滚动的 renderedStart/renderedEnd/spacer 状态
 const PLACEHOLDER_ROW_CLASS = "av__row--placeholder";
 
-// 获取当前数据行的下一行。虚拟滚动会把视口外的数据行裁掉，此时 nextElementSibling 指向的是
-// .av__row--util 等非数据行。此处按 data-index 递增，若目标行未渲染则按数据源生成占位行插入后再返回，
-// 使粘贴可以覆盖视口外（被虚拟滚动裁掉的）数据行。nextIndex 超出已有行数时返回 null 以终止遍历。
-// 占位行带 av__row--placeholder 标记，由调用方在粘贴循环结束后移除，以免破坏虚拟滚动状态。
 const getNextDataRow = (currentRowElement: Element): HTMLElement => {
     const nextSibling = currentRowElement.nextElementSibling as HTMLElement;
     if (nextSibling && nextSibling.classList.contains("av__row") &&
@@ -58,7 +53,6 @@ const getNextDataRow = (currentRowElement: Element): HTMLElement => {
     return newRowElement;
 };
 
-// 移除粘贴过程中插入的占位行，使 DOM 恢复到与虚拟滚动 bodyStates 一致的裁剪状态
 const removePlaceholderRows = (blockElement: HTMLElement) => {
     blockElement.querySelectorAll("." + PLACEHOLDER_ROW_CLASS).forEach(item => item.remove());
 };
@@ -326,7 +320,6 @@ const processTable = (range: Range, html: string, protyle: IProtyle, blockElemen
         return false;
     }
     const targetCells = getTableRangeCells(tableElement, startCell, endCell);
-    // 按逻辑网格坐标匹配实际单元格，避免 colspan/rowspan 的 fn__none 占位导致内容错位。
     const copyCellMap = new Map(copyCells.map(item => [`${item.row}:${item.col}`, item.cell]));
     const matchedCells: { source: HTMLTableCellElement; target: HTMLTableCellElement }[] = [];
     targetCells.forEach(item => {
@@ -353,9 +346,7 @@ const processTable = (range: Range, html: string, protyle: IProtyle, blockElemen
 };
 
 export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
-                           // 移动端插入嵌入块时，获取到的 range 为旧值
                            useProtyleRange = false,
-                           // 在开头粘贴块则插入上方
                            insertByCursor = false) => {
     if (html === "") {
         return;
@@ -374,7 +365,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     }
     let blockElement = hasClosestBlock(range.startContainer) as HTMLElement;
     if (!blockElement) {
-        // 使用鼠标点击选则模版提示列表后 range 丢失
         if (protyle.toolbar.range) {
             blockElement = hasClosestBlock(protyle.toolbar.range.startContainer) as HTMLElement;
         } else {
@@ -408,7 +398,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     if (!isBlock &&
         (isNodeCodeBlock || protyle.toolbar.getCurrentType(range).includes("code"))) {
         range.deleteContents();
-        // 代码块需保持至少一个 \n 
         let codeBlockIsEmpty = false;
         if (isNodeCodeBlock && editableElement.textContent === "") {
             codeBlockIsEmpty = true;
@@ -417,7 +406,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         range.collapse(false);
         range.insertNode(document.createElement("wbr"));
         if (codeBlockIsEmpty) {
-            // 代码块为空添加的 \n 需放在最后 
             range.collapse(false);
             range.insertNode(document.createTextNode("\n"));
         }
@@ -440,15 +428,12 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     if (range.toString() !== "") {
         const inlineMathElement = hasClosestByAttribute(range.commonAncestorContainer, "data-type", "inline-math");
         if (inlineMathElement) {
-            // 表格内选中数学公式 
             inlineMathElement.remove();
         } else if (range.startContainer.nodeType === 3 && range.startContainer.parentElement.getAttribute("data-type")?.indexOf("block-ref") > -1) {
-            // 选中 ref**bbb** 后 alt+[
             range.deleteContents();
             // 
             if (range.startContainer.nodeType !== 3 && (range.startContainer as Element).tagName === "SPAN" &&
                 range.startContainer.textContent === "") {
-                // ref 选中处理 
                 (range.startContainer as HTMLElement).remove();
             }
         } else {
@@ -475,9 +460,8 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         unSpinHTML = html;
     }
 
-    let innerHTML = unSpinHTML || // 在 table 中插入需要使用转换好的行内元素 
-        html;   // 空格会被 Spin 不再，需要使用原文
-    // 粘贴纯文本时会进行内部转义，这里需要进行反转义 
+    let innerHTML = unSpinHTML ||
+        html;
     innerHTML = innerHTML.replace(/;;;lt;;;/g, "&lt;").replace(/;;;gt;;;/g, "&gt;");
     tempElement.innerHTML = innerHTML;
 
@@ -493,7 +477,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         isBlock = false;
         block2text = true;
     }
-    // 使用 lute 方法会添加 p 元素，只有一个 p 元素或者只有一个字符串或者为 <u>b</u> 时的时候只拷贝内部
     if (!isBlock) {
         if (tempElement.content.firstChild.nodeType === 3 || block2text ||
             (tempElement.content.firstChild.nodeType !== 3 &&
@@ -502,12 +485,9 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             if (tempElement.content.firstChild.nodeType !== 3 && tempElement.content.firstElementChild.classList.contains("p")) {
                 tempElement.innerHTML = tempElement.content.firstElementChild.firstElementChild.innerHTML.trim();
             }
-            // 粘贴带样式的行内元素到另一个行内元素中需进行切割
             const spanElement = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer as HTMLElement;
             const splitElements: HTMLElement[] = [];
             if (spanElement.tagName === "SPAN" && spanElement === (range.endContainer.nodeType === 3 ? range.endContainer.parentElement : range.endContainer) &&
-                // 粘贴纯文本不需切割 
-                // emoji 图片需要切割 
                 tempElement.content.querySelector("span, img")
             ) {
                 const afterElement = document.createElement("span");
@@ -525,24 +505,20 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             range.insertNode(tempElement.content.cloneNode(true));
             range.collapse(false);
             blockElement.querySelector("wbr")?.remove();
-            // 移除行级元素边界插入时产生的空拆分元素，避免相邻标签修复在新标签后插入空格
             splitElements.forEach((item) => {
                 if (item.childElementCount === 0 && item.textContent.split(Constants.ZWSP).join("") === "") {
                     item.remove();
                 }
             });
-            // 相邻标签之间插入空格区隔，避免后续 SpinBlockDOM 解析时合并为一个标签 
             fixAdjacentTags(getContenteditableElement(blockElement));
             protyle.wysiwyg.lastHTMLs[id] = oldHTML;
             input(protyle, blockElement as HTMLElement, range);
             return;
         }
     }
-    // 光标是否在列表项的第一个段落块（紧挨 protyle-action）
     const isFirstBlockInLi = hasClosestByClassName(blockElement, "li") &&
         blockElement.previousElementSibling?.classList.contains("protyle-action");
     const cursorLiElement = hasClosestByClassName(blockElement, "li");
-    // 粘贴列表到已有列表内时统一列表类型 
     if (cursorLiElement) {
         const targetSubtype = cursorLiElement.getAttribute("data-subtype");
         const firstChild = tempElement.content.firstElementChild;
@@ -580,7 +556,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     }
     let isListPaste = false;
     let keepEmptyBlock = false;
-    // 列表项不能单独进行粘贴 
     if (tempElement.content.children[0]?.getAttribute("data-type") === "NodeListItem") {
         isListPaste = true;
         if (cursorLiElement) {
@@ -598,7 +573,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         const hasRefCount = sourceList.querySelector(".protyle-attr--refcount");
         if (!hasRefCount) {
             isListPaste = true;
-            // 顶层空列表项粘贴列表块时拆开为同级列表项 
             blockElement = cursorLiElement as HTMLElement;
             id = blockElement.getAttribute("data-node-id");
             oldHTML = blockElement.outerHTML;
@@ -612,7 +586,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
                 tempElement.content.appendChild(listElement.firstElementChild);
             }
         } else {
-            // 有 refcount 的列表直接作为子列表插入到空段落后，不拆开不清理 
             keepEmptyBlock = true;
         }
     }
@@ -697,7 +670,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         }
     });
     if (editableElement && editableElement.textContent === "" && blockElement.classList.contains("p") && !keepEmptyBlock) {
-        // 选中当前块所有内容粘贴再撤销会导致异常 
         doOperation.find((item, index) => {
             if (item.id === id) {
                 doOperation.splice(index, 1);
@@ -708,7 +680,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             action: "delete",
             id
         });
-        // 选中当前块所有内容粘贴再撤销会导致异常 
         undoOperation.find((item, index) => {
             if (item.id === id && item.action === "update") {
                 undoOperation.splice(index, 1);
@@ -731,7 +702,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
     protyle.wysiwyg.element.querySelectorAll("wbr").forEach(item => {
         item.remove();
     });
-    // 复制容器块中包含折叠标题块
     protyle.wysiwyg.element.querySelectorAll("[parent-heading]").forEach(item => {
         item.remove();
     });
@@ -756,24 +726,20 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         });
         return;
     }
-    // 粘贴到空列表项（第一个段落为空）后删除空列表项 
     if (isListPaste && cursorLiElement && isFirstBlockInLi) {
         const editEl = getContenteditableElement(cursorLiElement);
         if (editEl && editEl.textContent.replace(Constants.ZWSP, "").trim() === "") {
-            // 把空列表项的子列表移到粘贴的最后一项下面
             const subList = cursorLiElement.querySelector(":scope > [data-type='NodeList']");
             if (subList && lastElement && lastElement.classList.contains("li")) {
                 const movedList = subList.cloneNode(true) as HTMLElement;
                 const existSubList = lastElement.querySelector(":scope > [data-type='NodeList']");
                 if (existSubList) {
-                    // 最后一项已有子列表，合并子列表项
                     Array.from(movedList.querySelectorAll(":scope > .li")).forEach(li => {
                         existSubList.appendChild(li);
                     });
                 } else {
                     lastElement.appendChild(movedList);
                 }
-                // 更新最后一项的 update 操作 data
                 const lastUpdateOp = doOperation.find(op => op.action === "insert" && op.id === lastElement.getAttribute("data-node-id"));
                 if (lastUpdateOp) {
                     lastUpdateOp.data = lastElement.outerHTML;
@@ -792,20 +758,16 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             cursorLiElement.remove();
         }
     }
-    // 粘贴后修正有序列表序号 
     const orderLists = new Set<Element>();
     if (cursorLiElement) {
-        // cursorLiElement 可能已被清理删除，用 parentList 引用
         const cursorList = cursorLiElement.classList.contains("list") ? cursorLiElement : cursorLiElement.parentElement;
         if (cursorList?.getAttribute("data-subtype") === "o") {
             orderLists.add(cursorList);
         }
-        // 粘贴的最后一项所在的列表
         if (lastElement?.parentElement?.getAttribute("data-subtype") === "o") {
             orderLists.add(lastElement.parentElement);
         }
     }
-    // 粘贴产生的子列表也可能是有序列表
     doOperation.forEach(op => {
         if (op.action === "insert") {
             const tempEl = document.createElement("template");
@@ -819,7 +781,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
         }
     });
     orderLists.forEach(orderList => {
-        // 保存原有列表项的原始状态用于撤销
         const originalItems: {id: string, html: string}[] = [];
         orderList.querySelectorAll(":scope > .li").forEach(li => {
             const liId = li.getAttribute("data-node-id");
@@ -828,7 +789,6 @@ export const insertHTML = (html: string, protyle: IProtyle, isBlock = false,
             }
         });
         updateListOrder(orderList);
-        // 更新 doOperation 中受影响列表项的 data，原有项补充 update 操作用于撤销
         orderList.querySelectorAll(":scope > .li").forEach(li => {
             const liId = li.getAttribute("data-node-id");
             const op = doOperation.find(o => o.id === liId && o.action === "insert");

@@ -8,7 +8,7 @@ import {electronUndo} from "../protyle/undo";
 
 export class Menu {
     public element: HTMLElement;
-    public data: any;   // 用于记录当前菜单的数据
+    public data: any;
     public removeCB: () => void;
     private wheelEvent: string;
     private position: IPosition;
@@ -44,7 +44,6 @@ export class Menu {
                 return;
             }
             const subMenuElement = itemElement.querySelector(":scope > .b3-menu__submenu") as HTMLElement;
-            // 子菜单容器的 mouseover 会向上匹配到所属菜单项，无需重新定位已打开的子菜单
             if (subMenuElement?.contains(target)) {
                 return;
             }
@@ -93,21 +92,15 @@ export class Menu {
             }
         }
 
-        // 垂直方向位置调整
-        // 减 9px 是为了尽量对齐菜单选项（b3-menu__submenu 的默认 padding-top 加上子菜单首个 b3-menu__item 的默认 margin-top）
-        // 减 1px 是为了避免在特定情况下渲染出不应存在的滚动条而做的兼容处理
         subMenuElement.style.top = Math.max(getTopBarHeight(),
             Math.min(itemRect.top - 9, window.innerHeight - subMenuRect.height - 1)) + "px";
 
-        // 水平方向位置调整
-        // 多级菜单继承上一级子菜单的方向
         let isParentDirectionLeft = false;
         const parentSubMenuElement = hasClosestByClassName(subMenuElement.parentElement.parentElement, "b3-menu__item") as HTMLElement;
         if (parentSubMenuElement && itemRect.left < parentSubMenuElement.getBoundingClientRect().left) {
             isParentDirectionLeft = true;
         }
 
-        // 8px 是 b3-menu__items 的默认 padding-right
         const spaceRight = window.innerWidth - itemRect.right - 8;
         const spaceLeft = itemRect.left - 8;
         if (isParentDirectionLeft) {
@@ -132,14 +125,12 @@ export class Menu {
     }
 
     private updateMaxHeight(menuElement: HTMLElement, itemsMenuElement: HTMLElement) {
-        // 加 1px 是为了避免在特定情况下渲染出不应存在的滚动条而做的兼容处理; 18 为父子块高差
         itemsMenuElement.style.maxHeight = Math.max(window.innerHeight - menuElement.getBoundingClientRect().top - 18 + 1, 30) + "px";
     }
 
     private preventDefault(event: KeyboardEvent) {
         if (!hasClosestByClassName(event.target as Element, "b3-menu") &&
             !hasClosestByClassName(event.target as Element, "tooltip") &&
-            // 移动端底部键盘菜单
             !hasClosestByClassName(event.target as Element, "keyboard__bar")) {
             event.preventDefault();
         }
@@ -175,13 +166,13 @@ export class Menu {
         this.removeScrollEvent();
         this.element.firstElementChild.classList.add("fn__none");
         this.element.lastElementChild.innerHTML = "";
-        this.element.lastElementChild.removeAttribute("style");  // 输入框 focus 后 boxShadow 显示不全
+        this.element.lastElementChild.removeAttribute("style");
         this.element.classList.add("fn__none");
         this.element.classList.remove("b3-menu--list", "b3-menu--fullscreen");
         this.element.removeAttribute("style");  // zIndex
-        this.element.removeAttribute("data-name");    // 标识再次点击不消失
-        this.element.removeAttribute("data-from");    // 标识菜单入口
-        this.data = undefined;    // 移除数据
+        this.element.removeAttribute("data-name");
+        this.element.removeAttribute("data-from");
+        this.data = undefined;
     }
 
     public append(element?: HTMLElement, index?: number) {
@@ -217,7 +208,6 @@ export class Menu {
         setPosition(this.element, this.position.x - (this.position.isLeft ? this.element.clientWidth : 0), this.position.y, this.position.h, this.position.w);
         this.updateMaxHeight(this.element, this.element.lastElementChild as HTMLElement);
         this.element.querySelectorAll(".b3-menu__item--show .b3-menu__submenu").forEach((item: HTMLElement) => {
-            // 可能有多层子菜单，都要重新定位
             this.showSubMenu(item);
         });
     }
@@ -276,7 +266,6 @@ export class MenuItem {
             this.element.classList.add("b3-menu__item--selected");
         }
         if (options.click) {
-            // 需使用 click，否则移动端无法滚动
             this.element.addEventListener("click", (event) => {
                 if (this.element.getAttribute("disabled")) {
                     return;
@@ -322,7 +311,6 @@ export class MenuItem {
         }
 
         if (options.bind) {
-            // 主题 rem craft 需要使用 b3-menu__item--custom 来区分自定义菜单 by 281261361
             this.element.classList.add("b3-menu__item--custom");
             options.bind(this.element);
         }
@@ -389,7 +377,6 @@ export const bindMenuKeydown = (event: KeyboardEvent) => {
             return false;
         }
     }
-    // 支持输入框中的 undo & redo
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
         return false;
     }
@@ -490,7 +477,6 @@ export const bindMenuKeydown = (event: KeyboardEvent) => {
                 currentElement.dispatchEvent(new CustomEvent(getEventName()));
             }
             if (window.scribli.menus.menu.element.contains(currentElement)) {
-                // 块标上 AI 会使用新的 menu，不能移除
                 window.scribli.menus.menu.remove();
             }
         }

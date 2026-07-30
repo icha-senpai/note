@@ -650,7 +650,7 @@ export const openNewItemTemplateDialog = (options: {
                     try {
                         (valueElement as HTMLInputElement & {showPicker?: () => void}).showPicker?.();
                     } catch {
-                        // 浏览器会在当前事件不具备用户激活状态时拒绝打开选择器，输入框仍可正常点击选择。
+                        // Intentionally empty.
                     }
                 }
             });

@@ -115,7 +115,7 @@ var (
 		"sec-fetch-mode":            "navigate",
 		"sec-fetch-user":            "?1",
 		"sec-fetch-dest":            "document",
-		"accept-language":           "zh-CN,zh;q=0.9",
+		"accept-language":           "en-US,en;q=0.9",
 	}
 
 	chromeHeaderPriority = http2.PriorityParam{
@@ -231,7 +231,7 @@ var (
 	firefoxHeaders = map[string]string{
 		"user-agent":                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:120.0) Gecko/20100101 Firefox/120.0",
 		"accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-		"accept-language":           "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2",
+		"accept-language":           "en-US,en;q=0.9",
 		"upgrade-insecure-requests": "1",
 		"sec-fetch-dest":            "document",
 		"sec-fetch-mode":            "navigate",
@@ -297,7 +297,7 @@ var (
 		"accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 		"sec-fetch-site":  "same-origin",
 		"sec-fetch-dest":  "document",
-		"accept-language": "zh-CN,zh-Hans;q=0.9",
+		"accept-language": "en-US,en;q=0.9",
 		"sec-fetch-mode":  "navigate",
 		"user-agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15",
 	}

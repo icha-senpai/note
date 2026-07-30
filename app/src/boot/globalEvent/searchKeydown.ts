@@ -81,7 +81,6 @@ export const searchKeydown = (app: App, event: KeyboardEvent) => {
     }
     const assetLocal = window.scribli.storage[Constants.LOCAL_SEARCHASSET] as ISearchAssetOption;
     if (!window.scribli.menus.menu.element.classList.contains("fn__none")) {
-        // 不能返回 true，否则历史菜单无法使用快捷键
         return false;
     }
     let currentList: HTMLElement = listElement.querySelector(".b3-list-item--focus");

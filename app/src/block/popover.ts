@@ -13,20 +13,16 @@ import {Editor} from "../editor";
 import {Tab} from "../layout/Tab";
 
 let popoverTargetElement: HTMLElement;
-// 异步获取信息后再显示 tooltip，鼠标已移走时需中断请求 
 let tooltipAbortController: AbortController | null = null;
 export const initBlockPopover = (app: App) => {
     let timeout: number;
     let timeoutHide: number;
-    // 编辑器内容块引用/backlinks/tag/bookmark/套娃中使用
     document.addEventListener("mouseover", (event: MouseEvent & { target: HTMLElement, path: HTMLElement[] }) => {
         if (!window.scribli.config || !window.scribli.menus ||
-            // 拖拽时禁止
             window.scribli.dragElement || document.onmousemove) {
             hideTooltip();
             return;
         }
-        // 鼠标进入新元素时中断上一轮尚未完成的 tooltip 信息请求
         if (tooltipAbortController) {
             tooltipAbortController.abort();
             tooltipAbortController = null;
@@ -94,16 +90,15 @@ export const initBlockPopover = (app: App) => {
             let tooltipSpace: number | undefined;
             if (!tip && aElement.getAttribute("data-type")?.includes("inline-memo")) {
                 tip = window.DOMPurify.sanitize(aElement.getAttribute("data-inline-memo-content"));
-                tooltipClass = "memo"; // 为行级备注添加 class 
-                tooltipSpace = 0; // tooltip 和备注元素之间不能有空隙 
+                tooltipClass = "memo";
+                tooltipSpace = 0;
             }
             if (!tip) {
                 if (aElement.getAttribute("data-type")?.includes("a")) {
-                    tooltipClass = "href"; // 为超链接添加 class 
+                    tooltipClass = "href";
                     tooltipSpace = 0;
                 }
                 const href = aElement.getAttribute("data-href") || "";
-                // 链接地址强制换行 
                 if (href) {
                     tip = `<span style="word-break: break-all">${href.substring(0, Constants.SIZE_TITLE)}</span>`;
                 }
@@ -255,7 +250,6 @@ export const initBlockPopover = (app: App) => {
 };
 
 const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
-    // pad 端点击后 event.target 不会更新。
     const target = isTouchDevice() ? document.elementFromPoint(event.clientX, event.clientY) : event.target as HTMLElement;
     if (!target) {
         return false;
@@ -265,13 +259,11 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
         || target.tagName === "circle"
         || target.closest('.protyle-icon[data-action="openFloat"]')
     ) {
-        // gutter & mindmap & 文件树上的数字 & 关系图节点不处理
         return false;
     }
 
     const avPanelElement = hasClosestByClassName(target, "av__panel") || hasClosestByClassName(target, "av__mask");
     if (avPanelElement) {
-        // 浮窗上点击 av 操作，浮窗不能消失
         const blockPanel = window.scribli.blockPanels.find((item) => {
             if (item.element.style.zIndex < avPanelElement.style.zIndex) {
                 return true;
@@ -281,7 +273,6 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
             return false;
         }
     } else {
-        // 浮窗上点击菜单，浮窗不能消失 
         const menuElement = hasClosestByClassName(target, "b3-menu");
         if (menuElement && menuElement.getAttribute("data-name") !== Constants.MENU_DOC_TREE_MORE) {
             const blockPanel = window.scribli.blockPanels.find((item) => {
@@ -307,7 +298,6 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
         popoverTargetElement = linkElement;
     }
     if (!popoverTargetElement || (popoverTargetElement && window.scribli.menus.menu.data && window.scribli.menus.menu.data === popoverTargetElement)) {
-        // 移动到弹窗的 loading 元素上，但经过 settimeout 后 loading 已经被移除了
         // 
         let targetElement = target;
         if (!targetElement.parentElement && event.path && event.path[1]) {
@@ -324,7 +314,7 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
                         maxEditLevels[oid] = level;
                     }
                 } else {
-                    maxEditLevels[oid] = level; // 不能为1，否则 pin 住第三层，第二层会消失
+                    maxEditLevels[oid] = level;
                 }
             }
         });
@@ -338,7 +328,6 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
                     item.element.getAttribute("data-pin") === "false" &&
                     itemLevel > parseInt(blockElement.getAttribute("data-level"))) {
                     if (menuLevel && menuLevel >= itemLevel) {
-                        // 有 gutter 菜单时不隐藏
                         break;
                     } else {
                         const hasToolbar = item.editors.find(editItem => {
@@ -359,11 +348,9 @@ const hidePopover = (event: MouseEvent & { path: HTMLElement[] }) => {
                 const itemLevel = parseInt(item.element.getAttribute("data-level"));
                 if ((item.targetElement || typeof item.x === "number") && item.element.getAttribute("data-pin") === "false") {
                     if (menuLevel && menuLevel >= itemLevel) {
-                        // 有 gutter 菜单时不隐藏
                         break;
                     } else if (item.targetElement && item.targetElement.classList.contains("protyle-wysiwyg__embed") &&
                         item.targetElement.contains(targetElement)) {
-                        // 点击嵌入块后浮窗消失后再快速点击嵌入块无法弹出浮窗 
                         break;
                     } else {
                         const hasToolbar = item.editors.find(editItem => {
@@ -428,7 +415,6 @@ export const showPopover = async (app: App, showRef = false) => {
     let originalRefBlockIDs: IObject;
     const dataId = popoverTargetElement.getAttribute("data-id");
     if (dataId) {
-        // backlink/util/hint 上的弹层
         if (showRef) {
             const postResponse = await fetchSyncPost("/api/block/getRefIDs", {id: dataId});
             refDefs = postResponse.data.refDefs;
@@ -448,7 +434,6 @@ export const showPopover = async (app: App, showRef = false) => {
         });
         refDefs = postResponse.data.refDefs;
     } else if (popoverTargetElement.getAttribute("data-type")?.split(" ").includes("a")) {
-        // 以Scribli协议开头的链接
         const blockInfo = parseScribliUriInfo(popoverTargetElement.getAttribute("data-href"));
         refDefs = [{
             refID: blockInfo?.id ?? "",
@@ -457,7 +442,6 @@ export const showPopover = async (app: App, showRef = false) => {
             avGroupID: blockInfo?.avGroupID,
         }];
     } else if (popoverTargetElement.dataset.type === "url") {
-        // 在 database 的 url 列中以Scribli协议开头的链接
         const blockInfo = parseScribliUriInfo(popoverTargetElement.dataset.href || popoverTargetElement.textContent.trim());
         refDefs = [{
             refID: blockInfo?.id ?? "",
@@ -466,7 +450,6 @@ export const showPopover = async (app: App, showRef = false) => {
             avGroupID: blockInfo?.avGroupID,
         }];
     } else if (popoverTargetElement.dataset.popoverUrl) {
-        // 镜像数据库
         const postResponse = await fetchSyncPost(popoverTargetElement.dataset.popoverUrl, {avID: popoverTargetElement.dataset.avId});
         refDefs = postResponse.data.refDefs;
     } else {
@@ -474,7 +457,6 @@ export const showPopover = async (app: App, showRef = false) => {
         let targetId;
         let url = "/api/block/getRefIDs";
         if (popoverTargetElement.classList.contains("protyle-attr--refcount")) {
-            // 编辑器中的引用数
             targetId = popoverTargetElement.parentElement.parentElement.getAttribute("data-node-id");
         } else if (popoverTargetElement.classList.contains("pdf__rect")) {
             const relationIds = popoverTargetElement.getAttribute("data-relations");
@@ -488,7 +470,6 @@ export const showPopover = async (app: App, showRef = false) => {
                 url = "/api/block/getRefIDsByFileAnnotationID";
             }
         } else if (!targetId) {
-            // 文件树中的引用数
             targetId = popoverTargetElement.parentElement.getAttribute("data-node-id");
         }
         if (url) {
@@ -511,7 +492,7 @@ export const showPopover = async (app: App, showRef = false) => {
         }
     });
     if (!hasPin && popoverTargetElement.parentElement &&
-        popoverTargetElement.parentElement.style.opacity !== "0.38" // 反向面板图标拖拽时不应该弹层
+        popoverTargetElement.parentElement.style.opacity !== "0.38"
     ) {
         window.scribli.blockPanels.push(new BlockPanel({
             app,
@@ -521,5 +502,4 @@ export const showPopover = async (app: App, showRef = false) => {
             originalRefBlockIDs,
         }));
     }
-    // 不能清除，否则ctrl 后 shift 就 无效 popoverTargetElement = undefined;
 };

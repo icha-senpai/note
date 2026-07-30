@@ -273,7 +273,7 @@ func loadCode(petal *Petal) {
 
 				candidates := make([]string, 0, 6)
 				candidateSeen := make(map[string]bool, 6)
-				for _, lang := range []string{Conf.Lang, "en", "zh-CN"} {
+				for _, lang := range []string{Conf.Lang, "en"} {
 					for _, name := range []string{lang, util.LangToLegacy(lang)} {
 						fileName := name + ".json"
 						if candidateSeen[fileName] {

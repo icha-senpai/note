@@ -20,7 +20,7 @@ import {openSearch} from "../search/spread";
 import {openRecentDocs} from "../business/openRecentDocs";
 import {openHistory} from "../history/history";
 import {newFile} from "../util/newFile";
-import {mountHelp, newNotebook} from "../util/mount";
+import {newNotebook} from "../util/mount";
 import {Constants} from "../constants";
 import {fetchPost} from "../util/fetch";
 import {isWindow} from "../util/functions";
@@ -81,7 +81,6 @@ export const setTabPosition = (onlyPadding = false, onlyClear = false) => {
                 if (headerRect.right < toolbarDragRect.right && headerRect.right === centerRect.right) {
                     toolbarDragElement.style.setProperty("--b3-toolbar-drag-right", toolbarDragRect.right - headerRect.right + "px");
                 } else if (headerRect.right > toolbarDragRect.right) {
-                    // 不能取 clientWidth，因为设置了 min-width(64) 导致 clientWidth 大于实际宽度
                     if (headerRect.right - toolbarDragRect.right + 64 > headerRect.width) {
                         headerElement.style.visibility = "hidden";
                     } else {
@@ -141,19 +140,16 @@ export const switchTabByIndex = (index: number) => {
     if (activeDockIcoElement) {
         let indexElement = activeDockIcoElement.parentElement.children[index];
         if (index === -1) {
-            // 最后一个
             indexElement = activeDockIcoElement.parentElement.lastElementChild;
             if (!indexElement.getAttribute("data-type")) {
                 indexElement = indexElement.previousElementSibling;
             }
         } else if (index === -2) {
-            // 上一个
             indexElement = activeDockIcoElement.previousElementSibling;
             if (!indexElement) {
                 indexElement = activeDockIcoElement.parentElement.lastElementChild;
             }
         } else if (index === -3) {
-            // 下一个
             indexElement = activeDockIcoElement.nextElementSibling;
             if (!indexElement) {
                 indexElement = activeDockIcoElement.parentElement.firstElementChild;
@@ -169,16 +165,13 @@ export const switchTabByIndex = (index: number) => {
     if (tab) {
         let indexElement = tab.parent.headersElement.children[index];
         if (index === -1) {
-            // 最后一个
             indexElement = tab.parent.headersElement.lastElementChild;
         } else if (index === -2) {
-            // 上一个
             indexElement = tab.headElement.previousElementSibling;
             if (!indexElement) {
                 indexElement = tab.headElement.parentElement.lastElementChild;
             }
         } else if (index === -3) {
-            // 下一个
             indexElement = tab.headElement.nextElementSibling;
             if (!indexElement) {
                 indexElement = tab.headElement.parentElement.firstElementChild;
@@ -194,8 +187,6 @@ export const switchTabByIndex = (index: number) => {
 let resizeTimeout: number;
 export const resizeTabs = (isSaveLayout = true) => {
     clearTimeout(resizeTimeout);
-    //  .layout .fn__flex-shrink {width .15s cubic-bezier(0, 0, .2, 1) 0ms} 时需要再次计算 padding
-    // PDF 避免分屏多次调用后，页码跳转到1 
     resizeTimeout = window.setTimeout(() => {
         const models = getAllModels();
         models.editor.forEach((item) => {
@@ -279,10 +270,6 @@ export const newCenterEmptyTab = (app: App) => {
             <svg class="b3-list-item__graphic"><use xlink:href="#iconNewNoteBook"></use></svg>
             <span>${window.scribli.languages.newNotebook}</span>
         </div>
-        <div class="b3-list-item${window.scribli.config.readonly ? " fn__none" : ""}" id="editorEmptyHelp">
-            <svg class="b3-list-item__graphic"><use xlink:href="#iconHelp"></use></svg>
-            <span>${window.scribli.languages.userGuide}</span>
-        </div>
     </div>
 </div>`,
         callback(tab: Tab) {
@@ -314,11 +301,6 @@ export const newCenterEmptyTab = (app: App) => {
                         break;
                     } else if (target.id === "editorEmptyNewNotebook") {
                         newNotebook();
-                        event.stopPropagation();
-                        event.preventDefault();
-                        break;
-                    } else if (target.id === "editorEmptyHelp") {
-                        mountHelp();
                         event.stopPropagation();
                         event.preventDefault();
                         break;
@@ -479,7 +461,6 @@ export const closeTabByType = (tab: Tab, type: "closeOthers" | "closeAll" | "oth
             }
         }
     }
-    // 批量更新文档关闭时间
     if (rootIDs.length > 0) {
         fetchPost("/api/storage/batchUpdateRecentDocCloseTime", {rootIDs});
     }

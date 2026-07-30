@@ -146,7 +146,6 @@
       &--hl {
         position: relative;
 
-        // 扩展点击命中范围到 li 的左侧和上下边缘，视觉 hover 高亮区域保持不变
         &::before {
           content: "";
           position: absolute;
@@ -163,7 +162,6 @@
       }
     }
 
-    // 大纲中有图片 
     .img img {
       height: 24px;
       vertical-align: top;
@@ -251,7 +249,6 @@
       color: var(--b3-theme-on-background);
       @include mixin.text-clamp(1);
 
-      // 搜索列表中自定义图标
       & > img:not(.emoji),
       & > .custom-icon {
         height: 14px;

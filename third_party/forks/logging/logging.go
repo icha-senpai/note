@@ -32,14 +32,14 @@ import (
 )
 
 const (
-	ExitCodeUnavailableDatabase = 20 // 不可用的数据库
-	ExitCodeUnavailablePort     = 21 // 不可用的端口
-	ExitCodeSecurityRisk        = 22 // 存在安全风险
-	ExitCodeWorkspaceLocked     = 24 // 工作空间已被锁定
-	ExitCodeInitWorkspaceErr    = 25 // 初始化工作空间失败
-	ExitCodeFileSysErr          = 26 // 文件系统错误
-	ExitCodeOk                  = 0  // 正常退出
-	ExitCodeFatal               = 1  // 致命错误
+	ExitCodeUnavailableDatabase = 20
+	ExitCodeUnavailablePort     = 21
+	ExitCodeSecurityRisk        = 22
+	ExitCodeWorkspaceLocked     = 24
+	ExitCodeInitWorkspaceErr    = 25
+	ExitCodeFileSysErr          = 26
+	ExitCodeOk                  = 0
+	ExitCodeFatal               = 1
 )
 
 func ShortStack() string {
@@ -193,7 +193,6 @@ func openLogger() {
 
 	if gulu.File.IsExist(LogPath) {
 		if size := gulu.File.GetFileSize(LogPath); 1024*1024*32 <= size {
-			// 日志文件大于 32M 的话删了重建
 			os.Remove(LogPath)
 		}
 	}

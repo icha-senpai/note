@@ -31,7 +31,7 @@ async function removeLanguagePacks(appOutDir, platform) {
     return;
   }
 
-  const wantedLanguages = ["ar", "de", "en", "es", "fr", "he", "hi", "id", "it", "ja", "ko", "nl", "pl", "pt-BR", "ru", "sk", "th", "tr", "uk", "zh-TW", "zh-CN"];
+  const wantedLanguages = ["en"];
   const keepPrefixes = new Set(wantedLanguages.map(lang => lang.substring(0, 2)));
   const resourcePath = path.join(appOutDir, "locales");
   const fileExtension = ".pak";

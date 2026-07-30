@@ -24,9 +24,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
-	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
@@ -138,7 +138,7 @@ type RequestContext struct {
 
 type HttpResponse struct {
 	StatusCode int                 `json:"statusCode"` // e.g. 200
-	Headers    map[string][]string `json:"headers"`    // e.g. {"Content-Type": ["application/json"], "Set-Cookie": ["siyuan=abc123; Path=/; HttpOnly"]}
+	Headers    map[string][]string `json:"headers"`    // e.g. {"Content-Type": ["application/json"], "Set-Cookie": ["scribli=abc123; Path=/; HttpOnly"]}
 	Cookies    []*http.Cookie      `json:"cookies"`    // e.g. [{"Name": "plugin-sample", "Value": "abc123", "Quoted": false, "Path": "/plugin/private/plugin-sample/", "Domain": "", "Expires": "0001-01-01T00:00:00Z", "RawExpires": "", "MaxAge": 0, "Secure": false, "HttpOnly": false, "SameSite": 0, "Partitioned": false, "Raw": "", "Unparsed": null}]
 	Body       *ResponseBody       `json:"body"`       // response body, can be either raw data or a file
 }

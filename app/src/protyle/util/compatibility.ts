@@ -21,7 +21,7 @@ export const encodeBase64 = (text: string): string => {
         const encoder = new TextEncoder();
         const bytes = encoder.encode(text);
         let binary = "";
-        const chunkSize = 0x8000; // 避免栈溢出
+        const chunkSize = 0x8000;
 
         for (let i = 0; i < bytes.length; i += chunkSize) {
             const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
@@ -37,7 +37,6 @@ export const getTextScribliFromTextHTML = (html: string) => {
     const legacyInternalDataReg = /<!--data-Scribli='[^']+'-->/g;
     if (html.trimStart().startsWith("<html") &&
         html.substring(0, html.indexOf(">")).includes('xmlns:x="urn:schemas-microsoft-com:office:excel"')) {
-        // 移除 Microsoft Excel 中的内部剪贴板标记。
         return {
             textScribli: "",
             textHtml: html.replace(internalDataReg, "").replace(legacyInternalDataReg, "")
@@ -56,7 +55,6 @@ export const getTextScribliFromTextHTML = (html: string) => {
                 const bytes = Uint8Array.from(atob(scribliMatch[1]), char => char.charCodeAt(0));
                 textScribli = decoder.decode(bytes);
             }
-            // 移除注释节点，保持原有的 text/html 内容
             textHtml = html.replace(internalDataReg, "").replace(legacyInternalDataReg, "");
         } catch (e) {
             console.log("Failed to decode Scribli data from HTML comment:", e);
@@ -147,7 +145,6 @@ export const readText = () => {
 
 /// #if !BROWSER
 export const getLocalFiles = async () => {
-    // 不再支持 PC 浏览器 
     let localFiles: ILocalFiles[] = [];
     if ("darwin" === window.scribli.config.system.os) {
         const xmlString = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
@@ -235,11 +232,10 @@ export const writeText = (text: string) => {
 };
 
 export const copyPlainText = (text: string) => {
-    text = text.replace(new RegExp(Constants.ZWSP, "g"), ""); // `复制纯文本` 时移除所有零宽空格 
+    text = text.replace(new RegExp(Constants.ZWSP, "g"), "");
     writeText(text);
 };
 
-// 用户 iPhone 点击延迟/需要双击的处理
 export const getEventName = () => {
     if (isIPhone()) {
         return "touchstart";
@@ -328,13 +324,11 @@ export function isChromeBrowser(): boolean {
     };
     if (nav.userAgentData && Array.isArray(nav.userAgentData.brands)) {
         const brands = nav.userAgentData.brands.map((b) => b.brand);
-        // Edge、Opera 等 Chromium 内核浏览器 brands 中同样包含 Chromium，需与 userAgent 回退逻辑一致排除
         if (brands.some((brand) => /Edge|Opera|OPR/i.test(brand))) {
             return false;
         }
         return brands.some((brand) => /Chrome|Chromium/i.test(brand));
     }
-    // 回退到 userAgent
     const ua = nav.userAgent || "";
     const isChromium = /\bChrome\/\d+/i.test(ua) || /\bChromium\/\d+/i.test(ua);
     const isEdge = /\bEdg(e|A|iOS)?\/\d+/i.test(ua); // Edge Chromium
@@ -350,7 +344,6 @@ export const updateHotkeyAfterTip = (hotkey: string, split = " ") => {
     return "";
 };
 
-// Mac，Windows 快捷键展示
 export const updateHotkeyTip = (hotkey: string) => {
     if (!hotkey || isMac()) {
         return hotkey;
@@ -360,7 +353,6 @@ export const updateHotkeyTip = (hotkey: string) => {
     if (hotkey.indexOf("⇧") > -1) keys.push("Shift");
     if (hotkey.indexOf("⌥") > -1) keys.push("Alt");
 
-    // 不能去最后一个，需匹配 F2
     const lastKey = hotkey.replace(/[⌘⇧⌥⌃]/g, "");
     if (lastKey) {
         keys.push({
@@ -376,7 +368,6 @@ export const updateHotkeyTip = (hotkey: string) => {
 export const getLocalStorage = (cb: () => void) => {
     fetchPost("/api/storage/getLocalStorage", undefined, (response) => {
         window.scribli.storage = response.data;
-        // 历史数据迁移
         const defaultStorage: any = {};
         defaultStorage[Constants.LOCAL_SEARCHASSET] = {
             keys: [],
@@ -490,7 +481,6 @@ export const getLocalStorage = (cb: () => void) => {
                 try {
                     const parseData = JSON.parse(response.data[key]);
                     if (typeof parseData === "number") {
-                        //  Object.assign 会导致 number to Number
                         window.scribli.storage[key] = parseData;
                     } else {
                         window.scribli.storage[key] = Object.assign(defaultStorage[key], parseData);
@@ -502,7 +492,6 @@ export const getLocalStorage = (cb: () => void) => {
                 window.scribli.storage[key] = defaultStorage[key];
             }
         });
-        // 搜索数据添加 replaceTypes 兼容
         if (!window.scribli.storage[Constants.LOCAL_SEARCHDATA].replaceTypes ||
             Object.keys(window.scribli.storage[Constants.LOCAL_SEARCHDATA].replaceTypes).length === 0) {
             window.scribli.storage[Constants.LOCAL_SEARCHDATA].replaceTypes = Object.assign({}, Constants.SCRIBLI_DEFAULT_REPLACETYPES);
@@ -539,7 +528,6 @@ export const initWindowOpenOverride = (app: App, openExternal?: (url: string) =>
             void import("../../util/uri").then(({processScribliUri}) => processScribliUri(app, urlStr));
             return null;
         }
-        // 浏览器可通过 window.open("scribli://blocks/20221031001313-rk7sd0e", "_blank") 打开本地客户端
         return originalOpen.call(window, url, target, features);
     };
 };

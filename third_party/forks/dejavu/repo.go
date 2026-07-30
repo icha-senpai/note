@@ -32,38 +32,36 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/html"
 	"github.com/icha-senpai/note/third_party/forks/dejavu/cloud"
 	"github.com/icha-senpai/note/third_party/forks/dejavu/entity"
 	"github.com/icha-senpai/note/third_party/forks/dejavu/util"
 	"github.com/icha-senpai/note/third_party/forks/eventbus"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 	jsoniter "github.com/icha-senpai/note/third_party/forks/github/json-iterator/go"
 	"github.com/icha-senpai/note/third_party/forks/github/panjf2000/ants/v2"
 	"github.com/icha-senpai/note/third_party/forks/github/restic/chunker"
 	ignore "github.com/icha-senpai/note/third_party/forks/github/sabhiram/go-gitignore"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
 )
 
-// Repo 描述了逮虾户数据仓库。
 type Repo struct {
-	DataPath    string   // 数据文件夹的绝对路径，如：F:\\SiYuan\\data\\
-	Path        string   // 仓库的绝对路径，如：F:\\SiYuan\\repo\\
-	HistoryPath string   // 数据历史文件夹的绝对路径，如：F:\\SiYuan\\history\\
-	TempPath    string   // 临时文件夹的绝对路径，如：F:\\SiYuan\\temp\\
-	DeviceID    string   // 设备 ID
-	DeviceName  string   // 设备名称
-	DeviceOS    string   // 操作系统
-	IgnoreLines []string // 忽略配置文件内容行，是用 .gitignore 语法
+	DataPath    string
+	Path        string
+	HistoryPath string
+	TempPath    string
+	DeviceID    string
+	DeviceName  string
+	DeviceOS    string
+	IgnoreLines []string
 
-	store    *Store      // 仓库的存储
-	chunkPol chunker.Pol // 文件分块多项式值
-	cloud    cloud.Cloud // 云端存储服务
+	store    *Store
+	chunkPol chunker.Pol
+	cloud    cloud.Cloud
 }
 
-// NewRepo 创建一个新的仓库。
 func NewRepo(dataPath, repoPath, historyPath, tempPath, deviceID, deviceName, deviceOS string, aesKey []byte, ignoreLines []string, cloud cloud.Cloud) (ret *Repo, err error) {
 	if nil != cloud {
 		cloud.GetConf().RepoPath = repoPath
@@ -77,7 +75,7 @@ func NewRepo(dataPath, repoPath, historyPath, tempPath, deviceID, deviceName, de
 		DeviceName:  deviceName,
 		DeviceOS:    deviceOS,
 		cloud:       cloud,
-		chunkPol:    chunker.Pol(0x3DA3358B4DC173), // 固定分块多项式值
+		chunkPol:    chunker.Pol(0x3DA3358B4DC173),
 	}
 	if !strings.HasSuffix(ret.DataPath, string(os.PathSeparator)) {
 		ret.DataPath += string(os.PathSeparator)
@@ -102,7 +100,7 @@ var (
 	ErrIndexFileChanged = errors.New("file changed")
 )
 
-var lock = sync.Mutex{} // 仓库锁，Checkout、Index 和 Sync 等不能同时执行
+var lock = sync.Mutex{}
 
 func (repo *Repo) CountIndexes() (ret int, err error) {
 	dir := filepath.Join(repo.Path, "indexes")
@@ -125,7 +123,6 @@ func (repo *Repo) CountIndexes() (ret int, err error) {
 	return
 }
 
-// Reset 重置仓库，清空所有数据。
 func (repo *Repo) Reset() (err error) {
 	lock.Lock()
 	defer lock.Unlock()
@@ -139,14 +136,12 @@ func (repo *Repo) Reset() (err error) {
 	return
 }
 
-// Purge 清理所有未引用数据，retentionIndexIDs 为保留的索引 ID 列表，如果不传入的话则清理所有未引用数据。
 func (repo *Repo) Purge(ctx context.Context, retentionIndexIDs ...string) (ret *entity.PurgeStat, err error) {
 	lock.Lock()
 	defer lock.Unlock()
 	return repo.store.Purge(ctx, retentionIndexIDs...)
 }
 
-// PurgeCloud 清理云端所有未引用数据。
 // Support manual purge of unreferenced data snapshots in the S3/WebDAV cloud storage
 func (repo *Repo) PurgeCloud() (ret *entity.PurgeStat, err error) {
 	lock.Lock()
@@ -289,8 +284,6 @@ func (repo *Repo) PurgeCloud() (ret *entity.PurgeStat, err error) {
 	}
 	unreferencedPaths = gulu.Str.RemoveDuplicatedElem(unreferencedPaths)
 
-	// 删除所有遗留的校验索引
-	// S3/WebDAV 不上传校验索引 S3/WebDAV data sync no longer uploads check index
 	checkIndexIDs, _ := repo.cloud.ListObjects("check/indexes/")
 	var unreferencedCheckIndexPaths []string
 	for checkIndexID := range checkIndexIDs {
@@ -304,7 +297,6 @@ func (repo *Repo) PurgeCloud() (ret *entity.PurgeStat, err error) {
 		return
 	}
 
-	// 删除索引
 	var unreferencedIndexPaths []string
 	for unreferencedID := range unreferencedIndexIDs {
 		indexPath := path.Join("indexes", unreferencedID)
@@ -318,7 +310,6 @@ func (repo *Repo) PurgeCloud() (ret *entity.PurgeStat, err error) {
 		return
 	}
 
-	// 清理索引列表
 	eventbus.Publish(eventbus.EvtCloudPurgeRemoveIndexesV2, context)
 	err = repo.purgeIndexesV2(refIndexIDs)
 	if nil != err {
@@ -326,7 +317,6 @@ func (repo *Repo) PurgeCloud() (ret *entity.PurgeStat, err error) {
 		return
 	}
 
-	// 删除对象
 	var unreferencedObjPaths []string
 	for _, unreferencedPath := range unreferencedPaths {
 		objPath := path.Join("objects", unreferencedPath)
@@ -387,14 +377,12 @@ func (repo *Repo) purgeIndexesV2(refIndexIDs map[string]bool) (err error) {
 	return
 }
 
-// GetIndex 从仓库根据 id 获取索引。
 func (repo *Repo) GetIndex(id string) (index *entity.Index, err error) {
 	lock.Lock()
 	defer lock.Unlock()
 	return repo.store.GetIndex(id)
 }
 
-// PutIndex 将索引 index 写入仓库。
 func (repo *Repo) PutIndex(index *entity.Index) (err error) {
 	lock.Lock()
 	defer lock.Unlock()
@@ -404,7 +392,6 @@ func (repo *Repo) PutIndex(index *entity.Index) (err error) {
 var workspaceDataDirs = []string{"assets", "emojis", "snippets", "storage", "templates", "widgets", "plugins", "public", "snippets"}
 var removeEmptyDirExcludes = append(workspaceDataDirs, ".git")
 
-// Checkout 将仓库中的数据迁出到 repo 数据文件夹下。context 参数用于发布事件时传递调用上下文。
 func (repo *Repo) Checkout(id string, context map[string]interface{}) (upserts, removes []*entity.File, err error) {
 	lock.Lock()
 	defer lock.Unlock()
@@ -477,7 +464,6 @@ func (repo *Repo) Checkout(id string, context map[string]interface{}) (upserts, 
 	return
 }
 
-// Index 将 repo 数据文件夹中的文件索引到仓库中。context 参数用于发布事件时传递调用上下文。
 func (repo *Repo) Index(memo string, checkChunks bool, context map[string]interface{}) (ret *entity.Index, err error) {
 	lock.Lock()
 	defer lock.Unlock()
@@ -486,7 +472,6 @@ func (repo *Repo) Index(memo string, checkChunks bool, context map[string]interf
 	return
 }
 
-// GetFiles 返回快照索引 index 中的文件列表。
 func (repo *Repo) GetFiles(index *entity.Index) (ret []*entity.File, err error) {
 	ret, err = repo.getFiles(index.Files)
 	return
@@ -527,7 +512,6 @@ func (repo *Repo) SearchFile(keyword string, page int, pageSize int) (ret []*ent
 
 	keyword = strings.ToLower(keyword)
 
-	// Phase 1: 持有锁收集所有索引中的文件 ID（去重），同时记录文件所属的最新快照 ID
 	var allFileIDs []string
 	idSet := map[string]bool{}
 	fileIndexIDsMap := map[string]string{}
@@ -550,13 +534,12 @@ func (repo *Repo) SearchFile(keyword string, page int, pageSize int) (ret []*ent
 		err = collectErr
 		return
 	}
-	idSet = nil // 释放给 GC
+	idSet = nil
 
 	if 0 == len(allFileIDs) {
 		return
 	}
 
-	// Phase 2: 并发搜索匹配文件
 	var matches []*entity.File
 	matchSeen := map[string]bool{}
 	var mu sync.Mutex
@@ -644,7 +627,6 @@ func (repo *Repo) SearchFile(keyword string, page int, pageSize int) (ret []*ent
 
 	sort.Slice(matches, func(i, j int) bool { return matches[i].Updated > matches[j].Updated })
 
-	// Phase 3: 分页
 	totalCount = len(matches)
 	if totalCount == 0 {
 		pageCount = 0
@@ -815,7 +797,7 @@ func (repo *Repo) removeCloudObjects(objects []string) (err error) {
 	p, err := ants.NewPoolWithFunc(poolSize, func(arg interface{}) {
 		defer waitGroup.Done()
 		if nil != removeErr {
-			return // 快速失败
+			return
 		}
 
 		fileID := arg.(string)
@@ -911,7 +893,6 @@ func (repo *Repo) index0(memo string, checkChunks bool, context map[string]inter
 	//	logging.LogInfof("walked data [file=%s]", f.Path)
 	//}
 	if 1 > len(files) {
-		// 如果没有文件，则不创建快照 Abandon snapshot if file does not exist when creating snapshot
 		err = ErrEmptyIndex
 		logging.LogErrorf("empty index [%s]", repo.DataPath)
 		return
@@ -925,7 +906,6 @@ func (repo *Repo) index0(memo string, checkChunks bool, context map[string]inter
 			return
 		}
 
-		// 如果没有索引，则创建第一个索引
 		latest = &entity.Index{
 			ID:         util.RandHash(),
 			Memo:       memo,
@@ -972,7 +952,7 @@ func (repo *Repo) index0(memo string, checkChunks bool, context map[string]inter
 				latestFiles = append(latestFiles, file)
 				lock.Unlock()
 
-				if checkChunks { // 仅在非移动端校验，因为移动端私有数据空间不会存在外部操作导致分块损坏的情况
+				if checkChunks {
 					// Check local data chunk integrity before data synchronization
 					for _, chunk := range file.Chunks {
 						info, statErr := repo.store.Stat(chunk)
@@ -989,7 +969,6 @@ func (repo *Repo) index0(memo string, checkChunks bool, context map[string]inter
 						}
 
 						if errors.Is(statErr, os.ErrPermission) {
-							// 如果是权限问题，则尝试修改权限，不认为是分块文件损坏
 							// Improve checking local data chunk integrity before data sync
 							if chmodErr := os.Chmod(chunk, 0644); nil != chmodErr {
 								logging.LogWarnf("chmod file [%s] failed: %s", chunk, chmodErr)
@@ -1124,13 +1103,12 @@ func (repo *Repo) builtInIgnore(info os.FileInfo, absPath string) (ignored bool,
 	name := info.Name()
 	if info.IsDir() {
 		if strings.HasPrefix(name, ".") {
-			if ".siyuan" == name {
+			if ".scribli" == name {
 				return true, nil
 			}
 			return true, filepath.SkipDir
 		}
 		if "filesys_status_check" == name {
-			// 数据同步忽略用于文件系统检查的文件
 			return true, filepath.SkipDir
 		}
 		return true, nil
@@ -1141,15 +1119,12 @@ func (repo *Repo) builtInIgnore(info os.FileInfo, absPath string) (ignored bool,
 
 		slashAbsPath := filepath.ToSlash(absPath)
 		if strings.HasSuffix(slashAbsPath, "data/storage/local.json") {
-			// localStorage 不再支持同步
 			return true, nil
 		}
 		if strings.HasSuffix(slashAbsPath, "data/storage/recent-doc.json") {
-			// 数据同步忽略最近文档存储
 			return true, nil
 		}
 		if strings.HasSuffix(slashAbsPath, "data/storage/ref-used.json") {
-			// 数据同步忽略最近引用存储
 			return true, nil
 		}
 	}
@@ -1326,10 +1301,10 @@ func (repo *Repo) checkoutFiles(files []*entity.File, context map[string]interfa
 
 	//now := time.Now()
 
-	var dotSiYuans, assets, emojis, storage, plugins, widgets, templates, public, others, all []*entity.File
+	var dotScriblis, assets, emojis, storage, plugins, widgets, templates, public, others, all []*entity.File
 	for _, file := range files {
-		if strings.Contains(file.Path, ".siyuan") {
-			dotSiYuans = append(dotSiYuans, file)
+		if strings.Contains(file.Path, ".scribli") {
+			dotScriblis = append(dotScriblis, file)
 		} else if strings.HasPrefix(file.Path, "/assets/") {
 			assets = append(assets, file)
 		} else if strings.HasPrefix(file.Path, "/emojis/") {
@@ -1350,11 +1325,11 @@ func (repo *Repo) checkoutFiles(files []*entity.File, context map[string]interfa
 	}
 	files = nil
 
-	sort.Slice(dotSiYuans, func(i, j int) bool {
-		return strings.Count(dotSiYuans[i].Path, "/") < strings.Count(dotSiYuans[j].Path, "/")
+	sort.Slice(dotScriblis, func(i, j int) bool {
+		return strings.Count(dotScriblis[i].Path, "/") < strings.Count(dotScriblis[j].Path, "/")
 	})
-	all = append(all, dotSiYuans...)
-	dotSiYuans = nil
+	all = append(all, dotScriblis...)
+	dotScriblis = nil
 
 	sort.Slice(assets, func(i, j int) bool { return strings.Count(assets[i].Path, "/") < strings.Count(assets[j].Path, "/") })
 	all = append(all, assets...)
@@ -1444,13 +1419,13 @@ func (repo *Repo) checkoutFile(file *entity.File, checkoutDir string, count, tot
 	defer filelock.Unlock(absPath)
 
 	for i := 0; i < 3; i++ {
-		err = os.Rename(f.Name(), absPath) // Windows 上重命名是非原子的
+		err = os.Rename(f.Name(), absPath)
 		if nil == err {
 			os.Remove(f.Name())
 			break
 		}
 
-		if errMsg := strings.ToLower(err.Error()); strings.Contains(errMsg, "access is denied") || strings.Contains(errMsg, "used by another process") { // 文件可能是被锁定
+		if errMsg := strings.ToLower(err.Error()); strings.Contains(errMsg, "access is denied") || strings.Contains(errMsg, "used by another process") {
 			time.Sleep(200 * time.Millisecond)
 			continue
 		}

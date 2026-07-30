@@ -25,7 +25,6 @@ export const setRefDynamicText = (data: {
     "rootID": string
 }) => {
     getAllEditor().forEach(editor => {
-        // 不能对比 rootId，否则嵌入块中的锚文本无法更新
         editor.protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${data.blockID}"] span[data-type~="block-ref"][data-subtype="d"][data-id="${data.defBlockID}"]`).forEach(item => {
             item.innerHTML = data.refText;
         });
@@ -55,9 +54,7 @@ export const setDefRefCount = (data: {
         if (data.rootID === data.blockID) {
             return;
         }
-        // 不能对比 rootId，否则嵌入块中的锚文本无法更新
         editor.protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${data.blockID}"]`).forEach(item => {
-            // 不能直接查询，否则列表中会获取到第一个列表项的 attr 
             const countElement = item.lastElementChild?.querySelector(".protyle-attr--refcount");
             if (countElement) {
                 if (data.refCount === 0) {
@@ -81,8 +78,7 @@ export const setDefRefCount = (data: {
         });
     });
 
-    let liElement;
-    liElement = (getDockByType("file")?.data["file"] as Files)?.element.querySelector(`li[data-node-id="${data.rootID}"]`);
+    const liElement = (getDockByType("file")?.data["file"] as Files)?.element.querySelector(`li[data-node-id="${data.rootID}"]`);
     if (liElement) {
         const counterElement = liElement.querySelector(".counter");
         if (counterElement) {
@@ -150,7 +146,7 @@ const installNewVersion = (installPkgPath: string, setCurrentWorkspace: boolean)
 export const exitScribli = async (setCurrentWorkspace = true) => {
     hideAllElements(["util"]);
     fetchPost("/api/system/exit", {force: false, setCurrentWorkspace}, (response) => {
-        if (response.code === 1) { // 同步执行失败
+        if (response.code === 1) {
             const msgId = showMessage(response.msg, response.data.closeTimeout, "error");
             const buttonElement = document.querySelector(`#message [data-id="${msgId}"] button`);
             if (buttonElement) {
@@ -166,7 +162,7 @@ export const exitScribli = async (setCurrentWorkspace = true) => {
                     });
                 });
             }
-        } else if (response.code === 2) { // 提示新安装包
+        } else if (response.code === 2) {
             hideMessage();
 
             /// #if !BROWSER
@@ -181,14 +177,14 @@ export const exitScribli = async (setCurrentWorkspace = true) => {
                 fetchPost("/api/system/exit", {
                     force: true,
                     setCurrentWorkspace,
-                    execInstallPkg: 1 // 0：默认检查新版本，1：不返回安装包，2：返回安装包路径并退出
+                    execInstallPkg: 1
                 }, () => {
                     /// #if !BROWSER
                     ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
                     /// #endif
                 });
             });
-        } else { // 正常退出
+        } else {
             /// #if !BROWSER
             ipcRenderer.send(Constants.SCRIBLI_QUIT, location.port);
             /// #endif
@@ -256,7 +252,6 @@ export const progressLoading = (data: IWebSocketData) => {
         document.body.insertAdjacentHTML("beforeend", `<div id="progress" style="z-index: ${++window.scribli.zIndex}"></div>`);
         progressElement = document.getElementById("progress");
     }
-    // code 0: 有进度；1: 无进度；2: 关闭
     if (data.code === 2) {
         progressElement.remove();
         return;

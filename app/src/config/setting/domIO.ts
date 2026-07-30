@@ -1,6 +1,5 @@
 import {getAtPath} from "../util/dotPath";
 
-/** 解析并钳制 number / range 数值 */
 export const normalizeNumberInputValue = (el: HTMLInputElement): number => {
     const step = el.getAttribute("step")?.trim().toLowerCase() ?? "";
     const useFloat = step === "any" || step.includes(".");
@@ -23,7 +22,6 @@ export const normalizeNumberInputValue = (el: HTMLInputElement): number => {
     return number;
 };
 
-/** 按 min / max / step 生成可选值列表（与 range 下拉选项一致） */
 export const buildRangeValues = (min: number, max: number, step: number): number[] => {
     const values: number[] = [];
     if (!Number.isInteger(step)) {
@@ -38,7 +36,6 @@ export const buildRangeValues = (min: number, max: number, step: number): number
     return values;
 };
 
-/** 将数值对齐到最近的合法档位 */
 export const snapRangeValue = (value: number, min: number, max: number, step: number): number => {
     const values = buildRangeValues(min, max, step);
     if (!values.length) {
@@ -48,7 +45,6 @@ export const snapRangeValue = (value: number, min: number, max: number, step: nu
     return values.reduce((best, n) => (Math.abs(n - v) < Math.abs(best - v) ? n : best), values[0]);
 };
 
-/** 同步 range 行内滑块与移动端下拉的显示值；非 range 行返回 undefined */
 export const syncRangeRowValue = (el: HTMLElement): number | undefined => {
     const wrap = el?.closest(".config-wrap--range");
     if (!wrap) {

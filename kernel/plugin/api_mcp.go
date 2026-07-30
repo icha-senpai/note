@@ -20,11 +20,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/kernel/mcp/tools"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 // pluginToolName builds the fully-qualified MCP tool name for a plugin-local tool name.
@@ -33,8 +33,8 @@ func pluginToolName(pluginName, toolName string) string {
 	return fmt.Sprintf("plugin__%s__%s", util.SanitizeName(pluginName), util.SanitizeName(toolName))
 }
 
-// injectMcp adds siyuan.mcp to the plugin JS sandbox.
-func injectMcp(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
+// injectMcp adds scribli.mcp to the plugin JS sandbox.
+func injectMcp(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("injectMcp: %v", r)
@@ -43,7 +43,7 @@ func injectMcp(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err erro
 
 	mcp := rt.NewObject()
 
-	// siyuan.mcp.registerTool(name, config, handler) → Promise<IRegisteredTool>
+	// scribli.mcp.registerTool(name, config, handler) → Promise<IRegisteredTool>
 	lo.Must0(mcp.Set("registerTool", rt.ToValue(func(call goja.FunctionCall, rt *goja.Runtime) goja.Value {
 		promise, resolve, reject := rt.NewPromise()
 
@@ -150,25 +150,25 @@ func injectMcp(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err erro
 		}, func(rt *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.mcp.registerTool resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.mcp.registerTool resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.mcp.registerTool reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.mcp.registerTool reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.mcp.registerTool worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.mcp.registerTool worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.mcp.registerTool reject on run error: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.mcp.registerTool reject on run error: %v", p.Name, rejectErr)
 			}
 		}
 
 		return rt.ToValue(promise)
 	})))
 
-	// siyuan.mcp.unregisterTool(name) → Promise<void>
+	// scribli.mcp.unregisterTool(name) → Promise<void>
 	lo.Must0(mcp.Set("unregisterTool", rt.ToValue(func(call goja.FunctionCall, rt *goja.Runtime) goja.Value {
 		promise, resolve, reject := rt.NewPromise()
 
@@ -194,18 +194,18 @@ func injectMcp(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err erro
 		}, func(workerRT *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.mcp.unregisterTool resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.mcp.unregisterTool resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(workerRT.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.mcp.unregisterTool reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.mcp.unregisterTool reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.mcp.unregisterTool worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.mcp.unregisterTool worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.mcp.unregisterTool reject on run error: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.mcp.unregisterTool reject on run error: %v", p.Name, rejectErr)
 			}
 		}
 
@@ -213,7 +213,7 @@ func injectMcp(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err erro
 	})))
 
 	lo.Must0(ObjectFreeze(rt, mcp))
-	lo.Must0(siyuan.Set("mcp", mcp))
+	lo.Must0(scribli.Set("mcp", mcp))
 	return
 }
 

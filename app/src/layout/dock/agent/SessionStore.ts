@@ -17,12 +17,11 @@ async function waitForPendingSave(id: string) {
         try {
             await pending;
         } catch (e) {
-            // 后续读取或删除以服务端当前状态为准。
+            // Intentionally empty.
         }
     }
 }
 
-// 标识发起者 app，后端 saveSession/removeSession 据此排除自身、向其他实例广播会话变更。
 const APP_HEADER = {
     "Content-Type": "application/json",
     "X-Scribli-App-ID": Constants.SCRIBLI_APPID,
@@ -63,8 +62,6 @@ export interface AgentSession {
             selectedBlockIDs?: string[];
             visibleBlockIDs?: string[];
         };
-        // thinking step：新格式只含 reasoning/reasoningContent/toolNames/content；
-        // text/toolCalls 仅为读取老数据而保留为可选（渲染时归一化）。
         steps?: Array<{
             reasoning: string;
             reasoningContent: string;
@@ -146,7 +143,6 @@ export const SessionStore = {
             sessionRuntimeRevisions.set(id, runtimeRevision);
             return resp.data;
         }
-        // 连续写入期间若三次读取都落后于本地已知版本，则不返回旧数据覆盖界面。
         return null;
     },
 

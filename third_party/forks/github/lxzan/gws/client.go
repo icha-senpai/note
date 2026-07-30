@@ -16,10 +16,8 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/github/lxzan/gws/internal"
 )
 
-// Dialer 拨号器接口
 // Dialer interface
 type Dialer interface {
-	// Dial 连接到指定网络上的地址
 	// Connects to the address on the named network
 	Dial(network, addr string) (c net.Conn, err error)
 }
@@ -31,7 +29,6 @@ type connector struct {
 	secWebsocketKey string
 }
 
-// NewClient 创建一个新的 WebSocket 客户端连接
 // Creates a new WebSocket client connection
 func NewClient(handler Event, option *ClientOption) (*Conn, *http.Response, error) {
 	option = initClientOption(option)
@@ -71,7 +68,6 @@ func NewClient(handler Event, option *ClientOption) (*Conn, *http.Response, erro
 	return client, resp, err
 }
 
-// NewClientFromConn 通过外部连接创建客户端, 支持 TCP/KCP/Unix Domain Socket
 // Create new client via external connection, supports TCP/KCP/Unix Domain Socket.
 func NewClientFromConn(handler Event, option *ClientOption, conn net.Conn) (*Conn, *http.Response, error) {
 	option = initClientOption(option)
@@ -83,14 +79,12 @@ func NewClientFromConn(handler Event, option *ClientOption, conn net.Conn) (*Con
 	return client, resp, err
 }
 
-// 发送HTTP请求, 即WebSocket握手
 // Sends an http request, i.e., websocket handshake
 func (c *connector) request() (*http.Response, *bufio.Reader, error) {
 	_ = c.conn.SetDeadline(time.Now().Add(c.option.HandshakeTimeout))
 	ctx, cancel := context.WithTimeout(context.Background(), c.option.HandshakeTimeout)
 	defer cancel()
 
-	// 构建HTTP请求
 	// building a http request
 	r, err := http.NewRequestWithContext(ctx, http.MethodGet, c.option.Addr, nil)
 	if err != nil {
@@ -118,11 +112,9 @@ func (c *connector) request() (*http.Response, *bufio.Reader, error) {
 
 	var ch = make(chan error)
 
-	// 发送http请求
 	// send http request
 	go func() { ch <- r.Write(c.conn) }()
 
-	// 同步等待请求是否发送成功
 	// Synchronized waiting for the request to be sent successfully
 	select {
 	case err = <-ch:
@@ -133,14 +125,12 @@ func (c *connector) request() (*http.Response, *bufio.Reader, error) {
 		return nil, nil, err
 	}
 
-	// 读取响应结果
 	// Read the response result
 	br := bufio.NewReaderSize(c.conn, c.option.ReadBufferSize)
 	resp, err := http.ReadResponse(br, r)
 	return resp, br, err
 }
 
-// 获取压缩拓展结果
 // Get compression expansion results
 func (c *connector) getPermessageDeflate(extensions string) PermessageDeflate {
 	serverPD := permessageNegotiation(extensions)
@@ -159,7 +149,6 @@ func (c *connector) getPermessageDeflate(extensions string) PermessageDeflate {
 	return pd
 }
 
-// 执行 WebSocket 握手操作
 // Performs the WebSocket handshake operation
 func (c *connector) handshake() (*Conn, *http.Response, error) {
 	resp, br, err := c.request()
@@ -193,7 +182,6 @@ func (c *connector) handshake() (*Conn, *http.Response, error) {
 		readQueue:         make(channel, c.option.ParallelGolimit),
 	}
 
-	// 压缩字典和解压字典内存开销比较大, 故使用懒加载
 	// Compressing and decompressing dictionaries has a large memory overhead, so use lazy loading.
 	if pd.Enabled {
 		socket.deflater.initialize(false, pd, c.option.ReadMaxPayloadSize)
@@ -207,7 +195,6 @@ func (c *connector) handshake() (*Conn, *http.Response, error) {
 	return socket, resp, c.conn.SetDeadline(time.Time{})
 }
 
-// 从响应中获取子协议
 // Retrieves the subprotocol from the response
 func (c *connector) getSubProtocol(resp *http.Response) (string, error) {
 	a := internal.Split(c.option.RequestHeader.Get(internal.SecWebSocketProtocol.Key), ",")
@@ -219,7 +206,6 @@ func (c *connector) getSubProtocol(resp *http.Response) (string, error) {
 	return subprotocol, nil
 }
 
-// 检查响应头以验证握手是否成功
 // Checks the response headers to verify if the handshake was successful
 func (c *connector) checkHeaders(resp *http.Response) error {
 	if resp.StatusCode != http.StatusSwitchingProtocols {

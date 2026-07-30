@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -36,7 +35,7 @@ func GetTextMarkTextDataWithoutEscapeQuote(n *html.Node) (content string) {
 	content = strings.ReplaceAll(content, editor.Zwsp, "")
 	content = strings.TrimSuffix(content, "\n")
 	content = html.EscapeHTMLStr(content)
-	content = strings.ReplaceAll(content, "&quot;", "\"") // 粘贴 Markdown 时行级元素中的双引号不再转换为实体 https://github.com/siyuan-note/siyuan/issues/14503
+	content = strings.ReplaceAll(content, "&quot;", "\"")
 	for strings.Contains(content, "\n\n") {
 		content = strings.ReplaceAll(content, "\n\n", "\n")
 	}
@@ -66,7 +65,6 @@ func GetTextMarkAData(n *html.Node) (href, title string) {
 	href = html.EscapeHTMLStr(href)
 	title = DomAttrValue(n, "data-title")
 	title = html.EscapeHTMLStr(title)
-	// < 和 > 符号不用转义，可以符合 Markdown 规范 https://github.com/siyuan-note/siyuan/issues/15023
 	title = strings.ReplaceAll(title, "&amp;lt;", "<")
 	title = strings.ReplaceAll(title, "&amp;gt;", ">")
 	return
@@ -133,7 +131,6 @@ func DomChildByTypeAndClass(n *html.Node, dataAtom atom.Atom, class ...string) *
 }
 
 func DomChildrenByType(n *html.Node, dataAtom atom.Atom) (ret []*html.Node) {
-	// 递归遍历所有子节点
 	for c := n.FirstChild; nil != c; c = c.NextSibling {
 		if c.DataAtom == dataAtom {
 			ret = append(ret, c)
@@ -224,7 +221,6 @@ func domTexhtml0(n *html.Node, buffer *bytes.Buffer) {
 }
 
 func escapeMathSymbol(s string) string {
-	// 转义 Tex 公式中的符号，比如 _ ^ { }
 	s = strings.ReplaceAll(s, "_", "\\_")
 	s = strings.ReplaceAll(s, "^", "\\^")
 	s = strings.ReplaceAll(s, "{", "\\{")
@@ -263,7 +259,6 @@ func domText0(n *html.Node, buffer *bytes.Buffer) {
 
 	isTempMark := false
 	if 0 == n.DataAtom && html.ElementNode == n.Type {
-		// 可能是自定义标签
 		parent := n.Parent
 		if nil == parent {
 			return
@@ -273,7 +268,6 @@ func domText0(n *html.Node, buffer *bytes.Buffer) {
 		}
 
 		if !IsTempMarkSpan(parent) {
-			// Protyle 中的搜索高亮标记需要保留 https://github.com/siyuan-note/siyuan/issues/9821
 			return
 		}
 

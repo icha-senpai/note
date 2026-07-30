@@ -35,8 +35,6 @@ const resetEmbedBlocks = (element: HTMLElement) => {
     });
 };
 
-// / 技能菜单：异步拉取 lsSkills，选中后把技能名作为纯文本插入（value 即技能名）。
-// 返回 [] 占位，数据在 fetch 回调里通过 protyle.hint.genHTML 填充（与 hintRef 异步模式一致）。
 const hintSkill = (key: string, protyle: IProtyle): IHintData[] => {
     protyle.hint.genLoading(protyle);
     fetchPost("/api/ai/agent/lsSkills", {}, (response) => {
@@ -59,10 +57,9 @@ const hintSkill = (key: string, protyle: IProtyle): IHintData[] => {
     return [];
 };
 
-// 已发送消息历史（↑↓ 翻阅），独立于 protyle 的 undo/redo。
 class ComposerHistory {
     private items: string[] = [];
-    private idx = -1;       // -1 表示未在浏览历史（正在编辑草稿）
+    private idx = -1;
     private savedDraft = "";
 
     push(text: string) {
@@ -142,7 +139,6 @@ export function mountComposer(host: HTMLElement, onSend: () => void, onChange?: 
             title: false,
         },
         hint: {
-            // / 技能菜单（覆盖默认的块插入菜单 hintSlash）；[[ 块引用由 protyle 默认 extend 提供
             extend: [{
                 key: "((",
                 hint: hintRef,
@@ -165,8 +161,6 @@ export function mountComposer(host: HTMLElement, onSend: () => void, onChange?: 
         },
     });
 
-    // Protyle 实例的 protyle 属性才是 IProtyle（持有 wysiwyg/hint/lute 等）。
-    // 类方法（focus/insert/destroy）在 Protyle 实例上，内部数据属性在 IProtyle 上。
     const p = protyle.protyle;
     const wysiwyg = p.wysiwyg!;
 
@@ -182,7 +176,6 @@ export function mountComposer(host: HTMLElement, onSend: () => void, onChange?: 
     };
     updatePlaceholder();
 
-    // Protyle 的粘贴、块删除和程序化插入会直接修改 DOM，不一定派发 input，需以实际 DOM 变化为准刷新状态。
     const contentObserver = new MutationObserver(() => {
         updatePlaceholder();
         if (onChange) {
@@ -191,9 +184,7 @@ export function mountComposer(host: HTMLElement, onSend: () => void, onChange?: 
     });
     contentObserver.observe(wysiwyg.element, {childList: true, characterData: true, subtree: true});
 
-    // capture 阶段拦截 hint 选择、Enter 发送、历史翻页；undo/redo 交给 protyle 的 keydown（调 LocalUndo）。
     wysiwyg.element.addEventListener("keydown", (event: KeyboardEvent) => {
-        // hint 面板可见时，Enter/方向键主动调 hint.select 完成选择，避免 capture 与冒泡的时序问题。
         const hintEl = p.hint?.element;
         if (hintEl && !hintEl.classList.contains("fn__none")) {
             if (event.key === "Enter" || event.key.indexOf("Arrow") > -1) {
@@ -205,7 +196,6 @@ export function mountComposer(host: HTMLElement, onSend: () => void, onChange?: 
             return;
         }
 
-        // Enter 发送（Shift+Enter 让 protyle 走软换行/分块）
         if (event.key === "Enter" && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
             event.preventDefault();
             event.stopPropagation();
@@ -213,7 +203,6 @@ export function mountComposer(host: HTMLElement, onSend: () => void, onChange?: 
             return;
         }
 
-        // ↑ 翻历史：仅在空输入或已处于历史浏览时触发
         if (event.key === "ArrowUp" && !event.shiftKey) {
             const isEmpty = (wysiwyg.element.textContent || "").replace(new RegExp(Constants.ZWSP, "g"), "").trim() === "";
             if ((history.isBrowsing() || isEmpty) && history.has()) {
@@ -225,7 +214,6 @@ export function mountComposer(host: HTMLElement, onSend: () => void, onChange?: 
                 return;
             }
         }
-        // ↓ 翻历史：仅浏览中触发
         if (event.key === "ArrowDown" && history.isBrowsing()) {
             event.preventDefault();
             event.stopPropagation();
@@ -238,7 +226,6 @@ export function mountComposer(host: HTMLElement, onSend: () => void, onChange?: 
             return;
         }
 
-        // 用户开始新输入时退出历史浏览
         if (history.isBrowsing() && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
             history.resetCursor();
         }

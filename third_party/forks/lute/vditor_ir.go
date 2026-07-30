@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -24,20 +23,16 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// SpinVditorIRDOM 自旋 Vditor Instant-Rendering DOM，用于即时渲染模式下的编辑。
 func (lute *Lute) SpinVditorIRDOM(ivHTML string) (ovHTML string) {
-	// 替换插入符
 	ivHTML = strings.ReplaceAll(ivHTML, "<wbr>", editor.Caret)
 	markdown := lute.vditorIRDOM2Md(ivHTML)
 	tree := parse.Parse("", []byte(markdown), lute.ParseOptions)
 	renderer := render.NewVditorIRRenderer(tree, lute.RenderOptions, lute.ParseOptions)
 	output := renderer.Render()
-	// 替换插入符
 	ovHTML = strings.ReplaceAll(string(output), editor.Caret, "<wbr>")
 	return
 }
 
-// HTML2VditorIRDOM 将 HTML 转换为 Vditor Instant-Rendering DOM，用于即时渲染模式下粘贴。
 func (lute *Lute) HTML2VditorIRDOM(sHTML string) (vHTML string) {
 	markdown, err := lute.HTML2Markdown(sHTML)
 	if nil != err {
@@ -55,14 +50,12 @@ func (lute *Lute) HTML2VditorIRDOM(sHTML string) (vHTML string) {
 	return
 }
 
-// VditorIRDOM2HTML 将 Vditor Instant-Rendering DOM 转换为 HTML，用于 Vditor.getHTML() 接口。
 func (lute *Lute) VditorIRDOM2HTML(vhtml string) (sHTML string) {
 	markdown := lute.vditorIRDOM2Md(vhtml)
 	sHTML = lute.Md2HTML(markdown)
 	return
 }
 
-// Md2VditorIRDOM 将 markdown 转换为 Vditor Instant-Rendering DOM，用于从源码模式切换至即时渲染模式。
 func (lute *Lute) Md2VditorIRDOM(markdown string) (vHTML string) {
 	tree := parse.Parse("", []byte(markdown), lute.ParseOptions)
 	renderer := render.NewVditorIRRenderer(tree, lute.RenderOptions, lute.ParseOptions)
@@ -74,7 +67,6 @@ func (lute *Lute) Md2VditorIRDOM(markdown string) (vHTML string) {
 	return
 }
 
-// VditorIRDOM2Md 将 Vditor Instant-Rendering DOM 转换为 markdown，用于从即时渲染模式切换至源码模式。
 func (lute *Lute) VditorIRDOM2Md(htmlStr string) (markdown string) {
 	htmlStr = strings.ReplaceAll(htmlStr, editor.Zwsp, "")
 	markdown = lute.vditorIRDOM2Md(htmlStr)
@@ -83,42 +75,34 @@ func (lute *Lute) VditorIRDOM2Md(htmlStr string) (markdown string) {
 }
 
 func (lute *Lute) vditorIRDOM2Md(htmlStr string) (markdown string) {
-	// 删掉插入符
 	htmlStr = strings.ReplaceAll(htmlStr, "<wbr>", "")
 
-	// 替换结尾空白，否则 HTML 解析会产生冗余节点导致生成空的代码块
 	htmlStr = strings.ReplaceAll(htmlStr, "\t\n", "\n")
 	htmlStr = strings.ReplaceAll(htmlStr, "    \n", "  \n")
 
-	// 将字符串解析为 DOM 树
 	htmlRoot := util.ParseHTML(htmlStr)
 	if nil == htmlRoot {
 		return
 	}
 
-	// 调整 DOM 结构
 	lute.adjustVditorDOM(htmlRoot)
 
-	// 将 HTML 树转换为 Markdown AST
 	tree := &parse.Tree{Name: "", Root: &ast.Node{Type: ast.NodeDocument}, Context: &parse.Context{ParseOption: lute.ParseOptions}}
 	tree.Context.Tip = tree.Root
 	for c := htmlRoot.FirstChild; nil != c; c = c.NextSibling {
 		lute.genASTByVditorIRDOM(c, tree)
 	}
 
-	// 调整树结构
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if entering {
 			switch n.Type {
 			case ast.NodeInlineHTML, ast.NodeCodeSpan, ast.NodeInlineMath, ast.NodeHTMLBlock, ast.NodeCodeBlockCode, ast.NodeMathBlockContent:
 				n.Tokens = html.UnescapeHTML(n.Tokens)
 				if nil != n.Next && ast.NodeCodeSpan == n.Next.Type && n.CodeMarkerLen == n.Next.CodeMarkerLen {
-					// 合并代码节点 https://github.com/Vanessa219/vditor/issues/167
 					n.FirstChild.Next.Tokens = append(n.FirstChild.Next.Tokens, n.Next.FirstChild.Next.Tokens...)
 					n.Next.Unlink()
 				}
 			case ast.NodeList:
-				// 浏览器生成的子列表是 ul.ul 形式，需要将其调整为 ul.li.ul
 				if nil != n.Parent && ast.NodeList == n.Parent.Type {
 					if previousLi := n.Previous; nil != previousLi {
 						previousLi.AppendChild(n)
@@ -129,7 +113,6 @@ func (lute *Lute) vditorIRDOM2Md(htmlStr string) (markdown string) {
 		return ast.WalkContinue
 	})
 
-	// 将 AST 进行 Markdown 格式化渲染
 	options := render.NewOptions()
 	options.AutoSpace = false
 	options.FixTermTypo = false
@@ -139,10 +122,9 @@ func (lute *Lute) vditorIRDOM2Md(htmlStr string) (markdown string) {
 	return
 }
 
-// genASTByVditorIRDOM 根据指定的 Vditor IR DOM 节点 n 进行深度优先遍历并逐步生成 Markdown 语法树 tree。
 func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 	dataRender := util.DomAttrValue(n, "data-render")
-	if "1" == dataRender || "2" == dataRender { // 1：浮动工具栏，2：preview 代码块、数学公式块或者不解析的节点
+	if "1" == dataRender || "2" == dataRender {
 		return
 	}
 
@@ -152,8 +134,6 @@ func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 		if "code-block" == dataType || "html-block" == dataType || "math-block" == dataType || "yaml-front-matter" == dataType {
 			if ("code-block" == dataType || "math-block" == dataType) &&
 				!strings.Contains(util.DomAttrValue(n.FirstChild, "data-type"), "-block-open-marker") {
-				// 处理在结尾 ``` 或者 $$ 后换行的情况
-				// TODO: 插入符现在已经不可能出现在该位置，确认后移除该段代码
 				p := &ast.Node{Type: ast.NodeParagraph}
 				text := &ast.Node{Type: ast.NodeText, Tokens: []byte(util.DomText(n.FirstChild))}
 				p.AppendChild(text)
@@ -197,7 +177,7 @@ func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 			tree.Context.Tip.AppendChild(node)
 		} else {
 			text := util.DomText(n)
-			if editor.Caret+"\n" == text { // 处理 FireFox 某些情况下产生的分段
+			if editor.Caret+"\n" == text {
 				tree.Context.Tip.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: []byte(editor.Caret + "\n")})
 			}
 		}
@@ -242,7 +222,6 @@ func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 		node.Type = ast.NodeParagraph
 		text := util.DomText(n)
 		if "\n" == text && ast.NodeBlockquote == tree.Context.Tip.Type && nil == tree.Context.Tip.FirstChild.Next {
-			// 不允许在 bq 第一个节点前换行
 			return
 		} else {
 			tree.Context.Tip.AppendChild(node)
@@ -353,7 +332,6 @@ func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 					}
 					if "1." != marker && "1)" != marker && nil != n.PrevSibling && atom.Li != n.PrevSibling.DataAtom &&
 						nil != n.Parent.Parent && (atom.Ol == n.Parent.Parent.DataAtom || atom.Ul == n.Parent.Parent.DataAtom) {
-						// 子有序列表第一项必须从 1 开始
 						marker = "1."
 					}
 					if "1." != marker && "1)" != marker && atom.Ol == n.Parent.DataAtom && n.Parent.FirstChild == n && "" == util.DomAttrValue(n.Parent, "start") {
@@ -524,7 +502,7 @@ func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 					return
 				}
 				if nil == n.NextSibling {
-					return // 删掉表格中结尾的 br
+					return
 				}
 
 				node.Type = ast.NodeInlineHTML
@@ -566,11 +544,9 @@ func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 		}
 	case atom.Input:
 		if nil == n.Parent || nil == n.Parent.Parent || (atom.P != n.Parent.DataAtom && atom.Li != n.Parent.DataAtom) {
-			// 仅允许 input 出现在任务列表中
 			return
 		}
 		if nil != n.NextSibling && atom.Span == n.NextSibling.DataAtom {
-			// 在任务列表前退格
 			n.NextSibling.FirstChild.Data = strings.TrimSpace(n.NextSibling.FirstChild.Data)
 			break
 		}
@@ -602,7 +578,7 @@ func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 		}
 		node.TableAligns = tableAligns
 		node.Tokens = nil
-		tree.Context.Tip.AppendChild(&ast.Node{Type: ast.NodeParagraph}) // 表格开头输入会导致解析问题，所以插入一个空段落进行分隔
+		tree.Context.Tip.AppendChild(&ast.Node{Type: ast.NodeParagraph})
 		tree.Context.Tip.AppendChild(node)
 		tree.Context.Tip = node
 		defer tree.Context.ParentTip()
@@ -674,13 +650,12 @@ func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 			tree.Context.Tip = node
 			return
 		case "code-block-open-marker":
-			if atom.Pre == n.NextSibling.DataAtom { // DOM 后缺少 info span 节点
+			if atom.Pre == n.NextSibling.DataAtom {
 				n.InsertAfter(&html.Node{DataAtom: atom.Span, Attr: []*html.Attribute{{Key: "data-type", Val: "code-block-info"}}})
 			}
 			marker := []byte(util.DomText(n))
 			lastBacktick := bytes.LastIndex(marker, []byte("`")) + 1
 			if 0 < lastBacktick {
-				// 把 ` 后面的字符调整到 info 节点
 				n.NextSibling.AppendChild(&html.Node{Data: string(marker[lastBacktick:])})
 				marker = marker[:lastBacktick]
 			}
@@ -767,7 +742,6 @@ func (lute *Lute) genASTByVditorIRDOM(n *html.Node, tree *parse.Tree) {
 		node.Tokens = bytes.SplitAfter(node.Tokens, []byte("</summary>"))[0]
 		tree.Context.Tip.AppendChild(node)
 	case atom.Kbd:
-		// kbd 标签由 code 标签构成节点
 	case atom.Summary:
 		return
 	default:

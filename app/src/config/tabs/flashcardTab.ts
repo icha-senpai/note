@@ -1,6 +1,5 @@
 import type {SettingTabBuilder} from "../setting/builder";
 
-/** 闪卡 Tab：各组注册实现（由 setting/tabs.ts 调用） */
 const registerFlashcardCreationGroup = (tab: SettingTabBuilder) => {
     const group = tab.group("creation", window.scribli.languages.configGroupCardCreation);
 

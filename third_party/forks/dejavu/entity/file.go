@@ -23,13 +23,12 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/dejavu/util"
 )
 
-// File 描述了文件。
 type File struct {
 	ID      string   `json:"id"`      // Hash
-	Path    string   `json:"path"`    // 文件路径
-	Size    int64    `json:"size"`    // 文件大小
-	Updated int64    `json:"updated"` // 最后更新时间
-	Chunks  []string `json:"chunks"`  // 文件分块列表
+	Path    string   `json:"path"`
+	Size    int64    `json:"size"`
+	Updated int64    `json:"updated"`
+	Chunks  []string `json:"chunks"`
 }
 
 func NewFile(path string, size int64, updated int64) (ret *File) {

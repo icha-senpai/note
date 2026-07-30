@@ -23,13 +23,9 @@ export const genNotebookOption = (id: string, notebookId?: string, noCurrent?: b
     if (!noCurrent) {
         html = `<option value="">${window.scribli.languages.currentNotebook}</option>`;
     }
-    const helpIds: string[] = [];
-    Object.keys(Constants.HELP_PATH).forEach((key: "zh-CN") => {
-        helpIds.push(Constants.HELP_PATH[key]);
-    });
     let firstNotebookId = "";
     window.scribli.notebooks.forEach((item) => {
-        if (helpIds.includes(item.id) || item.id === notebookId) {
+        if (item.id === notebookId) {
             return;
         }
         if ("" === firstNotebookId) {

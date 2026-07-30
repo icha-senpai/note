@@ -128,6 +128,8 @@ $env:PATH=(Resolve-Path "..\.tools\w64devkit\bin").Path + ";" + $env:PATH
 $env:GOPATH=(Resolve-Path "..\.tools").Path + "\go-path"
 $env:GOCACHE=(Resolve-Path "..\.tools").Path + "\go-build-cache"
 $env:GOMODCACHE=(Resolve-Path "..\.tools").Path + "\go-mod-cache"
+$env:APPDATA=(Resolve-Path "..\.tools\appdata").Path
+go telemetry off
 $env:CGO_ENABLED="1"
 $env:CC=(Resolve-Path "..\.tools\w64devkit\bin\gcc.exe").Path
 go test ./...

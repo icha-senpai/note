@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -25,12 +24,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// HtmlRenderer 描述了 HTML 渲染器。
 type HtmlRenderer struct {
 	*BaseRenderer
 }
 
-// NewHtmlRenderer 创建一个 HTML 渲染器。
 func NewHtmlRenderer(tree *parse.Tree, options *Options, parseOptions *parse.Options) *HtmlRenderer {
 	ret := &HtmlRenderer{NewBaseRenderer(tree, options, parseOptions)}
 	ret.RendererFuncs[ast.NodeDocument] = ret.renderDocument
@@ -1460,7 +1457,6 @@ func (r *HtmlRenderer) renderSoftBreak(node *ast.Node, entering bool) ast.WalkSt
 
 func (r *HtmlRenderer) handleKramdownBlockIAL(node *ast.Node) {
 	if r.Options.KramdownBlockIAL && "id" != r.Options.KramdownIALIDRenderName && 0 < len(node.KramdownIAL) {
-		// 第一项必须是 ID
 		node.KramdownIAL[0][0] = r.Options.KramdownIALIDRenderName
 	}
 }
@@ -1485,7 +1481,7 @@ func (r *HtmlRenderer) renderTextMarkAttrs(node *ast.Node) (attrs [][]string) {
 			attrs = append(attrs, []string{"data-subtype", "math"})
 			content := node.TextMarkInlineMathContent
 			if node.ParentIs(ast.NodeTableCell) {
-				// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+				// Improve the handling of inline-math containing `|` in the table
 				content = strings.ReplaceAll(content, "|", "&#124;")
 				content = strings.ReplaceAll(content, "\n", "<br/>")
 			}

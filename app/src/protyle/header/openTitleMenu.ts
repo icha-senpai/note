@@ -303,7 +303,6 @@ export const openTitleMenu = (protyle: IProtyle, position: IPosition, from: stri
             id: "updateAndCreatedAt",
             iconHTML: "",
             type: "readonly",
-            // 不能换行，否则移动端间距过大
             label: `${window.scribli.languages.modifiedAt} ${dayjs(response.data.ial.updated).format("YYYY-MM-DD HH:mm:ss")}<br>${window.scribli.languages.createdAt} ${dayjs(response.data.ial.id.substr(0, 14)).format("YYYY-MM-DD HH:mm:ss")}`
         }).element);
         window.scribli.menus.menu.popup(position);

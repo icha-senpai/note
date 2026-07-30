@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -18,7 +17,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 )
 
-// FootnotesStart 判断脚注定义（[^label]）是否开始。
 func FootnotesStart(t *Tree, container *ast.Node) int {
 	if !t.Context.ParseOption.Footnotes || t.Context.indented {
 		return 0

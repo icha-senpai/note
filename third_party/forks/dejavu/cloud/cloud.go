@@ -25,169 +25,134 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/github/klauspost/compress/zstd"
 )
 
-// Conf 用于描述云端存储服务配置信息。
 type Conf struct {
-	Dir      string                 // 存储目录，第三方存储不使用 Dir 区别多租户
-	UserID   string                 // 用户 ID，没有的话请传入一个定值比如 "0"
-	RepoPath string                 // 本地仓库的绝对路径，如：F:\\SiYuan\\repo\\
-	Endpoint string                 // 服务端点
-	Extras   map[string]interface{} // 一些可能需要的附加信息
+	Dir      string
+	UserID   string
+	RepoPath string
+	Endpoint string
+	Extras   map[string]interface{}
 
-	// S3 对象存储协议所需配置
 	S3 *ConfS3
 
-	// WebDAV 协议所需配置
 	WebDAV *ConfWebDAV
 
-	// 本地存储服务配置
 	Local *ConfLocal
 
 	AvailableSize int64 // Storage size budget in bytes for user-controlled backends that do not report free space.
 }
 
-// ConfS3 用于描述 S3 对象存储协议所需配置。
 type ConfS3 struct {
-	Endpoint       string // 服务端点
+	Endpoint       string
 	AccessKey      string // Access Key
 	SecretKey      string // Secret Key
-	Region         string // 存储区域
-	Bucket         string // 存储空间
-	PathStyle      bool   // 是否使用路径风格寻址
-	SkipTlsVerify  bool   //  是否跳过 TLS 验证
-	Timeout        int    // 超时时间，单位：秒
-	ConcurrentReqs int    // 并发请求数
+	Region         string
+	Bucket         string
+	PathStyle      bool
+	SkipTlsVerify  bool
+	Timeout        int
+	ConcurrentReqs int
 }
 
-// ConfWebDAV 用于描述 WebDAV 协议所需配置。
 type ConfWebDAV struct {
-	Endpoint       string // 服务端点
-	Username       string // 用户名
-	Password       string // 密码
-	SkipTlsVerify  bool   // 是否跳过 TLS 验证
-	Timeout        int    // 超时时间，单位：秒
-	ConcurrentReqs int    // 并发请求数
+	Endpoint       string
+	Username       string
+	Password       string
+	SkipTlsVerify  bool
+	Timeout        int
+	ConcurrentReqs int
 }
 
-// ConfLocal 用于描述本地存储服务配置信息。
 type ConfLocal struct {
-	// 服务端点 (本地文件系统目录)
 	//
 	//	"D:/path/to/repos/directory" // Windows
 	//	"/path/to/repos/directory"   // Unix
 	Endpoint       string
-	Timeout        int // 超时时间，单位：秒
-	ConcurrentReqs int // 并发请求数
+	Timeout        int
+	ConcurrentReqs int
 }
 
-// Cloud 描述了云端存储服务，接入云端存储服务时需要实现该接口。
 type Cloud interface {
 
-	// CreateRepo 用于创建名称为 name 的云端仓库。
 	CreateRepo(name string) (err error)
 
-	// RemoveRepo 用于删除云端仓库。
 	RemoveRepo(name string) (err error)
 
-	// GetRepos 用于获取云端仓库列表 repos，size 为仓库总大小字节数。
 	GetRepos() (repos []*Repo, size int64, err error)
 
-	// UploadObject 用于上传对象，overwrite 参数用于指示是否覆盖已有对象。
 	UploadObject(filePath string, overwrite bool) (length int64, err error)
 
-	// UploadBytes 用于上传对象数据 data，overwrite 参数用于指示是否覆盖已有对象。
 	UploadBytes(filePath string, data []byte, overwrite bool) (length int64, err error)
 
-	// DownloadObject 用于下载对象数据 data。
 	DownloadObject(filePath string) (data []byte, err error)
 
-	// RemoveObject 用于删除对象。
 	RemoveObject(filePath string) (err error)
 
-	// GetTags 用于获取快照标记列表。
 	GetTags() (tags []*Ref, err error)
 
-	// GetIndexes 用于获取索引列表。
 	GetIndexes(page int) (indexes []*entity.Index, pageCount, totalCount int, err error)
 
-	// GetRefsFiles 用于获取所有引用索引中的文件 ID 列表 fileIDs。
 	GetRefsFiles() (fileIDs []string, refs []*Ref, err error)
 
-	// GetChunks 用于获取 checkChunkIDs 中不存在的分块 ID 列表 chunkIDs。
 	GetChunks(checkChunkIDs []string) (chunkIDs []string, err error)
 
-	// GetStat 用于获取统计信息 stat。
 	GetStat() (stat *Stat, err error)
 
-	// GetConf 用于获取配置信息。
 	GetConf() *Conf
 
-	// GetAvailableSize 用于获取云端存储可用空间字节数。
 	GetAvailableSize() (size int64)
 
-	// AddTraffic 用于统计流量。
 	AddTraffic(traffic *Traffic)
 
-	// ListObjects 用于列出指定前缀的对象。
 	ListObjects(pathPrefix string) (objInfos map[string]*entity.ObjectInfo, err error)
 
-	// GetIndex 用于获取索引。
 	GetIndex(id string) (index *entity.Index, err error)
 
-	// GetConcurrentReqs 用于获取配置的并发请求数。
 	GetConcurrentReqs() int
 }
 
-// Traffic 描述了流量信息。
 type Traffic struct {
-	UploadBytes   int64 // 上传字节数
-	DownloadBytes int64 // 下载字节数
-	APIGet        int   // API GET 请求次数
-	APIPut        int   // API PUT 请求次数
+	UploadBytes   int64
+	DownloadBytes int64
+	APIGet        int
+	APIPut        int
 }
 
-// Stat 描述了统计信息。
 type Stat struct {
-	Sync      *StatSync   `json:"sync"`      // 同步统计
-	Backup    *StatBackup `json:"backup"`    // 备份统计
-	AssetSize int64       `json:"assetSize"` // 资源文件大小字节数
-	RepoCount int         `json:"repoCount"` // 仓库数量
+	Sync      *StatSync   `json:"sync"`
+	Backup    *StatBackup `json:"backup"`
+	AssetSize int64       `json:"assetSize"`
+	RepoCount int         `json:"repoCount"`
 }
 
-// Repo 描述了云端仓库。
 type Repo struct {
 	Name    string `json:"name"`
 	Size    int64  `json:"size"`
 	Updated string `json:"updated"`
 }
 
-// Ref 描述了快照引用。
 type Ref struct {
-	Name    string `json:"name"`    // 引用文件名称，比如 latest、tag1
-	ID      string `json:"id"`      // 引用 ID
-	Updated string `json:"updated"` // 最近更新时间
+	Name    string `json:"name"`
+	ID      string `json:"id"`
+	Updated string `json:"updated"`
 }
 
-// StatSync 描述了同步统计信息。
 type StatSync struct {
-	Size      int64  `json:"size"`      // 总大小字节数
-	FileCount int    `json:"fileCount"` // 总文件数
-	Updated   string `json:"updated"`   // 最近更新时间
+	Size      int64  `json:"size"`
+	FileCount int    `json:"fileCount"`
+	Updated   string `json:"updated"`
 }
 
-// StatBackup 描述了备份统计信息。
 type StatBackup struct {
-	Count     int    `json:"count"`     // 已标记的快照数量
-	Size      int64  `json:"size"`      // 总大小字节数
-	FileCount int    `json:"fileCount"` // 总文件数
-	Updated   string `json:"updated"`   // 最近更新时间
+	Count     int    `json:"count"`
+	Size      int64  `json:"size"`
+	FileCount int    `json:"fileCount"`
+	Updated   string `json:"updated"`
 }
 
-// Indexes 描述了云端索引列表。
 type Indexes struct {
 	Indexes []*Index `json:"indexes"`
 }
 
-// Index 描述了云端索引。
 type Index struct {
 	ID         string `json:"id"`
 	SystemID   string `json:"systemID"`
@@ -195,7 +160,6 @@ type Index struct {
 	SystemOS   string `json:"systemOS"`
 }
 
-// BaseCloud 描述了云端存储服务的基础实现。
 type BaseCloud struct {
 	*Conf
 	Cloud
@@ -291,16 +255,16 @@ func (baseCloud *BaseCloud) AddTraffic(*Traffic) {
 }
 
 var (
-	ErrUnsupported             = errors.New("not supported yet")         // ErrUnsupported 描述了尚未支持的操作
-	ErrCloudObjectNotFound     = errors.New("cloud object not found")    // ErrCloudObjectNotFound 描述了云端存储服务中的对象不存在的错误
-	ErrCloudAuthFailed         = errors.New("cloud account auth failed") // ErrCloudAuthFailed 描述了云端存储服务鉴权失败的错误
-	ErrCloudServiceUnavailable = errors.New("cloud service unavailable") // ErrCloudServiceUnavailable 描述了云端存储服务不可用的错误
-	ErrSystemTimeIncorrect     = errors.New("system time incorrect")     // ErrSystemTimeIncorrect 描述了系统时间不正确的错误
-	ErrDeprecatedVersion       = errors.New("deprecated version")        // ErrDeprecatedVersion 描述了版本过低的错误
-	ErrCloudCheckFailed        = errors.New("cloud check failed")        // ErrCloudCheckFailed 描述了云端存储服务检查失败的错误
-	ErrCloudForbidden          = errors.New("cloud forbidden")           // ErrCloudForbidden 描述了云端存储服务禁止访问的错误
-	ErrCloudTooManyRequests    = errors.New("cloud too many requests")   // ErrCloudTooManyRequests 描述了云端存储服务请求过多的错误
-	ErrDecryptFailed           = errors.New("decrypt failed")            // ErrDecryptFailed 描述了解密失败的错误
+	ErrUnsupported             = errors.New("not supported yet")
+	ErrCloudObjectNotFound     = errors.New("cloud object not found")
+	ErrCloudAuthFailed         = errors.New("cloud account auth failed")
+	ErrCloudServiceUnavailable = errors.New("cloud service unavailable")
+	ErrSystemTimeIncorrect     = errors.New("system time incorrect")
+	ErrDeprecatedVersion       = errors.New("deprecated version")
+	ErrCloudCheckFailed        = errors.New("cloud check failed")
+	ErrCloudForbidden          = errors.New("cloud forbidden")
+	ErrCloudTooManyRequests    = errors.New("cloud too many requests")
+	ErrDecryptFailed           = errors.New("decrypt failed")
 )
 
 func IsValidCloudDirName(cloudDirName string) bool {
@@ -354,7 +318,6 @@ func init() {
 	}
 }
 
-// objectInfo 描述了对象信息，用于内部处理。
 type objectInfo struct {
 	Key     string `json:"key"`
 	Size    int64  `json:"size"`

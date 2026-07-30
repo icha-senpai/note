@@ -816,9 +816,6 @@ func Close(force, setCurrentWorkspace bool, execInstallPkg int) (exitCode int, i
 		}
 	}
 
-	// Close the user guide when exiting
-	closeUserGuide()
-
 	// Improve indexing completeness when exiting
 	sql.FlushQueue()
 
@@ -839,7 +836,7 @@ func Close(force, setCurrentWorkspace bool, execInstallPkg int) (exitCode int, i
 	Conf.Close()
 
 	for _, box := range Conf.GetOpenedBoxes() {
-		if IsEncryptedBox(box.ID) && !IsUserGuide(box.ID) {
+		if IsEncryptedBox(box.ID) {
 			Unmount(box.ID)
 		}
 	}
@@ -1267,81 +1264,6 @@ func clearWorkspaceTemp(preserveInstallPkgs bool) {
 	os.RemoveAll(filepath.Join(util.DataDir, "storage", "ai", "agent", "operations", "image"))
 
 	logging.LogInfof("cleared workspace temp")
-}
-
-func closeUserGuide() {
-	defer logging.Recover()
-
-	dirs, err := os.ReadDir(util.DataDir)
-	if err != nil {
-		logging.LogErrorf("read dir [%s] failed: %s", util.DataDir, err)
-		return
-	}
-
-	for _, dir := range dirs {
-		if !IsUserGuide(dir.Name()) {
-			continue
-		}
-
-		boxID := dir.Name()
-		boxDirPath := filepath.Join(util.DataDir, boxID)
-		boxConf := conf.NewBoxConf()
-		boxConfPath := filepath.Join(boxDirPath, ".scribli", "conf.json")
-		if !filelock.IsExist(boxConfPath) {
-			logging.LogWarnf("found a corrupted user guide box [%s]", boxDirPath)
-			if removeErr := filelock.Remove(boxDirPath); nil != removeErr {
-				logging.LogErrorf("remove corrupted user guide box [%s] failed: %s", boxDirPath, removeErr)
-			} else {
-				logging.LogInfof("removed corrupted user guide box [%s]", boxDirPath)
-			}
-			continue
-		}
-
-		data, readErr := filelock.ReadFile(boxConfPath)
-		if nil != readErr {
-			logging.LogErrorf("read box conf [%s] failed: %s", boxConfPath, readErr)
-			if removeErr := filelock.Remove(boxDirPath); nil != removeErr {
-				logging.LogErrorf("remove corrupted user guide box [%s] failed: %s", boxDirPath, removeErr)
-			} else {
-				logging.LogInfof("removed corrupted user guide box [%s]", boxDirPath)
-			}
-			continue
-		}
-		if readErr = gulu.JSON.UnmarshalJSON(data, boxConf); nil != readErr {
-			logging.LogErrorf("parse box conf [%s] failed: %s", boxConfPath, readErr)
-			if removeErr := filelock.Remove(boxDirPath); nil != removeErr {
-				logging.LogErrorf("remove corrupted user guide box [%s] failed: %s", boxDirPath, removeErr)
-			} else {
-				logging.LogInfof("removed corrupted user guide box [%s]", boxDirPath)
-			}
-			continue
-		}
-
-		if boxConf.Closed {
-			continue
-		}
-
-		msgId := util.PushMsg(Conf.language(233), 30000)
-
-		unindex(boxID)
-
-		sql.FlushQueue()
-
-		if removeErr := RemoveBox(boxID); nil == removeErr {
-			evt := util.NewCmdResult("removeBox", 0, util.PushModeBroadcast)
-			evt.Data = map[string]any{
-				"box": boxID,
-			}
-			util.PushEvent(evt)
-		} else {
-			logging.LogErrorf("close user guide box [%s] failed: %s", boxID, removeErr)
-			util.PushClearMsg(msgId)
-			continue
-		}
-
-		util.PushClearMsg(msgId)
-		logging.LogInfof("closed user guide box [%s]", boxID)
-	}
 }
 
 func init() {

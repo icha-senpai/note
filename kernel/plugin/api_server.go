@@ -24,7 +24,7 @@ import (
 )
 
 // injectServer adds scribli.server to the goja context.
-func injectServer(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
+func injectServer(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("injectServer: %v", r)
@@ -57,6 +57,6 @@ func injectServer(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 
 	lo.Must0(ObjectFreeze(rt, server))
 
-	lo.Must0(siyuan.Set("server", server))
+	lo.Must0(scribli.Set("server", server))
 	return
 }

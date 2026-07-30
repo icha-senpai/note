@@ -29,19 +29,19 @@ import (
 )
 
 type Log struct {
-	ID          string         `json:"id"`          // 索引 ID
-	Memo        string         `json:"memo"`        // 索引备注
-	Created     int64          `json:"created"`     // 索引时间
-	HCreated    string         `json:"hCreated"`    // 索引时间 "2006-01-02 15:04:05"
-	Files       []*entity.File `json:"files"`       // 文件列表
-	Count       int            `json:"count"`       // 文件总数
-	Size        int64          `json:"size"`        // 文件总大小
-	HSize       string         `json:"hSize"`       // 格式化好的文件总大小 "10.00 MB"
-	SystemID    string         `json:"systemID"`    // 设备 ID
-	SystemName  string         `json:"systemName"`  // 设备名称
-	SystemOS    string         `json:"systemOS"`    // 设备操作系统
-	Tag         string         `json:"tag"`         // 索引标记名称
-	HTagUpdated string         `json:"hTagUpdated"` // 标记时间 "2006-01-02 15:04:05"
+	ID          string         `json:"id"`
+	Memo        string         `json:"memo"`
+	Created     int64          `json:"created"`
+	HCreated    string         `json:"hCreated"`
+	Files       []*entity.File `json:"files"`
+	Count       int            `json:"count"`
+	Size        int64          `json:"size"`
+	HSize       string         `json:"hSize"`
+	SystemID    string         `json:"systemID"`
+	SystemName  string         `json:"systemName"`
+	SystemOS    string         `json:"systemOS"`
+	Tag         string         `json:"tag"`
+	HTagUpdated string         `json:"hTagUpdated"`
 }
 
 func (log *Log) String() string {

@@ -49,7 +49,6 @@ export const getEmbeddingStatsKeywords = (): string[] => [
     window.scribli.languages.rebuildEmbeddingIndexTip,
 ];
 
-// genEmbeddingStatsHtml 生成嵌入索引进度区块。容器留空，由 mountEmbeddingStatsBlock 轮询填充。
 export const genEmbeddingStatsHtml = (): string => `<div class="b3-label config-item" id="aiEmbeddingStatsBlock">
     <div class="fn__block">
         <div class="config-name">${window.scribli.languages.embeddingIndexProgress}</div>
@@ -65,7 +64,6 @@ export const genEmbeddingStatsHtml = (): string => `<div class="b3-label config-
     </div>
 </div>`;
 
-// mountEmbeddingStatsBlock 轮询 /api/ai/embeddingStat 刷新进度条与统计数字。设置页关闭时清理定时器。
 export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
     const block = root.querySelector("#aiEmbeddingStatsBlock");
     if (!block) {
@@ -86,7 +84,6 @@ export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
                 return;
             }
             if (!stat.enabled) {
-                // 未启用：隐藏进度区，显示提示
                 contentEl.classList.add("fn__none");
                 disabledEl.classList.remove("fn__none");
                 return;
@@ -97,7 +94,6 @@ export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
             const total = stat.total || 0;
             const indexed = stat.indexed || 0;
             const pending = stat.pending || 0;
-            // 进度条分母排除被忽略的块（长度忽略 + 配置忽略），它们永远不会被索引，否则进度条到不了 100%
             const ignored = (stat.ignoredByLen || 0) + (stat.ignoredByConfig || 0);
             const effectiveTotal = Math.max(0, total - ignored);
             const percent = effectiveTotal > 0 ? Math.min(100, indexed / effectiveTotal * 100) : 0;
@@ -109,11 +105,9 @@ export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
 
             const done = indexed >= effectiveTotal && pending === 0;
             if (done) {
-                // 完成：静态条
                 fillEl.style.backgroundImage = "";
                 fillEl.style.animation = "";
             } else {
-                // 索引中：条状动画
                 fillEl.style.backgroundImage = "linear-gradient(-45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent)";
                 fillEl.style.animation = "stripMove 450ms linear infinite";
                 fillEl.style.backgroundSize = "50px 50px";
@@ -123,14 +117,12 @@ export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
             if (!numEl) {
                 return;
             }
-            // 每个统计项独立一行，避免单行过长被截断
             numEl.innerHTML = `<div>${window.scribli.languages.embeddingIndexed}<b>${indexed}</b> / ${total}</div>
                 <div>${window.scribli.languages.embeddingPending}<b>${pending}</b></div>
                 <div>${window.scribli.languages.embeddingFailed}<b>${stat.failed || 0}</b></div>
                 <div>${window.scribli.languages.embeddingIgnoredByLen}<b>${stat.ignoredByLen || 0}</b></div>
                 <div>${window.scribli.languages.embeddingIgnoredByConfig}<b>${stat.ignoredByConfig || 0}</b></div>`;
 
-            // 有失败块时显示“重试失败”链接
             const retryEl = block.querySelector("#aiEmbeddingRetryFailed") as HTMLElement;
             if (retryEl) {
                 if (stat.failed > 0) {
@@ -142,7 +134,6 @@ export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
         });
     };
 
-    // “重试失败”点击：删除失败块行让其回到主循环重嵌，无需确认框（操作轻，只删空向量行）
     block.querySelector("#aiEmbeddingRetryFailed")?.addEventListener("click", () => {
         fetchPost("/api/ai/retryFailedEmbedding", {}, () => {
             showMessage(window.scribli.languages.retryFailedEmbeddingStarted);
@@ -151,7 +142,6 @@ export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
 
     render();
     const timer = window.setInterval(render, 3000);
-    // block 从 DOM 移除（设置页关闭/切换）时清理定时器，避免内存泄漏
     const cleanup = () => {
         if (!document.contains(block)) {
             window.clearInterval(timer);
@@ -162,14 +152,11 @@ export const mountEmbeddingStatsBlock = (root: HTMLElement) => {
     window.requestAnimationFrame(cleanup);
 };
 
-// mountEmbeddingTestBtn 在嵌入「模型」输入框下方注入测试连接按钮，点击后用极简文本请求嵌入端点验证连通性。
-// 嵌入配置即时保存，点测试时内核已持最新配置，故无需前端传参。
 export const mountEmbeddingTestBtn = (root: HTMLElement) => {
     const inputEl = root.querySelector<HTMLInputElement>('[id="ai.embedding.name"]');
     if (!inputEl) {
         return;
     }
-    // input 自身带 fn__block class，closest 会命中自身，故从 .config-item 往下精确定位外层容器
     const wrapper = inputEl.closest(".config-item")?.querySelector(".fn__block");
     if (!wrapper) {
         return;
@@ -218,8 +205,6 @@ export const mountEmbeddingTestBtn = (root: HTMLElement) => {
     });
 };
 
-// mountRerankTestBtn 在重排「模型」输入框下方注入测试连接按钮，点击后用极简 query+documents 请求重排端点验证连通性。
-// 重排配置即时保存，点测试时内核已持最新配置，故无需前端传参。
 export const mountRerankTestBtn = (root: HTMLElement) => {
     const inputEl = root.querySelector<HTMLInputElement>('[id="ai.rerank.name"]');
     if (!inputEl) {
@@ -435,7 +420,6 @@ const renderProviderList = (root: HTMLElement) => {
     const providers = window.scribli.config.ai.providers;
     const expanded = new Set<string>();
     if (!listEl.innerHTML) {
-        // 初始化时，如果模型总数小于 10，则默认展开所有提供商
         const totalModels = providers.reduce((sum, provider) => sum + provider.models.length, 0);
         if (totalModels < 10) {
             providers.forEach((provider) => {
@@ -445,7 +429,6 @@ const renderProviderList = (root: HTMLElement) => {
             });
         }
     } else {
-        // 重新渲染时，保持已有提供商的展开状态、新增的提供商默认展开
         const previousProviderIds = new Set<string>();
         root.querySelectorAll<HTMLElement>("[data-provider-id]").forEach((wrapper) => {
             const providerId = wrapper.dataset.providerId;
@@ -615,7 +598,6 @@ const saveProviders = (root: HTMLElement, providers: Config.IProvider[]) => {
     });
 };
 
-// 提供商或模型变更后，将各场景模型选择器与配置对齐，并在必要时修正已保存的 modelId
 const syncModelPickerSelects = (root: HTMLElement) => {
     const enabledProviders = getEnabledProviders();
     (["editing", "agent", "vision", "imageGeneration"] as const).forEach((group) => {
@@ -628,28 +610,22 @@ const syncModelPickerSelects = (root: HTMLElement) => {
         if (!providerSelect || !modelSelect) {
             return;
         }
-        // 数据源：当前 UI 下拉框选中值、持久化配置
         const uiProviderId = providerSelect.value;
         const uiModelId = modelSelect.value;
         const savedModelId = window.scribli.config.ai[group].modelId;
         const {providerId: savedProviderId, modelId: storedModelId} = lookupModelOwner(savedModelId);
 
-        // 提供商优先级：UI 选中（已启用）→ 配置归属（已启用）→ 空
         const providerId = pickProviderId(enabledProviders, [uiProviderId, savedProviderId]);
         const enabledModels = getEnabledModels(providerId);
-        // 模型优先级：UI 选中 → 配置保存值，无效时回退到第一个可用模型
         const modelId = pickModelId(enabledModels, [uiModelId, storedModelId]);
 
-        // 重建提供商下拉选项
         providerSelect.disabled = enabledProviders.length === 0;
         providerSelect.innerHTML = buildProviderOptionsHtml(enabledProviders, providerId);
         providerSelect.value = providerId;
-        // 重建模型下拉选项
         modelSelect.disabled = !providerId || enabledModels.length === 0;
         modelSelect.innerHTML = buildModelOptionsHtml(enabledModels, modelId);
         modelSelect.value = modelId;
 
-        // 原 modelId 已失效（被删、禁用等）时写回修正值，提供商或模型无效则清空
         if (modelId !== savedModelId) {
             const nextModelId = !providerId || !modelId ? "" : modelId;
             aiConfigApi.patch(`${group}.modelId`, nextModelId);
@@ -657,7 +633,6 @@ const syncModelPickerSelects = (root: HTMLElement) => {
     });
 };
 
-// 根据 modelId 反查其所属提供商
 const lookupModelOwner = (modelId: string): {providerId: string; modelId: string} => {
     if (!modelId) {
         return {providerId: "", modelId: ""};
@@ -692,7 +667,6 @@ const buildModelOptionsHtml = (enabledModels: Config.IModel[], modelId: string):
         `<option value="${Lute.EscapeHTMLStr(model.id)}"${model.id === modelId ? " selected" : ""}>${Lute.EscapeHTMLStr(model.displayName || model.name)}</option>`
     ).join("");
 
-// 在已启用提供商列表中按优先级选取 providerId，均无效时返回空
 const pickProviderId = (enabledProviders: Config.IProvider[], preferredProviderIds: string[]): string => {
     for (const preferredProviderId of preferredProviderIds) {
         if (preferredProviderId && enabledProviders.some((provider) => provider.id === preferredProviderId)) {
@@ -702,7 +676,6 @@ const pickProviderId = (enabledProviders: Config.IProvider[], preferredProviderI
     return "";
 };
 
-// 在可用模型列表中按优先级选取 modelId，均无效时取第一个
 const pickModelId = (enabledModels: Config.IModel[], preferredModelIds: string[]): string => {
     if (enabledModels.length === 0) {
         return "";
@@ -861,13 +834,11 @@ const openModelDialog = (root: HTMLElement, providerId: string, modelId: string 
     dialog.element.setAttribute("data-key", Constants.DIALOG_AIMODEL);
     dialog.element.querySelector<HTMLInputElement>("#aiModelName")?.select();
     const btns = dialog.element.querySelectorAll(".b3-dialog__action .b3-button");
-    // 读取模型名称当前值：该字段可能是文本输入框（初始或拉取失败回退），也可能是拉取成功后替换成的下拉框
     const getModelName = () => {
         const el = dialog.element.querySelector<HTMLInputElement | HTMLSelectElement>("#aiModelName");
         return (el?.value ?? "").trim();
     };
     btns[0].addEventListener("click", () => dialog.destroy());
-    // 拉取 Provider 可用模型清单，成功后把文本框替换为下拉框供选择
     dialog.element.querySelector<HTMLElement>("#aiModelFetchBtn")?.addEventListener("click", () => {
         const fetchBtn = dialog.element.querySelector<HTMLButtonElement>("#aiModelFetchBtn");
         const fetchSvg = fetchBtn.querySelector("svg");
@@ -886,7 +857,6 @@ const openModelDialog = (root: HTMLElement, providerId: string, modelId: string 
                 showMessage(`${window.scribli.languages.fetchAvailableModelsFail}${data.msg ? "：" + data.msg : ""}`, undefined, "error");
                 return;
             }
-            // 用可搜索选择器替换原文本框，保留当前已填值
             const current = getModelName();
             const inputEl = dialog.element.querySelector<HTMLElement>("#aiModelName");
             replaceModelInputWithPicker(inputEl, models, current);
@@ -1107,7 +1077,6 @@ export const mountMcpServersBlock = (root: HTMLElement) => {
     }
     renderMcpServerList(root);
 
-    // 轮询 MCP 连接状态，刷新每个 server 名称旁的状态圆点颜色、tooltip，以及标题右侧的汇总。
     const renderMcpStatus = () => {
         fetchPost("/api/ai/mcpStatus", {}, (response) => {
             const items = response.data as Array<{
@@ -1158,7 +1127,6 @@ export const mountMcpServersBlock = (root: HTMLElement) => {
                 if (dot) {
                     dot.style.backgroundColor = colorMap[item.status] || colorMap.disabled;
                 }
-                // 每个 server 行上显示其工具数（仅已连接且有工具时）。
                 const toolsEl = block.querySelector<HTMLElement>(`[data-mcp-tools-count="${CSS.escape(item.id)}"]`);
                 if (toolsEl) {
                     toolsEl.textContent = item.status === "connected" && item.tools > 0 ? window.scribli.languages.mcpStatusTools.replace("${x}", String(item.tools)) : "";
@@ -1193,7 +1161,6 @@ export const mountMcpServersBlock = (root: HTMLElement) => {
                     openedMcpOAuthURLs.delete(serverID);
                 }
             }
-            // 标题右侧汇总：已连接 server 数 + 总工具数。
             const summaryEl = block.querySelector<HTMLElement>("#aiMcpStatusSummary");
             if (summaryEl) {
                 if (connectedCount > 0) {
@@ -1207,7 +1174,6 @@ export const mountMcpServersBlock = (root: HTMLElement) => {
     };
     renderMcpStatus();
     const statusTimer = window.setInterval(renderMcpStatus, 3000);
-    // 设置页关闭/切换时清理定时器，避免内存泄漏（与 embedding 轮询清理模式一致）。
     const cleanupStatus = () => {
         if (!document.contains(block)) {
             window.clearInterval(statusTimer);

@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -28,13 +27,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// HTML2Markdown 将 HTML 转换为 Markdown。
 func (lute *Lute) HTML2Markdown(htmlStr string) (markdown string, err error) {
 	//fmt.Println(htmlStr)
-	// 将字符串解析为 DOM 树
 	tree := lute.HTML2Tree(htmlStr)
 
-	// 将 AST 进行 Markdown 格式化渲染
 	var formatted []byte
 	renderer := render.NewFormatRenderer(tree, lute.RenderOptions, lute.ParseOptions)
 	for nodeType, rendererFunc := range lute.HTML2MdRendererFuncs {
@@ -45,7 +41,6 @@ func (lute *Lute) HTML2Markdown(htmlStr string) (markdown string, err error) {
 	return
 }
 
-// HTML2Tree 将 HTML 转换为 AST。
 func (lute *Lute) HTML2Tree(dom string) (ret *parse.Tree) {
 	htmlRoot := util.ParseHTML(dom)
 	return lute.HTMLNode2Tree(htmlRoot)
@@ -56,18 +51,15 @@ func (lute *Lute) HTMLNode2Tree(n *html.Node) (ret *parse.Tree) {
 		return nil
 	}
 
-	// 调整 DOM 结构
 	lute.fixTableStructure(n)
 	lute.adjustVditorDOM(n)
 
-	// 将 HTML 树转换为 Markdown AST
 	ret = &parse.Tree{Name: "", Root: &ast.Node{Type: ast.NodeDocument}, Context: &parse.Context{ParseOption: lute.ParseOptions}}
 	ret.Context.Tip = ret.Root
 	for c := n.FirstChild; nil != c; c = c.NextSibling {
 		lute.genASTByDOM(c, ret)
 	}
 
-	// 调整树结构
 	var previousLis, unlinks []*ast.Node
 	ast.Walk(ret.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if entering {
@@ -91,17 +83,11 @@ func (lute *Lute) HTMLNode2Tree(n *html.Node) (ret *parse.Tree) {
 	return ret
 }
 
-// fixTableStructure 直接修改传入的 *html.Node 树，完美兼容 th、td 以及 colspan、rowspan 合并单元格。
-// 外部 HTML（如从浏览器、Excel、Word 复制）的合并单元格遵循 HTML 标准：被合并覆盖的位置没有对应的
-// td/th 节点。而思源内部规范需要这些位置存在 class="fn__none" 的占位单元格（见 parse/table.go、
-// spin_block_test.go 用例 112-116）。本函数按表格做二维网格计算，在跨行/跨列覆盖的位置补齐占位 td，
-// 同时保留原“补齐残缺行列数”的行为。
 func (lute *Lute) fixTableStructure(root *html.Node) {
 	if root == nil {
 		return
 	}
 
-	// 1. 递归查找 root 节点下的所有 table 节点，按表格分组处理以避免多表格相互污染列数
 	var tableNodes []*html.Node
 	var findTables func(*html.Node)
 	findTables = func(n *html.Node) {
@@ -119,9 +105,7 @@ func (lute *Lute) fixTableStructure(root *html.Node) {
 	}
 }
 
-// fixOneTableStructure 处理单个 table：计算 maxCols 并补齐 fn__none 占位单元格。
 func (lute *Lute) fixOneTableStructure(table *html.Node) {
-	// 收集该 table 下的所有 tr（跨 thead/tbody/tfoot）
 	var trNodes []*html.Node
 	var findTRs func(*html.Node)
 	findTRs = func(n *html.Node) {
@@ -137,7 +121,6 @@ func (lute *Lute) fixOneTableStructure(table *html.Node) {
 		return
 	}
 
-	// 辅助函数：读取单元格的 colspan（默认 1，非法值视为 1）
 	readColspan := func(cell *html.Node) int {
 		if cs := util.DomAttrValue(cell, "colspan"); "" != cs {
 			if val, err := strconv.Atoi(cs); err == nil && val > 0 {
@@ -146,7 +129,6 @@ func (lute *Lute) fixOneTableStructure(table *html.Node) {
 		}
 		return 1
 	}
-	// 辅助函数：读取单元格的 rowspan（默认 1，非法值视为 1）
 	readRowspan := func(cell *html.Node) int {
 		if rs := util.DomAttrValue(cell, "rowspan"); "" != rs {
 			if val, err := strconv.Atoi(rs); err == nil && val > 0 {
@@ -156,14 +138,12 @@ func (lute *Lute) fixOneTableStructure(table *html.Node) {
 		return 1
 	}
 
-	// 2. 遍历所有 tr，先用 colspan 权重算出真实最大总列数（保留原逻辑）
 	maxCols := 0
 	for _, tr := range trNodes {
 		rowCols := 0
 		for c := tr.FirstChild; c != nil; c = c.NextSibling {
 			if c.Type == html.ElementNode && (c.DataAtom == atom.Td || c.DataAtom == atom.Th) {
 				if "fn__none" == util.DomAttrValue(c, "class") {
-					// 已有的占位单元格不计入逻辑列（它们是被覆盖的位置）
 					continue
 				}
 				rowCols += readColspan(c)
@@ -177,10 +157,6 @@ func (lute *Lute) fixOneTableStructure(table *html.Node) {
 		return
 	}
 
-	// 3. 二维网格：occupied[row][col] 标记被跨行/跨列单元格覆盖的位置
-	// 用模拟 HTML 表格布局的方式补齐占位单元格
-	// 第 3 步统一处理所有行（含表头）：colspan 单元格后补 fn__none 占位、被 rowspan 覆盖处补占位、行末补齐，
-	// 使每行物理 td 数恰好等于 maxCols，从而 GFM 往返时各行 | 数一致，避免右侧列错位。
 	rowCount := len(trNodes)
 	occupied := make([][]bool, rowCount)
 	for i := range occupied {
@@ -196,7 +172,6 @@ func (lute *Lute) fixOneTableStructure(table *html.Node) {
 
 	for ri, tr := range trNodes {
 		colIdx := 0
-		// 预先收集本行的真实单元格（跳过已有的占位 td，它们属于被覆盖位置）
 		var realCells []*html.Node
 		for c := tr.FirstChild; c != nil; c = c.NextSibling {
 			if isCell(c) && !isPlaceholder(c) {
@@ -205,54 +180,42 @@ func (lute *Lute) fixOneTableStructure(table *html.Node) {
 		}
 
 		for _, cell := range realCells {
-			// 跳过被占用列（被上方 rowspan 覆盖的位置）：在 cell 之前插入 fn__none 占位 td
 			for colIdx < maxCols && occupied[ri][colIdx] {
 				insertPlaceholderBefore(cell)
 				colIdx++
 			}
 			if colIdx >= maxCols {
-				// 超出表格宽度的单元格，忽略（理论上不应发生，maxCols 已按 colspan 算过）
 				break
 			}
 
 			colspan := readColspan(cell)
-			// 读取 rowspan 并截断到表格剩余行数，避免越界
 			rowspan := readRowspan(cell)
 			if remaining := rowCount - ri; rowspan > remaining {
 				rowspan = remaining
 			}
 
-			// 标记二维占用（包含起始格自身）
 			for dr := 0; dr < rowspan && ri+dr < rowCount; dr++ {
 				for dc := 0; dc < colspan && colIdx+dc < maxCols; dc++ {
 					occupied[ri+dr][colIdx+dc] = true
 				}
 			}
-			// 单元格跨多列时，在其后补 (colspan-1) 个 fn__none 占位 td，使本行物理 td 数与逻辑列数一致。
-			// 否则 GFM 表格按 | 数对齐时该行会少列，导致 markdown 往返后右侧内容串列。
-			//（与思源内部规范一致：colspan 单元格后跟 fn__none 占位，见 spin_block_test 用例 112/113）
 			for dc := 1; dc < colspan && colIdx+dc <= maxCols; dc++ {
 				appendPlaceholderAfter(cell)
 			}
 			colIdx += colspan
 		}
 
-		// 行末：补齐到 maxCols
 		for colIdx < maxCols {
 			if occupied[ri][colIdx] {
-				// 被 rowspan 覆盖的位置：插 fn__none 占位 td
 				appendPlaceholder(tr, true)
 			} else {
-				// 行本身列数不足（残缺表格）：补普通空 td，不加 fn__none
 				appendPlaceholder(tr, false)
 			}
 			colIdx++
 		}
 	}
 
-	// 4. 处理 thead：如果表格没有 <thead>，且首行含 rowspan>1 的单元格，
-	// 则用 <thead> 包裹首行 rowspan 覆盖的所有行，避免 rowspan 跨越 thead/tbody 边界导致渲染错乱
-	//（siyuan 内部规范要求 rowspan 覆盖的行与起始格在同一 section）
+	// Keep rowspan-covered cells in the same section as their origin cell.
 	if 1 > len(util.DomChildrenByType(table, atom.Thead)) && 0 < len(trNodes) {
 		firstTR := trNodes[0]
 		theadRows := 1
@@ -267,9 +230,7 @@ func (lute *Lute) fixOneTableStructure(table *html.Node) {
 			}
 		}
 		if theadRows > 1 && theadRows <= len(trNodes) {
-			// 用 <thead> 包裹前 theadRows 个 tr
 			thead := &html.Node{Type: html.ElementNode, DataAtom: atom.Thead, Data: atom.Thead.String()}
-			// 在第一个 tr 之前插入 thead（无论它在 tbody 里还是 table 直接子节点）
 			firstTR.InsertBefore(thead)
 			for i := 0; i < theadRows; i++ {
 				tr := trNodes[i]
@@ -280,29 +241,24 @@ func (lute *Lute) fixOneTableStructure(table *html.Node) {
 	}
 }
 
-// insertPlaceholderBefore 在 ref 之前插入一个 class="fn__none" 的空 td。
 func insertPlaceholderBefore(ref *html.Node) {
 	td := newPlaceholderTD()
 	ref.InsertBefore(td)
 }
 
-// appendPlaceholder 将一个空 td 追加到 tr 末尾。fnNone 为 true 时标记为 class="fn__none"（合并覆盖占位）。
 func appendPlaceholder(tr *html.Node, fnNone bool) {
 	tr.AppendChild(newTD(fnNone))
 }
 
-// appendPlaceholderAfter 在 ref 之后插入一个 class="fn__none" 的空 td，用作 colspan 单元格横向覆盖的占位。
 func appendPlaceholderAfter(ref *html.Node) {
 	td := newPlaceholderTD()
 	ref.InsertAfter(td)
 }
 
-// newPlaceholderTD 构造一个 <td class="fn__none"></td> 节点（合并单元格覆盖占位）。
 func newPlaceholderTD() *html.Node {
 	return newTD(true)
 }
 
-// newTD 构造一个空 <td> 节点。fnNone 为 true 时添加 class="fn__none"。
 func newTD(fnNone bool) *html.Node {
 	td := &html.Node{
 		Type:     html.ElementNode,
@@ -315,12 +271,6 @@ func newTD(fnNone bool) *html.Node {
 	return td
 }
 
-// setTableCellSpanIAL 为表格单元格节点（th/td）提取 colspan/rowspan/class 属性并写入 KramdownIAL，
-// 同时 Prepend 一个 NodeKramdownSpanIAL 子节点以便渲染器输出 `{: colspan=".." rowspan=".."}`。
-// 与 parse.SetSpanIAL 的区别：本函数用于外部 HTML 转换路径（HTML2Markdown），刻意不提取 style 等
-// 属性，避免外部网页的大量 inline style 噪音污染表格单元格。class 仅在为 "fn__none"（思源合并单元格
-// 占位标记，由 fixTableStructure 插入）时才保留，外部网页的其它样式 class（如 column-1、row-2 odd）
-// 视为噪音丢弃。colspan/rowspan 是合并单元格的核心属性，必须保留。
 func setTableCellSpanIAL(node *ast.Node, n *html.Node) {
 	if nil == node || nil == n {
 		return
@@ -339,7 +289,6 @@ func setTableCellSpanIAL(node *ast.Node, n *html.Node) {
 	}
 	class := util.DomAttrValue(n, "class")
 	if "fn__none" == class {
-		// 仅保留思源合并单元格占位标记，丢弃外部网页的样式 class
 		node.SetIALAttr("class", class)
 	}
 	if "" == colspan && "" == rowspan && "" == node.IALAttr("class") {
@@ -351,7 +300,6 @@ func setTableCellSpanIAL(node *ast.Node, n *html.Node) {
 	node.PrependChild(ial)
 }
 
-// genASTByDOM 根据指定的 DOM 节点 n 进行深度优先遍历并逐步生成 Markdown 语法树 tree。
 func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 	if html.CommentNode == n.Type || atom.Meta == n.DataAtom {
 		return
@@ -368,21 +316,19 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 
 	class := util.DomAttrValue(n, "class")
 	if strings.HasPrefix(class, "line-number") &&
-		!strings.HasPrefix(class, "line-numbers" /* 简书代码块 https://github.com/siyuan-note/siyuan/issues/4361 */) {
+		!strings.HasPrefix(class, "line-numbers") {
 		return
 	}
 
 	if strings.Contains(class, "mw-editsection") {
-		// 忽略 Wikipedia [编辑] Do not clip the `Edit` element next to Wikipedia headings https://github.com/siyuan-note/siyuan/issues/11600
 		return
 	}
 
 	if strings.Contains(class, "citation-comment") {
-		// 忽略 Wikipedia 引用中的注释 https://github.com/siyuan-note/siyuan/issues/11640
 		return
 	}
 
-	if 0 == n.DataAtom && html.ElementNode == n.Type { // 自定义标签
+	if 0 == n.DataAtom && html.ElementNode == n.Type {
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
 			lute.genASTByDOM(c, tree)
 		}
@@ -415,7 +361,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 	case 0:
 		class := util.DomAttrValue(n.PrevSibling, "class")
 		if "fn__space5" == class {
-			// 链滴剪藏图片时多了长宽显示 https://github.com/siyuan-note/siyuan/issues/10987
+			// Drop clipping-service image width and height labels.
 			return
 		}
 
@@ -423,7 +369,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			node.Type = ast.NodeLinkText
 		}
 
-		// 将 \n空格空格* 转换为\n
 		for strings.Contains(string(node.Tokens), "\n  ") {
 			node.Tokens = bytes.ReplaceAll(node.Tokens, []byte("\n  "), []byte("\n "))
 		}
@@ -449,9 +394,9 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			node.Tokens = bytes.TrimSpace(node.Tokens)
 			node.Tokens = bytes.ReplaceAll(node.Tokens, []byte("\n"), []byte(" "))
 		}
-		node.Tokens = bytes.ReplaceAll(node.Tokens, []byte{194, 160}, []byte{' '}) // 将 &nbsp; 转换为空格
+		node.Tokens = bytes.ReplaceAll(node.Tokens, []byte{194, 160}, []byte{' '})
 
-		node.Tokens = bytes.ReplaceAll(node.Tokens, []byte("\n"), []byte{' '}) // 将 \n 转换为空格 https://github.com/siyuan-note/siyuan/issues/6052
+		node.Tokens = bytes.ReplaceAll(node.Tokens, []byte("\n"), []byte{' '})
 		if ast.NodeStrong == tree.Context.Tip.Type ||
 			ast.NodeEmphasis == tree.Context.Tip.Type ||
 			ast.NodeStrikethrough == tree.Context.Tip.Type ||
@@ -469,17 +414,15 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		}
 
 		if ast.NodeParagraph == tree.Context.Tip.Type && bytes.HasPrefix(node.Tokens, []byte("$$")) && bytes.HasSuffix(node.Tokens, []byte("$$")) && 2 == bytes.Count(node.Tokens, []byte("$$")) {
-			// 将其转换为公式块 https://github.com/siyuan-note/siyuan/issues/14360
 			tex := bytes.TrimSpace(node.Tokens[2 : len(node.Tokens)-2])
 			appendMathBlock(tree, util.BytesToStr(tex))
 			return
 		}
 
 		if nil != n.Parent && atom.Span == n.Parent.DataAtom && 0 == len(n.Parent.Attr) {
-			// 按原文解析，不处理转义
 		} else {
 			if lute.ParseOptions.ProtyleWYSIWYG {
-				if ast.NodeLink != tree.Context.Tip.Type { // a 标签锚文本中的标记符不进行转义 https://github.com/siyuan-note/siyuan/issues/14733
+				if ast.NodeLink != tree.Context.Tip.Type {
 					node.Tokens = lex.EscapeProtyleMarkers(node.Tokens)
 				}
 			} else {
@@ -497,7 +440,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 
 		if ast.NodeListItem == tree.Context.Tip.Type || (nil != tree.Context.Tip.Parent && ast.NodeListItem == tree.Context.Tip.Parent.Type) ||
 			(nil != tree.Context.Tip.Parent && nil != tree.Context.Tip.Parent.Parent && ast.NodeListItem == tree.Context.Tip.Parent.Parent.Type) {
-			// 去掉文本中开头的列表项标记符 https://github.com/siyuan-note/siyuan/issues/14329
 			if idx := bytes.Index(node.Tokens, []byte(". ")); 0 < idx {
 				num := node.Tokens[:idx]
 				isLi := true
@@ -562,13 +504,11 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		}
 
 		if ast.NodeHeading == tree.Context.Tip.Type {
-			// h 下存在 div/p/section 则忽略分块
 			break
 		}
 
 		class := util.DomAttrValue(n, "class")
 		if atom.Div == n.DataAtom || atom.Section == n.DataAtom {
-			// 解析 GitHub 语法高亮代码块
 			language := ""
 			if strings.Contains(class, "-source-") {
 				language = class[strings.LastIndex(class, "-source-")+len("-source-"):]
@@ -598,7 +538,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 				return
 			}
 
-			// The browser extension supports CSDN formula https://github.com/siyuan-note/siyuan/issues/5624
+			// The browser extension supports CSDN formula
 			if strings.Contains(class, "MathJax") && nil != n.NextSibling && atom.Script == n.NextSibling.DataAtom && strings.Contains(util.DomAttrValue(n.NextSibling, "type"), "math/tex") {
 				tex := util.DomText(n.NextSibling)
 				appendMathBlock(tree, tex)
@@ -606,7 +546,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 				return
 			}
 
-			// The browser extension supports Wikipedia formula clipping https://github.com/siyuan-note/siyuan/issues/11583
+			// The browser extension supports Wikipedia formula clipping
 			if tex := strings.TrimSpace(util.DomAttrValue(n, "data-tex")); "" != tex {
 				appendMathBlock(tree, tex)
 				return
@@ -618,18 +558,17 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		}
 
 		if "" == strings.TrimSpace(util.DomText(n)) {
-			for { // 这里用 for 是为了简化实现
+			for {
 				if util.DomExistChildByType(n, atom.Img, atom.Picture, atom.Annotation, atom.Iframe, atom.Video, atom.Audio, atom.Source, atom.Canvas, atom.Svg, atom.Math) {
 					break
 				}
 
 				if tex := util.GetFormula(n); "" != tex {
-					// https://github.com/siyuan-note/siyuan/issues/15457
+					//
 					appendMathBlock(tree, tex)
 					return
 				}
 
-				// span 可能是 TextMark 元素，也可能是公式，其他情况则忽略
 				spans := util.DomChildrenByType(n, atom.Span)
 				if 0 < len(spans) {
 					span := spans[0]
@@ -704,7 +643,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			}
 		} else {
 			if nil != n.Parent && "1." != marker && atom.Ol == n.Parent.DataAtom && nil != n.Parent.Parent && (atom.Ol == n.Parent.Parent.DataAtom || atom.Ul == n.Parent.Parent.DataAtom) {
-				// 子有序列表必须从 1 开始
 				marker = "1."
 			}
 		}
@@ -728,7 +666,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 
 		codes := util.DomChildrenByType(n, atom.Code)
 		if 0 < len(codes) {
-			// 删除第一个 code 之前的标签
 			unlinks := []*html.Node{}
 			for prev := codes[0].PrevSibling; nil != prev; prev = prev.PrevSibling {
 				unlinks = append(unlinks, prev)
@@ -744,14 +681,12 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 
 		class := util.DomAttrValue(firstc, "class")
 		if strings.Contains(class, "iconfont") {
-			// 处理 pre.i,ol 的情况，i 标签为“复制代码”或“隐藏代码”，ol 标签为“行号”
-			// https://github.com/siyuan-note/siyuan/issues/15314
+			//
 			firstc = firstc.NextSibling
 			n.FirstChild.Unlink()
 		}
 
 		if atom.Em == firstc.DataAtom && nil != firstc.NextSibling && atom.Em == firstc.NextSibling.DataAtom {
-			// pre.em,em,code 的情况，这两个 em 是“复制代码”和“隐藏代码” https://github.com/siyuan-note/siyuan/issues/13026
 
 			if 0 < len(codes) {
 				firstc = codes[0]
@@ -771,15 +706,12 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			if nil == firstc.NextSibling {
 				if 1 == len(codes) {
 					code := codes[0]
-					// pre 下只有一个 div，且 div 下只有一个 code，那么将 pre.div 替换为 pre.code https://github.com/siyuan-note/siyuan/issues/11131
 					code.Unlink()
 					n.AppendChild(code)
 					firstc.Unlink()
 					firstc = n.FirstChild
 				}
 			} else {
-				// pre 下全是 div，每个 div 为一行代码 https://github.com/siyuan-note/siyuan/issues/14195
-				// 将其转换为 pre.code， code, ... code，每个 div 为一行代码，然后交由后续处理
 				var unlinks, codes []*html.Node
 				for div := firstc; nil != div; div = div.NextSibling {
 					code := &html.Node{Data: "code", DataAtom: atom.Code, Type: html.ElementNode}
@@ -800,8 +732,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			}
 		}
 
-		// 改进两种 pre.ol.li 的代码块解析 https://github.com/siyuan-note/siyuan/issues/11296
-		// 第一种：将 pre.ol.li.p.span, span, ... span 转换为 pre.ol.li.p.code, code, ... code，然后交由第二种处理
 		span2Code := false
 		if atom.Ol == firstc.DataAtom && nil == firstc.NextSibling && nil != firstc.FirstChild && atom.Li == firstc.FirstChild.DataAtom &&
 			nil != firstc.FirstChild.FirstChild && atom.P == firstc.FirstChild.FirstChild.DataAtom &&
@@ -827,7 +757,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 				span2Code = true
 			}
 		}
-		// 第二种：将 pre.ol.li.p.code, code, ... code 转换为 pre.code, code, ... code，然后交由后续处理
 		if atom.Ol == firstc.DataAtom && nil == firstc.NextSibling && nil != firstc.FirstChild && atom.Li == firstc.FirstChild.DataAtom &&
 			nil != firstc.FirstChild.FirstChild && atom.P == firstc.FirstChild.FirstChild.DataAtom &&
 			nil != firstc.FirstChild.FirstChild.FirstChild && atom.Code == firstc.FirstChild.FirstChild.FirstChild.DataAtom {
@@ -906,13 +835,11 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 
 			if atom.Code == firstc.DataAtom {
 				if nil != firstc.NextSibling && atom.Code == firstc.NextSibling.DataAtom {
-					// pre.code code 每个 code 为一行的结构，需要在 code 中间插入换行
 					for c := firstc.NextSibling; nil != c; c = c.NextSibling {
 						c.InsertBefore(&html.Node{DataAtom: atom.Br})
 					}
 				}
 				if nil != firstc.FirstChild && atom.Span == firstc.FirstChild.DataAtom {
-					// pre.code.span 每个 span 为一行的结构，需要在 span 中间插入换行
 					for c := firstc.FirstChild.NextSibling; nil != c; c = c.NextSibling {
 						if strings.Contains(util.DomAttrValue(c, "class"), "token-line") {
 							c.InsertBefore(&html.Node{DataAtom: atom.Br})
@@ -921,7 +848,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 				}
 
 				if nil != firstc.FirstChild && atom.Ol == firstc.FirstChild.DataAtom {
-					// CSDN 代码块：pre.code.ol.li
 					for li := firstc.FirstChild.FirstChild; nil != li; li = li.NextSibling {
 						if li != firstc.FirstChild.FirstChild {
 							li.InsertBefore(&html.Node{DataAtom: atom.Br})
@@ -929,20 +855,17 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 					}
 				}
 				if nil != n.LastChild && atom.Ul == n.LastChild.DataAtom {
-					// CSDN 代码块：pre.code,ul
-					n.LastChild.Unlink() // 去掉最后一个代码行号子块 https://github.com/siyuan-note/siyuan/issues/5564
+					n.LastChild.Unlink()
 				}
 			}
 
 			if atom.Pre == firstc.DataAtom && nil != firstc.FirstChild {
-				// pre.code code 每个 code 为一行的结构，需要在 code 中间插入换行
 				for c := firstc.FirstChild.NextSibling; nil != c; c = c.NextSibling {
 					c.InsertBefore(&html.Node{DataAtom: atom.Br})
 				}
 			}
 
 			if atom.P == firstc.DataAtom {
-				// 避免下面 util.DomText 把 p 转换为两个换行
 				firstc.DataAtom = atom.Div
 			}
 
@@ -956,8 +879,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			node.AppendChild(&ast.Node{Type: ast.NodeCodeBlockFenceCloseMarker, Tokens: util.StrToBytes("```"), CodeBlockFenceLen: 3})
 
 			if tree.Context.Tip.ParentIs(ast.NodeTable) {
-				// 如果表格中只有一行一列，那么丢弃表格直接使用代码块
-				// Improve HTML parsing code blocks https://github.com/siyuan-note/siyuan/issues/11068
+				// Improve HTML parsing code blocks
 				for table := tree.Context.Tip.Parent; nil != table; table = table.Parent {
 					if ast.NodeTable == table.Type {
 						if nil != table.FirstChild && table.FirstChild == table.LastChild && ast.NodeTableHead == table.FirstChild.Type &&
@@ -989,7 +911,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 					}
 				}
 
-				// 表格中不支持添加块级元素，所以这里只能将其转换为多个行级代码元素
 				lines := bytes.Split(content.Tokens, []byte("\n"))
 				for i, line := range lines {
 					if 0 < len(line) {
@@ -1030,7 +951,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		}
 
 		if nil != tree.Context.Tip.LastChild && (ast.NodeStrong == tree.Context.Tip.LastChild.Type || ast.NodeEmphasis == tree.Context.Tip.LastChild.Type) {
-			// 在两个相邻的加粗或者斜体之间插入零宽空格，避免标记符重复
 			tree.Context.Tip.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: util.StrToBytes(editor.Zwsp)})
 		}
 
@@ -1092,7 +1012,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 					continue
 				}
 				if atom.Em == c.DataAtom || atom.Strong == c.DataAtom {
-					// https://github.com/siyuan-note/siyuan/issues/11682
+					//
 					continue
 				}
 				if atom.Span != c.DataAtom && atom.Br != c.DataAtom && atom.P != c.DataAtom {
@@ -1102,7 +1022,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			}
 		}
 		if allSpan {
-			// 如果全部都是 span 子节点，那么直接使用 span 的内容 https://github.com/siyuan-note/siyuan/issues/11281
 			code = []byte(util.DomText(n))
 			code = bytes.ReplaceAll(code, []byte("\u00A0"), []byte(" "))
 			code = bytes.ReplaceAll(code, []byte("\n"), []byte(" "))
@@ -1152,18 +1071,15 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		node.Type = ast.NodeLink
 		text := strings.TrimSpace(util.DomText(n))
 		if "" == text && nil != n.Parent && lute.parentIs(n, atom.H1, atom.H2, atom.H3, atom.H4, atom.H5, atom.H6, atom.Div, atom.Section) && nil == util.DomChildrenByType(n, atom.Img) {
-			// 丢弃标题中文本为空的链接，这样的链接是没有锚文本的锚点
 			// https://github.com/Vanessa219/vditor/issues/359
-			// https://github.com/siyuan-note/siyuan/issues/11445
+			//
 			return
 		}
 		if "" == text && nil == n.FirstChild {
-			// 剪藏时过滤空的超链接 https://github.com/siyuan-note/siyuan/issues/5686
 			return
 		}
 
 		if nil != n.FirstChild && atom.Img == n.FirstChild.DataAtom && strings.Contains(util.DomAttrValue(n.FirstChild, "src"), "wikimedia.org") {
-			// Wikipedia 链接嵌套图片的情况只保留图片
 			break
 		}
 
@@ -1176,7 +1092,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		imgAlt := util.DomAttrValue(n, "alt")
 		if "emoji" == imgClass {
 			if e := parse.EmojiUnicodeAlias[imgAlt]; "" != e {
-				// 直接使用 alt 值（即 emoji 字符）https://github.com/siyuan-note/siyuan/issues/13342
 				node.Type = ast.NodeText
 				node.Tokens = []byte(imgAlt)
 			} else {
@@ -1193,19 +1108,16 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 				imgAlt = strings.TrimSpace(imgAlt)
 				imgAlt = strings.ReplaceAll(imgAlt, "]", "")
 				imgAlt = strings.ReplaceAll(imgAlt, "\n", " ")
-				imgAlt = strings.ReplaceAll(imgAlt, "动图封面", "动图")
 				node.AppendChild(&ast.Node{Type: ast.NodeLinkText, Tokens: util.StrToBytes(imgAlt)})
 			}
 			node.AppendChild(&ast.Node{Type: ast.NodeCloseBracket})
 			node.AppendChild(&ast.Node{Type: ast.NodeOpenParen})
 			src := util.DomAttrValue(n, "src")
 			if strings.Contains(class, "ztext-gif") && strings.Contains(src, "zhimg.com") {
-				// 处理知乎动图
 				src = strings.Replace(src, ".jpg", ".webp", 1)
 			}
 
 			if strings.HasPrefix(src, "data:image") || strings.HasSuffix(src, "img-loading.svg") {
-				// 处理可能存在的预加载情况
 				if dataSrc := util.DomAttrValue(n, "data-src"); "" != dataSrc {
 					if strings.HasPrefix(dataSrc, "http://") || strings.HasPrefix(dataSrc, "https://") {
 						src = dataSrc
@@ -1213,7 +1125,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 				}
 			}
 
-			// 处理使用 data-original 属性的情况 https://github.com/siyuan-note/siyuan/issues/11826
 			dataOriginal := util.DomAttrValue(n, "data-original")
 			if "" != dataOriginal && !strings.HasPrefix(dataOriginal, "/") {
 				if "" == src || !strings.HasSuffix(src, ".gif") {
@@ -1222,7 +1133,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			}
 
 			if "" == src {
-				// 处理使用 srcset 属性的情况
 				if srcset := util.DomAttrValue(n, "srcset"); "" != srcset {
 					if strings.Contains(srcset, ",") {
 						src = strings.Split(srcset, ",")[len(strings.Split(srcset, ","))-1]
@@ -1239,7 +1149,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 				}
 			}
 
-			// Wikipedia 使用图片原图 https://github.com/siyuan-note/siyuan/issues/11640
 			if strings.Contains(src, "wikipedia/commons/thumb/") {
 				ext := path.Ext(src)
 				if strings.Contains(src, ".svg.png") {
@@ -1397,7 +1306,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		}
 
 		if nil != tree.Context.Tip.LastChild && !tree.Context.Tip.LastChild.IsBlock() {
-			// 如果上一个节点不是块级元素，那么需要先添加一个换行节点 Improve HTML table clipping https://github.com/siyuan-note/siyuan/issues/15307
 			tree.Context.Tip.AppendChild(&ast.Node{Type: ast.NodeHardBreak})
 		}
 
@@ -1413,7 +1321,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		tbodys := util.DomChildrenByType(n.Parent, atom.Tbody)
 		if 0 < len(tbodys) {
 			tbody := tbodys[0]
-			// 找到最多的 td 数
 			var tdCount int
 			for tr := tbody.FirstChild; nil != tr; tr = tr.NextSibling {
 				if atom.Tr != tr.DataAtom {
@@ -1432,7 +1339,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 				}
 			}
 
-			// 补全 thead 中 tr 的 th
 			for tr := n.FirstChild; nil != tr; tr = tr.NextSibling {
 				if atom.Tr != tr.DataAtom {
 					continue
@@ -1467,7 +1373,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		node.Type = ast.NodeTableRow
 
 		if nil == tree.Context.Tip.ChildByType(ast.NodeTableHead) && 1 > len(util.DomChildrenByType(table, atom.Thead)) {
-			// 补全 thead 节点
 			thead := &ast.Node{Type: ast.NodeTableHead}
 			tree.Context.Tip.AppendChild(thead)
 			tree.Context.Tip = thead
@@ -1505,7 +1410,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		}
 
 		if "tip" == class {
-			// 转换为行级备注 https://github.com/siyuan-note/siyuan/issues/13998
 			if nil != tree.Context.Tip.LastChild && ast.NodeText == tree.Context.Tip.LastChild.Type {
 				tree.Context.Tip.LastChild.Type = ast.NodeTextMark
 				tree.Context.Tip.LastChild.TextMarkType = "inline-memo"
@@ -1522,7 +1426,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 		}
 
 		if title := strings.TrimSpace(util.DomAttrValue(n, "title")); "" != title && tree.Context.Tip.IsBlock() {
-			// 转换为行级备注 https://github.com/siyuan-note/siyuan/issues/13998
 			node.Type = ast.NodeTextMark
 			node.TextMarkType = "inline-memo"
 			node.TextMarkTextContent = util.DomText(n)
@@ -1537,7 +1440,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			return
 		}
 
-		// Improve inline elements pasting https://github.com/siyuan-note/siyuan/issues/11740
+		// Improve inline elements pasting
 		dataType := util.DomAttrValue(n, "data-type")
 		if strings.Contains(dataType, " ") {
 			node.Type = ast.NodeTextMark
@@ -1546,7 +1449,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			tree.Context.Tip.AppendChild(node)
 			return
 		} else {
-			dataType = strings.Split(dataType, " ")[0] // 简化为只处理第一个类型
+			dataType = strings.Split(dataType, " ")[0]
 			switch dataType {
 			case "inline-math":
 				mathContent := util.DomAttrValue(n, "data-content")
@@ -1653,7 +1556,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			}
 		}
 
-		// The browser extension supports Zhihu formula https://github.com/siyuan-note/siyuan/issues/5599
+		// The browser extension supports Zhihu formula
 		if tex := strings.TrimSpace(util.DomAttrValue(n, "data-tex")); "" != tex {
 			if (strings.Contains(util.DomAttrValue(n, "class"), "math-inline") && ((nil != n.PrevSibling || nil != n.NextSibling) || lute.parentIs(n, atom.Table))) ||
 				(nil != n.Parent && strings.Contains(util.DomAttrValue(n.Parent, "class"), "math-inline")) {
@@ -1695,7 +1598,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			return
 		}
 
-		// The browser extension supports CSDN formula https://github.com/siyuan-note/siyuan/issues/5624
+		// The browser extension supports CSDN formula
 		if strings.Contains(strings.ToLower(strings.TrimSpace(util.DomAttrValue(n, "class"))), "katex") {
 			if span := util.DomChildByTypeAndClass(n, atom.Span, "katex-mathml"); nil != span {
 				if tex := util.DomText(span.FirstChild); "" != tex {
@@ -1703,7 +1606,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 					for strings.Contains(tex, "\n ") {
 						tex = strings.ReplaceAll(tex, "\n ", "\n")
 					}
-					// 根据最后 4 个换行符分隔公式内容
 					if idx := strings.LastIndex(tex, "\n\n\n\n"); 0 < idx {
 						tex = tex[idx+4:]
 						tex = strings.TrimSpace(tex)
@@ -1872,7 +1774,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			if nil != tree.Context.Tip.LastChild && ast.NodeImage == tree.Context.Tip.LastChild.Type {
 				if closeParen := tree.Context.Tip.LastChild.ChildByType(ast.NodeCloseParen); nil != closeParen {
 					if nil != n.FirstChild && atom.Span == n.FirstChild.DataAtom {
-						// 单独处理 <figcaption> 中的 <span leaf> 标签的情况 https://github.com/siyuan-note/siyuan/issues/14507
 						c := n.FirstChild.FirstChild
 						if nil != c {
 							c.Unlink()
@@ -1881,7 +1782,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 						n.FirstChild.Unlink()
 					}
 
-					if !util.DomExistChildByType(n, atom.A, atom.Span) { // 图片标题不包含非文本元素，包含的话走下面的逻辑，单独作为一个段落
+					if !util.DomExistChildByType(n, atom.A, atom.Span) {
 						linkTitle := strings.TrimSpace(util.DomText(n))
 						if "" != linkTitle && "null" != linkTitle && "undefined" != linkTitle {
 							closeParen.InsertBefore(&ast.Node{Type: ast.NodeLinkSpace})

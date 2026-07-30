@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -19,14 +18,12 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// parseBlocks 解析并生成块级节点。
 func (t *Tree) parseBlocks() {
 	t.Context.Tip = t.Root
 	lines := 0
 	for line := t.lexer.NextLine(); nil != line; line = t.lexer.NextLine() {
 		if t.Context.ParseOption.VditorWYSIWYG || t.Context.ParseOption.VditorIR || t.Context.ParseOption.VditorSV || t.Context.ParseOption.ProtyleWYSIWYG {
 			if !bytes.Equal(line, editor.CaretNewlineTokens) && t.Context.Tip.ParentIs(ast.NodeListItem) && bytes.HasPrefix(line, editor.CaretTokens) {
-				// 插入符在开头的话移动到上一行结尾，处理 https://github.com/Vanessa219/vditor/issues/633 中的一些情况
 				if ast.NodeListItem == t.Context.Tip.Type {
 					t.Context.Tip.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: line})
 					break
@@ -78,7 +75,6 @@ func (t *Tree) DocBlockCount() (ret int) {
 	return
 }
 
-// incorporateLine 处理文本行 line 并把生成的块级节点挂到树上。
 func (t *Tree) incorporateLine(line []byte) {
 	t.Context.oldtip = t.Context.Tip
 	t.Context.offset = 0
@@ -97,15 +93,15 @@ func (t *Tree) incorporateLine(line []byte) {
 		t.Context.findNextNonspace()
 
 		switch _continue(container, t.Context) {
-		case 0: // 说明匹配可继续处理
+		case 0:
 			break
-		case 1: // 匹配失败，不能继续处理
+		case 1:
 			allMatched = false
 			break
-		case 2: // 匹配围栏代码块闭合，处理下一行
+		case 2:
 			return
-		case 3: // 匹配超级块闭合，处理下一行
-			t.Context.closeSuperBlockChildren() // 闭合超级块下的子节点
+		case 3:
+			t.Context.closeSuperBlockChildren()
 			if ast.NodeSuperBlock != t.Context.Tip.Type {
 				sb := t.Context.Tip.Parent
 				sb.Close = true
@@ -122,7 +118,7 @@ func (t *Tree) incorporateLine(line []byte) {
 		}
 
 		if !allMatched {
-			container = container.Parent // 回到上一个匹配的块
+			container = container.Parent
 			break
 		}
 	}
@@ -134,61 +130,54 @@ func (t *Tree) incorporateLine(line []byte) {
 	blockParsers := blockStarts()
 	startsLen := len(blockParsers)
 
-	// 除非最后一个匹配到的是代码块，否则的话就起始一个新的块级节点
 	for !matchedLeaf {
 		t.Context.findNextNonspace()
 
-		// 如果不由潜在的节点标记符开头 ^[#`~*+_=<>0-9-${]，则说明不用继续迭代生成子节点
-		// 这里仅做简单判断的话可以提升一些性能
 		maybeMarker := t.Context.currentLine[t.Context.nextNonspace]
-		if !t.Context.indented && // 缩进代码块
-			lex.ItemHyphen != maybeMarker && lex.ItemAsterisk != maybeMarker && lex.ItemPlus != maybeMarker && // 无序列表
-			!lex.IsDigit(maybeMarker) && // 有序列表
-			lex.ItemBacktick != maybeMarker && lex.ItemTilde != maybeMarker && // 代码块
-			lex.ItemSemicolon != maybeMarker && // 定义块
-			lex.ItemCrosshatch != maybeMarker && // ATX 标题
-			lex.ItemGreater != maybeMarker && // 引述
-			lex.ItemLess != maybeMarker && // HTML 块
-			lex.ItemUnderscore != maybeMarker && lex.ItemEqual != maybeMarker && // Setext 标题
-			lex.ItemDollar != maybeMarker && // 数学公式
-			lex.ItemOpenBracket != maybeMarker && // 脚注
-			lex.ItemOpenBrace != maybeMarker && // kramdown 内联属性列表或超级块开始
-			lex.ItemCloseBrace != maybeMarker && // 超级块闭合
-			lex.ItemBang != maybeMarker && "！"[0] != maybeMarker && // 内容块嵌入
-			editor.Caret[0] != maybeMarker { // Vditor 编辑器支持
+		if !t.Context.indented &&
+			lex.ItemHyphen != maybeMarker && lex.ItemAsterisk != maybeMarker && lex.ItemPlus != maybeMarker &&
+			!lex.IsDigit(maybeMarker) &&
+			lex.ItemBacktick != maybeMarker && lex.ItemTilde != maybeMarker &&
+			lex.ItemSemicolon != maybeMarker &&
+			lex.ItemCrosshatch != maybeMarker &&
+			lex.ItemGreater != maybeMarker &&
+			lex.ItemLess != maybeMarker &&
+			lex.ItemUnderscore != maybeMarker && lex.ItemEqual != maybeMarker &&
+			lex.ItemDollar != maybeMarker &&
+			lex.ItemOpenBracket != maybeMarker &&
+			lex.ItemOpenBrace != maybeMarker &&
+			lex.ItemCloseBrace != maybeMarker &&
+			lex.ItemBang != maybeMarker && "！"[0] != maybeMarker &&
+			editor.Caret[0] != maybeMarker {
 			t.Context.advanceNextNonspace()
 			break
 		}
 
-		// 逐个尝试是否可以起始一个块级节点
 		i := 0
 		for i < startsLen {
 			res := blockParsers[i](t, container)
-			if res == 1 { // 匹配到容器块，继续迭代下降过程
+			if res == 1 {
 				container = t.Context.Tip
 				break
-			} else if res == 2 { // 匹配到叶子块，跳出迭代下降过程
+			} else if res == 2 {
 				container = t.Context.Tip
 				matchedLeaf = true
 				break
-			} else { // 没有匹配到，继续用下一个起始块模式进行匹配
+			} else {
 				i++
 			}
 		}
 
-		if i == startsLen { // 没有匹配到任何块
+		if i == startsLen {
 			t.Context.advanceNextNonspace()
 			break
 		}
 	}
 
-	// offset 后余下的内容算作是文本行，需要将其添加到相应的块节点上
 
 	if !t.Context.allClosed && !t.Context.blank && t.Context.Tip.Type == ast.NodeParagraph {
-		// 该行是段落延续文本，直接添加到当前末梢段落上
 		t.addLine()
 	} else {
-		// 最终化未匹配的块
 		t.Context.closeUnmatchedBlocks()
 
 		if t.Context.blank && nil != container.LastChild {
@@ -198,17 +187,14 @@ func (t *Tree) incorporateLine(line []byte) {
 		typ := container.Type
 		isFenced := ast.NodeCodeBlock == typ && container.IsFencedCodeBlock
 
-		// 空行判断，主要是为了判断列表是紧凑模式还是松散模式
 		lastLineBlank := t.Context.blank &&
 			!(typ == ast.NodeFootnotesDef ||
-				typ == ast.NodeBlockquote || typ == ast.NodeCallout || // 引述、提示块肯定不会是空行因为至少有一个 >
-				(typ == ast.NodeCodeBlock && isFenced) || // 围栏代码块不计入空行判断
-				(typ == ast.NodeCustomBlock) || // 自定义块不计入空行判断
-				(typ == ast.NodeMathBlock) || // 数学公式块不计入空行判断
-				(typ == ast.NodeGitConflict) || // Git 冲突标记不计入空行判断
-				(typ == ast.NodeListItem && nil == container.FirstChild)) // 内容为空的列表项也不计入空行判断
-		// 因为列表是块级容器（可进行嵌套），所以需要在父节点方向上传播 LastLineBlank
-		// LastLineBlank 目前仅在判断列表紧凑模式上使用
+				typ == ast.NodeBlockquote || typ == ast.NodeCallout ||
+				(typ == ast.NodeCodeBlock && isFenced) ||
+				(typ == ast.NodeCustomBlock) ||
+				(typ == ast.NodeMathBlock) ||
+				(typ == ast.NodeGitConflict) ||
+				(typ == ast.NodeListItem && nil == container.FirstChild))
 		for cont := container; nil != cont; cont = cont.Parent {
 			cont.LastLineBlank = lastLineBlank
 		}
@@ -217,7 +203,6 @@ func (t *Tree) incorporateLine(line []byte) {
 			t.addLine()
 			switch typ {
 			case ast.NodeHTMLBlock:
-				// HTML 块（类型 1-5）需要检查是否满足闭合条件
 				html := container
 				if html.HtmlBlockType >= 1 && html.HtmlBlockType <= 5 {
 					tokens := t.Context.currentLine[t.Context.offset:]
@@ -226,7 +211,6 @@ func (t *Tree) incorporateLine(line []byte) {
 					}
 				}
 			case ast.NodeMathBlock:
-				// 数学公式块标记符没有换行的形式（$$foo$$）需要判断右边结尾的闭合标记符
 				if 3 > len(container.Tokens) {
 					break
 				}
@@ -250,7 +234,6 @@ func (t *Tree) incorporateLine(line []byte) {
 				}
 			}
 		} else if t.Context.offset < t.Context.currentLineLen && !t.Context.blank {
-			// 普通段落开始
 			t.Context.addChild(ast.NodeParagraph)
 			t.Context.advanceNextNonspace()
 			t.addLine()
@@ -258,8 +241,6 @@ func (t *Tree) incorporateLine(line []byte) {
 	}
 }
 
-// addLine 用于在当前的末梢节点 context.Tip 上添加迭代行剩余的所有 Tokens。
-// 调用该方法前必须确认末梢 tip 能够接受新行。
 func (t *Tree) addLine() {
 	if t.Context.partiallyConsumedTab {
 		t.Context.offset++ // skip over tab
@@ -277,8 +258,6 @@ func (t *Tree) addLine() {
 	}
 }
 
-// _continue 判断节点是否可以继续处理，比如引述需要 >，缩进代码块需要 4 空格，围栏代码块需要 ```。
-// 如果可以继续处理返回 0，如果不能接续处理返回 1，如果返回 2（仅在围栏代码块、超级块或自定义块闭合时）则说明可以继续下一行处理了。
 func _continue(n *ast.Node, context *Context) int {
 	switch n.Type {
 	case ast.NodeCodeBlock:

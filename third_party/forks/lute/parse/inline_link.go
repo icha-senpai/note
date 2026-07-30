@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -72,7 +71,7 @@ func (context *Context) parseInlineLinkDest(tokens []byte) (passed, remains, des
 		if lex.ItemGreater == tokens[i+1] || lex.ItemCloseParen == tokens[i+1] {
 			passed = append(passed, tokens[i+1])
 			remains = tokens[i+2:]
-		} else { // 后跟空格的情况
+		} else {
 			remains = tokens[i+1:]
 		}
 	} else {

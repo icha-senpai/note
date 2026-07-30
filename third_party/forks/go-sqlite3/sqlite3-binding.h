@@ -14346,5 +14346,4 @@ struct fts5_api {
 
 /******** End of fts5.h *********/
 #endif /* SQLITE3_H */
-#else // 使用系统库或 SQLCipher 时，本 amalgamation 不参与编译
  #endif

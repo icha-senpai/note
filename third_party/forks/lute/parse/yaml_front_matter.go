@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -19,7 +18,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// 判断 YAML Front Matter（---）是否开始。
 func YamlFrontMatterStart(t *Tree, container *ast.Node) int {
 	if !t.Context.ParseOption.YamlFrontMatter || t.Context.indented || nil != t.Root.FirstChild {
 		return 0
@@ -48,18 +46,16 @@ var YamlFrontMatterMarkerCaret = util.StrToBytes("---" + editor.Caret)
 var YamlFrontMatterMarkerCaretNewline = util.StrToBytes("---" + editor.Caret + "\n")
 
 func (context *Context) yamlFrontMatterFinalize(node *ast.Node) {
-	tokens := node.Tokens[3:] // 剔除开头的 ---\n
+	tokens := node.Tokens[3:]
 	tokens = lex.TrimWhitespace(tokens)
 	if context.ParseOption.VditorWYSIWYG || context.ParseOption.VditorIR || context.ParseOption.VditorSV {
 		if bytes.HasSuffix(tokens, YamlFrontMatterMarkerCaret) {
-			// 剔除结尾的 ---‸
 			tokens = bytes.TrimSuffix(tokens, YamlFrontMatterMarkerCaret)
-			// 把 Vditor 插入符移动到内容末尾
 			tokens = append(tokens, editor.CaretTokens...)
 		}
 	}
 	if bytes.HasSuffix(tokens, YamlFrontMatterMarker) {
-		tokens = tokens[:len(tokens)-3] // 剔除结尾的 ---
+		tokens = tokens[:len(tokens)-3]
 	}
 	node.Tokens = tokens
 	node.AppendChild(&ast.Node{Type: ast.NodeYamlFrontMatterOpenMarker})
@@ -81,7 +77,6 @@ func (t *Tree) parseYamlFrontMatter() bool {
 
 func isYamlFrontMatterClose(context *Context) bool {
 	if context.ParseOption.KramdownBlockIAL && simpleCheckIsBlockIAL(context.currentLine) {
-		// 判断 IAL 打断
 		if ial := context.parseKramdownBlockIAL(context.currentLine); 0 < len(ial) {
 			context.Tip.ID = IAL2Map(ial)["id"]
 			context.Tip.KramdownIAL = ial

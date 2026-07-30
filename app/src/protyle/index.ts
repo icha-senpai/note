@@ -53,8 +53,6 @@ export class Protyle {
     public protyle: IProtyle;
 
     /**
-     * @param id 要挂载 Protyle 的元素或者元素 ID。
-     * @param options Protyle 参数
      */
     constructor(app: App, id: HTMLElement, options: IProtyleOptions) {
         this.version = Constants.SCRIBLI_VERSION;
@@ -106,18 +104,16 @@ export class Protyle {
 
         this.protyle.element.innerHTML = "";
         this.protyle.element.classList.add("protyle");
-        // 启用 RTL 时给 .protyle 元素添加 .rtl 类名，方便主题开发者判断 RTL 方向
         if (window.scribli.config.editor.rtl) {
             this.protyle.element.classList.add("rtl");
         }
         if (mergedOptions.render.breadcrumb) {
             this.protyle.element.appendChild(this.protyle.breadcrumb.element.parentElement);
         }
-        // lite 模式用前端操作日志 undo（不依赖 kernel），其余走 kernel 的 GlobalUndoLog。
         this.protyle.undo = this.protyle.lite ? new LocalUndo() : new Undo();
         this.protyle.wysiwyg = new WYSIWYG(this.protyle);
         this.protyle.toolbar = new Toolbar(this.protyle);
-        this.protyle.scroll = new Scroll(this.protyle); // 不能使用 render.scroll 来判读是否初始化，除非重构后面用到的相关变量
+        this.protyle.scroll = new Scroll(this.protyle);
         if (this.protyle.options.render.gutter) {
             this.protyle.gutter = new Gutter(this.protyle);
         }
@@ -200,7 +196,6 @@ export class Protyle {
                                     reloadProtyle(this.protyle, false);
                                 }
                                 if (data.cmd === "heading2doc") {
-                                    // 文档标题互转后，需更新大纲
                                     updatePanelByEditor({
                                         protyle: this.protyle,
                                         focus: false,
@@ -227,7 +222,7 @@ export class Protyle {
                             if (this.protyle.options.render.title && this.protyle.block.parentID === data.data.id) {
                                 if (!document.body.classList.contains("body--blur") && getSelection().rangeCount > 0 &&
                                     this.protyle.title.editElement?.contains(getSelection().getRangeAt(0).startContainer)) {
-                                    // 标题编辑中的不用更新 
+                                    // Intentionally empty.
                                 } else {
                                     this.protyle.title.setTitle(data.data.title, data.data.empty);
                                 }
@@ -240,7 +235,6 @@ export class Protyle {
                             // update ref
                             this.protyle.wysiwyg.element.querySelectorAll(`[data-type~="block-ref"][data-id="${data.data.id}"]`).forEach(item => {
                                 if (item.getAttribute("data-subtype") === "d") {
-                                    // 同 updateRef 一样处理 
                                     item.innerHTML = data.data.refText;
                                 }
                             });
@@ -274,12 +268,10 @@ export class Protyle {
             if (options.backlinkData) {
                 this.protyle.block.rootID = options.blockId;
                 renderBacklink(this.protyle, options.backlinkData);
-                // 为了满足 eventPath0.style.paddingLeft 从而显示块标 
                 this.protyle.wysiwyg.element.style.padding = "4px 16px 4px 24px";
                 return;
             }
             if (!options.blockId) {
-                // 搜索页签需提前初始化
                 removeLoading(this.protyle);
                 return;
             }
@@ -308,7 +300,6 @@ export class Protyle {
     }
 
     private onTransaction(data: IWebSocketData) {
-        // 多窗口/多端：用广播附带的撤销状态同步本地镜像
         if (data.context?.undoState) {
             syncMirrorFromBroadcast(data.context.undoState);
         }
@@ -322,9 +313,7 @@ export class Protyle {
         let hasDeleteOp = false;
         data.data[0].doOperations.find((item: IOperation) => {
             if (this.protyle.options.backlinkData && ["delete", "move"].includes(item.action)) {
-                // 只对特定情况刷新，否则展开、编辑等操作刷新会频繁
                 if (2 == data.data[0].doOperations.length && "insert" === data.data[0].doOperations[0].action && "delete" === data.data[0].doOperations[1].action) {
-                    // 从反链面板复制块到正文粘贴时不再自动刷新反链面板
                     // The list in the backlink panel no longer collapses automatically 
                     return true;
                 }
@@ -341,13 +330,11 @@ export class Protyle {
                     hasDeleteOp = true;
                 }
                 onTransaction(this.protyle, [item], false);
-                // 反链面板移除元素后，文档为空
                 if (!(item.action === "delete" && typeof item.data?.createEmptyParagraph === "boolean" && !item.data.createEmptyParagraph)) {
                     needCreateAction = item.action;
                 }
             }
         });
-        // 聚焦块被分屏另一侧的删除操作连带删除时（容器块删除会级联删除其所有子孙块，如列表/超级块/引述等），当前页签的聚焦块已成为孤儿但仍显示，需退出聚焦
         // Improve editor state synchronization when deleting blocks 
         if (this.protyle.block.showAll && hasDeleteOp) {
             fetchPost("/api/block/checkBlockExist", {id: this.protyle.block.id}, response => {
@@ -373,12 +360,10 @@ export class Protyle {
                     });
                 }
             } else {
-                // 不能使用 transaction，否则分屏后会重复添加
                 refreshUndoButtons(this.protyle);
                 this.reload(false);
             }
         }
-        // undo/redo 重放广播到达后，整批操作已应用，重置 lastHTMLs 防下次本地编辑算错逆操作
         if (data.context?.isUndoReplay === true) {
             this.protyle.wysiwyg.lastHTMLs = {};
         }
@@ -389,7 +374,6 @@ export class Protyle {
             id: mergedOptions.blockId,
             isBacklink: mergedOptions.action.includes(Constants.CB_GET_BACKLINK),
             originalRefBlockIDs: mergedOptions.originalRefBlockIDs,
-            // 0: 仅当前 ID（默认值），1：向上 2：向下，3：上下都加载，4：加载最后
             mode: (mergedOptions.action && mergedOptions.action.includes(Constants.CB_GET_CONTEXT)) ? 3 : 0,
             size: mergedOptions.action?.includes(Constants.CB_GET_ALL) ? Constants.SIZE_GET_MAX : window.scribli.config.editor.dynamicLoadBlocks,
         };
@@ -410,7 +394,6 @@ export class Protyle {
     }
 
     private afterOnGet(mergedOptions: IProtyleOptions) {
-        // 文档加载完成后初始化撤销镜像（低频，不在 selectionchange 热路径）
         if (this.protyle.block?.rootID) {
             initMirror(this.protyle.block.rootID);
         }
@@ -426,9 +409,7 @@ export class Protyle {
                 resize: false
             });
         }
-        resize(this.protyle);   // 需等待 fullwidth 获取后设定完毕再重新计算 padding 和元素
-        // 需等待 getDoc 完成后再执行，否则在无页签的时候 updatePanelByEditor 会执行2次
-        // 只能用 focusin，否则点击表格无法执行
+        resize(this.protyle);
         this.protyle.wysiwyg.element.addEventListener("focusin", () => {
             if (this.protyle && this.protyle.model) {
                 let needUpdate = true;
@@ -447,7 +428,6 @@ export class Protyle {
                     resize: false,
                 });
             } else {
-                // 悬浮层应移除其余面板高亮，否则按键会被面板监听到
                 document.querySelectorAll(".layout__tab--active").forEach(item => {
                     item.classList.remove("layout__tab--active");
                 });
@@ -456,7 +436,6 @@ export class Protyle {
                 });
             }
         });
-        // 需等渲染完后再回调，用于定位搜索字段 
         if (mergedOptions.after) {
             mergedOptions.after(this);
         }
@@ -478,22 +457,18 @@ export class Protyle {
         initUI(this.protyle);
     }
 
-    /** 聚焦到编辑器 */
     public focus() {
         this.protyle.wysiwyg.element.focus();
     }
 
-    /** 上传是否还在进行中 */
     public isUploading() {
         return this.protyle.upload.isUploading;
     }
 
-    /** 清空 undo & redo 栈 */
     public clearStack() {
         this.protyle.undo.clear();
     }
 
-    /** 销毁编辑器 */
     public destroy() {
         destroy(this.protyle);
     }
@@ -515,8 +490,6 @@ export class Protyle {
     }
 
     /**
-     * 多个块转换为一个块
-     * @param {TTurnIntoOneSub} [subType] type 为 "BlocksMergeSuperBlock" 时必传
      */
     public turnIntoOneTransaction(selectsElement: Element[], type: TTurnIntoOne, subType?: TTurnIntoOneSub) {
         turnsIntoOneTransaction({
@@ -528,9 +501,6 @@ export class Protyle {
     }
 
     /**
-     * 多个块转换
-     * @param {Element} [nodeElement] 优先使用包含 protyle-wysiwyg--select 的块，否则使用 nodeElement 单块
-     * @param {number} [subType] type 为 "Blocks2Hs" 时必传
      */
     public turnIntoTransaction(nodeElement: Element, type: TTurnInto, subType?: number) {
         turnsIntoTransaction({
@@ -542,7 +512,6 @@ export class Protyle {
     }
 
     /**
-     * @deprecated 将在 3.7.1 版本中移除。请改用 {@link updateTransactionElement}。
      */
     public updateTransaction(id: string, newHTML: string, html: string) {
         const element = document.createElement("template");

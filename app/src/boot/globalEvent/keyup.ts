@@ -96,11 +96,9 @@ export const windowKeyUp = (app: App, event: KeyboardEvent) => {
         } else if (window.scribli.config.keymap.general.goToEditTabNext.custom.startsWith(Constants.KEYCODELIST[event.keyCode]) ||
             window.scribli.config.keymap.general.goToEditTabPrev.custom.startsWith(Constants.KEYCODELIST[event.keyCode])) {
             let currentLiElement = switchDialog.element.querySelector(".b3-list-item--focus");
-            // 快速切换时，不触发 Tab
             if (currentLiElement.getAttribute("data-original")) {
                 currentLiElement.classList.remove("b3-list-item--focus");
                 if (matchHotKey(window.scribli.config.keymap.general.goToEditTabPrev.custom, event)) {
-                    // 上一个
                     if (currentLiElement.previousElementSibling) {
                         currentLiElement.previousElementSibling.classList.add("b3-list-item--focus");
                     } else {

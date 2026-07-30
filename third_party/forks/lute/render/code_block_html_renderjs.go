@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -19,13 +18,11 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 )
 
-// renderCodeBlock 进行代码块 HTML 渲染，不实现语法高亮。
 func (r *HtmlRenderer) renderCodeBlock(node *ast.Node, entering bool) ast.WalkStatus {
 	r.Newline()
 
 	if !node.IsFencedCodeBlock {
 		if entering {
-			// 缩进代码块处理
 			r.WriteString("<pre><code>")
 			r.Write(html.EscapeHTML(node.FirstChild.Tokens))
 			r.WriteString("</code></pre>")

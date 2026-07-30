@@ -55,7 +55,6 @@ export const getRowHTML = (options: {
                 checkClass = cell.value?.checkbox?.checked ? " av__cell-check" : " av__cell-uncheck";
             }
             const isEmpty = cellValueIsEmpty(cell.value);
-            // NOTE: innerHTML 中不能换行否则 
             let ariaLabel = escapeAttr(kanbanData.fields[fieldsIndex].name) || getColNameByType(kanbanData.fields[fieldsIndex].type);
             if (kanbanData.fields[fieldsIndex].desc) {
                 ariaLabel += escapeAttr(`<div class="ft__on-surface">${kanbanData.fields[fieldsIndex].desc}</div>`);
@@ -121,7 +120,6 @@ ${cell.color ? `color:${cell.color};` : ""}">${renderCell(cell.value, options.ro
                 checkClass = cell.value?.checkbox?.checked ? " av__cell-check" : " av__cell-uncheck";
             }
             const isEmpty = cellValueIsEmpty(cell.value);
-            // NOTE: innerHTML 中不能换行否则 
             let ariaLabel = escapeAttr(kanbanData.fields[fieldsIndex].name) || getColNameByType(kanbanData.fields[fieldsIndex].type);
             if (kanbanData.fields[fieldsIndex].desc) {
                 ariaLabel += escapeAttr(`<div class="ft__on-surface">${kanbanData.fields[fieldsIndex].desc}</div>`);
@@ -224,13 +222,10 @@ export const selectRow = (checkElement: Element, type: "toggle" | "select" | "un
                     rowItemElement.classList.remove("av__row--select");
                 }
             });
-            // 全不选：清空选中快照，避免被 trim 掉的行回填后仍带选中态
             if (bodyElement) {
                 resetAVRowSelect(bodyElement, []);
             }
         } else {
-            // 全选：范围以当前已加载的分页行（dataStore 的 view.rows）为准，而非仅 DOM 内已渲染的行。
-            // 虚拟滚动下被 trim 掉的行 ID 一并存入快照，回填时由 restoreSelect 恢复高亮。
             rowElement.parentElement.querySelectorAll(".av__firstcol").forEach(item => {
                 item.querySelector("use").setAttribute("xlink:href", "#iconCheck");
                 const rowItemElement = hasClosestByClassName(item, "av__row");
@@ -280,7 +275,6 @@ export const updateHeader = (rowElement: HTMLElement) => {
     let selectCount: number;
     if (avType === "table") {
         const bodyElement = rowElement.parentElement as HTMLElement;
-        // 虚拟滚动下 DOM 内只有渲染窗口的行，直接计数会低估；优先用选中快照与已加载行总数。
         const stat = getAVSelectStat(bodyElement);
         selectCount = stat ? stat.selectCount : bodyElement.querySelectorAll(".av__row--select:not(.av__row--header)").length;
         const count = stat ? stat.loadedCount : bodyElement.querySelectorAll(".av__row:not(.av__row--header)").length;
@@ -297,7 +291,6 @@ export const updateHeader = (rowElement: HTMLElement) => {
             headUseElement.setAttribute("xlink:href", "#iconIndeterminateCheck");
         }
     } else {
-        // 卡片/看板视图按分组（.av__body）聚合选中数，看板与分组卡片视图存在多个 body。
         selectCount = 0;
         blockElement.querySelectorAll(".av__body").forEach((bodyItem: HTMLElement) => {
             const stat = getAVSelectStat(bodyItem);
@@ -328,12 +321,10 @@ export const setPage = (blockElement: Element) => {
 };
 
 /**
- * 前端插入一假行
  * @param options.protyle
  * @param options.blockElement
  * @param options.srcIDs
  * @param options.previousId
- * @param options.avId 存在为新增否则为拖拽插入
  */
 export const insertAttrViewBlockAnimation = (options: {
     protyle: IProtyle,
@@ -345,7 +336,6 @@ export const insertAttrViewBlockAnimation = (options: {
     options.blockElement.querySelector('[data-type="av-search"]').textContent = "";
     const groupQuery = options.groupID ? `.av__body[data-group-id="${options.groupID}"] ` : "";
     let previousElement = options.blockElement.querySelector(groupQuery + `.av__row[data-id="${options.previousId}"]`) || options.blockElement.querySelector(groupQuery + ".av__row--header");
-    // 有排序需要加入最后一行
     const hasSort = options.blockElement.querySelector('.av__views [data-type="av-sort"]').classList.contains("block__icon--active");
     if (hasSort) {
         previousElement = options.blockElement.querySelector(groupQuery + ".av__row--util").previousElementSibling;
@@ -504,14 +494,12 @@ export const stickyRow = (blockElement: HTMLElement, scrollElement: HTMLElement,
         bindHeaderScrollSync(blockElement, scrollEl);
     }
 
-    // 先批量读取所有几何信息，再统一写入 style，避免读-写交错触发强制重排
     const elementRect = scrollElement.getBoundingClientRect();
     const scrollTop = scrollElement.scrollTop;
     const scrollLeft = scrollEl ? scrollEl.scrollLeft : 0;
     const doTop = status === "top" || status === "all";
     const doBottom = status === "bottom" || status === "all";
 
-    // 第一遍：纯读取，收集每个 header/footer 的几何与判定结果
     const headerTasks: Array<{
         item: HTMLElement;
         bodyRect: DOMRect;
@@ -568,7 +556,6 @@ export const stickyRow = (blockElement: HTMLElement, scrollElement: HTMLElement,
         });
     }
 
-    // 第二遍：纯写入，此时不再读取布局，仅触发一次重排
     const stickyTop = Math.round(elementRect.top);
     const stickyBottom = Math.round(window.innerHeight - elementRect.bottom);
     headerTasks.forEach((task) => {
@@ -845,7 +832,6 @@ export const duplicateRows = (blockElement: HTMLElement, protyle: IProtyle, rowE
     const doOperations: IOperation[] = [];
     const undoOperations: IOperation[] = [];
     const newRowIDs: string[] = [];
-    // 副本统一插入到最后选中的条目之后，按源序排列
     const anchorID = rowElements[rowElements.length - 1].getAttribute("data-id");
     let previousID = anchorID;
     rowElements.forEach(rowElement => {
@@ -859,7 +845,6 @@ export const duplicateRows = (blockElement: HTMLElement, protyle: IProtyle, rowE
             srcIDs: [srcRowID],
             previousID,
         });
-        // 后续副本接在前一个副本之后，保证源序
         previousID = newRowID;
     });
     const newUpdated = dayjs().format("YYYYMMDDHHmmss");

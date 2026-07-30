@@ -26,17 +26,17 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/third_party/forks/github/lxzan/gws"
 	sse "github.com/icha-senpai/note/third_party/forks/github/r3labs/sse/v2"
 	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 // injectClient adds scribli.client to the goja context.
-func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
+func injectClient(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("injectClient: %v", r)
@@ -103,13 +103,13 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 				var err error
 				defer func() {
 					if r := recover(); r != nil {
-						err = fmt.Errorf("panic during siyuan.client.fetch: %v", r)
+						err = fmt.Errorf("panic during scribli.client.fetch: %v", r)
 					}
 
 					if err != nil {
 						p.worker.Run(func(rt *goja.Runtime) (_ any, _ error) {
 							if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-								logging.LogErrorf("[plugin:%s] siyuan.client.fetch reject: %v", p.Name, rejectErr)
+								logging.LogErrorf("[plugin:%s] scribli.client.fetch reject: %v", p.Name, rejectErr)
 							}
 							return
 						}, nil)
@@ -160,11 +160,11 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 				}, func(rt *goja.Runtime, result any, err error) {
 					if lo.IsNil(err) {
 						if resolveErr := resolve(result); resolveErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.fetch resolve: %v", p.Name, resolveErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.fetch resolve: %v", p.Name, resolveErr)
 						}
 					} else {
 						if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.fetch reject: %v", p.Name, rejectErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.fetch reject: %v", p.Name, rejectErr)
 						}
 					}
 				})
@@ -178,14 +178,14 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 		}, func(rt *goja.Runtime, _ any, err error) {
 			if !lo.IsNil(err) {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.fetch reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.fetch reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.client.fetch worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.client.fetch worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.client.fetch reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.client.fetch reject: %v", p.Name, rejectErr)
 			}
 		}
 
@@ -293,7 +293,7 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 				if openPromises != nil {
 					for _, promise := range openPromises {
 						if resolveErr := promise.Resolve(nil); resolveErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.open resolve: %v", p.Name, resolveErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.open resolve: %v", p.Name, resolveErr)
 						}
 					}
 					openPromises = nil
@@ -304,7 +304,7 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 				if openPromises != nil {
 					for _, promise := range openPromises {
 						if rejectErr := promise.Reject(rt.NewGoError(err)); rejectErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.open reject: %v", p.Name, rejectErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.open reject: %v", p.Name, rejectErr)
 						}
 					}
 					openPromises = nil
@@ -328,7 +328,7 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 					switch state {
 					case WebSocketReadyStateOpen:
 						if resolveErr := openResolve(nil); resolveErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.open resolve: %v", p.Name, resolveErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.open resolve: %v", p.Name, resolveErr)
 						}
 						return
 					case WebSocketReadyStateClosing:
@@ -392,12 +392,12 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 					if lo.IsNil(err) {
 					} else {
 						if rejectErr := openReject(rt.NewGoError(err)); rejectErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.open reject: %v", p.Name, rejectErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.open reject: %v", p.Name, rejectErr)
 						}
 					}
 				})
 				if openRunErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.socket.open worker run: %v", p.Name, openRunErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.socket.open worker run: %v", p.Name, openRunErr)
 				}
 
 				return rt.ToValue(openPromise)
@@ -445,11 +445,11 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 						}, func(rt *goja.Runtime, result any, err error) {
 							if lo.IsNil(err) {
 								if resolveErr := sendResolve(result); resolveErr != nil {
-									logging.LogErrorf("[plugin:%s] siyuan.client.socket.send resolve: %v", p.Name, resolveErr)
+									logging.LogErrorf("[plugin:%s] scribli.client.socket.send resolve: %v", p.Name, resolveErr)
 								}
 							} else {
 								if rejectErr := sendReject(rt.NewGoError(err)); rejectErr != nil {
-									logging.LogErrorf("[plugin:%s] siyuan.client.socket.send reject: %v", p.Name, rejectErr)
+									logging.LogErrorf("[plugin:%s] scribli.client.socket.send reject: %v", p.Name, rejectErr)
 								}
 							}
 						})
@@ -458,12 +458,12 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 				}, func(rt *goja.Runtime, _ any, err error) {
 					if !lo.IsNil(err) {
 						if rejectErr := sendReject(rt.NewGoError(err)); rejectErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.send reject: %v", p.Name, rejectErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.send reject: %v", p.Name, rejectErr)
 						}
 					}
 				})
 				if sendRunErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.socket.send worker run: %v", p.Name, sendRunErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.socket.send worker run: %v", p.Name, sendRunErr)
 				}
 
 				return rt.ToValue(sendPromise)
@@ -487,16 +487,16 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 				}, func(rt *goja.Runtime, result any, err error) {
 					if lo.IsNil(err) {
 						if resolveErr := pingResolve(result); resolveErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.ping resolve: %v", p.Name, resolveErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.ping resolve: %v", p.Name, resolveErr)
 						}
 					} else {
 						if rejectErr := pingReject(rt.NewGoError(err)); rejectErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.ping reject: %v", p.Name, rejectErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.ping reject: %v", p.Name, rejectErr)
 						}
 					}
 				})
 				if pingRunErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.socket.ping worker run: %v", p.Name, pingRunErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.socket.ping worker run: %v", p.Name, pingRunErr)
 				}
 
 				return rt.ToValue(pingPromise)
@@ -520,16 +520,16 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 				}, func(rt *goja.Runtime, result any, err error) {
 					if lo.IsNil(err) {
 						if resolveErr := pongResolve(result); resolveErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.pong resolve: %v", p.Name, resolveErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.pong resolve: %v", p.Name, resolveErr)
 						}
 					} else {
 						if rejectErr := pongReject(rt.NewGoError(err)); rejectErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.pong reject: %v", p.Name, rejectErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.pong reject: %v", p.Name, rejectErr)
 						}
 					}
 				})
 				if pongRunErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.socket.pong worker run: %v", p.Name, pongRunErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.socket.pong worker run: %v", p.Name, pongRunErr)
 				}
 
 				return rt.ToValue(pongPromise)
@@ -559,16 +559,16 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 				}, func(rt *goja.Runtime, result any, err error) {
 					if lo.IsNil(err) {
 						if resolveErr := closeResolve(result); resolveErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.close resolve: %v", p.Name, resolveErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.close resolve: %v", p.Name, resolveErr)
 						}
 					} else {
 						if rejectErr := closeReject(rt.NewGoError(err)); rejectErr != nil {
-							logging.LogErrorf("[plugin:%s] siyuan.client.socket.close reject: %v", p.Name, rejectErr)
+							logging.LogErrorf("[plugin:%s] scribli.client.socket.close reject: %v", p.Name, rejectErr)
 						}
 					}
 				})
 				if closeRunErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.socket.close worker run: %v", p.Name, closeRunErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.socket.close worker run: %v", p.Name, closeRunErr)
 				}
 
 				return rt.ToValue(closePromise)
@@ -601,18 +601,18 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 		}, func(rt *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.socket resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.socket resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.socket reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.socket reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.client.socket worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.client.socket worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.client.socket reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.client.socket reject: %v", p.Name, rejectErr)
 			}
 		}
 
@@ -694,7 +694,7 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 				var err error
 				defer func() {
 					if r := recover(); r != nil {
-						err = fmt.Errorf("panic during siyuan.client.event: %v", r)
+						err = fmt.Errorf("panic during scribli.client.event: %v", r)
 					}
 
 					doClose()
@@ -757,18 +757,18 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 		}, func(rt *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.event resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.event resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.client.event reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.client.event reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.client.event worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.client.event worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.client.event reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.client.event reject: %v", p.Name, rejectErr)
 			}
 		}
 
@@ -777,6 +777,6 @@ func injectClient(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 
 	lo.Must0(ObjectFreeze(rt, client))
 
-	lo.Must0(siyuan.Set("client", client))
+	lo.Must0(scribli.Set("client", client))
 	return
 }

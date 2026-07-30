@@ -103,8 +103,7 @@ const PARTIAL_LANG_CODES = {
   nn: "nn-NO",
   pa: "pa-IN",
   pt: "pt-PT",
-  sv: "sv-SE",
-  zh: "zh-CN",
+  sv: "sv-SE",
 };
 
 // Try to support "incompletely" specified language codes (see issue 13689).

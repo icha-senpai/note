@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -18,7 +17,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 )
 
-// SuperBlockStart 判断超级块（{{{ blocks }}}）是否开始。
 func SuperBlockStart(t *Tree, container *ast.Node) int {
 	if !t.Context.ParseOption.SuperBlock || t.Context.indented {
 		return 0
@@ -29,7 +27,7 @@ func SuperBlockStart(t *Tree, container *ast.Node) int {
 		t.Context.addChild(ast.NodeSuperBlock)
 		t.Context.addChildMarker(ast.NodeSuperBlockOpenMarker, nil)
 		t.Context.addChildMarker(ast.NodeSuperBlockLayoutMarker, layout)
-		t.Context.offset = t.Context.currentLineLen - 1 // 整行过
+		t.Context.offset = t.Context.currentLineLen - 1
 		return 1
 	}
 	return 0
@@ -43,7 +41,7 @@ func SuperBlockContinue(superBlock *ast.Node, context *Context) int {
 	if context.isSuperBlockClose(context.currentLine[context.nextNonspace:]) {
 		for p := context.Tip; nil != p; p = p.Parent {
 			if ast.NodeSuperBlock == p.Type {
-				return 3 // 闭合
+				return 3
 			}
 		}
 	}
@@ -51,7 +49,6 @@ func SuperBlockContinue(superBlock *ast.Node, context *Context) int {
 }
 
 func (context *Context) superBlockFinalize(superBlock *ast.Node) {
-	// 最终化所有子块
 	for child := superBlock.FirstChild; nil != child; child = child.Next {
 		if child.Close {
 			continue

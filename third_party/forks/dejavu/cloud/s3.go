@@ -47,12 +47,11 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/github/panjf2000/ants/v2"
 )
 
-// S3 描述了 S3 协议兼容的对象存储服务实现。
 type S3 struct {
 	*BaseCloud
 	HTTPClient *http.Client
-	service    *as3.Client // 用于缓存 S3 客户端
-	mux        sync.Mutex  // 用于保护 service 字段的并发访问
+	service    *as3.Client
+	mux        sync.Mutex
 }
 
 func NewS3(baseCloud *BaseCloud, httpClient *http.Client) *S3 {

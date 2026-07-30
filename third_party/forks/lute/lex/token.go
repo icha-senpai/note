@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -51,27 +50,22 @@ const (
 	ItemCloseBrace     = byte('}')
 )
 
-// IsWhitespace 判断 token 是否是空白。
 func IsWhitespace(token byte) bool {
 	return ItemSpace == token || ItemNewline == token || ItemTab == token || '\u000B' == token || '\u000C' == token || '\u000D' == token
 }
 
-// IsUnicodeWhitespace 判断 token 是否是 Unicode 空白。
 func IsUnicodeWhitespace(r rune) bool {
 	return unicode.IsSpace(r) || unicode.Is(unicode.Zs, r)
 }
 
-// IsDigit 判断 token 是否为数字 0-9。
 func IsDigit(token byte) bool {
 	return '0' <= token && '9' >= token
 }
 
-// IsHexDigit 判断 token 是否是十六进制数字。
 func IsHexDigit(token byte) bool {
 	return IsDigit(token) || token >= 'a' && token <= 'f' || token >= 'A' && token <= 'F'
 }
 
-// TokenToUpper 将 token 转为大写。
 func TokenToUpper(token byte) byte {
 	if token >= 'a' && token <= 'z' {
 		return token - 'a' + 'A'
@@ -79,22 +73,18 @@ func TokenToUpper(token byte) byte {
 	return token
 }
 
-// IsASCIIPunct 判断 token 是否是一个 ASCII 标点符号。
 func IsASCIIPunct(token byte) bool {
 	return (0x21 <= token && 0x2F >= token) || (0x3A <= token && 0x40 >= token) || (0x5B <= token && 0x60 >= token) || (0x7B <= token && 0x7E >= token)
 }
 
-// IsASCIILetter 判断 token 是否是一个 ASCII 字母。
 func IsASCIILetter(token byte) bool {
 	return ('A' <= token && 'Z' >= token) || ('a' <= token && 'z' >= token)
 }
 
-// IsASCIILetterNum 判断 token 是否是一个 ASCII 字母或数字。
 func IsASCIILetterNum(token byte) bool {
 	return ('A' <= token && 'Z' >= token) || ('a' <= token && 'z' >= token) || ('0' <= token && '9' >= token)
 }
 
-// IsASCIILetterNums 判断 tokens 是否是 ASCII 字母或数字组成。
 func IsASCIILetterNums(tokens []byte) bool {
 	for _, token := range tokens {
 		if !IsASCIILetterNum(token) {
@@ -104,17 +94,14 @@ func IsASCIILetterNums(tokens []byte) bool {
 	return true
 }
 
-// IsASCIILetterNumHyphen 判断 token 是否是一个 ASCII 字母、数字或者横线 -。
 func IsASCIILetterNumHyphen(token byte) bool {
 	return ('A' <= token && 'Z' >= token) || ('a' <= token && 'z' >= token) || ('0' <= token && '9' >= token) || '-' == token
 }
 
-// IsControl 判断 token 是否是一个控制字符。
 func IsControl(token byte) bool {
 	return unicode.IsControl(rune(token))
 }
 
-// IsBlank 判断 Tokens 是否都为空格。
 func IsBlank(tokens []byte) bool {
 	for _, token := range tokens {
 		if ItemSpace != token {
@@ -145,7 +132,6 @@ func Split(tokens []byte, separator byte) (ret [][]byte) {
 	return
 }
 
-// SplitWithoutBackslashEscape 使用 separator 作为分隔符将 Tokens 切分为多个子串，被反斜杠 \ 转义的字符不会计入切分。
 func SplitWithoutBackslashEscape(tokens []byte, separator byte) (ret [][]byte) {
 	length := len(tokens)
 	var token byte
@@ -171,7 +157,6 @@ func SplitWithoutBackslashEscape(tokens []byte, separator byte) (ret [][]byte) {
 	return
 }
 
-// ReplaceAll 会将 Tokens 中的所有 old 使用 new 替换。
 func ReplaceAll(tokens []byte, old, new byte) []byte {
 	for i, token := range tokens {
 		if token == old {
@@ -181,7 +166,6 @@ func ReplaceAll(tokens []byte, old, new byte) []byte {
 	return tokens
 }
 
-// ReplaceNewlineSpace 会将 Tokens 中的所有 "\n " 替换为 "\n"。
 func ReplaceNewlineSpace(tokens []byte) []byte {
 	length := len(tokens)
 	var token byte
@@ -327,7 +311,6 @@ func SplitWhitespace(tokens []byte) (ret [][]byte) {
 	return
 }
 
-// IsBackslashEscapePunct 判断 Tokens 中 pos 所指的值是否是由反斜杠 \ 转义的 ASCII 标点符号。
 func IsBackslashEscapePunct(tokens []byte, pos int) bool {
 	if !IsASCIIPunct(tokens[pos]) {
 		return false
@@ -373,11 +356,9 @@ func Peek(tokens []byte, pos int) byte {
 	return 0
 }
 
-// BytesShowLength 获取字节数组展示为 UTF8 字符串时的长度。
 func BytesShowLength(bytes []byte) int {
 	length := 0
 	for i := 0; i < len(bytes); i++ {
-		// 按位与 11000000 为 10000000 则表示为 UTF8 字节首位
 		if (bytes[i] & 0xc0) != 0x80 {
 			if bytes[i] < 0x7f {
 				length++

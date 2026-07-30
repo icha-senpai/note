@@ -83,7 +83,6 @@ func FnvNumber[T Integer](x T) uint64 {
 	return h
 }
 
-// MaskXOR 计算掩码
 func MaskXOR(b []byte, key []byte) {
 	var maskKey = binary.LittleEndian.Uint32(key)
 	var key64 = uint64(maskKey)<<32 + uint64(maskKey)
@@ -121,7 +120,6 @@ func MaskXOR(b []byte, key []byte) {
 	}
 }
 
-// InCollection 检查给定的字符串 elem 是否在字符串切片 elems 中
 // Checks if the given string elem is in the string slice elems.
 func InCollection(elem string, elems []string) bool {
 	for _, item := range elems {
@@ -132,7 +130,6 @@ func InCollection(elem string, elems []string) bool {
 	return false
 }
 
-// GetIntersectionElem 获取两个字符串切片 a 和 b 的交集中的一个元素
 // Gets an element in the intersection of two string slices a and b
 func GetIntersectionElem(a, b []string) string {
 	for _, item := range a {
@@ -143,7 +140,6 @@ func GetIntersectionElem(a, b []string) string {
 	return ""
 }
 
-// Split 分割给定的字符串 s，使用 sep 作为分隔符。空值将会被过滤掉。
 // Splits the given string s using sep as the separator. Empty values will be filtered out.
 func Split(s string, sep string) []string {
 	var list = strings.Split(s, sep)
@@ -180,7 +176,6 @@ func ToBinaryNumber[T Integer](n T) T {
 	return x
 }
 
-// BinaryPow 返回2的n次方
 func BinaryPow(n int) int {
 	var ans = 1
 	for i := 0; i < n; i++ {
@@ -189,19 +184,15 @@ func BinaryPow(n int) int {
 	return ans
 }
 
-// BufferReset 重置buffer底层的切片
 // Reset the buffer's underlying slice
-// 注意：修改后面的属性一定要加偏移量，否则可能会导致未定义的行为。
 // Note: Be sure to add an offset when modifying the following properties, otherwise it may lead to undefined behavior.
 func BufferReset(b *bytes.Buffer, p []byte) { *(*[]byte)(unsafe.Pointer(b)) = p }
 
-// IsZero 零值判断
 func IsZero[T comparable](v T) bool {
 	var zero T
 	return v == zero
 }
 
-// WithDefault 如果原值为零值, 返回新值, 否则返回原值
 func WithDefault[T comparable](rawValue, newValue T) T {
 	if IsZero(rawValue) {
 		return newValue
@@ -243,7 +234,6 @@ func IsIPv6(ipStr string) bool {
 	return ip.To4() == nil
 }
 
-// GetAddrFromURL 根据URL获取网络连接地址
 // Get the network connection address based on the URL
 func GetAddrFromURL(URL *url.URL, tlsEnabled bool) string {
 	port := SelectValue(URL.Port() == "", SelectValue(tlsEnabled, "443", "80"), URL.Port())

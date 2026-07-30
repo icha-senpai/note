@@ -141,9 +141,9 @@ func TestIsRollupFilterValueEmpty(t *testing.T) {
 }
 
 func TestRollupRelativeDateFilter(t *testing.T) {
-	relationKey := NewKey("relation", "关联", "", KeyTypeRelation)
+	relationKey := NewKey("relation", "Relation", "", KeyTypeRelation)
 	relationKey.Relation = &Relation{AvID: "target"}
-	rollupKey := NewKey("rollup", "汇总", "", KeyTypeRollup)
+	rollupKey := NewKey("rollup", "Rollup", "", KeyTypeRollup)
 	rollupKey.Rollup = &Rollup{RelationKeyID: relationKey.ID, KeyID: "date"}
 	attrView := &AttributeView{KeyValues: []*KeyValues{
 		{Key: relationKey, Values: []*Value{{
@@ -159,7 +159,7 @@ func TestRollupRelativeDateFilter(t *testing.T) {
 		KeyID: "date", BlockID: "target-item", Type: KeyTypeDate,
 		Date: &ValueDate{Content: today.AddDate(0, 0, -1).UnixMilli(), IsNotEmpty: true},
 	}
-	targetView := &AttributeView{KeyValues: []*KeyValues{{Key: NewKey("date", "日期", "", KeyTypeDate), Values: []*Value{targetDate}}}}
+	targetView := &AttributeView{KeyValues: []*KeyValues{{Key: NewKey("date", "Date", "", KeyTypeDate), Values: []*Value{targetDate}}}}
 	value := &Value{KeyID: rollupKey.ID, BlockID: "source-item", Type: KeyTypeRollup, Rollup: &ValueRollup{}}
 	filter := &ViewFilter{
 		Qualifier:    FilterQuantifierAny,

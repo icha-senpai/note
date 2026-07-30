@@ -24,7 +24,6 @@ type NewDocRequest = {
     app: App;
     notebookId: string;
     currentPath: string;
-    /** 是否有来自编辑器或文件树选中项的焦点目标 */
     hasFocusTarget: boolean;
     name?: string;
     paths?: string[];
@@ -32,7 +31,6 @@ type NewDocRequest = {
     onCreated?: (id: string, title: string) => void;
 };
 
-/** 按配置路径创建文档；从聚焦编辑器或文件树推断上下文；可选 name 指定文档名 */
 export const newFile = (app: App, name?: string) => {
     if (getOpenNotebookCount() === 0) {
         showMessage(window.scribli.languages.newFileTip);
@@ -192,7 +190,6 @@ function runNewDoc(request: NewDocRequest) {
 
 function getNewDocHPath(targetNotebookId: string, currentNotebookId: string, currentPath: string, callback: (hPath: string) => void) {
     if (targetNotebookId !== currentNotebookId) {
-        // 跨笔记本时当前文档路径在目标笔记本中不存在，直接按目标笔记本根路径解析
         callback("/");
         return;
     }
@@ -233,7 +230,6 @@ function runNewDocInTree(request: NewDocRequest) {
     });
 }
 
-/** 同笔记本 + 有聚焦 + 非根路径 时取当前文档 ID */
 function getCreateDocParentID(hasFocusTarget: boolean, notebookId: string, currentPath: string, targetNotebookId: string): string | undefined {
     return hasFocusTarget && notebookId === targetNotebookId && currentPath !== "/"
         ? getDisplayName(currentPath, true, true)
@@ -286,10 +282,7 @@ function openCreatedDoc(app: App, id: string, onCreated?: (id: string, title: st
 }
 
 /**
- * 块引新建文档。
  * 
- * 与 `newFile` 入口路径解析规则对齐；创建后仅回调插入引用，不打开新文档页签。
- * 独立于 `runNewDoc` 编排，避免给通用入口引入块引专用参数。
  */
 export const newFileByRefHint = (
     protyle: IProtyle,

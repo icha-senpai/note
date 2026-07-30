@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -25,13 +24,11 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// ProtyleRenderer 描述了 Protyle WYSIWYG Block DOM 渲染器。
 type ProtyleRenderer struct {
 	*BaseRenderer
 	NodeIndex int
 }
 
-// NewProtyleRenderer 创建一个 WYSIWYG Block DOM 渲染器。
 func NewProtyleRenderer(tree *parse.Tree, options *Options, parseOptions *parse.Options) *ProtyleRenderer {
 	ret := &ProtyleRenderer{BaseRenderer: NewBaseRenderer(tree, options, parseOptions), NodeIndex: options.NodeIndexStart}
 	ret.RendererFuncs[ast.NodeDocument] = ret.renderDocument
@@ -271,28 +268,27 @@ func (r *ProtyleRenderer) renderTextMark(node *ast.Node, entering bool) ast.Walk
 			r.TextAutoSpacePrevious(node)
 		}
 		attrs := r.renderTextMarkAttrs(node)
-			r.spanNodeAttrs(node, &attrs)
-			if parse.ContainTextMark(node, "tag") && nil != node.Previous {
-				prevIsTag := node.Previous.IsTextMarkType("tag")
-				prevIsCaretBeforeTag := editor.Caret == node.Previous.TokensStr() &&
-					nil != node.Previous.Previous && node.Previous.Previous.IsTextMarkType("tag")
-				if prevIsTag || prevIsCaretBeforeTag {
-					// 相邻标签之间使用普通空格区隔，避免视觉上连在一起 https://github.com/siyuan-note/siyuan/issues/18191
-					r.WriteByte(lex.ItemSpace)
-				} else if (nil == node.Previous || ast.NodeSoftBreak == node.Previous.Type ||
-					(editor.Caret == node.Previous.TokensStr() && (nil == node.Previous.Previous || ast.NodeSoftBreak == node.Previous.Previous.Type))) &&
-					parse.ContainTextMark(node, "code", "kbd", "tag") {
-					r.WriteString(editor.Zwsp)
-				}
+		r.spanNodeAttrs(node, &attrs)
+		if parse.ContainTextMark(node, "tag") && nil != node.Previous {
+			prevIsTag := node.Previous.IsTextMarkType("tag")
+			prevIsCaretBeforeTag := editor.Caret == node.Previous.TokensStr() &&
+				nil != node.Previous.Previous && node.Previous.Previous.IsTextMarkType("tag")
+			if prevIsTag || prevIsCaretBeforeTag {
+				r.WriteByte(lex.ItemSpace)
 			} else if (nil == node.Previous || ast.NodeSoftBreak == node.Previous.Type ||
 				(editor.Caret == node.Previous.TokensStr() && (nil == node.Previous.Previous || ast.NodeSoftBreak == node.Previous.Previous.Type))) &&
 				parse.ContainTextMark(node, "code", "kbd", "tag") {
 				r.WriteString(editor.Zwsp)
 			}
+		} else if (nil == node.Previous || ast.NodeSoftBreak == node.Previous.Type ||
+			(editor.Caret == node.Previous.TokensStr() && (nil == node.Previous.Previous || ast.NodeSoftBreak == node.Previous.Previous.Type))) &&
+			parse.ContainTextMark(node, "code", "kbd", "tag") {
+			r.WriteString(editor.Zwsp)
+		}
 
 		if node.IsTextMarkType("code") {
 			if r.Options.Spellcheck {
-				// Spell check should be disabled inside inline and block code https://github.com/siyuan-note/siyuan/issues/9672
+				// Spell check should be disabled inside inline and block code
 				attrs = append(attrs, []string{"spellcheck", "false"})
 			}
 		}
@@ -400,7 +396,6 @@ func (r *ProtyleRenderer) renderBlockQueryEmbed(node *ast.Node, entering bool) a
 		tokens := script.Tokens
 		tokens = html.EscapeHTML(bytes.ReplaceAll(tokens, editor.CaretTokens, nil))
 		content := util.BytesToStr(tokens)
-		// 嵌入块中存在换行 SQL 语句时会被转换为段落文本 https://github.com/siyuan-note/siyuan/issues/5728
 		content = strings.ReplaceAll(content, editor.IALValEscNewLine, "\n")
 		attrs = append(attrs, []string{"data-content", content})
 		r.blockNodeAttrs(node, &attrs, "render-node")
@@ -651,7 +646,6 @@ func (r *ProtyleRenderer) renderTag(node *ast.Node, entering bool) ast.WalkStatu
 		prevIsCaretBeforeTag := nil != node.Previous && editor.Caret == node.Previous.TokensStr() &&
 			nil != node.Previous.Previous && ast.NodeTag == node.Previous.Previous.Type
 		if prevIsTag || prevIsCaretBeforeTag {
-			// 相邻标签之间使用普通空格区隔，避免视觉上连在一起 https://github.com/siyuan-note/siyuan/issues/18191
 			r.WriteByte(lex.ItemSpace)
 		} else if nil == node.Previous || ast.NodeSoftBreak != node.Previous.Type {
 			r.WriteString(editor.Zwsp)
@@ -695,10 +689,8 @@ func (r *ProtyleRenderer) renderSuperBlock(node *ast.Node, entering bool) ast.Wa
 		attrs = append(attrs, []string{"data-sb-layout", layout})
 		r.Tag("div", attrs, false)
 
-		// col 布局下手动遍历真实子块，每个非末尾块节点后插入手柄，支持拖拽调整子块宽度
-		// https://github.com/siyuan-note/siyuan/issues/9521
+		//
 		if "col" == layout {
-			// 先统计真实块节点数量（排除 IAL 和标记符），用于判断是否为末尾块
 			blockCount := 0
 			for c := node.FirstChild.Next.Next; nil != c && ast.NodeSuperBlockCloseMarker != c.Type; c = c.Next {
 				if ast.NodeKramdownBlockIAL != c.Type {
@@ -714,7 +706,6 @@ func (r *ProtyleRenderer) renderSuperBlock(node *ast.Node, entering bool) ast.Wa
 					}
 					return render(n, entering)
 				})
-				// 仅在块节点（非 IAL）且非末尾块后插入手柄；IAL 节点照常渲染但不作为手柄锚点
 				if ast.NodeKramdownBlockIAL != c.Type {
 					if blockIdx < blockCount-1 {
 						r.Tag("span", [][]string{{"class", "sb__resize"}, {"contenteditable", "false"}}, false)
@@ -932,7 +923,6 @@ func (r *ProtyleRenderer) renderFootnotesDefBlock(node *ast.Node, entering bool)
 func (r *ProtyleRenderer) renderFootnotesDef(node *ast.Node, entering bool) ast.WalkStatus {
 	if entering {
 		// r.WriteString("<li id=\"footnotes-def-" + node.FootnotesRefId + "\">")
-		// 在 li 上带 id 后，Pandoc HTML 转换 Docx 会有问题
 		r.WriteString("<li>")
 		if 0 < len(node.FootnotesRefs) {
 			refId := node.FootnotesRefs[0].FootnotesRefId
@@ -1058,7 +1048,6 @@ func (r *ProtyleRenderer) renderCodeBlockCode(node *ast.Node, entering bool) ast
 		}
 	} else {
 		tokens := html.EscapeHTML(node.Tokens)
-		// 支持代码块搜索定位 https://github.com/siyuan-note/siyuan/issues/5520
 		tokens = bytes.ReplaceAll(tokens, []byte("__@mark__"), []byte("<span data-type=\"search-mark\">"))
 		tokens = bytes.ReplaceAll(tokens, []byte("__mark@__"), []byte("</span>"))
 		r.Write(tokens)
@@ -1379,7 +1368,7 @@ func (r *ProtyleRenderer) renderImage(node *ast.Node, entering bool) ast.WalkSta
 
 		attrs := [][]string{{"contenteditable", "false"}, {"data-type", "img"}, {"class", "img"}}
 		parentStyle := node.IALAttr("parent-style")
-		if "" != parentStyle { // 手动设置了位置
+		if "" != parentStyle {
 			parentStyle = strings.ReplaceAll(parentStyle, "display: block;", "")
 			parentStyle = strings.TrimSpace(parentStyle)
 			if "" != parentStyle {
@@ -1564,7 +1553,6 @@ func (r *ProtyleRenderer) renderInlineHTML(node *ast.Node, entering bool) ast.Wa
 		return ast.WalkContinue
 	}
 
-	// Protyle 中没有行级 HTML，这里转换为 HTML 块渲染
 	node.Type = ast.NodeHTMLBlock
 	return r.renderHTML(node, entering)
 }
@@ -2054,12 +2042,10 @@ func (r *ProtyleRenderer) renderTextMarkAttrs(node *ast.Node) (attrs [][]string)
 			if node.ParentIs(ast.NodeTableCell) {
 				href = strings.ReplaceAll(href, "\\|", "|")
 			}
-			// 超链接元素地址中存在 `"` 字符时粘贴无法正常解析 https://github.com/siyuan-note/siyuan/issues/11385
 			href = strings.ReplaceAll(href, "\"", "&amp;quot;")
 
 			attrs = append(attrs, []string{"data-href", href})
 			if "" != node.TextMarkATitle {
-				// 超链接元素标题中存在 `"` 字符时粘贴无法正常解析 https://github.com/siyuan-note/siyuan/issues/5974
 				title := strings.ReplaceAll(node.TextMarkATitle, "\"", "&amp;quot;")
 				if node.ParentIs(ast.NodeTableCell) {
 					title = strings.ReplaceAll(title, "\\|", "|")
@@ -2070,12 +2056,12 @@ func (r *ProtyleRenderer) renderTextMarkAttrs(node *ast.Node) (attrs [][]string)
 			attrs = append(attrs, []string{"data-subtype", "math"})
 			content := node.TextMarkInlineMathContent
 			if node.ParentIs(ast.NodeTableCell) {
-				// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+				// Improve the handling of inline-math containing `|` in the table
 				content = strings.ReplaceAll(content, "|", "&#124;")
 				content = strings.ReplaceAll(content, "\n", "<br/>")
 			}
 			content = strings.ReplaceAll(content, editor.IALValEscNewLine, "\n")
-			// Improve inline formulas input https://github.com/siyuan-note/siyuan/issues/8972
+			// Improve inline formulas input
 			//content = strings.ReplaceAll(inlineMathContent, editor.Caret, "")
 			content = strings.ReplaceAll(content, "\"", "&amp;quot;")
 			attrs = append(attrs, []string{"data-content", content})

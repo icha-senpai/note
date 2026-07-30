@@ -356,7 +356,6 @@ const editKeydown = (app: App, event: KeyboardEvent) => {
     if (target.tagName !== "TABLE" && ["INPUT", "TEXTAREA"].includes(target.tagName)) {
         return false;
     }
-    // ctrl+home 光标移动到顶
     if (!event.altKey && !event.shiftKey && isOnlyMeta(event) && event.key === "Home") {
         goHome(protyle);
         hideElements(["select"], protyle);
@@ -364,7 +363,6 @@ const editKeydown = (app: App, event: KeyboardEvent) => {
         event.preventDefault();
         return;
     }
-    // ctrl+end 光标移动到尾
     if (!event.altKey && !event.shiftKey && isOnlyMeta(event) && event.key === "End") {
         goEnd(protyle);
         hideElements(["select"], protyle);
@@ -535,7 +533,6 @@ const editKeydown = (app: App, event: KeyboardEvent) => {
     if (hasClosestByClassName(target, "protyle-title__input")) {
         return false;
     }
-    // 没有光标时，无法撤销 
     if (matchHotKey(window.scribli.config.keymap.editor.general.undo.custom, event)) {
         protyle.undo.undo(protyle);
         event.preventDefault();
@@ -972,7 +969,6 @@ const fileTreeKeydown = (app: App, event: KeyboardEvent) => {
 };
 
 const panelTreeKeydown = (app: App, event: KeyboardEvent) => {
-    // 面板折叠展开操作
     const target = event.target as HTMLElement;
     if (["INPUT", "TEXTAREA"].includes(target.tagName) ||
         hasClosestByAttribute(target, "contenteditable", null) ||
@@ -1096,7 +1092,7 @@ const panelTreeKeydown = (app: App, event: KeyboardEvent) => {
         while (nextElement) {
             if (nextElement.nextElementSibling) {
                 if (nextElement.nextElementSibling.tagName === "UL") {
-                    if (nextElement.nextElementSibling.classList.contains("fn__none")) {   // 遇到折叠内容
+                    if (nextElement.nextElementSibling.classList.contains("fn__none")) {
                         if (nextElement.nextElementSibling.nextElementSibling) {
                             nextElement = nextElement.nextElementSibling.nextElementSibling;
                         }
@@ -1141,7 +1137,7 @@ const panelTreeKeydown = (app: App, event: KeyboardEvent) => {
                     if (previousElement.previousElementSibling.previousElementSibling) {
                         previousElement = previousElement.previousElementSibling.previousElementSibling;
                     }
-                } else if (previousElement.previousElementSibling.tagName === "UL" && previousElement.previousElementSibling.classList.contains("fn__none")) {   // 遇到折叠内容
+                } else if (previousElement.previousElementSibling.tagName === "UL" && previousElement.previousElementSibling.classList.contains("fn__none")) {
                     if (previousElement.previousElementSibling.previousElementSibling) {
                         previousElement = previousElement.previousElementSibling.previousElementSibling;
                     }
@@ -1254,7 +1250,6 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
 </div>`,
         });
         switchDialog.element.setAttribute("data-key", Constants.DIALOG_SWITCHTAB);
-        // 需移走光标，否则编辑器会继续监听并执行按键操作
         switchDialog.element.querySelector("input").focus();
         if (isMac()) {
             switchDialog.element.addEventListener("contextmenu", (event) => {
@@ -1299,7 +1294,6 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
 
     if (["Home", "End", "ArrowUp", "ArrowDown"].includes(event.key)) {
         let matchDialog: Dialog;
-        // 需找到最顶层的，因此不能用 find
         window.scribli.dialogs.forEach(item => {
             if ([Constants.DIALOG_VIEWCARDS, Constants.DIALOG_HISTORYCOMPARE].includes(item.element.getAttribute("data-key"))) {
                 matchDialog = item;
@@ -1443,15 +1437,13 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
         if (!window.scribli.menus.menu.element.classList.contains("fn__none")) {
             if (window.scribli.dialogs.length > 0 &&
                 window.scribli.menus.menu.element.style.zIndex < (window.scribli.dialogs[0].element.querySelector(".b3-dialog") as HTMLElement).style.zIndex) {
-                // 窗口高于菜单时，先关闭窗口，如 av 修改列 icon 时
+                // Intentionally empty.
             } else {
                 window.scribli.menus.menu.remove(true);
                 return;
             }
         }
 
-        // 需放在 menus 后，否则资源列中添加资源会先关闭菜单
-        // 需放在 dialog 前，否则属性面板中修改日期会先关闭 dialog，只剩修改界面
         const avElement = document.querySelector(".av__panel");
         if (avElement) {
             const selectCellElement = document.querySelector(".av__cell--select");
@@ -1462,7 +1454,6 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
             return;
         }
 
-        // 闪卡长按 Esc 光标定位到闪卡按钮上 
         // 
         if (event.repeat && document.activeElement && hasClosestByClassName(document.activeElement, "card__action")) {
             return;
@@ -1501,7 +1492,6 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
             return;
         }
 
-        // 光标在文档树等面板中，按 Esc 回到编辑器中 
         if (getSelection().rangeCount > 0) {
             const range = getSelection().getRangeAt(0);
             if (hasClosestByClassName(range.startContainer, "protyle-content", true)) {
@@ -1693,12 +1683,10 @@ export const windowKeyDown = (app: App, event: KeyboardEvent) => {
         return;
     }
 
-    // 文件树的操作
     if (!isTabWindow && fileTreeKeydown(app, event)) {
         return;
     }
 
-    // 面板的操作
     if (!isTabWindow && panelTreeKeydown(app, event)) {
         return;
     }

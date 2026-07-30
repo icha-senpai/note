@@ -17,27 +17,7 @@
 package util
 
 var LangLegacyToBCP47 = map[string]string{
-	"zh_CN":  "zh-CN",
-	"zh_CHT": "zh-TW",
-	"en_US":  "en",
-	"de_DE":  "de",
-	"fr_FR":  "fr",
-	"es_ES":  "es",
-	"pt_BR":  "pt-BR",
-	"it_IT":  "it",
-	"ja_JP":  "ja",
-	"ko_KR":  "ko",
-	"ru_RU":  "ru",
-	"uk_UA":  "uk",
-	"pl_PL":  "pl",
-	"nl_NL":  "nl",
-	"ar_SA":  "ar",
-	"he_IL":  "he",
-	"hi_IN":  "hi",
-	"id_ID":  "id",
-	"th_TH":  "th",
-	"tr_TR":  "tr",
-	"sk_SK":  "sk",
+	"en_US": "en",
 }
 
 var langBCP47ToLegacy map[string]string
@@ -53,7 +33,7 @@ func LangToBCP47(lang string) string {
 	if v, ok := LangLegacyToBCP47[lang]; ok {
 		return v
 	}
-	return lang
+	return "en"
 }
 
 func LangToLegacy(lang string) string {

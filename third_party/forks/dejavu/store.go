@@ -34,9 +34,8 @@ import (
 
 var ErrNotFoundObject = errors.New("not found object")
 
-// Store 描述了存储库。
 type Store struct {
-	Path   string // 存储库文件夹的绝对路径，如：F:\\SiYuan\\repo\\
+	Path   string
 	AesKey []byte
 
 	compressEncoder *zstd.Encoder
@@ -82,7 +81,6 @@ func (store *Store) Purge(ctx context.Context, retentionIndexIDs ...string) (ret
 		return
 	}
 
-	// 收集所有数据对象
 	objIDs := map[string]bool{}
 	for _, entry := range entries {
 		if !entry.IsDir() {
@@ -109,7 +107,6 @@ func (store *Store) Purge(ctx context.Context, retentionIndexIDs ...string) (ret
 		return
 	}
 
-	// 收集所有索引对象
 	indexIDs := map[string]bool{}
 	indexesDir := filepath.Join(store.Path, "indexes")
 	if gulu.File.IsDir(indexesDir) {
@@ -134,13 +131,12 @@ func (store *Store) Purge(ctx context.Context, retentionIndexIDs ...string) (ret
 		return
 	}
 
-	// 收集所有引用的索引
 	refIndexIDs, err := store.readRefs()
 	if nil != err {
 		logging.LogErrorf("read refs failed: %s", err)
 		return
 	}
-	for _, retentionIndexID := range retentionIndexIDs { // 指定保留的索引算作被引用
+	for _, retentionIndexID := range retentionIndexIDs {
 		refIndexIDs[retentionIndexID] = true
 	}
 	unreferencedIndexIDs := map[string]bool{}
@@ -150,7 +146,6 @@ func (store *Store) Purge(ctx context.Context, retentionIndexIDs ...string) (ret
 		}
 	}
 
-	// 收集所有引用的数据对象
 	referencedObjIDs := map[string]bool{}
 	for refID := range refIndexIDs {
 		if isCancelled(ctx) {
@@ -178,7 +173,6 @@ func (store *Store) Purge(ctx context.Context, retentionIndexIDs ...string) (ret
 		}
 	}
 
-	// 收集所有未引用的数据对象
 	unreferencedObjIDs := map[string]bool{}
 	for objID := range objIDs {
 		if !referencedObjIDs[objID] {
@@ -194,7 +188,6 @@ func (store *Store) Purge(ctx context.Context, retentionIndexIDs ...string) (ret
 		return
 	}
 
-	// 清理未引用的索引对象
 	for unreferencedIndexID := range unreferencedIndexIDs {
 		indexPath := filepath.Join(store.Path, "indexes", unreferencedIndexID)
 		if err = os.RemoveAll(indexPath); nil != err {
@@ -203,7 +196,6 @@ func (store *Store) Purge(ctx context.Context, retentionIndexIDs ...string) (ret
 		}
 	}
 
-	// 清理校验索引
 	// Clear check index when purging data repo
 	checkIndexesDir := filepath.Join(store.Path, "check", "indexes")
 	if gulu.File.IsDir(checkIndexesDir) {
@@ -252,7 +244,6 @@ func (store *Store) Purge(ctx context.Context, retentionIndexIDs ...string) (ret
 		}
 	}
 
-	// 清理未引用的数据对象
 	for unreferencedObjID := range unreferencedObjIDs {
 		if isCancelled(ctx) {
 			logging.LogWarnf("purging data repo [%s] cancelled while removing unreferenced objects", store.Path)
@@ -333,7 +324,6 @@ func (store *Store) PutIndex(index *entity.Index) (err error) {
 		return errors.New("put index failed: " + err.Error())
 	}
 
-	// Index 仅压缩，不加密
 	data = store.compressEncoder.EncodeAll(data, nil)
 
 	err = gulu.File.WriteFileSafer(file, data, 0644)
@@ -364,7 +354,6 @@ func (store *Store) GetIndex(id string) (ret *entity.Index, err error) {
 		return
 	}
 
-	// Index 没有加密，直接解压
 	data, err = store.compressDecoder.DecodeAll(data, nil)
 	if nil == err {
 		ret = &entity.Index{}
@@ -512,16 +501,16 @@ func (store *Store) decodeData(data []byte) (ret []byte, err error) {
 
 var fileCache, _ = ristretto.NewCache(&ristretto.Config{
 	NumCounters: 200000,
-	MaxCost:     1000 * 1000 * 32, // 1 个文件按 300 字节计算，32MB 大概可以缓存 10W 个文件实例
+	MaxCost:     1000 * 1000 * 32,
 	BufferItems: 64,
 })
 
 var indexCache, _ = ristretto.NewCache(&ristretto.Config{
 	NumCounters: 200000,
-	MaxCost:     1000 * 1000 * 128, // 1 个文件按 300K 字节（大约 1.5W 个文件）计算，128MB 大概可以缓存 400 个索引
+	MaxCost:     1000 * 1000 * 128,
 	BufferItems: 64,
 })
 
 func (store *Store) cacheFile(file *entity.File) {
-	fileCache.Set(file.ID, file, 256 /* 直接使用合理的均值以免进行实际计算消耗性能 */)
+	fileCache.Set(file.ID, file, 256 )
 }

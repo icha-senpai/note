@@ -12,7 +12,6 @@ export const highlightById = (protyle: IProtyle, id: string, position: ScrollLog
     let nodeElement: HTMLElement;
     const protyleElement = protyle.wysiwyg.element;
     if (!protyle.preview.element.classList.contains("fn__none")) {
-        // 预览定位
         nodeElement = document.getElementById(id);
         if (nodeElement) {
             protyle.preview.element.scrollTop = nodeElement.offsetTop;
@@ -30,7 +29,7 @@ export const highlightById = (protyle: IProtyle, id: string, position: ScrollLog
     if (nodeElement) {
         scrollCenter(protyle, nodeElement, position);
         bgFade(nodeElement);
-        return nodeElement;// 仅配合前进后退使用
+        return nodeElement;
     }
     if (id === protyle.block.rootID && protyle.options.render.title && protyle.title.editElement) {
         bgFade(protyle.title.editElement);
@@ -61,7 +60,6 @@ export const scrollCenter = (
             }
 
             if (blockElement.classList.contains("av") && blockElement.dataset.render === "true") {
-                // undo 时禁止数据库滚动
                 if (blockElement.querySelector(".av__row--header")?.getAttribute("style")?.indexOf("transform") > -1 ||
                     blockElement.querySelector(".av__row--footer")?.getAttribute("style")?.indexOf("transform") > -1) {
                     return;
@@ -74,7 +72,6 @@ export const scrollCenter = (
                 }
                 return;
             }
-            // 撤销时 br 插入删除会导致 rang 被修改 
             const cloneRange = range.cloneRange();
             const br2Element = document.createElement("br");
             range.insertNode(br2Element);
@@ -83,7 +80,7 @@ export const scrollCenter = (
             let scrollTop = 0;
             if (cursorTop < 0) {
                 scrollTop = editorElement.scrollTop + cursorTop;
-            } else if (cursorTop > editorElement.clientHeight - 74) {   // 74 = 移动端底部 + 段落块高度
+            } else if (cursorTop > editorElement.clientHeight - 74) {
                 scrollTop = editorElement.scrollTop + (cursorTop + 74 - editorElement.clientHeight);
             }
             if (scrollTop !== 0) {
@@ -113,7 +110,6 @@ export const scrollCenter = (
         return;
     }
     if (position === "nearest") {
-        // 在可视区域内不进行滚动
         if (elementRect.bottom < contentRect.top) {
             protyle.contentElement.scroll({
                 top: protyle.contentElement.scrollTop + elementRect.top - contentRect.top,

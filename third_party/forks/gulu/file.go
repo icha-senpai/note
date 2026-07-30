@@ -26,14 +26,13 @@ func (*GuluFile) IsSubPath(absPath, toCheckPath string) bool {
 	if 1 > len(absPath) || 1 > len(toCheckPath) {
 		return false
 	}
-	if absPath == toCheckPath { // 相同路径时不认为是子路径
+	if absPath == toCheckPath {
 		return false
 	}
 
 	if OS.IsWindows() {
 		if filepath.IsAbs(absPath) && filepath.IsAbs(toCheckPath) {
 			if strings.ToLower(absPath)[0] != strings.ToLower(toCheckPath)[0] {
-				// 不在一个盘
 				return false
 			}
 		}
@@ -131,13 +130,13 @@ func (*GuluFile) WriteFileSaferByReader(writePath string, reader io.Reader, perm
 	}
 
 	for i := 0; i < 3; i++ {
-		err = os.Rename(f.Name(), writePath) // Windows 上重命名是非原子的
+		err = os.Rename(f.Name(), writePath)
 		if nil == err {
 			os.Remove(f.Name())
 			return
 		}
 
-		if errMsg := strings.ToLower(err.Error()); strings.Contains(errMsg, "access is denied") || strings.Contains(errMsg, "used by another process") { // 文件可能是被锁定
+		if errMsg := strings.ToLower(err.Error()); strings.Contains(errMsg, "access is denied") || strings.Contains(errMsg, "used by another process") {
 			time.Sleep(200 * time.Millisecond)
 			continue
 		}
@@ -174,13 +173,13 @@ func (*GuluFile) WriteFileSafer(writePath string, data []byte, perm os.FileMode)
 	}
 
 	for i := 0; i < 3; i++ {
-		err = os.Rename(f.Name(), writePath) // Windows 上重命名是非原子的
+		err = os.Rename(f.Name(), writePath)
 		if nil == err {
 			os.Remove(f.Name())
 			return
 		}
 
-		if errMsg := strings.ToLower(err.Error()); strings.Contains(errMsg, "access is denied") || strings.Contains(errMsg, "used by another process") { // 文件可能是被锁定
+		if errMsg := strings.ToLower(err.Error()); strings.Contains(errMsg, "access is denied") || strings.Contains(errMsg, "used by another process") {
 			time.Sleep(200 * time.Millisecond)
 			continue
 		}
@@ -312,7 +311,6 @@ func (gl *GuluFile) copyFile(source, dest string, ignoreHidden, chtimes bool) (e
 	}
 
 	if 0 != sourceinfo.Mode()&os.ModeSymlink {
-		// 忽略符号链接
 		return
 	}
 

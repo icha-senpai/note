@@ -70,7 +70,7 @@ func TestRerankTruncatesDocumentsByRunes(t *testing.T) {
 	}))
 	defer server.Close()
 
-	document := strings.Repeat("中", rerankDocTextMaxRunes+1)
+	document := strings.Repeat("x", rerankDocTextMaxRunes+1)
 	indices, _, err := Rerank("query", []string{document}, "key", server.URL, "model", 1, 5)
 	if nil != err {
 		t.Fatalf("Rerank failed: %v", err)

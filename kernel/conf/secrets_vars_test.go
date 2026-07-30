@@ -58,11 +58,11 @@ func TestPerStoreDollarIsolation(t *testing.T) {
 	vars := &Variables{Items: []*Variable{{Name: "ONLY_VAR", Value: "v"}}}
 
 	if got := secrets.Resolve("$ONLY_VAR"); got != "$ONLY_VAR" {
-		t.Errorf("secrets.Resolve($ONLY_VAR) = %q, want $ONLY_VAR (密钥库不应跨库查变量)", got)
+		t.Errorf("secrets.Resolve($ONLY_VAR) = %q, want $ONLY_VAR (secret store should not resolve variables across stores)", got)
 	}
 
 	if got := vars.Resolve("$ONLY_SECRET"); got != "$ONLY_SECRET" {
-		t.Errorf("vars.Resolve($ONLY_SECRET) = %q, want $ONLY_SECRET (变量库不应跨库查密钥)", got)
+		t.Errorf("vars.Resolve($ONLY_SECRET) = %q, want $ONLY_SECRET (variable store should not resolve secrets across stores)", got)
 	}
 }
 

@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -20,7 +19,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// ListStart 判断列表、列表项（* - + 1.）或者任务列表项是否开始。
 func ListStart(t *Tree, container *ast.Node) int {
 	if ast.NodeList != container.Type && t.Context.indented {
 		return 0
@@ -31,7 +29,6 @@ func ListStart(t *Tree, container *ast.Node) int {
 		return 0
 	}
 
-	// 列表项为空时创建子列表前先补一个空段落，避免出现列表项下直接挂列表的结构 https://github.com/siyuan-note/siyuan/issues/17890
 	var emptyListItem *ast.Node
 	if t.Context.ParseOption.EnsureListItemParagraph && ast.NodeListItem == t.Context.Tip.Type {
 		fc := t.Context.Tip.FirstChild
@@ -42,8 +39,7 @@ func ListStart(t *Tree, container *ast.Node) int {
 
 	t.Context.closeUnmatchedBlocks()
 
-	// closeUnmatchedBlocks 可能已触发 listFinalize 给该空列表项补了段落，此时不再重复追加
-	// https://github.com/siyuan-note/siyuan/issues/17890
+	//
 	if nil != emptyListItem && nil == emptyListItem.FirstChild {
 		p := &ast.Node{Type: ast.NodeParagraph}
 		if t.Context.ParseOption.KramdownBlockIAL {
@@ -71,7 +67,6 @@ func ListStart(t *Tree, container *ast.Node) int {
 
 	listItem.Tokens = data.Marker
 	if 1 == listItem.ListData.Typ || (3 == listItem.ListData.Typ && 0 == listItem.ListData.BulletChar) {
-		// 修正有序列表项序号
 		prev := listItem.Previous
 		if nil != prev {
 			listItem.ListData.Num = prev.ListData.Num + 1
@@ -84,7 +79,7 @@ func ListStart(t *Tree, container *ast.Node) int {
 
 func ListItemContinue(listItem *ast.Node, context *Context) int {
 	if context.blank {
-		if nil == listItem.FirstChild { // 列表项后面是空的
+		if nil == listItem.FirstChild {
 			return 1
 		}
 
@@ -100,7 +95,6 @@ func ListItemContinue(listItem *ast.Node, context *Context) int {
 func (context *Context) listFinalize(list *ast.Node) {
 	item := list.FirstChild
 
-	// 检查子列表项之间是否包含空行，包含的话说明该列表是非紧凑的，即松散的
 	for nil != item {
 		if endsWithBlankLine(item) && nil != item.Next {
 			list.ListData.Tight = false
@@ -170,7 +164,6 @@ func (context *Context) listFinalize(list *ast.Node) {
 
 var items1 = util.StrToBytes("1")
 
-// parseListMarker 用于解析泛列表（列表、列表项或者任务列表）标记符。
 func (t *Tree) parseListMarker(container *ast.Node) (data *ast.ListData, ial [][]string) {
 	if 4 <= t.Context.indent {
 		return nil, nil
@@ -193,10 +186,10 @@ func (t *Tree) parseListMarker(container *ast.Node) (data *ast.ListData, ial [][
 
 	tokens := ln[t.Context.nextNonspace:]
 	data = &ast.ListData{
-		Typ:          0,                // 默认无序列表
-		Tight:        true,             // 默认紧凑模式
-		MarkerOffset: t.Context.indent, // 设置前置相对缩进
-		Num:          -1,               // 假设有序列表起始为 -1，后面会进行计算赋值
+		Typ:          0,
+		Tight:        true,
+		MarkerOffset: t.Context.indent,
+		Num:          -1,
 	}
 
 	markerLength := 1
@@ -206,7 +199,7 @@ func (t *Tree) parseListMarker(container *ast.Node) (data *ast.ListData, ial [][
 		data.BulletChar = marker[0]
 	} else if marker, delim = t.parseOrderedListMarker(tokens); nil != marker {
 		if container.Type != ast.NodeParagraph || bytes.Equal(items1, marker) {
-			data.Typ = 1 // 有序列表
+			data.Typ = 1
 			data.Start, _ = strconv.Atoi(util.BytesToStr(marker))
 			markerLength = len(marker) + 1
 			data.Delimiter = delim
@@ -224,19 +217,16 @@ func (t *Tree) parseListMarker(container *ast.Node) (data *ast.ListData, ial [][
 
 	token := ln[t.Context.nextNonspace+markerLength]
 
-	// 列表项标记符后必须是空白字符
 	if !lex.IsWhitespace(token) {
 		return nil, nil
 	}
 
-	// 如果要打断段落，则列表项内容部分不能为空
 	if container.Type == ast.NodeParagraph && lex.ItemNewline == token {
 		return nil, nil
 	}
 
-	// 到这里说明满足列表规则，开始解析并计算内部缩进空格数
-	t.Context.advanceNextNonspace()             // 把起始下标移动到标记符起始位置
-	t.Context.advanceOffset(markerLength, true) // 把结束下标移动到标记符结束位置
+	t.Context.advanceNextNonspace()
+	t.Context.advanceOffset(markerLength, true)
 	spacesStartCol := t.Context.column
 	spacesStartOffset := t.Context.offset
 	for {
@@ -262,7 +252,6 @@ func (t *Tree) parseListMarker(container *ast.Node) (data *ast.ListData, ial [][
 	}
 
 	if !isBlankItem {
-		// 判断是否是任务列表项
 
 		tokens := ln[t.Context.offset:]
 		if t.Context.ParseOption.KramdownBlockIAL {
@@ -275,7 +264,7 @@ func (t *Tree) parseListMarker(container *ast.Node) (data *ast.ListData, ial [][
 			tokens = bytes.ReplaceAll(tokens, editor.CaretTokens, nil)
 		}
 
-		if 3 <= len(tokens) { // 至少需要 [ ] 或者 [x] 3 个字符
+		if 3 <= len(tokens) {
 			if lex.ItemOpenBracket == tokens[0] && lex.ItemCloseBracket != tokens[1] && lex.ItemCloseBracket == tokens[2] {
 				marker := tokens[1]
 				if t.Context.ParseOption.IsValidTaskListItemMarker(marker) {
@@ -308,7 +297,6 @@ func (t *Tree) parseOrderedListMarker(tokens []byte) (marker []byte, delimiter b
 	return
 }
 
-// endsWithBlankLine 判断块节点 block 是否是空行结束。如果 block 是列表或者列表项则迭代下降进入判断。
 func endsWithBlankLine(block *ast.Node) bool {
 	for nil != block {
 		if block.LastLineBlank {

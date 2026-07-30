@@ -107,7 +107,7 @@ func NewCloudFileRequest2m() *req.Request {
 
 func newCloudFileClient2m() {
 	cloudFileClientTimeout2Min = req.C().
-		EnableForceHTTP1(). // 强制使用 HTTP/1.1，避免有些服务器并发请求时报错
+		EnableForceHTTP1().
 		SetCommonHeader("Cache-Control", "no-cache, no-store, must-revalidate").
 		SetCommonHeader("Pragma", "no-cache").
 		SetCommonHeader("Expires", "0").
@@ -141,7 +141,7 @@ func retryCondition(resp *req.Response, err error) bool {
 	if nil == resp || nil == resp.Response {
 		return true
 	}
-	if 503 == resp.StatusCode { // 返回 503 需要重试
+	if 503 == resp.StatusCode {
 		return true
 	}
 	return false
@@ -169,7 +169,5 @@ func defaultTransportDialContext(dialer *net.Dialer) func(context.Context, strin
 }
 
 func ProxyFromEnvironment(req *http.Request) (*url.URL, error) {
-	// 因为 http.ProxyFromEnvironment 为了优化性能所以会缓存结果
-	// 这里需要每次都重新从环境变量获取，以便实现不重启就能切换代理
 	return httpproxy.FromEnvironment().ProxyFunc()(req.URL)
 }

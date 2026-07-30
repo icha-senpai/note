@@ -35,7 +35,6 @@ const sendTrafficLightPosition = (zoom: number) => {
     /// #endif
 };
 
-/** 同步顶栏隐藏后的布局（运行时切换 hideToolbar 时调用） */
 export const syncHideToolbarLayout = () => {
     document.body.classList.toggle("body--toolbar-hide", window.scribli.config.appearance.hideToolbar);
     resizeTopBar();
@@ -76,7 +75,7 @@ export const initBar = (app: App) => {
 <button id="barForward" class="ariaLabel toolbar__item toolbar__item--disabled" aria-label="${window.scribli.languages.goForward} ${updateHotkeyTip(window.scribli.config.keymap.general.goForward.custom)}">
     <svg><use xlink:href="#iconForward"></use></svg>
 </button>
-<div class="fn__flex-1 fn__ellipsis" id="drag"><span class="fn__none">开发版，使用前请进行备份 Development version, please backup before use</span></div>
+<div class="fn__flex-1 fn__ellipsis" id="drag"><span class="fn__none">Development version, please back up before use</span></div>
 <div id="toolbarAccount" class="fn__flex${window.scribli.config.readonly ? " fn__none" : ""}"></div>
 <div id="barPlugins" class="toolbar__item ariaLabel" aria-label="${window.scribli.languages.plugin}">
     <svg><use xlink:href="#iconPlugin"></use></svg>
@@ -121,7 +120,6 @@ export const initBar = (app: App) => {
                 window.scribli.menus.menu.remove();
                 window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_BAR_MORE);
                 (target.getAttribute("data-hideids") || "").split(",").forEach((itemId) => {
-                    // data-hideids 可能为空字符串，split(",") 会得到 [""]，导致 querySelector("#") 抛出无效选择器异常
                     if (!itemId) {
                         return;
                     }

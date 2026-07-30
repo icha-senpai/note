@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -20,7 +19,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// FenceCodeBlockStart 判断围栏代码块（```）是否开始。
 func FenceCodeBlockStart(t *Tree, container *ast.Node) int {
 	if t.Context.indented {
 		return 0
@@ -42,7 +40,6 @@ func FenceCodeBlockStart(t *Tree, container *ast.Node) int {
 	return 0
 }
 
-// IndentCodeBlockStart 判断缩进代码块（    code）是否开始。
 func IndentCodeBlockStart(t *Tree, container *ast.Node) int {
 	if !t.Context.ParseOption.IndentCodeBlock || !t.Context.indented {
 		return 0
@@ -66,7 +63,6 @@ func CodeBlockContinue(codeBlock *ast.Node, context *Context) int {
 			context.finalize(codeBlock)
 			return 2
 		} else {
-			// 跳过围栏标记符之前可能存在的空格
 			i := codeBlock.CodeBlockFenceOffset
 			var token byte
 			for i > 0 {
@@ -78,7 +74,7 @@ func CodeBlockContinue(codeBlock *ast.Node, context *Context) int {
 				i--
 			}
 		}
-	} else { // 缩进代码块
+	} else {
 		if indent >= 4 {
 			context.advanceOffset(4, true)
 		} else if context.blank {
@@ -105,7 +101,7 @@ func (context *Context) codeBlockFinalize(codeBlock *ast.Node) {
 			}
 		}
 		codeBlock.Tokens = content[i+1:]
-	} else { // 缩进代码块
+	} else {
 		codeBlock.Tokens = lex.ReplaceNewlineSpace(codeBlock.Tokens)
 	}
 }
@@ -140,7 +136,6 @@ func (t *Tree) parseFencedCode() (ok bool, fenceChar byte, fenceLen int, fenceOf
 
 	infoTokens := t.Context.currentLine[t.Context.nextNonspace+fenceLen:]
 	if lex.ItemBacktick == marker && bytes.Contains(infoTokens, codeBlockBacktick) {
-		// info 部分不能包含 `
 		return
 	}
 	info := lex.TrimWhitespace(infoTokens)

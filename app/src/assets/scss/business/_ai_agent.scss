@@ -5,13 +5,11 @@
 }
 
 .agent-chat__tokens {
-  // 圆环轨道（背景灰圈）。用比 hover 背景更深的灰，避免悬浮时轨道被吃掉。
   .agent-chat__tokens-track {
     fill: none;
     stroke: var(--b3-scroll-color);
   }
 
-  // 圆环弧度（按占用率描边），统一主色，rotate -90 让起点在顶部。
   .agent-chat__tokens-arc {
     fill: none;
     stroke: var(--b3-theme-primary);
@@ -32,8 +30,6 @@
 
 .agent-chat__messages {
   overflow-y: auto;
-  // scrollbar-gutter 预留滚动条槽位，避免出现/消失滚动条时内容横向抖动；
-  // 右侧 padding 相应减去滚动条宽度（10px），保证与 input-area（margin 16px）内容左右对齐。
   scrollbar-gutter: stable;
   padding: 12px 6px 12px 16px;
   flex: 1;
@@ -139,7 +135,6 @@
   border-color: var(--b3-theme-primary);
 }
 
-// 无模型提示块：引导用户去 设置 - 人工智能 配置。
 .agent-welcome__no-model {
   display: flex;
   flex-direction: column;
@@ -167,7 +162,6 @@
   line-height: 1.5;
 }
 
-// 未配置模型时的「去配置」按钮：复用 b3-button 主色实心样式，仅微调尺寸。
 .agent-welcome__go-setting {
   margin-top: 4px;
   padding: 4px 14px;
@@ -260,7 +254,6 @@
 
 .agent-chat__body--streaming {
   min-height: 20px;
-  // 流式期 body 是纯文本（textContent），需保留换行与空白，富渲染在结束后才进行。
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -273,21 +266,14 @@
   }
 }
 
-// 覆盖消息排版的基础字号：b3-typography 和 protyle-wysiwyg 默认使用编辑器字号，
-// 在 dock 面板里偏大。压回面板级 14px，与大纲/书签等其他 dock 面板对齐。
-// 行高、段落间距等仍沿用各自的全局排版规范。
 .agent-chat__msg--user .agent-chat__body.protyle-wysiwyg,
 .agent-chat__body.b3-typography,
 .agent-chat__thinking-chat.b3-typography {
   font-size: var(--b3-font-size);
 }
 
-// 消息正文复用全局 b3-typography 排版（与导出预览/编辑器预览一致），
-// 仅保留 AgentChat 特有的代码块增强：hover 显示语言标签 + 复制按钮。
-// pre 需 position:relative 作为复制按钮（absolute）和语言标签（::before）的定位上下文。
 .agent-chat__body--mirror pre {
   position: relative;
-  // 左右 padding 统一变量，::before 语言标签用同值 left 保证左对齐代码正文。
   padding: 8px var(--agent-code-pad, 8px);
   margin: 0.5em 0;
   border: 0;
@@ -295,7 +281,6 @@
   background-color: var(--b3-protyle-code-background);
   overflow: auto;
 
-  // 覆盖 hljs 主题的 .hljs padding（其特异性 0,1,0 高于 pre code），用 !important 确保对齐语言标签。
   code.hljs,
   code {
     padding: 0 !important;
@@ -304,7 +289,6 @@
   }
 }
 
-// 有语言标签的代码块顶部留空间，避免 ::before 语言标签与正文重叠。
 .agent-chat__body--mirror pre[data-language] {
   padding-top: 24px;
 }
@@ -326,7 +310,6 @@
   display: none;
 }
 
-// hover 显隐：对齐原 agent-chat__copy-wrap 行为，opacity 渐显。
 .agent-chat__body pre:hover .protyle-icons,
 .agent-chat__body [data-subtype="math"]:hover .protyle-icons {
   opacity: .86;
@@ -462,9 +445,8 @@
 .agent-chat__thinking-body--preview {
   max-height: 120px;
   overflow-y: auto;
-  contain: none; // 覆盖 base 的 contain:layout paint，该值会阻止 JS 设置 scrollTop 生效
+  contain: none;
 
-  // 隐藏滚动条，保持预览态视觉干净（内容通过 JS 自动滚到底部）。
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
@@ -500,7 +482,6 @@
 
 .agent-chat__thinking-chat--streaming {
   min-height: 20px;
-  // 流式期是纯文本（textContent），保留换行；富渲染在结束后进行。
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -665,12 +646,10 @@
   }
 }
 
-// 思考强度：iconBrain 图标嵌入原生 select 左侧，与旁边的模型 select 外观一致。
 .agent-chat__reasoning-effort {
   position: relative;
   display: inline-flex;
 
-  // iconBrain 绝对定位到 select 左内侧，不拦截 select 点击。
   & > svg {
     position: absolute;
     left: 6px;
@@ -682,19 +661,16 @@
     pointer-events: none;
   }
 
-  // 文字右移让出图标空间（b3-select 原始左 padding 为 8px）。
   .agent-chat__reasoning-effort-select {
     padding-left: 26px;
   }
 }
 
-// 停止按钮：常显悬浮背景色，图标主色填充。
 .agent-chat__stop {
   background: var(--b3-list-hover);
   color: var(--b3-theme-primary);
 }
 
-// token 分类明细弹层：hover 底部 tokens 数字时弹出，复用 b3-menu 基础样式。
 .agent-token-popup {
   position: fixed;
   width: 280px;
@@ -706,7 +682,6 @@
   }
 }
 
-// 总数行（第一行）：加粗，与其他分类区分。
 .agent-token-popup__total {
   display: flex;
   align-items: center;
@@ -716,7 +691,6 @@
   color: var(--b3-theme-on-background);
 }
 
-// 各分类行：两端对齐，左标签右百分比。
 .agent-token-popup__row {
   display: flex;
   align-items: center;
@@ -736,15 +710,12 @@
   color: var(--b3-theme-on-surface-light);
 }
 
-// 总数行与分类之间、分类与缓存命中之间的分隔线。
 .agent-token-popup__divider {
   height: 1px;
   margin: 4px 10px;
   background: var(--b3-border-color);
 }
 
-// 第一行下方的上下文占用横条：总长 = 模型上限，填充宽度 = 已用占比，
-// 填充色统一主色（与底部圆环一致）；未填充为轨道灰。
 .agent-token-popup__bar {
   height: 4px;
   margin: 6px 10px 4px;
@@ -771,7 +742,6 @@
   margin: 0 8px 4px;
 }
 
-// 会话条目"更多"按钮的子菜单定位：使用 position: fixed（默认），位置由 JS 动态计算。
 .agent-session-more {
   position: relative;
 
@@ -1045,7 +1015,6 @@
   }
 }
 
-// 迷你 protyle 输入框：复用 .protyle-wysiwyg，此处只约束尺寸（min/max-height、滚动）。
 .agent-chat__composer-host .protyle-wysiwyg {
   outline: none;
   font-size: 14px;

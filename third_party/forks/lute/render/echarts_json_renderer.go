@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -19,12 +18,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// EChartsJSONRenderer 描述了 ECharts JSON 渲染器。
 type EChartsJSONRenderer struct {
 	*BaseRenderer
 }
 
-// NewEChartsJSONRenderer 创建一个 ECharts JSON 渲染器。
 func NewEChartsJSONRenderer(tree *parse.Tree, options *Options, parseOptions *parse.Options) Renderer {
 	ret := &EChartsJSONRenderer{NewBaseRenderer(tree, options, parseOptions)}
 	ret.RendererFuncs[ast.NodeDocument] = ret.renderDocument
@@ -526,7 +523,6 @@ func (r *EChartsJSONRenderer) comma() {
 
 func (r *EChartsJSONRenderer) ignore(node *ast.Node) bool {
 	return nil == node ||
-		// 以下类型的节点不进行渲染，否则图画出来节点太多
 		ast.NodeBlockquoteMarker == node.Type ||
 		ast.NodeEmA6kOpenMarker == node.Type || ast.NodeEmA6kCloseMarker == node.Type ||
 		ast.NodeEmU8eOpenMarker == node.Type || ast.NodeEmU8eCloseMarker == node.Type ||

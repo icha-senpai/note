@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -21,8 +20,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// 没有实现可扩展的策略，仅过滤不安全的标签和属性。
-// 鸣谢 https://github.com/icha-senpai/note/third_party/forks/github/microcosm-cc/bluemonday
 
 var setOfElementsToSkipContent = map[string]interface{}{
 	"frame":    nil,
@@ -185,9 +182,6 @@ func writeLinkableBuf(buff *bytes.Buffer, token *html.Token) {
 	buff.WriteString(tokenBuff.String())
 }
 
-// urlAttrs 列出承载 URL 的属性，这些属性都需要做危险协议（javascript: / data:text/html 等）过滤。
-// 除了常见的 src/srcset/href 外，还包括 <form action> 和 SVG <a xlink:href>，
-// 否则 <form action="javascript:..."> 与 <svg><a xlink:href="javascript:..."> 会绕过过滤。
 var urlAttrs = map[string]interface{}{
 	"src":        nil,
 	"srcset":     nil,
@@ -245,8 +239,6 @@ func allowAttr(attrName string) bool {
 	return true
 }
 
-// eventAttrs 包含除事件处理器外的危险属性。
-// 事件处理器属性（以 "on" 开头）由 allowAttr 统一拒绝。
 var eventAttrs = map[string]interface{}{
 	"http-equiv": nil,
 	"formaction": nil,

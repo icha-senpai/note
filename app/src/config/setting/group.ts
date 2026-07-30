@@ -5,7 +5,6 @@ export interface SettingGroup {
     tabId: string;
     title: string;
     order: number;
-    /** 标题检索串（注册时 normalize） */
     searchTitle: string;
 }
 
@@ -35,7 +34,6 @@ export const registerSettingGroup = (tabId: string, groupId: string, title: stri
     return group;
 };
 
-/** 按注册顺序返回 Tab 下全部分组 */
 export const getSettingGroupsByTabId = (tabId: string): SettingGroup[] => {
     const tabGroups = groupsByTab.get(tabId);
     return tabGroups ? [...tabGroups.values()].sort((a, b) => a.order - b.order) : [];

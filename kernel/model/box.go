@@ -28,13 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/go-humanize"
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/lute/lex"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	"github.com/icha-senpai/note/third_party/forks/github/araddon/dateparse"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/filesys"
@@ -42,9 +35,16 @@ import (
 	"github.com/icha-senpai/note/kernel/task"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/external/gopkg.in/yaml.v3"
+	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/github/araddon/dateparse"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/lute/lex"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
 type Box struct {
@@ -114,29 +114,24 @@ func ListNotebooks() (ret []*Box, err error) {
 		boxConfPath := filepath.Join(boxDirPath, ".scribli", "conf.json")
 		isExistConf := filelock.IsExist(boxConfPath)
 		if !isExistConf {
-			if !IsUserGuide(id) {
+			backup, backupErr := readNotebookCryptBackup(id)
+			if backupErr != nil {
+				logging.LogErrorf("read notebook crypt backup [%s] failed: %s", boxDirPath, backupErr)
+				continue
+			}
+			if backup != nil {
 
-				backup, backupErr := readNotebookCryptBackup(id)
-				if backupErr != nil {
-					logging.LogErrorf("read notebook crypt backup [%s] failed: %s", boxDirPath, backupErr)
+				boxConf.Encrypted = true
+				boxConf.BoxCrypt = backup
+				tmpBox := &Box{ID: id}
+				if saveErr := tmpBox.SaveConf(boxConf); saveErr != nil {
+					logging.LogErrorf("restore encrypted notebook conf from backup failed [%s]: %s", boxDirPath, saveErr)
 					continue
 				}
-				if backup != nil {
-
-					boxConf.Encrypted = true
-					boxConf.BoxCrypt = backup
-					tmpBox := &Box{ID: id}
-					if saveErr := tmpBox.SaveConf(boxConf); saveErr != nil {
-						logging.LogErrorf("restore encrypted notebook conf from backup failed [%s]: %s", boxDirPath, saveErr)
-						continue
-					}
-					logging.LogWarnf("restored encrypted notebook conf from backup [%s]", boxDirPath)
-				} else {
-
-					logging.LogWarnf("found a corrupted box [%s]", boxDirPath)
-				}
+				logging.LogWarnf("restored encrypted notebook conf from backup [%s]", boxDirPath)
 			} else {
-				continue
+
+				logging.LogWarnf("found a corrupted box [%s]", boxDirPath)
 			}
 		} else {
 			data, readErr := filelock.ReadFile(boxConfPath)

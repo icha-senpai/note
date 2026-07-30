@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -25,13 +24,11 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// FormatRenderer 描述了格式化渲染器。
 type FormatRenderer struct {
 	*BaseRenderer
-	NodeWriterStack []*bytes.Buffer // 节点输出缓冲栈
+	NodeWriterStack []*bytes.Buffer
 }
 
-// NewFormatRenderer 创建一个格式化渲染器。
 func NewFormatRenderer(tree *parse.Tree, options *Options, parseOptions *parse.Options) *FormatRenderer {
 	ret := &FormatRenderer{BaseRenderer: NewBaseRenderer(tree, options, parseOptions)}
 	ret.RendererFuncs[ast.NodeDocument] = ret.renderDocument
@@ -294,7 +291,6 @@ func (r *FormatRenderer) renderTextMark(node *ast.Node, entering bool) ast.WalkS
 		}
 
 		if r.Options.AutoSpace && !parse.ContainTextMark(node, "block-ref", "code", "inline-math", "kbd", "tag") {
-			// `优化排版` 支持行级元素加粗、斜体等 https://github.com/siyuan-note/siyuan/issues/6800
 			textContent = string(r.Space([]byte(textContent)))
 		}
 
@@ -351,7 +347,7 @@ func (r *FormatRenderer) renderTextMarkAttrs(node *ast.Node) (attrs [][]string) 
 			attrs = append(attrs, []string{"data-subtype", "math"})
 			inlineMathContent := node.TextMarkInlineMathContent
 			if node.ParentIs(ast.NodeTableCell) {
-				// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+				// Improve the handling of inline-math containing `|` in the table
 				inlineMathContent = strings.ReplaceAll(inlineMathContent, "|", "&#124;")
 				inlineMathContent = strings.ReplaceAll(inlineMathContent, "\n", "<br/>")
 			}
@@ -910,8 +906,6 @@ func (r *FormatRenderer) renderEmoji(node *ast.Node, entering bool) ast.WalkStat
 	return ast.WalkContinue
 }
 
-// tableCellStructIALTokens 提取单元格的 colspan/rowspan/fn__none 结构属性并序列化为 IAL tokens，
-// 供 markdown 往返时保留合并单元格信息。无结构属性时返回 nil。
 func tableCellStructIALTokens(node *ast.Node) []byte {
 	var structural [][]string
 	for _, kv := range node.KramdownIAL {
@@ -938,10 +932,6 @@ func (r *FormatRenderer) renderTableCell(node *ast.Node, entering bool) ast.Walk
 				r.Write(bytes.Repeat([]byte{lex.ItemSpace}, padding))
 			}
 		}
-		// 表格合并单元格的 colspan/rowspan/fn__none 是结构属性，必须随 markdown 往返保留。
-		// 当 KramdownSpanIAL 渲染选项关闭时（如思源 html2BlockDOM），renderKramdownSpanIAL 不输出
-		// NodeKramdownSpanIAL 子节点，这里从 KramdownIAL 手动补出，避免合并信息丢失。
-		// 选项开启时由 renderKramdownSpanIAL 统一输出，此处跳过以免重复。
 		if !r.Options.KramdownSpanIAL {
 			if ialTokens := tableCellStructIALTokens(node); nil != ialTokens {
 				r.Write(ialTokens)
@@ -1016,7 +1006,6 @@ func (r *FormatRenderer) renderTableHead(node *ast.Node, entering bool) ast.Walk
 
 func (r *FormatRenderer) renderTable(node *ast.Node, entering bool) ast.WalkStatus {
 	if entering {
-		// 遍历单元格算出最大宽度
 
 		var cells [][]*ast.Node
 		cells = append(cells, []*ast.Node{})
@@ -1043,15 +1032,12 @@ func (r *FormatRenderer) renderTable(node *ast.Node, entering bool) ast.WalkStat
 		for col := 0; col < len(cells[0]); col++ {
 			for row := 0; row < len(cells) && col < len(cells[row]); row++ {
 				cells[row][col].TableCellContentWidth = cells[row][col].TokenLen()
-				// 自动添加空格会导致单元格宽度发生变化
 				if r.Options.AutoSpace {
 					ret := 0
-					// 遍历字节点，将可能会多出来的空格计算出来
 					ast.Walk(cells[row][col], func(n *ast.Node, entering bool) ast.WalkStatus {
 						if !entering {
 							return ast.WalkContinue
 						}
-						// 空格仅一个字节，可以直接计算长度
 						ret += len(r.Space(n.Tokens)) - len(n.Tokens)
 						return ast.WalkContinue
 					})
@@ -1308,8 +1294,6 @@ func (r *FormatRenderer) renderParagraph(node *ast.Node, entering bool) ast.Walk
 			if ast.NodeListItem == parent.Type { // ListItem.Paragraph
 				listItem := parent
 				if nil != listItem.Parent && nil != listItem.Parent.ListData {
-					// 必须通过列表（而非列表项）上的紧凑标识判断，因为在设置该标识时仅设置了 List.Tight
-					// 设置紧凑标识的具体实现可参考函数 List.Finalize()
 					inTightList = listItem.Parent.ListData.Tight
 
 					if nextItem := listItem.Next; nil == nextItem {
@@ -1648,7 +1632,7 @@ func (r *FormatRenderer) renderBlockquote(node *ast.Node, entering bool) ast.Wal
 		if 2 < length && lex.IsBlank(lines[length-1]) && lex.IsBlank(lines[length-2]) {
 			lines = lines[:length-1]
 		}
-		if 1 == len(r.NodeWriterStack) { // 已经是根这一层
+		if 1 == len(r.NodeWriterStack) {
 			length = len(lines)
 			if 1 < length && lex.IsBlank(lines[length-1]) {
 				lines = lines[:length-1]
@@ -1678,7 +1662,7 @@ func (r *FormatRenderer) renderBlockquote(node *ast.Node, entering bool) ast.Wal
 		buf = bytes.TrimSpace(r.Writer.Bytes())
 		r.Writer.Reset()
 		r.Write(buf)
-		if !node.ParentIs(ast.NodeTableCell) { // 在表格中不能换行，否则会破坏表格的排版 https://github.com/Vanessa219/vditor/issues/368
+		if !node.ParentIs(ast.NodeTableCell) {
 			if r.withoutKramdownBlockIAL(node) {
 				r.WriteString("\n\n")
 			}

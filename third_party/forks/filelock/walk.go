@@ -30,7 +30,7 @@ import (
 
 var (
 	Container         = ""
-	AndroidServerPort = 6906 // Android HTTP 服务器端口
+	AndroidServerPort = 6906
 )
 
 func Walk(root string, fn fs.WalkDirFunc) error {
@@ -39,7 +39,6 @@ func Walk(root string, fn fs.WalkDirFunc) error {
 	}
 
 	if strings.Contains(runtime.GOOS, "android") {
-		// Android 系统上统一使用 Android HTTP 服务器来遍历文件
 		// Data sync may cause data loss on Android 14
 
 		start := time.Now()
@@ -104,13 +103,11 @@ func Walk(root string, fn fs.WalkDirFunc) error {
 			err = fn(p, fs.FileInfoToDirEntry(info), nil)
 			if nil != err {
 				if errors.Is(err, fs.SkipDir) {
-					// 如果是目录且返回 SkipDir，将其加入跳过列表
-					// 注意：需要确保 p 后面带上分隔符，防止误跳过同名前缀目录
 					skipPaths = append(skipPaths, p+"/")
 					continue
 				}
 				if errors.Is(err, fs.SkipAll) {
-					return nil // 彻底结束
+					return nil
 				}
 				return err
 			}

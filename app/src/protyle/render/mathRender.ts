@@ -68,13 +68,10 @@ export const mathRender = (element: Element, cdn = Constants.PROTYLE_CDN, maxWid
                         }
                         const nextSibling = hasNextSibling(mathElement) as HTMLElement;
                         if (!nextSibling) {
-                            // 表格编辑问题 
                             if (mathElement.parentElement.tagName !== "TH" && mathElement.parentElement.tagName !== "TD") {
-                                // 光标无法移动到末尾 
                                 mathElement.insertAdjacentText("afterend", "\n");
                             } else {
                                 // ，
-                                // 随着浏览器的升级，从 beforeend 修改为 afterend
                                 mathElement.insertAdjacentText("afterend", Constants.ZWSP);
                             }
                         } else if (nextSibling && nextSibling.nodeType !== 3 &&
@@ -82,21 +79,15 @@ export const mathRender = (element: Element, cdn = Constants.PROTYLE_CDN, maxWid
                                 nextSibling.getAttribute("data-type")?.indexOf("inline-math") > -1 ||
                                 nextSibling.classList.contains("img")
                             )) {
-                            // 相邻的数学公式删除或光标移动有问题
                             mathElement.after(document.createTextNode(Constants.ZWSP));
                         } else if (nextSibling &&
                             !nextSibling.textContent.startsWith("\n") && // 
-                            // 输入 $a$ 后，光标移动到其他块，再点击 a 后，光标不显示 
                             nextSibling.textContent !== Constants.ZWSP) {
-                            // 数学公式后一个字符删除多 br 
-                            // 数学公式后有 \n 不能再添加 &#xFEFF; 
                             mathElement.insertAdjacentHTML("beforeend", "&#xFEFF;");
                         }
-                        // 光标无法移动到段首 
                         if (mathElement.previousSibling?.textContent.endsWith("\n")) {
                             mathElement.insertAdjacentText("beforebegin", Constants.ZWSP);
                         } else if (!hasPreviousSibling(mathElement) && ["TH", "TD"].includes(mathElement.parentElement.tagName)) {
-                            // 单元格中只有数学公式时，光标无法移动到数学公式前
                             mathElement.insertAdjacentText("afterbegin", Constants.ZWSP);
                         }
                     }

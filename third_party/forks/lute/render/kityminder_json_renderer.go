@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -21,12 +20,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
-// KityMinderJSONRenderer 描述了 KityMinder JSON 渲染器。
 type KityMinderJSONRenderer struct {
 	*BaseRenderer
 }
 
-// NewKityMinderJSONRenderer 创建一个 KityMinder JSON 渲染器。
 func NewKityMinderJSONRenderer(tree *parse.Tree, options *Options, parseOptions *parse.Options) Renderer {
 	ret := &KityMinderJSONRenderer{NewBaseRenderer(tree, options, parseOptions)}
 	ret.RendererFuncs[ast.NodeDocument] = ret.renderDocument
@@ -133,7 +130,7 @@ func (r *KityMinderJSONRenderer) renderHTML(node *ast.Node, entering bool) ast.W
 
 func (r *KityMinderJSONRenderer) renderParagraph(node *ast.Node, entering bool) ast.WalkStatus {
 	if grandparent := node.Parent.Parent; nil != grandparent && ast.NodeList == grandparent.Type && grandparent.ListData.Tight { // List.ListItem.Paragraph
-		if node.Parent.FirstChild == node && node.Parent.LastChild == node { // ListItem 下面只有一个段落时不渲染该段落
+		if node.Parent.FirstChild == node && node.Parent.LastChild == node {
 			return ast.WalkContinue
 		}
 	}

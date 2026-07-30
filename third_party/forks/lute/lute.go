@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -8,7 +7,6 @@
 // THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-// Package lute 提供了一款结构化的 Markdown 引擎，支持 Go 和 JavaScript。
 package lute
 
 import (
@@ -27,38 +25,25 @@ import (
 
 const Version = "1.7.6"
 
-// Lute 描述了 Lute 引擎的顶层使用入口。
 type Lute struct {
-	ParseOptions  *parse.Options  // 解析选项
-	RenderOptions *render.Options // 渲染选项
+	ParseOptions  *parse.Options
+	RenderOptions *render.Options
 
-	HTML2MdRendererFuncs          map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 HTML2Md 渲染器函数
-	HTML2VditorDOMRendererFuncs   map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 HTML2VditorDOM 渲染器函数
-	HTML2VditorIRDOMRendererFuncs map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 HTML2VditorIRDOM 渲染器函数
-	HTML2BlockDOMRendererFuncs    map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 HTML2BlockDOM 渲染器函数
-	HTML2VditorSVDOMRendererFuncs map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 HTML2VditorSVDOM 渲染器函数
-	Md2HTMLRendererFuncs          map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 Md2HTML 渲染器函数
-	Md2VditorDOMRendererFuncs     map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 Md2VditorDOM 渲染器函数
-	Md2VditorIRDOMRendererFuncs   map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 Md2VditorIRDOM 渲染器函数
-	Md2BlockDOMRendererFuncs      map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 Md2BlockDOM 渲染器函数
-	Md2VditorSVDOMRendererFuncs   map[ast.NodeType]render.ExtRendererFunc // 用户自定义的 Md2VditorSVDOM 渲染器函数
+	HTML2MdRendererFuncs          map[ast.NodeType]render.ExtRendererFunc
+	HTML2VditorDOMRendererFuncs   map[ast.NodeType]render.ExtRendererFunc
+	HTML2VditorIRDOMRendererFuncs map[ast.NodeType]render.ExtRendererFunc
+	HTML2BlockDOMRendererFuncs    map[ast.NodeType]render.ExtRendererFunc
+	HTML2VditorSVDOMRendererFuncs map[ast.NodeType]render.ExtRendererFunc
+	Md2HTMLRendererFuncs          map[ast.NodeType]render.ExtRendererFunc
+	Md2VditorDOMRendererFuncs     map[ast.NodeType]render.ExtRendererFunc
+	Md2VditorIRDOMRendererFuncs   map[ast.NodeType]render.ExtRendererFunc
+	Md2BlockDOMRendererFuncs      map[ast.NodeType]render.ExtRendererFunc
+	Md2VditorSVDOMRendererFuncs   map[ast.NodeType]render.ExtRendererFunc
 }
 
-// New 创建一个新的 Lute 引擎。
 //
-// 默认启用的解析选项：
-//   - GFM 支持
-//   - 脚注
-//   - 标题自定义 ID
-//   - Emoji 别名替换，比如 :heart: 替换为 ❤️
 //   - YAML Front Matter
 //
-// 默认启用的渲染选项：
-//   - 软换行转硬换行
-//   - 代码块语法高亮
-//   - 中西文间插入空格
-//   - 修正术语拼写
-//   - 标题自定义 ID
 func New(opts ...ParseOption) (ret *Lute) {
 	ret = &Lute{ParseOptions: parse.NewOptions(), RenderOptions: render.NewOptions()}
 	for _, opt := range opts {
@@ -78,7 +63,6 @@ func New(opts ...ParseOption) (ret *Lute) {
 	return ret
 }
 
-// Markdown 将 markdown 文本字节数组处理为相应的 html 字节数组。name 参数仅用于标识文本，比如可传入 id 或者标题，也可以传入 ""。
 func (lute *Lute) Markdown(name string, markdown []byte) (html []byte) {
 	tree := parse.Parse(name, markdown, lute.ParseOptions)
 	renderer := render.NewHtmlRenderer(tree, lute.RenderOptions, lute.ParseOptions)
@@ -89,14 +73,12 @@ func (lute *Lute) Markdown(name string, markdown []byte) (html []byte) {
 	return
 }
 
-// MarkdownStr 接受 string 类型的 markdown 后直接调用 Markdown 进行处理。
 func (lute *Lute) MarkdownStr(name, markdown string) (html string) {
 	htmlBytes := lute.Markdown(name, []byte(markdown))
 	html = util.BytesToStr(htmlBytes)
 	return
 }
 
-// Format 将 markdown 文本字节数组进行格式化。
 func (lute *Lute) Format(name string, markdown []byte) (formatted []byte) {
 	tree := parse.Parse(name, markdown, lute.ParseOptions)
 	renderer := render.NewFormatRenderer(tree, lute.RenderOptions, lute.ParseOptions)
@@ -104,14 +86,12 @@ func (lute *Lute) Format(name string, markdown []byte) (formatted []byte) {
 	return
 }
 
-// FormatStr 接受 string 类型的 markdown 后直接调用 Format 进行处理。
 func (lute *Lute) FormatStr(name, markdown string) (formatted string) {
 	formattedBytes := lute.Format(name, []byte(markdown))
 	formatted = util.BytesToStr(formattedBytes)
 	return
 }
 
-// TextBundle 将 markdown 文本字节数组进行 TextBundle 处理。
 func (lute *Lute) TextBundle(name string, markdown []byte, linkPrefixes []string) (textbundle []byte, originalLinks []string) {
 	tree := parse.Parse(name, markdown, lute.ParseOptions)
 	renderer := render.NewTextBundleRenderer(tree, linkPrefixes, lute.RenderOptions, lute.ParseOptions)
@@ -119,14 +99,12 @@ func (lute *Lute) TextBundle(name string, markdown []byte, linkPrefixes []string
 	return
 }
 
-// TextBundleStr 接受 string 类型的 markdown 后直接调用 TextBundle 进行处理。
 func (lute *Lute) TextBundleStr(name, markdown string, linkPrefixes []string) (textbundle string, originalLinks []string) {
 	textbundleBytes, originalLinks := lute.TextBundle(name, []byte(markdown), linkPrefixes)
 	textbundle = util.BytesToStr(textbundleBytes)
 	return
 }
 
-// HTML2Text 将指定的 HTMl dom 转换为文本。
 func (lute *Lute) HTML2Text(dom string) string {
 	tree := lute.HTML2Tree(dom)
 	if nil == tree {
@@ -135,7 +113,6 @@ func (lute *Lute) HTML2Text(dom string) string {
 	return tree.Root.Text()
 }
 
-// RenderJSON 用于渲染 JSON 格式数据。
 func (lute *Lute) RenderJSON(markdown string) (json string) {
 	tree := parse.Parse("", []byte(markdown), lute.ParseOptions)
 	renderer := render.NewJSONRenderer(tree, lute.RenderOptions, lute.ParseOptions)
@@ -144,12 +121,10 @@ func (lute *Lute) RenderJSON(markdown string) (json string) {
 	return
 }
 
-// Space 用于在 text 中的中西文之间插入空格。
 func (lute *Lute) Space(text string) string {
 	return render.Space0(text)
 }
 
-// IsValidLinkDest 判断 str 是否为合法的链接地址。
 func (lute *Lute) IsValidLinkDest(str string) bool {
 	str = strings.TrimSpace(str)
 	if strings.HasPrefix(str, "[") {
@@ -192,7 +167,6 @@ func (lute *Lute) GetLinkDest(str string) string {
 	return tree.Root.FirstChild.FirstChild.ChildByType(ast.NodeLinkDest).TokensStr()
 }
 
-// GetEmojis 返回 Emoji 别名和对应 Unicode 字符的字典列表。
 func (lute *Lute) GetEmojis() (ret map[string]string) {
 	parse.EmojiLock.Lock()
 	defer parse.EmojiLock.Unlock()
@@ -208,7 +182,6 @@ func (lute *Lute) GetEmojis() (ret map[string]string) {
 	return
 }
 
-// PutEmojis 将指定的 emojiMap 合并覆盖已有的 Emoji 字典。
 func (lute *Lute) PutEmojis(emojiMap map[string]string) {
 	parse.EmojiLock.Lock()
 	defer parse.EmojiLock.Unlock()
@@ -219,7 +192,6 @@ func (lute *Lute) PutEmojis(emojiMap map[string]string) {
 	}
 }
 
-// RemoveEmoji 用于删除 str 中的 Emoji Unicode。
 func (lute *Lute) RemoveEmoji(str string) string {
 	parse.EmojiLock.Lock()
 	defer parse.EmojiLock.Unlock()
@@ -230,12 +202,10 @@ func (lute *Lute) RemoveEmoji(str string) string {
 	return strings.TrimSpace(str)
 }
 
-// GetTerms 返回术语字典。
 func (lute *Lute) GetTerms() map[string]string {
 	return lute.RenderOptions.Terms
 }
 
-// PutTerms 将制定的 termMap 合并覆盖已有的术语字典。
 func (lute *Lute) PutTerms(termMap map[string]string) {
 	for k, v := range termMap {
 		lute.RenderOptions.Terms[k] = v
@@ -312,31 +282,25 @@ func ProtyleExportMdNodeSync(node *ast.Node, parseOptions *parse.Options, render
 	return
 }
 
-// ProtylePreview 使用指定的 options 渲染 tree 为 Protyle 预览 HTML。
 func (lute *Lute) ProtylePreview(tree *parse.Tree, options *render.Options, parseOptions *parse.Options) string {
 	renderer := render.NewProtylePreviewRenderer(tree, options, parseOptions)
 	output := renderer.Render()
 	return util.BytesToStr(output)
 }
 
-// ProtylePreviewStr 接受 string 类型的 markdown，内部 parse 后调用 ProtylePreview 渲染为预览 HTML。
-// 等价于后端导出预览的 markdown → parse → ProtylePreview 链路，供前端 lute.min.js 直接调用。
 func (lute *Lute) ProtylePreviewStr(name, markdown string) string {
 	tree := parse.Parse(name, []byte(markdown), lute.ParseOptions)
 	return lute.ProtylePreview(tree, lute.RenderOptions, lute.ParseOptions)
 }
 
-// Tree2HTML 使用指定的 options 渲染 tree 为标准 HTML。
 func (lute *Lute) Tree2HTML(tree *parse.Tree, options *render.Options, parseOptions *parse.Options) string {
 	renderer := render.NewHtmlRenderer(tree, options, parseOptions)
 	output := renderer.Render()
 	return util.BytesToStr(output)
 }
 
-// ParseOption 描述了解析选项设置函数签名。
 type ParseOption func(lute *Lute)
 
-// 以下 Setters 主要是给 JavaScript 端导出方法用。
 
 func (lute *Lute) SetGFMTable(b bool) {
 	lute.ParseOptions.GFMTable = b
@@ -496,8 +460,6 @@ func (lute *Lute) SetRenderListStyle(b bool) {
 	lute.RenderOptions.RenderListStyle = b
 }
 
-// SetSanitize 设置为 true 时表示对输出进行 XSS 过滤。
-// 注意：Lute 目前的实现存在一些漏洞，请不要依赖它来防御 XSS 攻击。
 func (lute *Lute) SetSanitize(b bool) {
 	lute.RenderOptions.Sanitize = b
 }
@@ -647,7 +609,7 @@ func (lute *Lute) SetEnsureListItemParagraph(b bool) {
 
 func (lute *Lute) SetJSRenderers(options map[string]map[string]*js.Object) {
 	for rendererType, extRenderer := range options["renderers"] {
-		switch extRenderer.Interface().(type) { // 稍微进行一点格式校验
+		switch extRenderer.Interface().(type) {
 		case map[string]interface{}:
 			break
 		default:

@@ -23,18 +23,15 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"time"
 	"unicode/utf8"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/sql"
-	"github.com/icha-senpai/note/kernel/task"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 func GetBoxByName(name string) (ret *Box) {
@@ -147,7 +144,6 @@ func RemoveBox(boxID string) (err error) {
 	}
 
 	FlushTxQueue()
-	isUserGuide := IsUserGuide(boxID)
 	createDocLock.Lock()
 	defer createDocLock.Unlock()
 
@@ -163,24 +159,22 @@ func RemoveBox(boxID string) (err error) {
 
 	isEncrypted := IsEncryptedBox(boxID)
 
-	if !isUserGuide {
-		var historyDir string
-		historyDir, err = getHistoryDir(HistoryOpDelete)
-		if err != nil {
-			logging.LogErrorf("get history dir failed: %s", err)
-			return
-		}
+	var historyDir string
+	historyDir, err = getHistoryDir(HistoryOpDelete)
+	if err != nil {
+		logging.LogErrorf("get history dir failed: %s", err)
+		return
+	}
 
-		p := strings.TrimPrefix(localPath, util.DataDir)
-		historyPath := filepath.Join(historyDir, p)
-		if err = filelock.Copy(localPath, historyPath); err != nil {
-			logging.LogErrorf("gen sync history failed: %s", err)
-			return
-		}
+	p := strings.TrimPrefix(localPath, util.DataDir)
+	historyPath := filepath.Join(historyDir, p)
+	if err = filelock.Copy(localPath, historyPath); err != nil {
+		logging.LogErrorf("gen sync history failed: %s", err)
+		return
+	}
 
-		if !isEncrypted {
-			copyBoxAssetsToDataAssets(boxID)
-		}
+	if !isEncrypted {
+		copyBoxAssetsToDataAssets(boxID)
 	}
 
 	if isEncrypted {
@@ -199,19 +193,6 @@ func RemoveBox(boxID string) (err error) {
 		treenode.RemoveEncryptedBlockTreeDBFile(boxID)
 	}
 
-	if isUserGuide {
-		if avFiles, readAvErr := getUserGuideAVJSONFiles(boxID); nil == readAvErr {
-			for _, avName := range avFiles {
-				avFilePath := filepath.Join(util.DataDir, "storage", "av", avName)
-				if removeErr := filelock.Remove(avFilePath); nil != removeErr {
-					logging.LogErrorf("remove av file [%s] failed: %s", avFilePath, removeErr)
-				} else {
-					logging.LogDebugf("removed av file [%s]", avFilePath)
-				}
-			}
-		}
-	}
-
 	IncSync()
 
 	logging.LogInfof("removed box [%s]", boxID)
@@ -223,22 +204,11 @@ func Unmount(boxID string) {
 
 	unmount0(boxID)
 
-	cmdName := "closeBox"
-	if IsUserGuide(boxID) {
-		if err := RemoveBox(boxID); err == nil {
-			cmdName = "removeBox"
-		} else {
-			logging.LogErrorf("close user guide box [%s] failed, fallback to unmount: %s", boxID, err)
-		}
-	}
-	evt := util.NewCmdResult(cmdName, 0, util.PushModeBroadcast)
+	evt := util.NewCmdResult("closeBox", 0, util.PushModeBroadcast)
 	evt.Data = map[string]any{
 		"box": boxID,
 	}
 	util.PushEvent(evt)
-	if cmdName == "removeBox" {
-		TriggerOnboardingIfEmpty()
-	}
 }
 
 func clearDEKIfUnlockedEncryptedBox(boxID string) {
@@ -282,60 +252,7 @@ func Mount(boxID string) (alreadyMount bool, err error) {
 	defer boxLock.Delete(boxID)
 
 	FlushTxQueue()
-	isUserGuide := IsUserGuide(boxID)
-
 	localPath := filepath.Join(util.DataDir, boxID)
-	var reMountGuide bool
-	if isUserGuide {
-
-		guideBox := Conf.Box(boxID)
-		if nil != guideBox {
-			unmount0(guideBox.ID)
-			reMountGuide = true
-		}
-
-		if err = filelock.Remove(localPath); err != nil {
-			return
-		}
-
-		boxes, _ := ListNotebooks()
-		var sort int
-		if len(boxes) > 0 {
-			sort = boxes[0].Sort - 1
-		}
-
-		p := filepath.Join(util.WorkingDir, "guide", boxID)
-		if err = filelock.Copy(p, localPath); err != nil {
-			return
-		}
-
-		cache.ClearTreeCache()
-		cache.ClearDocsIAL()
-		cache.ClearBlocksIAL()
-		cache.ClearAVCache()
-
-		avDirPath := filepath.Join(util.WorkingDir, "guide", boxID, "storage", "av")
-		if filelock.IsExist(avDirPath) {
-			if err = filelock.Copy(avDirPath, filepath.Join(util.DataDir, "storage", "av")); err != nil {
-				return
-			}
-		}
-
-		if box := Conf.Box(boxID); nil != box {
-			boxConf := box.GetConf()
-			boxConf.Closed = true
-			boxConf.Sort = sort
-			box.SaveConf(boxConf)
-		}
-
-		task.AppendAsyncTaskWithDelay(task.PushMsg, 3*time.Second, util.PushErrMsg, Conf.Language(244), 7000)
-		go func() {
-
-			time.Sleep(time.Second * 10)
-			CheckUpdate(true)
-		}()
-	}
-
 	if !gulu.File.IsDir(localPath) {
 		return false, errors.New("can not open file, just support open folder only")
 	}
@@ -366,57 +283,5 @@ func Mount(boxID string) (alreadyMount bool, err error) {
 		box.Index()
 	}
 
-	if reMountGuide {
-		return true, nil
-	}
 	return false, nil
-}
-
-func IsUserGuide(boxID string) bool {
-	return "20210808180117-czj9bvb" == boxID || "20210808180117-6v0mkxr" == boxID || "20211226090932-5lcq56f" == boxID || "20240530133126-axarxgx" == boxID
-}
-
-func getUserGuideAVJSONFiles(boxID string) (ret []string, err error) {
-	guideAVDirPath := filepath.Join(util.WorkingDir, "guide", boxID, "storage", "av")
-	if !filelock.IsExist(guideAVDirPath) {
-		logging.LogErrorf("guide av dir [%s] not exist", guideAVDirPath)
-		return
-	}
-
-	avEntries, err := os.ReadDir(guideAVDirPath)
-	if nil != err {
-		logging.LogErrorf("read guide av dir [%s] failed: %s", guideAVDirPath, err)
-		return
-	}
-
-	for _, avEntry := range avEntries {
-		avName := avEntry.Name()
-		if avEntry.IsDir() || !strings.HasSuffix(avName, ".json") || !ast.IsNodeIDPattern(strings.TrimSuffix(avName, ".json")) {
-			continue
-		}
-		ret = append(ret, avName)
-	}
-	return
-}
-
-func getAllUserGuideAVJSONFiles() (ret []string) {
-	guideDirPath := filepath.Join(util.WorkingDir, "guide")
-	guideEntries, err := os.ReadDir(guideDirPath)
-	if nil != err {
-		return
-	}
-
-	for _, guideEntry := range guideEntries {
-		boxID := guideEntry.Name()
-		if !guideEntry.IsDir() || !IsUserGuide(boxID) {
-			continue
-		}
-
-		avFiles, err := getUserGuideAVJSONFiles(boxID)
-		if nil != err {
-			continue
-		}
-		ret = append(ret, avFiles...)
-	}
-	return
 }

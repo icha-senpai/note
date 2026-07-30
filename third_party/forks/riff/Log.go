@@ -16,7 +16,6 @@
 
 package riff
 
-// Log 描述了复习日志记录。
 type Log struct {
 	ID            string
 	CardID        string

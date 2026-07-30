@@ -123,12 +123,10 @@ export const openFile = async (options: IOpenFileOptions) => {
     document.querySelectorAll(".av__panel, .av__mask").forEach(item => {
         item.remove();
     });
-    // 打开 PDF 时移除文档光标
     if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
     }
     const allModels = getAllModels();
-    // 文档已打开
     if (options.assetPath) {
         clearOBG();
         const asset = allModels.asset.find((item) => {
@@ -214,7 +212,6 @@ export const openFile = async (options: IOpenFileOptions) => {
             }
             return editor.parent;
         }
-        // 没有初始化的页签无法检测到
         const hasEditor = getUnInitTab(options);
         if (hasEditor) {
             if (options.afterOpen) {
@@ -249,13 +246,11 @@ export const openFile = async (options: IOpenFileOptions) => {
     /// #endif
 
     let wnd: Wnd = undefined;
-    // 获取光标所在 tab
     const element = document.querySelector(".layout__wnd--active");
     if (element) {
         wnd = getInstanceById(element.getAttribute("data-id")) as Wnd;
     }
     if (!wnd) {
-        // 中心 tab
         wnd = getWndByLayout(window.scribli.layout.centerLayout);
     }
     if (wnd) {
@@ -268,7 +263,6 @@ export const openFile = async (options: IOpenFileOptions) => {
                     if (item.id === wnd.id) {
                         let nextWnd = wnd.parent.children[index + 1];
                         if (!nextWnd) {
-                            // wnd 为右侧时，应设置其为目标
                             nextWnd = wnd;
                         }
                         while (nextWnd instanceof Layout) {
@@ -286,7 +280,6 @@ export const openFile = async (options: IOpenFileOptions) => {
                     }
                     return;
                 }
-                // 在右侧/下侧打开已有页签将进行页签切换 
                 let hasEditor = !options.openNewTab && targetWnd.children.find(item => {
                     if (item.model && item.model instanceof Editor && item.model.editor.protyle.block.rootID === options.rootID) {
                         switchEditor(item.model, options, allModels);
@@ -323,7 +316,6 @@ export const openFile = async (options: IOpenFileOptions) => {
             wnd.addTab(createdTab, options.keepCursor);
         } else if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
             let unUpdateTab: Tab;
-            // 不能 reverse, 找到也不能提前退出循环，否则 
             wnd.children.find((item) => {
                 if (item.headElement && item.headElement.classList.contains("item--unupdate") && !item.headElement.classList.contains("item--pin")) {
                     unUpdateTab = item;
@@ -350,7 +342,6 @@ export const openFile = async (options: IOpenFileOptions) => {
     }
 };
 
-// 没有初始化的页签无法检测到
 const getUnInitTab = (options: IOpenFileOptions) => {
     return getAllTabs().find(item => {
         const initData = item.headElement?.getAttribute("data-initdata");
@@ -414,11 +405,9 @@ const switchEditor = (editor: Editor, options: IOpenFileOptions, allModels: IMod
                 action: options.action,
                 scrollPosition: options.scrollPosition
             });
-            // 大纲点击折叠标题下的内容时，需更新反链面板
             updateBacklinkGraph(allModels, editor.editor.protyle);
         });
     } else {
-        // 点击大纲产生滚动时会动态加载内容，最终导致定位不准确
         preventScroll(editor.editor.protyle);
         editor.editor.protyle.observerLoad?.disconnect();
         if (options.action?.includes(Constants.CB_GET_HL)) {
@@ -456,7 +445,7 @@ const switchEditor = (editor: Editor, options: IOpenFileOptions, allModels: IMod
                 }, 1000 * 3);
                 editor.editor.protyle.observerLoad.observe(editor.editor.protyle.wysiwyg.element);
             } else if (editor.editor.protyle.block.rootID === options.id) {
-                // 由于 ，移除定位
+                // Intentionally empty.
             } else if (editor.editor.protyle.toolbar.range) {
                 nodeElement = hasClosestBlock(editor.editor.protyle.toolbar.range.startContainer) as Element;
                 focusByRange(editor.editor.protyle.toolbar.range);
@@ -513,8 +502,7 @@ const newTab = (options: IOpenFileOptions) => {
                         tab.addModel(model);
                     }
                 } else {
-                    // plugin 0.8.3 历史兼容
-                    console.warn("0.8.3 将移除 custom.fn 参数，请将其修改为 custom.id");
+                    console.warn("0.8.3 removes the custom.fn parameter. Please change it to custom.id");
                     tab.addModel(options.custom.fn({
                         tab,
                         data: options.custom.data
@@ -616,7 +604,6 @@ export const updatePanelByEditor = (options: {
             item.eventBus.emit("switch-protyle", {protyle: options.protyle});
         });
     }
-    // 切换页签或关闭所有页签时，需更新对应的面板
     const models = getAllModels();
     updateOutline(models, options.protyle, options.reload);
     updateBacklinkGraph(models, options.protyle);
@@ -628,7 +615,7 @@ export const isCurrentEditor = (blockId: string) => {
         const tab = getInstanceById(activeElement.getAttribute("data-id"));
         if (tab instanceof Tab && tab.model instanceof Editor) {
             if (tab.model.editor.protyle.block.rootID === blockId ||
-                tab.model.editor.protyle.block.parentID === blockId ||  // updateBacklinkGraph 时会传入 parentID
+                tab.model.editor.protyle.block.parentID === blockId ||
                 tab.model.editor.protyle.block.id === blockId) {
                 return true;
             }
@@ -761,20 +748,17 @@ export const openBy = (url: string, type: "folder" | "app") => {
     }
     let address = "";
     if ("windows" === window.scribli.config.system.os) {
-        // `file://` 协议兼容 Window 平台使用 `/` 作为目录分割线 
         address = url.replace("file:///", "").replace("file://\\", "").replace("file://", "").replace(/\//g, "\\");
     } else {
         address = url.replace("file://", "");
     }
 
-    // 拖入文件名包含 `)` 、`(` 的文件以 `file://` 插入后链接解析错误 
     address = address.replace(/\\\)/g, ")").replace(/\\\(/g, "(");
     if (type === "app") {
         useShell("openPath", address);
     } else if (type === "folder") {
         if ("windows" === window.scribli.config.system.os) {
-            if (!address.startsWith("\\\\")) { // \\ 开头的路径是 Windows 网络共享路径 
-                // Windows 端打开本地文件所在位置失效 
+            if (!address.startsWith("\\\\")) {
                 address = address.replace(/\\\\/g, "\\");
             }
         }

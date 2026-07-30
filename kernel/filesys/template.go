@@ -21,15 +21,15 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/go-humanize"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	util2 "github.com/icha-senpai/note/third_party/forks/lute/util"
-	"github.com/icha-senpai/note/third_party/forks/github/Masterminds/sprig/v3"
-	"github.com/icha-senpai/note/third_party/forks/github/araddon/dateparse"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/Masterminds/sprig/v3"
+	"github.com/icha-senpai/note/third_party/forks/github/araddon/dateparse"
 	"github.com/icha-senpai/note/third_party/forks/github/spf13/cast"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	util2 "github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
 func BuiltInTemplateFuncs() (ret template.FuncMap) {
@@ -40,8 +40,6 @@ func BuiltInTemplateFuncs() (ret template.FuncMap) {
 	delete(ret, "getHostByName")
 
 	ret["Weekday"] = util.Weekday
-	ret["WeekdayCN"] = util.WeekdayCN
-	ret["WeekdayCN2"] = util.WeekdayCN2
 	ret["ISOWeek"] = util.ISOWeek
 	ret["ISOYear"] = util.ISOYear
 	ret["ISOMonth"] = util.ISOMonth

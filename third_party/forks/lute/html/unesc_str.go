@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -36,7 +35,6 @@ func UnescapeBytes(tokens []byte) (ret []byte) {
 }
 
 func HtmlUnescapeString(s string) string {
-	// 鸣谢 https://gitlab.com/golang-commonmark
 
 	i := strings.IndexByte(s, lex.ItemAmpersand)
 	if i < 0 {

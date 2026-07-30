@@ -18,7 +18,6 @@
     position: fixed;
     right: 30px;
     top: 22px;
-    // 不能设置死，否则右键菜单会被遮盖 z-index: 999999;
     max-height: calc(100vh - 32px);
     display: flex;
     flex-direction: column;

@@ -5,21 +5,18 @@ import (
 	"unicode/utf8"
 )
 
-// ReadN 精准地读取 len(data) 个字节, 否则返回错误
 // reads exactly len(data) bytes, otherwise returns an error
 func ReadN(reader io.Reader, data []byte) error {
 	_, err := io.ReadFull(reader, data)
 	return err
 }
 
-// WriteN 将 content 写入 writer 中
 // writes the content to the writer
 func WriteN(writer io.Writer, content []byte) error {
 	_, err := writer.Write(content)
 	return err
 }
 
-// CheckEncoding 检查 payload 的编码是否有效
 // checks if the encoding of the payload is valid
 func CheckEncoding(enabled bool, opcode uint8, payload []byte) bool {
 	if enabled && (opcode == 1 || opcode == 8) {
@@ -53,7 +50,6 @@ func (b Buffers) Len() int {
 	return sum
 }
 
-// WriteTo 可重复写
 func (b Buffers) WriteTo(w io.Writer) (int64, error) {
 	var n = 0
 	for i, _ := range b {
@@ -76,7 +72,6 @@ func (b Bytes) Len() int {
 	return len(b)
 }
 
-// WriteTo 可重复写
 func (b Bytes) WriteTo(w io.Writer) (int64, error) {
 	n, err := w.Write(b)
 	return int64(n), err

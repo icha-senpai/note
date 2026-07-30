@@ -19,13 +19,13 @@ package plugin
 import (
 	"fmt"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/kernel/extensions"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
 )
 
-// injectPlugin adds siyuan.plugin to the goja context.
-func injectPlugin(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
+// injectPlugin adds scribli.plugin to the goja context.
+func injectPlugin(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("injectPlugin: %v", r)
@@ -47,6 +47,6 @@ func injectPlugin(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err e
 	lo.Must0(plugin.Set("lifecycle", lifecycle))
 	lo.Must0(ObjectFreeze(rt, plugin))
 
-	lo.Must0(siyuan.Set("plugin", plugin))
+	lo.Must0(scribli.Set("plugin", plugin))
 	return
 }

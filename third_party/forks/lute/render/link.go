@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -22,7 +21,6 @@ func (r *BaseRenderer) EncodeLinkSpace(dest string) string {
 		return dest
 	}
 
-	// Improve export of Markdown hyperlink spaces and markers https://github.com/siyuan-note/siyuan/issues/9792
 	return strings.ReplaceAll(dest, " ", "%20")
 }
 
@@ -51,11 +49,6 @@ func (r *BaseRenderer) RelativePath(dest []byte) []byte {
 		return dest
 	}
 
-	if !bytes.HasPrefix(dest, []byte("assets/")) &&
-		(strings.HasPrefix(r.Options.LinkBase, "https://assets.b3logfile.com/siyuan/") || strings.HasPrefix(r.Options.LinkBase, "https://assets.liuyun.io/siyuan/")) {
-		return dest
-	}
-
 	dest = bytes.ReplaceAll(dest, []byte("%5C"), []byte("\\"))
 	linkBase := util.StrToBytes(r.Options.LinkBase)
 	if !bytes.HasSuffix(linkBase, []byte("/")) {
@@ -77,7 +70,6 @@ func (r *BaseRenderer) isRelativePath(dest []byte) bool {
 		return false
 	}
 
-	// 检查特定协议前缀
 	lowerDest := strings.ToLower(string(dest))
 	if strings.HasPrefix(lowerDest, "mailto:") ||
 		strings.HasPrefix(lowerDest, "tel:") ||

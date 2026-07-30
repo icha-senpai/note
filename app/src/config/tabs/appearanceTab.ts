@@ -160,7 +160,6 @@ const mountAppearanceFontFamily = (root: HTMLElement) => {
                         filterFontList();
                     });
                     inputElement.addEventListener("compositionend", filterFontList);
-                    // 列表点击委托，读取 dataset 应用选中逻辑
                     listElement.addEventListener("click", (event) => {
                         const target = event.target as HTMLElement;
                         const itemEl = target.closest(".b3-list-item")?.querySelector(".b3-menu__label") as HTMLElement;
@@ -178,7 +177,6 @@ const mountAppearanceFontFamily = (root: HTMLElement) => {
             });
             const rect = fontFamilyEl.getBoundingClientRect();
             fontMenu.open({x: rect.left, y: rect.bottom, h: rect.height});
-            // 内部列表自行滚动，搜索框保持固定
             fontMenu.element.querySelector(".b3-menu__items").setAttribute("style", "overflow: initial");
             fontMenu.element.querySelector("input").focus();
         });
@@ -430,7 +428,6 @@ const registerAppearanceControlsGroup = (tab: SettingTabBuilder) => {
             control: desktopModeControl,
             save: (value) => {
                 desktopModeCookie.set(value as boolean);
-                // 切换桌面/移动模式需要重启应用才能加载对应 bundle，走正常退出流程后由用户手动重启
                 void exitScribli();
             },
         }],
@@ -528,7 +525,6 @@ const NOTIFICATIONS_ITEMS: { field: keyof Config.IAppearanceNotifications; label
 
 const genNotificationsDialogHtml = (): string => {
     const notifications = window.scribli.config.appearance.notifications;
-    // 默认启用：字段为 undefined（旧配置未迁移）或 true 时开关勾选
     const listItems = NOTIFICATIONS_ITEMS.map(({field, labelKey}) =>
         genListSwitchItemHtml(field, window.scribli.languages[labelKey], notifications?.[field] !== false)
     ).join("");
@@ -598,13 +594,6 @@ const registerAppearancePersonalizationGroup = (tab: SettingTabBuilder) => {
         afterMount: mountAppearanceCodeSnippet,
     }, (stack) => {
         stack.title(window.scribli.languages.codeSnippet);
-        if ("zh-CN" === window.scribli.config.lang) {
-            stack.button({
-                id: "codeSnippetCommunityShare",
-                label: window.scribli.languages.visitCommunityShare,
-                icon: "iconUpload",
-            });
-        }
         stack.desc(window.scribli.languages.codeSnippetTip);
         stack.button({
             id: "codeSnippet",

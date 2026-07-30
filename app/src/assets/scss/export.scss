@@ -50,14 +50,12 @@ svg {
 }
 
 @media print {
-  // 尽量避免块内分页
   .protyle-wysiwyg [data-node-id] {
     &[data-type=NodeAudio],
     &.render-node[data-type=NodeCodeBlock],
     &[data-type=NodeHeading],
     &[data-type=NodeIFrame],
     &[data-type=NodeMathBlock],
-    // 移除段落块元素  &[data-type=NodeParagraph],
     &[data-type=NodeThematicBreak],
     &[data-type=NodeVideo],
     &[data-type=NodeWidget],

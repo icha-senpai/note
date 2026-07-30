@@ -23,7 +23,6 @@ export const moveToUp = (protyle: IProtyle, nodeElement: HTMLElement, range: Ran
         sourceElements = [sourceElement];
     }
     const type = sourceElements[0].getAttribute("data-type");
-    // 子列表
     if (type === "NodeListItem" &&
         !sourceElements[0].previousElementSibling &&
         sourceElements[0].parentElement.previousElementSibling?.previousElementSibling?.classList.contains("protyle-action")) {
@@ -47,7 +46,6 @@ export const moveToUp = (protyle: IProtyle, nodeElement: HTMLElement, range: Ran
             range.insertNode(document.createElement("wbr"));
             oldListHTML = sourceElements[0].parentElement.parentElement.outerHTML;
             if (!previousElement) {
-                // 目标 li 无子列表：直接整体移动源列表，与其他块移动保持一致
                 sourceElements[0].parentElement.previousElementSibling.lastElementChild.insertAdjacentElement("beforebegin", sourceElements[0]);
                 updateTransaction(protyle, sourceElements[0].parentElement.parentElement, oldListHTML);
                 preventScroll(protyle);
@@ -65,7 +63,6 @@ export const moveToUp = (protyle: IProtyle, nodeElement: HTMLElement, range: Ran
         const orderIndex = parseInt(sourceParentElement.firstElementChild.getAttribute("data-marker"));
         sourceElements.reverse().forEach(item => {
             if (item.classList.contains("list")) {
-                // 子列表需移动其全部直接子列表项
                 Array.from(item.querySelectorAll(":scope > .li")).reverse().forEach(li => previousElement.after(li));
             } else {
                 previousElement.after(item);
@@ -134,7 +131,6 @@ export const moveToDown = (protyle: IProtyle, nodeElement: HTMLElement, range: R
         sourceElements = [sourceElement];
     }
     const type = sourceElements[0].getAttribute("data-type");
-    // 子列表
     if (type === "NodeListItem" &&
         sourceElements[sourceElements.length - 1].nextElementSibling.classList.contains("protyle-attr") &&
         sourceElements[0].parentElement.parentElement?.classList.contains("li")) {
@@ -158,7 +154,6 @@ export const moveToDown = (protyle: IProtyle, nodeElement: HTMLElement, range: R
             range.insertNode(document.createElement("wbr"));
             oldListHTML = sourceElements[0].parentElement.parentElement.outerHTML;
             if (!nextElement) {
-                // 目标 li 无子列表：直接整体移动源列表，与其他块移动保持一致
                 sourceElements[0].parentElement.nextElementSibling.lastElementChild.insertAdjacentElement("beforebegin", sourceElements[0]);
                 updateTransaction(protyle, sourceElements[0].parentElement.parentElement, oldListHTML);
                 preventScroll(protyle);
@@ -175,7 +170,6 @@ export const moveToDown = (protyle: IProtyle, nodeElement: HTMLElement, range: R
         const sourceParentElement = sourceElements[0].classList.contains("list") ? sourceElements[0] : sourceElements[0].parentElement;
         sourceElements.forEach(item => {
             if (item.classList.contains("list")) {
-                // 子列表需移动其全部直接子列表项
                 Array.from(item.querySelectorAll(":scope > .li")).forEach(li => nextElement.before(li));
             } else {
                 nextElement.before(item);

@@ -1,8 +1,8 @@
 const fsPromises = require("fs").promises;
 const path = require("path");
 
-// 裁剪 changelog，只保留顶层 changelogs/v{version}/；预发布版删除整个 changelogs 目录。
-// 版本号须与 package.json、kernel/util/working.go 的 Ver 一致（内核按此路径读取）。
+// Trim changelogs, keeping only the top-level changelogs/v{version}/ directory. Prerelease builds delete the whole changelogs directory.
+// The version must match package.json and kernel/util/working.go Ver because the kernel reads this path.
 async function trimChangelogs(changelogsDir, version) {
   let exists = true;
   try {
@@ -12,7 +12,7 @@ async function trimChangelogs(changelogsDir, version) {
   }
 
   if (version.includes("-")) {
-    // 预发布版
+    // Prerelease build
     if (exists) {
       await fsPromises.rm(changelogsDir, {recursive: true, force: true});
     }
@@ -52,7 +52,7 @@ async function trimChangelogs(changelogsDir, version) {
 
 module.exports = { trimChangelogs };
 
-// CLI：node scripts/trimChangelogs.js（Docker 镜像构建用）
+// CLI: node scripts/trimChangelogs.js, used by package builds.
 if (require.main === module) {
   const changelogsDir = path.resolve(process.cwd(), "changelogs");
   const version = require(path.join(__dirname, "..", "package.json")).version;

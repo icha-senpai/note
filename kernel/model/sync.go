@@ -26,9 +26,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/github/gorilla/websocket"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/filesys"
@@ -37,7 +34,10 @@ import (
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/dejavu"
 	"github.com/icha-senpai/note/third_party/forks/dejavu/cloud"
+	"github.com/icha-senpai/note/third_party/forks/github/gorilla/websocket"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
 )
 
 func SyncDataDownload() {
@@ -752,15 +752,6 @@ func getSyncIgnoreLines() (ret []string) {
 	dataStr := string(data)
 	dataStr = strings.ReplaceAll(dataStr, "\r\n", "\n")
 	ret = strings.Split(dataStr, "\n")
-
-	ret = append(ret, "20210808180117-6v0mkxr/**/*")
-	ret = append(ret, "20210808180117-czj9bvb/**/*")
-	ret = append(ret, "20211226090932-5lcq56f/**/*")
-	ret = append(ret, "20240530133126-axarxgx/**/*")
-
-	for _, avName := range getAllUserGuideAVJSONFiles() {
-		ret = append(ret, "/storage/av/"+avName)
-	}
 
 	ret = gulu.Str.RemoveDuplicatedElem(ret)
 	return

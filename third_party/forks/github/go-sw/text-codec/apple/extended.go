@@ -173,7 +173,6 @@ func (e *extendedEncoding) String() string {
 // extendedDecoder handles decoding with single-byte overrides.
 // It follows the fonttools approach: overrides are only applied when the
 // base decoder cannot handle a byte. This ensures multi-byte sequences
-// (like Shift-JIS 0x8C 0xA0 for 権) are decoded correctly even when a
 // trail byte happens to match an override.
 type extendedDecoder struct {
 	base      transform.Transformer

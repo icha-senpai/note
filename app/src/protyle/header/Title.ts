@@ -41,27 +41,24 @@ export class Title {
         if (protyle.options.render?.titleShowTop) {
             this.element.innerHTML = '<div class="protyle-attr"></div>';
         } else {
-            // 标题内需要一个空格，避免首次加载出现`请输入文档名`干扰
             this.element.innerHTML = `<span aria-label="${isMac() ? window.scribli.languages.gutterTip2 : window.scribli.languages.gutterTip2.replace("⇧", "Shift+")}" data-position="west" class="protyle-title__icon ariaLabel"><svg><use xlink:href="#iconFile"></use></svg></span>
 <div contenteditable="true" spellcheck="${window.scribli.config.editor.spellcheck}" class="protyle-title__input" data-tip="${window.scribli.languages._kernel[16]}"> </div><div class="protyle-attr"></div>`;
             this.editElement = this.element.querySelector(".protyle-title__input");
             this.editElement.addEventListener("paste", (event: ClipboardEvent) => {
                 event.stopPropagation();
                 event.preventDefault();
-                // 不能使用 range.insertNode，否则无法撤销
                 let text = event.clipboardData.getData("text/scribli") || event.clipboardData.getData("text/Scribli");
                 if (text) {
                     try {
                         JSON.parse(text);
                         text = event.clipboardData.getData("text/plain");
                     } catch (e) {
-                        // 不为数据库，保持 text 不变
+                        // Intentionally empty.
                     }
                     text = protyle.lute.BlockDOM2Content(text);
                 } else {
                     text = event.clipboardData.getData("text/plain");
                 }
-                // 阻止右键复制菜单报错
                 setTimeout(function () {
                     document.execCommand("insertText", false, replaceFileName(text));
                 }, 0);
@@ -102,16 +99,12 @@ export class Title {
                     event.stopPropagation();
                     let textPlain = await readText() || "";
                     if (textPlain) {
-                        // 对 <<assets/...>> 进行内部转义 
                         textPlain = textPlain.replace(/<<assets\//g, "__@lt2assets/@__").replace(/>>/g, "__@gt2@__");
-                        // 对 HTML 标签进行内部转义，避免被 Lute 解析以后变为小写 
                         textPlain = textPlain.replace(/</g, ";;;lt;;;").replace(/>/g, ";;;gt;;;");
-                        // 反转义 <<assets/...>>
                         textPlain = textPlain.replace(/__@lt2assets\/@__/g, "<<assets/").replace(/__@gt2@__/g, ">>");
                         enableLuteMarkdownSyntax(protyle);
                         let content = protyle.lute.BlockDOM2EscapeMarkerContent(protyle.lute.Md2BlockDOM(textPlain));
                         restoreLuteMarkdownSyntax(protyle);
-                        // 移除 ;;;lt;;; 和 ;;;gt;;; 转义及其包裹的内容
                         content = content.replace(/;;;lt;;;[^;]+;;;gt;;;/g, "");
                         document.execCommand("insertText", false, replaceFileName(content));
                         this.rename(protyle);
@@ -137,7 +130,7 @@ export class Title {
                 if (event.key === "ArrowDown") {
                     const rects = getSelection().getRangeAt(0).getClientRects();
                     // 
-                    if (rects.length === 0 // 标题为空时时
+                    if (rects.length === 0
                         || this.editElement.getBoundingClientRect().bottom - rects[rects.length - 1].bottom < 25) {
                         const noContainerElement = getNoContainerElement(protyle.wysiwyg.element.firstElementChild);
                         // 
@@ -152,7 +145,6 @@ export class Title {
                     const editElement = getContenteditableElement(firstElement);
                     if (editElement && editElement.textContent === "" && editElement.getAttribute("placeholder") ||
                         firstElement.classList.contains("li")) {
-                        // 配合提示文本使用，避免提示文本挤压到第二个块中
                         focusBlock(firstElement, protyle.wysiwyg.element);
                     } else {
                         const newId = Lute.NewNodeID();
@@ -191,7 +183,6 @@ export class Title {
             });
             const iconElement = this.element.querySelector(".protyle-title__icon") as HTMLElement;
             iconElement.addEventListener("click", (event) => {
-                // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 
                 if (event.shiftKey) {
                     const docInfoParam: IObject = {
                         id: protyle.block.rootID
@@ -289,7 +280,6 @@ export class Title {
                         enableLuteMarkdownSyntax(protyle);
                         let content = protyle.lute.BlockDOM2EscapeMarkerContent(protyle.lute.Md2BlockDOM(textPlain));
                         restoreLuteMarkdownSyntax(protyle);
-                        // 移除 ;;;lt;;; 和 ;;;gt;;; 转义及其包裹的内容
                         content = content.replace(/;;;lt;;;[^;]+;;;gt;;;/g, "");
                         document.execCommand("insertText", false, replaceFileName(content));
                         this.rename(protyle);
@@ -326,7 +316,6 @@ export class Title {
     private rename(protyle: IProtyle) {
         clearTimeout(this.timeout);
         if (!validateName(this.editElement.textContent, this.editElement)) {
-            // 字数过长会导致滚动
             const offset = getSelectionOffset(this.editElement);
             this.setTitle(this.editElement.textContent.substring(0, Constants.SIZE_TITLE));
             focusByOffset(this.editElement, offset.start, offset.end);
@@ -403,7 +392,6 @@ export class Title {
         if (response.data.refCount !== 0) {
             this.element.querySelector(".protyle-attr").insertAdjacentHTML("beforeend", `<div class="protyle-attr--refcount popover__block">${response.data.refCount}</div>`);
         }
-        // 存在设置新建文档名模板，不能使用 Untitled 进行判断，
         if (this.editElement && Date.now() - dayjs(response.data.id.split("-")[0]).toDate().getTime() < 2000) {
             const range = this.editElement.ownerDocument.createRange();
             range.selectNodeContents(this.editElement);

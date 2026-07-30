@@ -48,7 +48,6 @@ export const globalClick = (event: MouseEvent) => {
         return;
     }
 
-    // dock float 时，点击空白处，隐藏 dock。场景：文档树上重命名后
     if (!isWindow() && window.scribli.layout.leftDock &&
         !hasClosestByClassName(target, "b3-dialog--open", true) &&
         !hasClosestByClassName(target, "b3-menu") &&
@@ -73,7 +72,6 @@ export const globalClick = (event: MouseEvent) => {
         hideAllElements(["pdfutil"]);
     }
 
-    // 点击空白，pdf 搜索、更多消失
     if (hasClosestByAttribute(target, "id", "secondaryToolbarToggleButton") ||
         hasClosestByAttribute(target, "id", "viewFindButton") ||
         hasClosestByAttribute(target, "id", "findbar")) {

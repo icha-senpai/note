@@ -162,7 +162,6 @@ class PDFViewerApplication {
         /** @type {ImageAltTextSettings} */
         this.imageAltTextSettings = null
         this.isInitialViewSet = false
-        // NOTE 不使用 initialBookmark
         this.isViewerEmbedded = true
         this.url = ""
         this.baseUrl = ""
@@ -1348,7 +1347,6 @@ class PDFViewerApplication {
                             spreadMode = stored.spreadMode | 0;
                         }
                     }
-                    // NOTE 定位分页，最后通过 showHighlight 进行高亮
                     if (hash.indexOf("page=") === -1 && this.pdfId) {
                         hash += `&page=${this.pdfId}`;
                     }
@@ -1416,7 +1414,6 @@ class PDFViewerApplication {
                     // To prevent any future issues, e.g. the document being completely
                     // blank on load, always trigger rendering here.
                     pdfViewer.update();
-                    // NOTE: 没有渲染完就切换页签导致 
                     const tabElement = hasClosestByClassName(pdfViewer.container, "fn__flex-1")
                     if (tabElement) {
                         tabElement.removeAttribute("data-loading")
@@ -2791,7 +2788,6 @@ function onTouchEnd(evt) {
 }
 
 function onClick(evt) {
-    // 点击后证快捷键可正常使用，select 等也可正常使用 
     if (!["SELECT", "TEXTAREA", "INPUT"].includes(evt.target.tagName)) {
         this.pdfViewer.focus();
     }
@@ -2818,7 +2814,6 @@ function onKeyUp(evt) {
     if (!pdfInstance) {
         return
     }
-    // NOTE 4+ 版本不知道为 r 后不 focus 了
     if (!["SELECT", "TEXTAREA", "INPUT"].includes(evt.target.tagName)) {
         pdfInstance.pdfViewer.focus();
     }
@@ -2827,7 +2822,6 @@ function onKeyUp(evt) {
     if (evt.key === "Control") {
         pdfInstance._isCtrlKeyDown = false;
     }
-    // NOTE 快捷键高亮取消
     if (([92, 91, 68].includes(evt.keyCode) || evt.ctrlKey || evt.altKey) && pdfInstance.appConfig.toolbar.rectAnno.classList.contains('toggled')) {
         pdfInstance.appConfig.toolbar.rectAnno.dispatchEvent(new MouseEvent('click'))
     }

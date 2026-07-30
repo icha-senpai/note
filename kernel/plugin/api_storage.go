@@ -22,15 +22,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
-// injectStorage adds siyuan.storage.* methods for scoped file CRUD.
-func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
+// injectStorage adds scribli.storage.* methods for scoped file CRUD.
+func injectStorage(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("injectStorage: %v", r)
@@ -40,14 +40,14 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 	resolvePath := func(relPath string) (abs string, err error) {
 		abs = filepath.Join(p.storageDir, filepath.Clean(relPath))
 		if !(abs == p.storageDir || strings.HasPrefix(abs, p.storageDir+string(filepath.Separator))) {
-			err = fmt.Errorf("siyuan.storage: path traversal not allowed")
+			err = fmt.Errorf("scribli.storage: path traversal not allowed")
 		}
 		return
 	}
 
 	watcher := rt.NewObject()
 
-	// siyuan.storage.watcher.add(path) -> Promise<void>
+	// scribli.storage.watcher.add(path) -> Promise<void>
 	lo.Must0(watcher.Set("add", rt.ToValue(func(call goja.FunctionCall, rt *goja.Runtime) goja.Value {
 		promise, resolve, reject := rt.NewPromise()
 
@@ -76,25 +76,25 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 		}, func(rt *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.storage.watcher.add resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.storage.watcher.add resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.storage.watcher.add reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.storage.watcher.add reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.storage.watcher.add worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.storage.watcher.add worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.storage.watcher.add reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.storage.watcher.add reject: %v", p.Name, rejectErr)
 			}
 		}
 
 		return rt.ToValue(promise)
 	})))
 
-	// siyuan.storage.watcher.remove(path) -> void
+	// scribli.storage.watcher.remove(path) -> void
 	lo.Must0(watcher.Set("remove", rt.ToValue(func(call goja.FunctionCall, rt *goja.Runtime) goja.Value {
 		promise, resolve, reject := rt.NewPromise()
 
@@ -123,18 +123,18 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 		}, func(rt *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.storage.watcher.remove resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.storage.watcher.remove resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.storage.watcher.remove reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.storage.watcher.remove reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.storage.watcher.remove worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.storage.watcher.remove worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.storage.watcher.remove reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.storage.watcher.remove reject: %v", p.Name, rejectErr)
 			}
 		}
 
@@ -145,7 +145,7 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 
 	storage := rt.NewObject()
 
-	// siyuan.storage.get(path) -> Promise<{text, json, arrayBuffer}>
+	// scribli.storage.get(path) -> Promise<{text, json, arrayBuffer}>
 	lo.Must0(storage.Set("get", rt.ToValue(func(call goja.FunctionCall, rt *goja.Runtime) goja.Value {
 		promise, resolve, reject := rt.NewPromise()
 
@@ -171,7 +171,7 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 			go func() (result []byte, err error) {
 				defer func() {
 					if r := recover(); r != nil {
-						err = fmt.Errorf("panic during siyuan.storage.get: %v", r)
+						err = fmt.Errorf("panic during scribli.storage.get: %v", r)
 					}
 					p.worker.Run(func(rt *goja.Runtime) (_ any, _ error) {
 						if err != nil {
@@ -187,11 +187,11 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 					}, func(rt *goja.Runtime, result any, err error) {
 						if lo.IsNil(err) {
 							if resolveErr := resolve(result); resolveErr != nil {
-								logging.LogErrorf("[plugin:%s] siyuan.storage.get resolve: %v", p.Name, resolveErr)
+								logging.LogErrorf("[plugin:%s] scribli.storage.get resolve: %v", p.Name, resolveErr)
 							}
 						} else {
 							if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-								logging.LogErrorf("[plugin:%s] siyuan.storage.get reject: %v", p.Name, rejectErr)
+								logging.LogErrorf("[plugin:%s] scribli.storage.get reject: %v", p.Name, rejectErr)
 							}
 						}
 					})
@@ -211,21 +211,21 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 		}, func(rt *goja.Runtime, result any, err error) {
 			if !lo.IsNil(err) {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.storage.get reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.storage.get reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.storage.get worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.storage.get worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.storage.get reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.storage.get reject: %v", p.Name, rejectErr)
 			}
 		}
 
 		return rt.ToValue(promise)
 	})))
 
-	// siyuan.storage.put(path, content) -> Promise<void>
+	// scribli.storage.put(path, content) -> Promise<void>
 	lo.Must0(storage.Set("put", rt.ToValue(func(call goja.FunctionCall, rt *goja.Runtime) goja.Value {
 		promise, resolve, reject := rt.NewPromise()
 
@@ -257,17 +257,17 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 			go func() (result any, err error) {
 				defer func() {
 					if r := recover(); r != nil {
-						err = fmt.Errorf("panic during siyuan.storage.put: %v", r)
+						err = fmt.Errorf("panic during scribli.storage.put: %v", r)
 					}
 
 					p.worker.Run(func(rt *goja.Runtime) (_ any, _ error) {
 						if lo.IsNil(err) {
 							if resolveErr := resolve(result); resolveErr != nil {
-								logging.LogErrorf("[plugin:%s] siyuan.storage.put resolve: %v", p.Name, resolveErr)
+								logging.LogErrorf("[plugin:%s] scribli.storage.put resolve: %v", p.Name, resolveErr)
 							}
 						} else {
 							if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-								logging.LogErrorf("[plugin:%s] siyuan.storage.put reject: %v", p.Name, rejectErr)
+								logging.LogErrorf("[plugin:%s] scribli.storage.put reject: %v", p.Name, rejectErr)
 							}
 						}
 						return
@@ -289,21 +289,21 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 		}, func(rt *goja.Runtime, result any, err error) {
 			if !lo.IsNil(err) {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.storage.put reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.storage.put reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.storage.put worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.storage.put worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.storage.put reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.storage.put reject: %v", p.Name, rejectErr)
 			}
 		}
 
 		return rt.ToValue(promise)
 	})))
 
-	// siyuan.storage.remove(path) -> Promise<void>
+	// scribli.storage.remove(path) -> Promise<void>
 	lo.Must0(storage.Set("remove", rt.ToValue(func(call goja.FunctionCall, rt *goja.Runtime) goja.Value {
 		promise, resolve, reject := rt.NewPromise()
 
@@ -338,17 +338,17 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 			go func() (result any, err error) {
 				defer func() {
 					if r := recover(); r != nil {
-						err = fmt.Errorf("panic during siyuan.storage.remove: %v", r)
+						err = fmt.Errorf("panic during scribli.storage.remove: %v", r)
 					}
 
 					p.worker.Run(func(rt *goja.Runtime) (_ any, _ error) {
 						if lo.IsNil(err) {
 							if resolveErr := resolve(result); resolveErr != nil {
-								logging.LogErrorf("[plugin:%s] siyuan.storage.remove resolve: %v", p.Name, resolveErr)
+								logging.LogErrorf("[plugin:%s] scribli.storage.remove resolve: %v", p.Name, resolveErr)
 							}
 						} else {
 							if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-								logging.LogErrorf("[plugin:%s] siyuan.storage.remove reject: %v", p.Name, rejectErr)
+								logging.LogErrorf("[plugin:%s] scribli.storage.remove reject: %v", p.Name, rejectErr)
 							}
 						}
 						return
@@ -366,21 +366,21 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 		}, func(rt *goja.Runtime, result any, err error) {
 			if !lo.IsNil(err) {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.storage.remove reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.storage.remove reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.storage.remove worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.storage.remove worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.storage.remove reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.storage.remove reject: %v", p.Name, rejectErr)
 			}
 		}
 
 		return rt.ToValue(promise)
 	})))
 
-	// siyuan.storage.list(path) -> Promise<Entry[]>
+	// scribli.storage.list(path) -> Promise<Entry[]>
 	lo.Must0(storage.Set("list", rt.ToValue(func(call goja.FunctionCall, rt *goja.Runtime) goja.Value {
 		promise, resolve, reject := rt.NewPromise()
 
@@ -406,16 +406,16 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 			go func() (result any, err error) {
 				defer func() {
 					if r := recover(); r != nil {
-						err = fmt.Errorf("panic during siyuan.storage.list: %v", r)
+						err = fmt.Errorf("panic during scribli.storage.list: %v", r)
 					}
 					p.worker.Run(func(rt *goja.Runtime) (_ any, _ error) {
 						if lo.IsNil(err) {
 							if resolveErr := resolve(result); resolveErr != nil {
-								logging.LogErrorf("[plugin:%s] siyuan.storage.list resolve: %v", p.Name, resolveErr)
+								logging.LogErrorf("[plugin:%s] scribli.storage.list resolve: %v", p.Name, resolveErr)
 							}
 						} else {
 							if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-								logging.LogErrorf("[plugin:%s] siyuan.storage.list reject: %v", p.Name, rejectErr)
+								logging.LogErrorf("[plugin:%s] scribli.storage.list reject: %v", p.Name, rejectErr)
 							}
 						}
 						return
@@ -450,25 +450,25 @@ func injectStorage(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err 
 		}, func(rt *goja.Runtime, result any, err error) {
 			if !lo.IsNil(err) {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.storage.list reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.storage.list reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.storage.list worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.storage.list worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.storage.list reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.storage.list reject: %v", p.Name, rejectErr)
 			}
 		}
 
 		return rt.ToValue(promise)
 	})))
 
-	// siyuan.storage.watcher
+	// scribli.storage.watcher
 	lo.Must0(storage.Set("watcher", watcher))
 
 	lo.Must0(ObjectFreeze(rt, storage))
 
-	lo.Must0(siyuan.Set("storage", storage))
+	lo.Must0(scribli.Set("storage", storage))
 	return
 }

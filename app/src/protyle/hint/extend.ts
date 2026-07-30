@@ -32,47 +32,47 @@ const getHotkeyOrMarker = (hotkey: string, marker: string) => {
 
 export const hintSlash = (key: string, protyle: IProtyle) => {
     const allList: IHintData[] = [{
-        filter: [window.scribli.languages.template, "template", "模板", "moban", "muban", "mb"],
+        filter: [window.scribli.languages.template, "template", "moban", "muban", "mb"],
         id: "template",
         value: Constants.ZWSP,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconMarkdown"></use></svg><span class="b3-list-item__text">${window.scribli.languages.template}</span></div>`,
     }, {
-        filter: [window.scribli.languages.widget, "widget", "挂件", "guajian", "gj"],
+        filter: [window.scribli.languages.widget, "widget", "guajian", "gj"],
         id: "widget",
         value: Constants.ZWSP + 1,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconBoth"></use></svg><span class="b3-list-item__text">${window.scribli.languages.widget}</span></div>`,
     }, {
-        filter: [window.scribli.languages.assets, "assets", "资源", "ziyuan", "zy"],
+        filter: [window.scribli.languages.assets, "assets", "ziyuan", "zy"],
         id: "assets",
         value: Constants.ZWSP + 2,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconImage"></use></svg><span class="b3-list-item__text">${window.scribli.languages.assets}</span></div>`,
     }, {
-        filter: [window.scribli.languages.ref, "block reference", "块引用", "kuaiyinyong", "kyy"],
+        filter: [window.scribli.languages.ref, "block reference", "kuaiyinyong", "kyy"],
         id: "ref",
         value: "((",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconRef"></use></svg><span class="b3-list-item__text">${window.scribli.languages.ref}</span><span class="b3-list-item__meta">((</span></div>`,
     }, {
-        filter: [window.scribli.languages.blockEmbed, "embed block", "嵌入块", "qianrukuai", "qrk"],
+        filter: [window.scribli.languages.blockEmbed, "embed block", "qianrukuai", "qrk"],
         id: "blockEmbed",
         value: "{{",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconSQL"></use></svg><span class="b3-list-item__text">${window.scribli.languages.blockEmbed}</span><span class="b3-list-item__meta">{{</span></div>`,
     }, {
-        filter: [window.scribli.languages.aiWriting, "ai writing", "ai编写", "aibianxie", "aibx", "人工智能", "rengongzhineng", "rgzn"],
+        filter: [window.scribli.languages.aiWriting, "ai writing", "aibianxie", "aibx", "rengongzhineng", "rgzn"],
         id: "aiWriting",
         value: Constants.ZWSP + 5,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconSparkles"></use></svg><span class="b3-list-item__text">${window.scribli.languages.aiWriting}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.general.aiWriting.custom, "")}</div>`,
     }, {
-        filter: [window.scribli.languages.database, "database", "db", "数据库", "shujuku", "sjk", "视图", "view"],
+        filter: [window.scribli.languages.database, "database", "db", "shujuku", "sjk", "view"],
         id: "database",
         value: '<div data-type="NodeAttributeView" data-av-type="table"></div>',
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconDatabase"></use></svg><span class="b3-list-item__text">${window.scribli.languages.database}</span></div>`,
     }, {
-        filter: [window.scribli.languages.newFileRef, "create new doc with reference", "新建文档并引用", "xinjianwendangbingyinyong", "xjwdbyy"],
+        filter: [window.scribli.languages.newFileRef, "create new doc with reference", "xinjianwendangbingyinyong", "xjwdbyy"],
         id: "newFileRef",
         value: Constants.ZWSP + 4,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconFile"></use></svg><span class="b3-list-item__text">${window.scribli.languages.newFileRef}</span></div>`,
     }, {
-        filter: [window.scribli.languages.newSubDocRef, "create sub doc with reference", "新建子文档并引用", "xinjianziwendangbingyinyong", "xjzwdbyy"],
+        filter: [window.scribli.languages.newSubDocRef, "create sub doc with reference", "xinjianziwendangbingyinyong", "xjzwdbyy"],
         id: "newSubDocRef",
         value: Constants.ZWSP + 6,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconFile"></use></svg><span class="b3-list-item__text">${window.scribli.languages.newSubDocRef}</span></div>`,
@@ -81,97 +81,97 @@ export const hintSlash = (key: string, protyle: IProtyle) => {
         id: "separator_1",
         html: "separator",
     }, {
-        filter: [window.scribli.languages.heading1, "heading1", "h1", "一级标题", "yijibiaoti", "yjbt"],
+        filter: [window.scribli.languages.heading1, "heading1", "h1", "yijibiaoti", "yjbt"],
         id: "heading1",
         value: "# " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconH1"></use></svg><span class="b3-list-item__text">${window.scribli.languages.heading1}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.heading.heading1.custom, "# ")}</div>`,
     }, {
-        filter: [window.scribli.languages.heading2, "heading2", "h2", "二级标题", "erjibiaoti", "ejbt"],
+        filter: [window.scribli.languages.heading2, "heading2", "h2", "erjibiaoti", "ejbt"],
         id: "heading2",
         value: "## " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconH2"></use></svg><span class="b3-list-item__text">${window.scribli.languages.heading2}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.heading.heading2.custom, "## ")}</div>`,
     }, {
-        filter: [window.scribli.languages.heading3, "heading3", "h3", "三级标题", "sanjibiaoti", "sjbt"],
+        filter: [window.scribli.languages.heading3, "heading3", "h3", "sanjibiaoti", "sjbt"],
         id: "heading3",
         value: "### " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconH3"></use></svg><span class="b3-list-item__text">${window.scribli.languages.heading3}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.heading.heading3.custom, "### ")}</div>`,
     }, {
-        filter: [window.scribli.languages.heading4, "heading4", "h4", "四级标题", "sijibiaoti", "sjbt"],
+        filter: [window.scribli.languages.heading4, "heading4", "h4", "sijibiaoti", "sjbt"],
         id: "heading4",
         value: "#### " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconH4"></use></svg><span class="b3-list-item__text">${window.scribli.languages.heading4}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.heading.heading4.custom, "#### ")}</div>`,
     }, {
-        filter: [window.scribli.languages.heading5, "heading5", "h5", "五级标题", "wujibiaoti", "wjbt"],
+        filter: [window.scribli.languages.heading5, "heading5", "h5", "wujibiaoti", "wjbt"],
         id: "heading5",
         value: "##### " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconH5"></use></svg><span class="b3-list-item__text">${window.scribli.languages.heading5}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.heading.heading5.custom, "##### ")}</div>`,
     }, {
-        filter: [window.scribli.languages.heading6, "heading6", "h6", "六级标题", "liujibiaoti", "ljbt"],
+        filter: [window.scribli.languages.heading6, "heading6", "h6", "liujibiaoti", "ljbt"],
         id: "heading6",
         value: "###### " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconH6"></use></svg><span class="b3-list-item__text">${window.scribli.languages.heading6}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.heading.heading6.custom, "###### ")}</div>`,
     }, {
-        filter: [window.scribli.languages.list, "unordered list", "无序列表", "wuxvliebiao", "wuxuliebiao", "wxlb"],
+        filter: [window.scribli.languages.list, "unordered list", "wuxvliebiao", "wuxuliebiao", "wxlb"],
         id: "list",
         value: "- " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconList"></use></svg><span class="b3-list-item__text">${window.scribli.languages.list}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.insert.list.custom, "- ")}</div>`,
     }, {
-        filter: [window.scribli.languages["ordered-list"], "order list", "ordered list", "有序列表", "youxvliebiao", "youxuliebiao", "yxlb"],
+        filter: [window.scribli.languages["ordered-list"], "order list", "ordered list", "youxvliebiao", "youxuliebiao", "yxlb"],
         id: "orderedList",
         value: "1. " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconOrderedList"></use></svg><span class="b3-list-item__text">${window.scribli.languages["ordered-list"]}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.insert["ordered-list"].custom, "1. ")}</div>`,
     }, {
-        filter: [window.scribli.languages.check, "task list", "todo list", "任务列表", "renwuliebiao", "rwlb"],
+        filter: [window.scribli.languages.check, "task list", "todo list", "renwuliebiao", "rwlb"],
         id: "check",
         value: "- [ ] " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconCheck"></use></svg><span class="b3-list-item__text">${window.scribli.languages.check}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.insert.check.custom, "[]")}</div>`,
     }, {
-        filter: [window.scribli.languages.quote, "blockquote", "bq", "引述", "yinshu", "ys"],
+        filter: [window.scribli.languages.quote, "blockquote", "bq", "yinshu", "ys"],
         id: "quote",
         value: "> " + Lute.Caret,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconQuote"></use></svg><span class="b3-list-item__text">${window.scribli.languages.quote}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.insert.quote.custom, ">")}</div>`,
     }, {
-        filter: [window.scribli.languages.callout, "callout", "ts", "提示", "tishi", "note"],
+        filter: [window.scribli.languages.callout, "callout", "ts", "tishi", "note"],
         id: "calloutNote",
         value: `> [!NOTE]\n> ${Lute.Caret}`,
         html: `<div class="b3-list-item__first"><span class="b3-list-item__graphic">✏️</span><span class="b3-list-item__text">${window.scribli.languages.callout} - <span style="color: var(--b3-callout-note)">Note</span></span></div>`,
     }, {
-        filter: [window.scribli.languages.callout, "callout", "ts", "提示", "tishi", "tip"],
+        filter: [window.scribli.languages.callout, "callout", "ts", "tishi", "tip"],
         id: "calloutTip",
         value: `> [!TIP]\n> ${Lute.Caret}`,
         html: `<div class="b3-list-item__first"><span class="b3-list-item__graphic">💡</span><span class="b3-list-item__text">${window.scribli.languages.callout} - <span style="color: var(--b3-callout-tip)">Tip</span></span></div>`,
     }, {
-        filter: [window.scribli.languages.callout, "callout", "ts", "提示", "tishi", "important"],
+        filter: [window.scribli.languages.callout, "callout", "ts", "tishi", "important"],
         id: "calloutImportant",
         value: `> [!IMPORTANT]\n> ${Lute.Caret}`,
         html: `<div class="b3-list-item__first"><span class="b3-list-item__graphic">❗</span><span class="b3-list-item__text">${window.scribli.languages.callout} - <span style="color: var(--b3-callout-important)">Important</span></span></div>`,
     }, {
-        filter: [window.scribli.languages.callout, "callout", "ts", "提示", "tishi", "warning"],
+        filter: [window.scribli.languages.callout, "callout", "ts", "tishi", "warning"],
         id: "calloutWarning",
         value: `> [!WARNING]\n> ${Lute.Caret}`,
         html: `<div class="b3-list-item__first"><span class="b3-list-item__graphic">⚠️</span><span class="b3-list-item__text">${window.scribli.languages.callout} - <span style="color: var(--b3-callout-warning)">Warning</span></span></div>`,
     }, {
-        filter: [window.scribli.languages.callout, "callout", "ts", "提示", "tishi", "caution"],
+        filter: [window.scribli.languages.callout, "callout", "ts", "tishi", "caution"],
         id: "calloutCaution",
         value: `> [!CAUTION]\n> ${Lute.Caret}`,
         html: `<div class="b3-list-item__first"><span class="b3-list-item__graphic">🚨</span><span class="b3-list-item__text">${window.scribli.languages.callout} - <span style="color: var(--b3-callout-caution)">Caution</span></span></div>`,
     }, {
-        filter: [window.scribli.languages.code, "code block", "代码块", "daimakuai", "dmk"],
+        filter: [window.scribli.languages.code, "code block", "daimakuai", "dmk"],
         id: "code",
         value: "```",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconCode"></use></svg><span class="b3-list-item__text">${window.scribli.languages.code}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.insert.code.custom, "```" + window.scribli.languages.enterKey)}</div>`,
     }, {
-        filter: [window.scribli.languages.table, "table", "表格", "biaoge", "bg"],
+        filter: [window.scribli.languages.table, "table", "biaoge", "bg"],
         id: "table",
         value: `| ${Lute.Caret} |  |  |\n| --- | --- | --- |\n|  |  |  |\n|  |  |  |`,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconTable"></use></svg><span class="b3-list-item__text">${window.scribli.languages.table}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.table.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.line, "thematic break", "divider", "分隔线", "分割线", "fengexian", "fgx"],
+        filter: [window.scribli.languages.line, "thematic break", "divider", "fengexian", "fgx"],
         id: "line",
         value: "---",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconLine"></use></svg><span class="b3-list-item__text">${window.scribli.languages.line}</span><span class="b3-list-item__meta">---</span></div>`,
     }, {
-        filter: [window.scribli.languages.math, "formulas block", "math block", "数学公式块", "shuxuegongshikuai", "sxgsk"],
+        filter: [window.scribli.languages.math, "formulas block", "math block", "shuxuegongshikuai", "sxgsk"],
         id: "math",
         value: "$$",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconMath"></use></svg><span class="b3-list-item__text">${window.scribli.languages.math}</span><span class="b3-list-item__meta">$$</span></div>`,
@@ -185,67 +185,67 @@ export const hintSlash = (key: string, protyle: IProtyle) => {
         id: "separator_2",
         html: "separator",
     }, {
-        filter: [window.scribli.languages.emoji, "emoji", "表情", "biaoqing", "bq"],
+        filter: [window.scribli.languages.emoji, "emoji", "biaoqing", "bq"],
         id: "emoji",
         value: "emoji",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconEmoji"></use></svg><span class="b3-list-item__text">${window.scribli.languages.emoji}</span><span class="b3-list-item__meta">:</span></div>`,
     }, {
-        filter: [window.scribli.languages.link, "link", "a", "链接", "lianjie", "lj"],
+        filter: [window.scribli.languages.link, "link", "a", "lianjie", "lj"],
         id: "link",
         value: "a",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconLink"></use></svg><span class="b3-list-item__text">${window.scribli.languages.link}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.link.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.bold, "bold", "strong", "粗体", "cuti", "ct", "加粗", "jiacu", "jc"],
+        filter: [window.scribli.languages.bold, "bold", "strong", "cuti", "ct", "jiacu", "jc"],
         id: "bold",
         value: "strong",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconBold"></use></svg><span class="b3-list-item__text">${window.scribli.languages.bold}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.bold.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.italic, "italic", "em", "斜体", "xieti", "xt"],
+        filter: [window.scribli.languages.italic, "italic", "em", "xieti", "xt"],
         id: "italic",
         value: "em",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconItalic"></use></svg><span class="b3-list-item__text">${window.scribli.languages.italic}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.italic.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.underline, "underline", "下划线", "xiahuaxian", "xhx"],
+        filter: [window.scribli.languages.underline, "underline", "xiahuaxian", "xhx"],
         id: "underline",
         value: "u",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconUnderline"></use></svg><span class="b3-list-item__text">${window.scribli.languages.underline}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.underline.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.strike, "strike", "delete", "删除线", "shanchuxian", "scx"],
+        filter: [window.scribli.languages.strike, "strike", "delete", "shanchuxian", "scx"],
         id: "strike",
         value: "s",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconStrike"></use></svg><span class="b3-list-item__text">${window.scribli.languages.strike}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.strike.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.mark, "mark", "标记", "biaoji", "bj", "高亮", "gaoliang", "gl"],
+        filter: [window.scribli.languages.mark, "mark", "biaoji", "bj", "gaoliang", "gl"],
         id: "mark",
         value: "mark",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconMark"></use></svg><span class="b3-list-item__text">${window.scribli.languages.mark}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.mark.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.sup, "superscript", "上标", "shangbiao", "sb"],
+        filter: [window.scribli.languages.sup, "superscript", "shangbiao", "sb"],
         id: "sup",
         value: "sup",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconSup"></use></svg><span class="b3-list-item__text">${window.scribli.languages.sup}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.sup.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.sub, "subscript", "下标", "xiaobiao", "xb"],
+        filter: [window.scribli.languages.sub, "subscript", "xiaobiao", "xb"],
         id: "sub",
         value: "sub",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconSub"></use></svg><span class="b3-list-item__text">${window.scribli.languages.sub}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.sub.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages["inline-code"], "inline code", "行级代码", "hangjidaima", "hjdm"],
+        filter: [window.scribli.languages["inline-code"], "inline code", "hangjidaima", "hjdm"],
         id: "inlineCode",
         value: "code",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconInlineCode"></use></svg><span class="b3-list-item__text">${window.scribli.languages["inline-code"]}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert["inline-code"].custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.kbd, "kbd", "键盘", "jianpan", "jp"],
+        filter: [window.scribli.languages.kbd, "kbd", "jianpan", "jp"],
         id: "kbd",
         value: "kbd",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconKeymap"></use></svg><span class="b3-list-item__text">${window.scribli.languages.kbd}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.kbd.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages.tag, "tags", "标签", "biaoqian", "bq"],
+        filter: [window.scribli.languages.tag, "tags", "biaoqian", "bq"],
         id: "tag",
         value: "tag",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconTag"></use></svg><span class="b3-list-item__text">${window.scribli.languages.tag}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert.tag.custom))}</span></div>`,
     }, {
-        filter: [window.scribli.languages["inline-math"], "inline formulas", "inline math", "行级公式", "hangjigongshi", "hjgs", "行级数学公式", "hangjishuxvegongshi", "hangjishuxuegongshi", "hjsxgs"],
+        filter: [window.scribli.languages["inline-math"], "inline formulas", "inline math", "hangjigongshi", "hjgs", "hangjishuxvegongshi", "hangjishuxuegongshi", "hjsxgs"],
         id: "inlineMath",
         value: "inline-math",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconMath"></use></svg><span class="b3-list-item__text">${window.scribli.languages["inline-math"]}</span><span class="b3-menu__accelerator b3-menu__accelerator--hotkey">${updateHotkeyTip((window.scribli.config.keymap.editor.insert["inline-math"].custom))}</span></div>`,
@@ -254,28 +254,28 @@ export const hintSlash = (key: string, protyle: IProtyle) => {
         id: "separator_3",
         html: "separator",
     }, {
-        filter: [window.scribli.languages.insertAsset, "insert image or file", "upload", "插入图片或文件", "charutupianhuowenjian", "crtphwj", "上传", "sc"],
+        filter: [window.scribli.languages.insertAsset, "insert image or file", "upload", "charutupianhuowenjian", "crtphwj", "sc"],
         id: "insertAsset",
         value: Constants.ZWSP + 3,
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconDownload"></use></svg><span class="b3-list-item__text">${window.scribli.languages.insertAsset}</span>
 <input class="b3-form__upload" type="file" ${protyle.options.upload.accept ? 'multiple="' + protyle.options.upload.accept + '"' : ""}></div>`,
     }, {
-        filter: [window.scribli.languages.insertIframeURL, "insert iframe link", "插入 iframe 链接", "charuiframelianjie", "criframelj"],
+        filter: [window.scribli.languages.insertIframeURL, "insert iframe link", "charuiframelianjie", "criframelj"],
         id: "insertIframeURL",
         value: '<iframe sandbox="allow-forms allow-presentation allow-same-origin allow-scripts allow-modals allow-popups allow-storage-access-by-user-activation" src="" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>',
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconGlobe"></use></svg><span class="b3-list-item__text">${window.scribli.languages.insertIframeURL}</span></div>`,
     }, {
-        filter: [window.scribli.languages.insertImgURL, "insert image link", "image", "img", "插入图片链接", "charutupianlianjie", "crtplj"],
+        filter: [window.scribli.languages.insertImgURL, "insert image link", "image", "img", "charutupianlianjie", "crtplj"],
         id: "insertImgURL",
         value: "![]()",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconImage"></use></svg><span class="b3-list-item__text">${window.scribli.languages.insertImgURL}</span></div>`,
     }, {
-        filter: [window.scribli.languages.insertVideoURL, "insert video link", "插入视频链接", "charushipinlianjie", "crsplj"],
+        filter: [window.scribli.languages.insertVideoURL, "insert video link", "charushipinlianjie", "crsplj"],
         id: "insertVideoURL",
         value: '<video controls="controls" src=""></video>',
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconVideo"></use></svg><span class="b3-list-item__text">${window.scribli.languages.insertVideoURL}</span></div>`,
     }, {
-        filter: [window.scribli.languages.insertAudioURL, "insert audio link", "插入音频链接", "charuyinpinlianjie", "cryplj"],
+        filter: [window.scribli.languages.insertAudioURL, "insert audio link", "charuyinpinlianjie", "cryplj"],
         id: "insertAudioURL",
         value: '<audio controls="controls" src=""></audio>',
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconRecord"></use></svg><span class="b3-list-item__text">${window.scribli.languages.insertAudioURL}</span></div>`,
@@ -284,37 +284,37 @@ export const hintSlash = (key: string, protyle: IProtyle) => {
         id: "separator_4",
         html: "separator",
     }, {
-        filter: [window.scribli.languages.staff, "staff", "五线谱", "wuxianpu", "wxp"],
+        filter: [window.scribli.languages.staff, "staff", "wuxianpu", "wxp"],
         id: "staff",
         value: "```abc\n```",
         html: `<div class="b3-list-item__first"><span class="b3-list-item__text">ABC</span><span class="b3-list-item__meta">${window.scribli.languages.staff}</span></div>`,
     }, {
-        filter: [window.scribli.languages.chart, "chart", "图表", "tubiao", "tb"],
+        filter: [window.scribli.languages.chart, "chart", "tubiao", "tb"],
         id: "chart",
         value: "```echarts\n```",
         html: `<div class="b3-list-item__first"><span class="b3-list-item__text">Chart</span><span class="b3-list-item__meta">${window.scribli.languages.chart}</span></div>`,
     }, {
-        filter: ["flowchart", "flow chart", "流程图", "liuchengtu", "lct"],
+        filter: ["flowchart", "flow chart", "liuchengtu", "lct"],
         id: "flowChart",
         value: "```flowchart\n```",
         html: '<div class="b3-list-item__first"><span class="b3-list-item__text">FlowChart</span><span class="b3-list-item__meta">Flow Chart</span></div>',
     }, {
-        filter: ["graphviz", "状态图", "zhuangtaitu", "ztt"],
+        filter: ["graphviz", "zhuangtaitu", "ztt"],
         id: "graph",
         value: "```graphviz\n```",
         html: '<div class="b3-list-item__first"><span class="b3-list-item__text">Graphviz</span><span class="b3-list-item__meta">Graph</span></div>',
     }, {
-        filter: ["mermaid", "diagram", "图表", "tubiao", "tb"],
+        filter: ["mermaid", "diagram", "tubiao", "tb"],
         id: "mermaid",
         value: "```mermaid\n```",
         html: '<div class="b3-list-item__first"><span class="b3-list-item__text">Mermaid</span><span class="b3-list-item__meta">Mermaid</span></div>',
     }, {
-        filter: [window.scribli.languages.mindmap, "mindmap", "脑图", "naotu", "nt"],
+        filter: [window.scribli.languages.mindmap, "mindmap", "naotu", "nt"],
         id: "mindmap",
         value: "```mindmap\n```",
         html: `<div class="b3-list-item__first"><span class="b3-list-item__text">Mind map</span><span class="b3-list-item__meta">${window.scribli.languages.mindmap}</span></div>`,
     }, {
-        filter: ["plantuml", "建模语言", "jianmoyuyan", "jmyy"],
+        filter: ["plantuml", "jianmoyuyan", "jmyy"],
         id: "UML",
         value: "```plantuml\n```",
         html: '<div class="b3-list-item__first"><span class="b3-list-item__text">PlantUML</span><span class="b3-list-item__meta">UML</span></div>',
@@ -323,27 +323,27 @@ export const hintSlash = (key: string, protyle: IProtyle) => {
         id: "separator_5",
         html: "separator",
     }, {
-        filter: [window.scribli.languages.infoStyle, "info style", "信息样式", "xinxiyangshi", "xxys"],
+        filter: [window.scribli.languages.infoStyle, "info style", "xinxiyangshi", "xxys"],
         id: "infoStyle",
         value: `style${Constants.ZWSP}color: var(--b3-card-info-color);background-color: var(--b3-card-info-background);`,
         html: `<div class="b3-list-item__first"><div style="color: var(--b3-card-info-color);background-color: var(--b3-card-info-background);" class="color__square color__square--list">A</div><span class="b3-list-item__text">${window.scribli.languages.infoStyle}</span></div>`,
     }, {
-        filter: [window.scribli.languages.successStyle, "success style", "成功样式", "chenggongyangshi", "cgys"],
+        filter: [window.scribli.languages.successStyle, "success style", "chenggongyangshi", "cgys"],
         id: "successStyle",
         value: `style${Constants.ZWSP}color: var(--b3-card-success-color);background-color: var(--b3-card-success-background);`,
         html: `<div class="b3-list-item__first"><div style="color: var(--b3-card-success-color);background-color: var(--b3-card-success-background);" class="color__square color__square--list">A</div><span class="b3-list-item__text">${window.scribli.languages.successStyle}</span></div>`,
     }, {
-        filter: [window.scribli.languages.warningStyle, "warning style", "警告样式", "jinggaoyangshi", "jgys"],
+        filter: [window.scribli.languages.warningStyle, "warning style", "jinggaoyangshi", "jgys"],
         id: "warningStyle",
         value: `style${Constants.ZWSP}color: var(--b3-card-warning-color);background-color: var(--b3-card-warning-background);`,
         html: `<div class="b3-list-item__first"><div style="color: var(--b3-card-warning-color);background-color: var(--b3-card-warning-background);" class="color__square color__square--list">A</div><span class="b3-list-item__text">${window.scribli.languages.warningStyle}</span></div>`,
     }, {
-        filter: [window.scribli.languages.errorStyle, "error style", "错误样式", "cuowuyangshi", "cwys"],
+        filter: [window.scribli.languages.errorStyle, "error style", "cuowuyangshi", "cwys"],
         id: "errorStyle",
         value: `style${Constants.ZWSP}color: var(--b3-card-error-color);background-color: var(--b3-card-error-background);`,
         html: `<div class="b3-list-item__first"><div style="color: var(--b3-card-error-color);background-color: var(--b3-card-error-background);" class="color__square color__square--list">A</div><span class="b3-list-item__text">${window.scribli.languages.errorStyle}</span></div>`,
     }, {
-        filter: [window.scribli.languages.clearFontStyle, "clear style", "清除样式", "qingchuyangshi", "qcys"],
+        filter: [window.scribli.languages.clearFontStyle, "clear style", "qingchuyangshi", "qcys"],
         id: "clearFontStyle",
         value: `style${Constants.ZWSP}`,
         html: `<div class="b3-list-item__first"><div class="color__square color__square--list">A</div><span class="b3-list-item__text">${window.scribli.languages.clearFontStyle}</span></div>`,
@@ -447,7 +447,6 @@ export const genHintItemHTML = (item: IBlock) => {
     if (item.refCount) {
         countHTML = `<span class="popover__block counter b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.ref}">${item.refCount}</span>`;
     }
-    // data-node-id 用于获取引用面板
     return `${attrHTML}<div class="b3-list-item__first" data-node-id="${item.id}">
     ${iconHTML}
     <span class="b3-list-item__text">${item.content}</span>${countHTML}
@@ -578,7 +577,6 @@ export const hintRenderTemplate = (value: string, protyle: IProtyle, nodeElement
 
 export const hintRenderWidget = (value: string, protyle: IProtyle) => {
     focusByRange(protyle.toolbar.range);
-    // src 地址以 / 结尾
     // Use the path ending with `/` when loading the widget 
     insertHTML(protyle.lute.SpinBlockDOM(`<iframe src="/widgets/${value}/" data-subtype="widget" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>`), protyle, true);
     hideElements(["util"], protyle);
@@ -606,7 +604,6 @@ export const hintMoveBlock = (pathString: string, sourceElements: Element[], pro
     let sideElement;
     sourceElements.forEach((item, index) => {
         if (index === sourceElements.length - 1 &&
-            // 动态加载过慢，导致 item 被移除
             item.parentElement) {
             topSourceElement = getTopAloneElement(item);
             sideElement = topSourceElement.nextElementSibling || topSourceElement.previousElementSibling;
@@ -621,7 +618,6 @@ export const hintMoveBlock = (pathString: string, sourceElements: Element[], pro
         });
         item.remove();
     });
-    // 删除空元素
     if (topSourceElement) {
         doOperations.push({
             action: "delete",
@@ -649,7 +645,6 @@ export const hintMoveBlock = (pathString: string, sourceElements: Element[], pro
     } else if (parentElement.classList.contains("protyle-wysiwyg") && parentElement.innerHTML === "" &&
         !hasClosestByClassName(parentElement, "block__edit", true) &&
         protyle.block.id === protyle.block.rootID) {
-        // 根文档原内容为空
         const newId = Lute.NewNodeID();
         const newElement = genEmptyElement(false, false, newId);
         doOperations.splice(0, 0, {
@@ -663,6 +658,5 @@ export const hintMoveBlock = (pathString: string, sourceElements: Element[], pro
     } else if (sideElement) {
         focusBlock(sideElement);
     }
-    // 跨文档不支持撤销
     transaction(protyle, doOperations);
 };

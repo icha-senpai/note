@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -522,12 +521,11 @@ func parseAttrValSpec(tokens []byte) (valid bool, remains, valSpec []byte) {
 	} else { // An unquoted attribute value is a nonempty string of characters not including whitespace, ", ', =, <, >, or `.
 		for i, token = range tokens {
 			if lex.ItemGreater == token {
-				i-- // 大于字符 > 不计入 valSpec
+				i--
 				break
 			}
 			valSpec = append(valSpec, token)
 			if lex.IsWhitespace(token) {
-				// 属性使用空白分隔
 				break
 			}
 			if lex.ItemDoublequote == token || lex.ItemSinglequote == token || lex.ItemEqual == token || lex.ItemLess == token || lex.ItemGreater == token || lex.ItemBacktick == token {
@@ -599,7 +597,7 @@ func SetSpanIAL(node *ast.Node, n *html.Node) {
 	}
 
 	insertedIAL := false
-	if style := util.DomAttrValue(n, "style"); "" != style { // 比如设置表格列宽，颜色等
+	if style := util.DomAttrValue(n, "style"); "" != style {
 		style = StyleValue(style)
 		node.SetIALAttr("style", style)
 
@@ -644,7 +642,6 @@ func SetSpanIAL(node *ast.Node, n *html.Node) {
 	}
 
 	if atom.Th == n.DataAtom || atom.Td == n.DataAtom {
-		// 设置表格合并单元格
 		colspan := util.DomAttrValue(n, "colspan")
 		if "" != colspan {
 			node.SetIALAttr("colspan", colspan)
@@ -664,7 +661,6 @@ func SetSpanIAL(node *ast.Node, n *html.Node) {
 				node.PrependChild(ial)
 				insertedIAL = true
 			} else {
-				// 合并这两个 IAL
 				node.FirstChild.Tokens = IAL2Tokens(node.KramdownIAL)
 			}
 		}
@@ -752,7 +748,6 @@ func SetTextMarkNode(node *ast.Node, n *html.Node, options *Options) {
 	node.TextMarkType = dataType
 	node.Tokens = nil
 	types := strings.Split(dataType, " ")
-	// 重新排序，将 a、inline-memo、block-ref、file-annotation-ref、inline-math 放在最前面
 	var tmp []string
 	for i, typ := range types {
 		if "a" == typ || "inline-memo" == typ || "block-ref" == typ || "file-annotation-ref" == typ || "inline-math" == typ {
@@ -784,11 +779,11 @@ func SetTextMarkNode(node *ast.Node, n *html.Node, options *Options) {
 			node.TextMarkInlineMemoContent = strings.ReplaceAll(node.TextMarkInlineMemoContent, "\n", editor.IALValEscNewLine)
 			node.TextMarkInlineMemoContent = strings.ReplaceAll(node.TextMarkInlineMemoContent, "\"", "&quot;")
 		default:
-			if !isInlineMath { // 带有字体样式的公式复制之后内容不正确 https://github.com/siyuan-note/siyuan/issues/6799
+			if !isInlineMath {
 				node.TextMarkTextContent = util.GetTextMarkTextDataWithoutEscapeQuote(n)
 
 				if node.ContainTextMarkTypes("strong", "em", "s", "mark", "sup", "sub") {
-					// Improve some inline elements Markdown editing https://github.com/siyuan-note/siyuan/issues/9999
+					// Improve some inline elements Markdown editing
 					startBlank, endBlank := startEndBlank(node.TextMarkTextContent)
 					if "" != startBlank {
 						if !strings.HasSuffix(node.PreviousNodeText(), " ") && !strings.HasSuffix(node.PreviousNodeText(), "　") {
@@ -802,18 +797,16 @@ func SetTextMarkNode(node *ast.Node, n *html.Node, options *Options) {
 					}
 					node.TextMarkTextContent = strings.TrimSpace(node.TextMarkTextContent)
 					if !options.KeepEscaped && !node.ContainTextMarkTypes("code") {
-						// Improve the unescaping of copied block contents https://github.com/siyuan-note/siyuan/issues/16136
+						// Improve the unescaping of copied block contents
 						node.TextMarkTextContent = html.UnescapeHTMLStr(node.TextMarkTextContent)
 					}
 				}
 
 				if node.ParentIs(ast.NodeTableCell) && node.IsTextMarkType("code") {
-					// 表格中的代码中带有管道符时使用 HTML 实体替换管道符 Improve the handling of inline-code containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9252
 					node.TextMarkTextContent = strings.ReplaceAll(node.TextMarkTextContent, "|", "&#124;")
 				}
 
 				if "u" == node.TextMarkType {
-					// 下划线中支持包含 Markdown 语法 Improve underline element parsing https://github.com/siyuan-note/siyuan/issues/13768
 
 					content := node.TextMarkTextContent
 					if nil != n.FirstChild && "a" == util.DomAttrValue(n.FirstChild, "data-type") {
@@ -825,7 +818,6 @@ func SetTextMarkNode(node *ast.Node, n *html.Node, options *Options) {
 						node.TextMarkTextContent = inlineTree.Root.FirstChild.Content()
 
 						if nil == inlineTree.Root.FirstChild.FirstChild.Next {
-							// 不支持下划线中包含多个元素
 							if ast.NodeLink == inlineTree.Root.FirstChild.FirstChild.Type {
 								node.TextMarkType += " a"
 								node.TextMarkAHref = inlineTree.Root.FirstChild.FirstChild.ChildByType(ast.NodeLinkDest).TokensStr()

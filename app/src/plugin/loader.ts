@@ -35,7 +35,6 @@ export const loadPlugins = async (app: App, names?: string[], init = true) => {
         const item = response.data[i] as IPluginData;
         if (!names || (names && names.includes(item.name))) {
             if (init) {
-                // 初始化时为加快启动速度，已特殊处理，不进行 await
                 loadPluginJS(app, item);
             } else {
                 await loadPluginJS(app, item);
@@ -87,7 +86,7 @@ const getPluginsStyle = () => {
     let pluginsStyle = document.getElementById("pluginsStyle");
     if (!pluginsStyle) {
         pluginsStyle = document.createElement("style");
-        pluginsStyle.id = "pluginsStyle"; // 用于将内联样式插入到插件样式前的标识
+        pluginsStyle.id = "pluginsStyle";
         document.head.append(pluginsStyle);
     }
     return pluginsStyle;
@@ -103,7 +102,6 @@ const insertPluginCSS = (item: IPluginData, pluginsStyle: HTMLElement) => {
     pluginsStyle.insertAdjacentElement("afterend", styleElement);
 };
 
-// 启用插件
 export const loadPlugin = async (app: App, item: IPluginData) => {
     const plugin = await loadPluginJS(app, item);
     insertPluginCSS(item, getPluginsStyle());
@@ -252,17 +250,15 @@ export const addPluginDock = (plugin: Plugin) => {
 };
 
 export const reloadPlugin = async (app: App, data: {
-    uninstallPlugins?: string[],  // 插件卸载
-    unloadPlugins?: string[],     // 插件禁用
-    reloadPlugins?: string[],     // 插件启用，或插件代码变更
-    dataChangePlugins?: string[], // 插件存储数据变更
+    uninstallPlugins?: string[],
+    unloadPlugins?: string[],
+    reloadPlugins?: string[],
+    dataChangePlugins?: string[],
 } = {}) => {
     const {uninstallPlugins = [], unloadPlugins = [], reloadPlugins = [], dataChangePlugins = []} = data;
-    // 禁用
     unloadPlugins.forEach((item) => {
         uninstall(app, item, true);
     });
-    // 卸载
     uninstallPlugins.forEach((item) => {
         uninstall(app, item, false);
     });

@@ -34,7 +34,6 @@ export const getColIndex = (cellElement: HTMLElement) => {
     return index;
 };
 
-// 光标设置到前一个表格中
 const goPreviousCell = (cellElement: HTMLElement, range: Range, isSelected = true) => {
     let previousElement = cellElement.previousElementSibling;
     if (!previousElement) {
@@ -131,7 +130,6 @@ export const insertRowAbove = (protyle: IProtyle, range: Range, cellElement: HTM
         if (className === "fn__none") {
             hasNone = true;
         }
-        // 不需要空格，否则列宽调整后在空格后插入图片会换行 
         const classAttr = className ? ` class="${className}"` : "";
         const tag = cellElement.tagName === "TH" ? "th" : "td";
         rowHTML += `<${tag}${classAttr} colspan="${currentCellElement.colSpan}" align="${currentCellElement.getAttribute("align") || ""}"></${tag}>`;
@@ -188,7 +186,6 @@ export const insertColumn = (protyle: IProtyle, nodeElement: Element, cellElemen
         }
         colCellElement.insertAdjacentHTML(type, html);
     }
-    // 滚动条横向定位
     if (type === "afterend" && cellElement.offsetLeft + cellElement.clientWidth + 60 >
         nodeElement.firstElementChild.scrollLeft + nodeElement.firstElementChild.clientWidth) {
         nodeElement.firstElementChild.scrollLeft = cellElement.offsetLeft + cellElement.clientWidth + 60 - nodeElement.firstElementChild.clientWidth;
@@ -236,7 +233,6 @@ export const deleteColumn = (protyle: IProtyle, range: Range, nodeElement: Eleme
     if (sideCellElement) {
         range.selectNodeContents(sideCellElement);
         range.collapse(true);
-        // 滚动条横向定位
         if (sideCellElement.offsetLeft + sideCellElement.clientWidth > nodeElement.firstElementChild.scrollLeft + nodeElement.firstElementChild.clientWidth) {
             nodeElement.firstElementChild.scrollLeft = sideCellElement.offsetLeft + sideCellElement.clientWidth - nodeElement.firstElementChild.clientWidth;
         }
@@ -335,7 +331,6 @@ export const moveColumnToLeft = (protyle: IProtyle, range: Range, cellElement: H
     nodeElement.querySelectorAll("tr").forEach((trElement) => {
         trElement.cells[cellIndex].after(trElement.cells[cellIndex - 1]);
     });
-    // 滚动条横向定位
     if (cellElement.offsetLeft < nodeElement.firstElementChild.scrollLeft) {
         nodeElement.firstElementChild.scrollLeft = cellElement.offsetLeft;
     }
@@ -361,7 +356,6 @@ export const moveColumnToRight = (protyle: IProtyle, range: Range, cellElement: 
     nodeElement.querySelectorAll("tr").forEach((trElement) => {
         trElement.cells[cellIndex].before(trElement.cells[cellIndex + 1]);
     });
-    // 滚动条横向定位
     if (cellElement.offsetLeft + cellElement.clientWidth > nodeElement.firstElementChild.scrollLeft + nodeElement.firstElementChild.clientWidth) {
         nodeElement.firstElementChild.scrollLeft = cellElement.offsetLeft + cellElement.clientWidth - nodeElement.firstElementChild.clientWidth;
     }
@@ -377,7 +371,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
     if (!cellElement || !nodeElement) {
         return false;
     }
-    // 光标在表格中，选中其他块标后按删除按钮无效
     const selectedElement = protyle.wysiwyg.element.querySelector(".protyle-wysiwyg--select");
     if (selectedElement && !selectedElement.contains(cellElement)) {
         return false;
@@ -391,7 +384,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         }
     }
 
-    // shift+enter 软换行
     if (event.key === "Enter" && event.shiftKey && isNotCtrl(event) && !event.altKey) {
         const wbrElement = document.createElement("wbr");
         range.insertNode(wbrElement);
@@ -418,7 +410,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
     }
 
     if (!nodeElement.classList.contains("protyle-wysiwyg--select") && !hasClosestByClassName(nodeElement, "protyle-wysiwyg--select")) {
-        // enter 光标跳转到下一行同列
         if (isNotCtrl(event) && !event.shiftKey && !event.altKey && event.key === "Enter") {
             event.preventDefault();
             const trElement = cellElement.parentElement as HTMLTableRowElement;
@@ -439,7 +430,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
             scrollCenter(protyle);
             return true;
         }
-        // 表格后无内容时，按右键需新建空块
         if (event.key === "ArrowRight" && range.toString() === "" &&
             !nodeElement.nextElementSibling &&
             cellElement === nodeElement.querySelector("table").lastElementChild.lastElementChild.lastElementChild &&
@@ -448,10 +438,8 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
             insertEmptyBlock(protyle, "afterend", nodeElement.getAttribute("data-node-id"));
             return true;
         }
-        // tab：光标移向下一个 cell
         if (event.key === "Tab" && isNotCtrl(event)) {
             if (event.shiftKey) {
-                // shift + tab 光标移动到前一个 cell
                 goPreviousCell(cellElement, range);
                 event.preventDefault();
                 return true;
@@ -579,10 +567,8 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
             return true;
         }
 
-        // Backspace：光标移动到前一个 cell
         if (isNotCtrl(event) && !event.shiftKey && !event.altKey && event.key === "Backspace"
             && getSelectionOffset(cellElement, protyle.wysiwyg.element, range).start === 0 && range.toString() === "" &&
-            // 空换行无法删除 
             (range.startOffset === 0 || (range.startOffset === 1 && cellElement.querySelectorAll("br").length === 1))) {
             const previousCellElement = goPreviousCell(cellElement, range, false);
             if (!previousCellElement && nodeElement.previousElementSibling) {
@@ -593,19 +579,16 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
             return true;
         }
 
-        // 居左
         if (matchHotKey(window.scribli.config.keymap.editor.general.alignLeft.custom, event)) {
             setTableAlign(protyle, [cellElement], nodeElement, "left", range);
             event.preventDefault();
             return true;
         }
-        // 居中
         if (matchHotKey(window.scribli.config.keymap.editor.general.alignCenter.custom, event)) {
             setTableAlign(protyle, [cellElement], nodeElement, "center", range);
             event.preventDefault();
             return true;
         }
-        // 居右
         if (matchHotKey(window.scribli.config.keymap.editor.general.alignRight.custom, event)) {
             setTableAlign(protyle, [cellElement], nodeElement, "right", range);
             event.preventDefault();
@@ -720,7 +703,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         return true;
     }
 
-    // 上方新添加一行
     if (matchHotKey(window.scribli.config.keymap.editor.table.insertRowAbove.custom, event)) {
         insertRowAbove(protyle, range, cellElement, nodeElement);
         event.preventDefault();
@@ -728,7 +710,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         return true;
     }
 
-    // 下方新添加一行 https://github.com/Vanessa219/vditor/issues/46
     if (matchHotKey(window.scribli.config.keymap.editor.table.insertRowBelow.custom, event)) {
         if (!nextHasNone || (nextHasNone && !nextHasRowSpan && nextHasColSpan)) {
             insertRow(protyle, range, cellElement, nodeElement);
@@ -737,7 +718,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         return true;
     }
 
-    // 左方新添加一列
     if (matchHotKey(window.scribli.config.keymap.editor.table.insertColumnLeft.custom, event)) {
         if (colIsPure || previousColIsPure) {
             insertColumn(protyle, nodeElement, cellElement, "beforebegin", range);
@@ -746,7 +726,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         return true;
     }
 
-    // 后方新添加一列
     if (matchHotKey(window.scribli.config.keymap.editor.table.insertColumnRight.custom, event)) {
         if (colIsPure || nextColIsPure) {
             insertColumn(protyle, nodeElement, cellElement, "afterend", range);
@@ -755,7 +734,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         return true;
     }
 
-    // 删除当前行
     if (matchHotKey(window.scribli.config.keymap.editor.table["delete-row"].custom, event)) {
         if ((!hasNone && !hasRowSpan) || //
             (hasNone && !hasRowSpan && hasColSpan)) {
@@ -766,7 +744,6 @@ export const fixTable = (protyle: IProtyle, event: KeyboardEvent, range: Range) 
         return true;
     }
 
-    // 删除当前列
     if (matchHotKey(window.scribli.config.keymap.editor.table["delete-column"].custom, event)) {
         if (colIsPure) {
             deleteColumn(protyle, range, nodeElement, cellElement);
@@ -928,22 +905,19 @@ const buildTableGrid = (tableElement: HTMLElement): ITableGrid => {
     const trElements = Array.from(tableElement.querySelectorAll("tr"));
     trElements.forEach((tr, rowIdx) => {
         ensureRow(rowIdx);
-        // 判定该 tr 所属的 section
         const section = (tr.parentElement && (tr.parentElement.tagName === "THEAD")) ? "thead" : "tbody";
         sectionOfRow[rowIdx] = section;
         let colIdx = 0;
         tr.querySelectorAll("th, td").forEach((cell: HTMLTableCellElement) => {
             if (cell.classList.contains("fn__none")) {
-                return; // 跳过合并单元格的占位
+                return;
             }
             const rowspan = getCS(cell, "rowspan");
             const colspan = getCS(cell, "colspan");
-            // 找到当前行第一个空闲列
             while (grid[rowIdx][colIdx]) {
                 colIdx++;
             }
             cellInfos.push({cell, row: rowIdx, col: colIdx, rowspan, colspan});
-            // 占据网格
             for (let dr = 0; dr < rowspan; dr++) {
                 ensureRow(rowIdx + dr);
                 for (let dc = 0; dc < colspan; dc++) {
@@ -965,7 +939,6 @@ const getTableRangeBounds = (cellInfos: ITableCellInfo[], rowCount: number, star
     }
     return {
         rowStart: Math.min(startInfo.row, endInfo.row),
-        // 历史数据可能存在超出表格末行的 rowspan，复制时不能为其生成仅含 fn__none 的虚拟尾行。
         rowEnd: Math.min(rowCount - 1,
             Math.max(startInfo.row + startInfo.rowspan - 1, endInfo.row + endInfo.rowspan - 1)),
         colStart: Math.min(startInfo.col, endInfo.col),
@@ -973,7 +946,6 @@ const getTableRangeBounds = (cellInfos: ITableCellInfo[], rowCount: number, star
     };
 };
 
-// 返回选区内实际可编辑的单元格及其相对网格坐标，合并单元格占位不会进入结果。
 export const getTableRangeCells = (tableElement: HTMLElement, startCell?: HTMLElement, endCell?: HTMLElement) => {
     const {cellInfos, rowCount} = buildTableGrid(tableElement);
     if (!startCell || !endCell) {
@@ -996,28 +968,19 @@ export const getTableRangeCells = (tableElement: HTMLElement, startCell?: HTMLEl
     return ret;
 };
 
-// getTableRangeHTML 根据起始单元格到结束单元格的矩形区域，重建一个合法的 <table> HTML。
-// 用于表格内跨多单元格的文本选区复制/剪切：原 range.cloneContents()/extractContents() 会产出残缺片段。
-// 算法：建立原表格的二维网格映射，确定选区的网格范围，枚举其中的物理单元格，
-// 并根据每个单元格在新表格（选区）中的实际跨度重新计算 colspan/rowspan，避免维度错位。
 export const getTableRangeHTML = (tableElement: HTMLElement, startCell: HTMLElement, endCell: HTMLElement) => {
-    // 1. 建立二维网格映射，记录每个物理单元格的网格坐标、跨度及其所属行（用于保留 thead/tbody 划分）
-    // grid[r][c] = cell（每个单元格占据 rowspan×colspan 个网格位置）
     const {cellInfos, sectionOfRow, rowCount} = buildTableGrid(tableElement);
 
-    // 2. 确定 startCell/endCell 的网格坐标
     const bounds = getTableRangeBounds(cellInfos, rowCount, startCell, endCell);
     if (!bounds) {
         return "";
     }
 
-    // 3. 计算选区网格范围（包含 startCell/endCell 各自的合并跨度）
     const selRowStart = bounds.rowStart;
     const selRowEnd = bounds.rowEnd;
     const selColStart = bounds.colStart;
     const selColEnd = bounds.colEnd;
 
-    // 4. 枚举与选区有交集的单元格，计算在新表格中的行号、列号和跨度
     type OutCell = {
         newCell: HTMLTableCellElement;
         newRow: number;
@@ -1027,21 +990,18 @@ export const getTableRangeHTML = (tableElement: HTMLElement, startCell: HTMLElem
     };
     const outCells: OutCell[] = [];
     cellInfos.forEach(info => {
-        // 判断该单元格的网格范围是否与选区有交集
         const interRowStart = Math.max(info.row, selRowStart);
         const interRowEnd = Math.min(info.row + info.rowspan - 1, selRowEnd);
         const interColStart = Math.max(info.col, selColStart);
         const interColEnd = Math.min(info.col + info.colspan - 1, selColEnd);
         if (interRowStart > interRowEnd || interColStart > interColEnd) {
-            return; // 无交集
+            return;
         }
-        // 重新计算在新表格中的跨度（= 交集部分的跨度）
         const newRow = interRowStart - selRowStart;
         const newCol = interColStart - selColStart;
         const newRowspan = interRowEnd - interRowStart + 1;
         const newColspan = interColEnd - interColStart + 1;
         const newCell = info.cell.cloneNode(true) as HTMLTableCellElement;
-        // 移除占位 class（避免被误认为 fn__none）
         newCell.classList.remove("fn__none");
         if (newRowspan > 1) {
             newCell.setAttribute("rowspan", String(newRowspan));
@@ -1056,31 +1016,24 @@ export const getTableRangeHTML = (tableElement: HTMLElement, startCell: HTMLElem
         outCells.push({newCell, newRow, newCol, newRowspan, newColspan});
     });
 
-    // 5. 按新行列号输出。需建立输出网格以正确处理 rowspan 占位：
-    // 当某单元格 newRowspan > 1 跨多行时，后续行对应列要插入 class="fn__none" 占位单元格
-    //（与 Scribli 内部合并单元格规范一致），否则行列对应关系会错乱。
-    // 输出时会根据规范化后的 thead/tbody 选择 th/td，保证结果可直接解析为独立表格块。
     if (outCells.length === 0) {
         return "";
     }
     const maxOutRow = outCells.reduce((m, oc) => Math.max(m, oc.newRow + oc.newRowspan - 1), 0);
     const maxOutCol = outCells.reduce((m, oc) => Math.max(m, oc.newCol + oc.newColspan - 1), 0);
-    // coveredSlots[r][c] = 该网格位置被合并单元格覆盖
     const coveredSlots: boolean[][] = [];
     const outGrid: (OutCell | null)[][] = [];
     for (let r = 0; r <= maxOutRow; r++) {
         outGrid.push(new Array(maxOutCol + 1).fill(null));
         coveredSlots.push(new Array(maxOutCol + 1).fill(false));
     }
-    // 按 newRow, newCol 排序后填充，确保起始格先于其占位被处理
     outCells.sort((a, b) => a.newRow - b.newRow || a.newCol - b.newCol);
     outCells.forEach(oc => {
         outGrid[oc.newRow][oc.newCol] = oc;
-        // 标记被 rowspan/colspan 覆盖的位置
         for (let dr = 0; dr < oc.newRowspan; dr++) {
             for (let dc = 0; dc < oc.newColspan; dc++) {
                 if (dr === 0 && dc === 0) {
-                    continue; // 起始格本身
+                    continue;
                 }
                 const rr = oc.newRow + dr;
                 const cc = oc.newCol + dc;
@@ -1090,8 +1043,6 @@ export const getTableRangeHTML = (tableElement: HTMLElement, startCell: HTMLElem
             }
         }
     });
-    // 计算每个输出行所属的 section。独立表格必须包含 thead；从 tbody 开始复制时，将首行及其 rowspan
-    // 覆盖的行提升为表头，避免合并单元格跨越 thead/tbody。
     const outSection = (outRow: number) => {
         const origRow = selRowStart + outRow;
         return (origRow < sectionOfRow.length && sectionOfRow[origRow]) ? sectionOfRow[origRow] : "tbody";
@@ -1136,11 +1087,9 @@ export const getTableRangeHTML = (tableElement: HTMLElement, startCell: HTMLElem
             if (slot) {
                 html += getCellHTML(slot.newCell, section);
             } else if (coveredSlots[r][c]) {
-                // 被 rowspan/colspan 覆盖的占位使用当前 section 对应的单元格标签。
                 const tagName = section === "thead" ? "th" : "td";
                 html += `<${tagName} class="fn__none"></${tagName}>`;
             } else {
-                // 选区内空洞（理论上不应发生），补齐当前 section 的空单元格。
                 html += section === "thead" ? "<th></th>" : "<td></td>";
             }
         }

@@ -20,13 +20,11 @@ import (
 	"io"
 	"net/http"
 	"strings"
-	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
-	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 func getNotebookInfo(c *gin.Context) {
@@ -147,7 +145,7 @@ func removeNotebook(c *gin.Context) {
 		return
 	}
 
-	if util.ReadOnly && !model.IsUserGuide(notebook) {
+	if util.ReadOnly {
 		ret.Code = -1
 		ret.Msg = model.Conf.Language(34)
 		ret.Data = map[string]any{"closeTimeout": 5000}
@@ -232,8 +230,7 @@ func openNotebook(c *gin.Context) {
 		return
 	}
 
-	isUserGuide := model.IsUserGuide(notebook)
-	if util.ReadOnly && !isUserGuide {
+	if util.ReadOnly {
 		ret.Code = -1
 		ret.Msg = model.Conf.Language(34)
 		ret.Data = map[string]any{"closeTimeout": 5000}
@@ -262,35 +259,6 @@ func openNotebook(c *gin.Context) {
 		"existed": existed,
 	}
 	util.PushEvent(evt)
-
-	if isUserGuide {
-		appArg := arg["app"]
-		app := ""
-		if nil != appArg {
-			app = appArg.(string)
-		}
-
-		go func() {
-			var startID string
-			i := 0
-			for ; i < 70; i++ {
-				time.Sleep(100 * time.Millisecond)
-				guideStartID := map[string]string{
-					"20210808180117-czj9bvb": "20200812220555-lj3enxa",
-					"20211226090932-5lcq56f": "20211226115423-d5z1joq",
-					"20210808180117-6v0mkxr": "20200923234011-ieuun1p",
-					"20240530133126-axarxgx": "20240530101000-4qitucx",
-				}
-				startID = guideStartID[notebook]
-				if treenode.ExistBlockTree(startID) {
-					util.BroadcastByTypeAndApp("main", app, "openFileById", 0, "", map[string]any{
-						"id": startID,
-					})
-					break
-				}
-			}
-		}()
-	}
 }
 
 func closeNotebook(c *gin.Context) {

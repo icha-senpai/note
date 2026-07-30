@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -15,11 +14,8 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
-// 判断 Git 冲突标记是否开始。
 //   <<<<<<< HEAD
-//   这里是本地原来的内容
 //   =======
-//   这里是拉取下来的内容
 //   >>>>>>> feebfeb6bef44cf1384d51cdd7aef7e4197b8180
 func GitConflictStart(t *Tree, container *ast.Node) int {
 	if !t.Context.ParseOption.GitConflict {

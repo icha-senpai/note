@@ -71,7 +71,6 @@ func (repo *Repo) tryLockCloud(currentDeviceID string, context map[string]interf
 			return
 		}
 
-		// 锁定成功，定时刷新锁
 		go func() {
 			ticker := time.NewTicker(30 * time.Second)
 			defer ticker.Stop()
@@ -92,7 +91,6 @@ func (repo *Repo) tryLockCloud(currentDeviceID string, context map[string]interf
 	return
 }
 
-// lockCloud 锁定云端仓库，不要单独调用，应该调用 tryLockCloud，否则解锁时 endRefreshLock 会阻塞。
 func (repo *Repo) lockCloud(currentDeviceID string, context map[string]interface{}) (err error) {
 	eventbus.Publish(eventbus.EvtCloudLock, context)
 	data, err := repo.cloud.DownloadObject(lockSyncKey)
@@ -123,7 +121,6 @@ func (repo *Repo) lockCloud(currentDeviceID string, context map[string]interface
 	now := time.Now()
 	lockTime := time.UnixMilli(t)
 	if now.After(lockTime.Add(65*time.Second)) || deviceID == currentDeviceID {
-		// 云端锁超时过期或者就是当前设备锁的，那么当前设备可以继续直接锁
 		err = repo.lockCloud0(currentDeviceID)
 		return
 	}

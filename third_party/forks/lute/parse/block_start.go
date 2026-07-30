@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -14,7 +13,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
-// blockStarts 返回定义好的一系列函数，每个函数用于判断某种块节点是否可以开始。
 func blockStarts() []blockStartFunc {
 	return []blockStartFunc{
 		GitConflictStart,
@@ -22,7 +20,7 @@ func blockStarts() []blockStartFunc {
 		BlockquoteStart,
 		ATXHeadingStart,
 		FenceCodeBlockStart,
-		// CustomBlockStart, // https://github.com/siyuan-note/siyuan/issues/8418
+		// CustomBlockStart, //
 		SetextHeadingStart,
 		HtmlBlockStart,
 		YamlFrontMatterStart,
@@ -37,9 +35,5 @@ func blockStarts() []blockStartFunc {
 	}
 }
 
-// blockStartFunc 定义了用于判断块是否开始的函数签名，返回值：
 //
-//	0：不匹配
-//	1：匹配到容器块，需要继续迭代下降
-//	2：匹配到叶子块
 type blockStartFunc func(t *Tree, container *ast.Node) int

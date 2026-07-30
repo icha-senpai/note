@@ -26,25 +26,25 @@ type TEditorMode = "preview" | "wysiwyg"
 
 type ILuteRenderCallback = (node: ILuteNode, entering: boolean) => [string, number];
 
-type TProtyleAction = "cb-get-append" | // 向下滚动加载
-    "cb-get-before" | // 向上滚动加载
-    "cb-get-unchangeid" | // 上下滚动，定位时不修改 blockid
-    "cb-get-hl" | // 高亮
-    "cb-get-focus" | // 光标定位
-    "cb-get-focusfirst" | // 动态定位到第一个块
-    "cb-get-setid" | // 无折叠大纲点击 重置 blockid
-    "cb-get-outline" | // 大纲点击
-    "cb-get-all" | // 获取所有块
-    "cb-get-backlink" | // 悬浮窗为传递型需展示上下文
-    "cb-get-unundo" | // 不需要记录历史
-    "cb-get-scroll" | // 滚动到指定位置，用于直接打开文档，必有 rootID
-    "cb-get-search" | // 使用搜索打开搜索
-    "cb-get-context" | // 包含上下文
-    "cb-get-rootscroll" | // 如果为 rootID 就滚动到指定位置，必有 rootID
-    "cb-get-html" | // 直接渲染，不需要再 /api/block/getDocInfo，否则搜索表格无法定位
-    "cb-get-history" | // 历史渲染
-    "cb-get-opennew" | // 编辑器只读后新建文件需为临时解锁状态 & 
-    "cb-get-av-no-create"  // 属性视图不自动创建
+type TProtyleAction = "cb-get-append" |
+    "cb-get-before" |
+    "cb-get-unchangeid" |
+    "cb-get-hl" |
+    "cb-get-focus" |
+    "cb-get-focusfirst" |
+    "cb-get-setid" |
+    "cb-get-outline" |
+    "cb-get-all" |
+    "cb-get-backlink" |
+    "cb-get-unundo" |
+    "cb-get-scroll" |
+    "cb-get-search" |
+    "cb-get-context" |
+    "cb-get-rootscroll" |
+    "cb-get-html" |
+    "cb-get-history" |
+    "cb-get-opennew" |
+    "cb-get-av-no-create"
 
 /** @link  */
 interface ILuteRender {
@@ -314,50 +314,32 @@ declare const webkitAudioContext: {
 
 /** @link  */
 interface IUpload {
-    /** 上传 url */
     url?: string;
-    /** 上传文件最大 Byte */
     max?: number;
-    /** 剪切板中包含图片地址时，使用此 url 重新上传 */
     linkToImgUrl?: string;
-    /** CORS 上传验证，头为 X-Upload-Token */
     token?: string;
-    /** 文件上传类型，同 [input accept](https://www.w3schools.com/tags/att_input_accept.asp) */
     accept?: string;
-    /** 跨站点访问控制。默认值: false */
     withCredentials?: boolean;
-    /** 请求头设置 */
     headers?: Record<string, string>;
-    /** 额外请求参数 */
     extraData?: { [key: string]: string | Blob };
-    /** 上传字段名。默认值：file[] */
     fieldName?: string;
 
-    /** 每次上传前都会重新设置请求头 */
     setHeaders?(): IObject;
 
-    /** 上传成功回调 */
     success?(editor: HTMLDivElement, msg: string): void;
 
-    /** 上传失败回调 */
     error?(msg: string): void;
 
-    /** 文件名安全处理。 默认值: name => name.replace(/\W/g, '') */
     filename?(name: string): string;
 
-    /** 校验，成功时返回 true 否则返回错误信息 */
     validate?(files: File[]): string | boolean;
 
-    /** 自定义上传，当发生错误时返回错误信息 */
     handler?(files: File[]): string | null;
 
-    /** 对服务端返回的数据进行转换，以满足内置的数据结构 */
     format?(files: File[], responseText: string): string;
 
-    /** 将上传的文件处理后再返回  */
     file?(files: File[]): File[];
 
-    /** 图片地址上传后的回调  */
     linkToImgCallback?(responseText: string): void;
 }
 
@@ -374,19 +356,12 @@ interface IScrollAttr {
 
 /** @link  */
 interface IMenuItem {
-    /** 唯一标示 */
     name: string;
-    /** 提示 */
     tip?: string;
-    /** 语言 key */
     lang?: string;
-    /** svg 图标 */
     icon?: string;
-    /** 快捷键 */
     hotkey?: string;
-    /** 提示的位置 */
     tipPosition?: string;
-    /** 是否在精简版中显示。默认值：false */
     showInLite?: boolean;
 
     click?(protyle: import("../protyle").Protyle): void;
@@ -394,41 +369,30 @@ interface IMenuItem {
 
 /** @link  */
 interface IMarkdownConfig {
-    /** 段落开头是否空两格。默认值: false */
     paragraphBeginningSpace?: boolean;
-    /** 是否启用过滤 XSS。默认值: true */
     sanitize?: boolean;
-    /** 为列表添加标记，以便[自定义列表样式](https://github.com/Vanessa219/vditor/issues/390) 默认值：false */
     listStyle?: boolean;
 }
 
 /** @link  */
 interface IPreview {
-    /** 预览 debounce 毫秒间隔。默认值: 1000 */
     delay?: number;
-    /** 显示模式。默认值: 'both' */
     mode?: "both" | "editor";
-    /** md 解析请求 */
     url?: string;
     /** @link  */
     markdown?: IMarkdownConfig;
     /** @link   */
     actions?: Array<IPreviewAction | IPreviewActionCustom>;
 
-    /** 渲染之前回调 */
     transform?(html: string): string;
 }
 
 type IPreviewAction = "desktop" | "tablet" | "mobile" | "mp-wechat" | "zhihu" | "yuque";
 
 interface IPreviewActionCustom {
-    /** 键名 */
     key: string;
-    /** 按钮文本 */
     text: string;
-    /** 按钮 className 值 */
     className?: string;
-    /** 点击回调 */
     click: (key: string) => void;
 }
 
@@ -448,11 +412,8 @@ interface IHintExtend {
 
 /** @link  */
 interface IHint {
-    /** 常用表情提示 HTML */
     emojiTail?: string;
-    /** 提示 debounce 毫秒间隔。默认值: 200 */
     delay?: number;
-    /** 默认表情，可从 [lute/emoji_map](https://github.com/88250/lute/blob/master/parse/emoji_map.go#L32) 中选取，也可自定义 */
     emoji?: IObject;
     emojiPath?: string;
     extend?: IHintExtend[];
@@ -489,9 +450,7 @@ interface IProtyleOptions {
         breadcrumbDocName?: boolean
         hideTitleOnZoom?: boolean
     }
-    /** 内部调试时使用 */
     _lutePath?: string;
-    /** 是否启用打字机模式。默认值: false */
     typewriterMode?: boolean;
     toolbar?: Array<string | IMenuItem>;
     /** @link  */
@@ -505,16 +464,13 @@ interface IProtyleOptions {
         preview?: string;
     };
     click?: {
-        /** 点击末尾是否阻止插入新块 */
         preventInsetEmptyBlock?: boolean
     }
 
     handleEmptyContent?(): void
 
-    /** 编辑器异步渲染完成后的回调方法 */
     after?(protyle: import("../protyle").Protyle): void;
 
-    /** 精简版本 */
     lite?: boolean;
 }
 

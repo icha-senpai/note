@@ -9,7 +9,6 @@ html {
   box-sizing: border-box;
 }
 
-// 声明当前配色方案，用于修正 iOS 深色模式下输入法候选词高亮项背景丢失等问题 
 :root[data-theme-mode="dark"] {
   color-scheme: dark;
 }
@@ -32,7 +31,6 @@ body {
   max-height: 100%;
   overflow: hidden;
 
-  // body 使用字号导致显示不全 
   & > .fn__flex-1 {
     font-size: 14px;
   }

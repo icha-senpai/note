@@ -1,4 +1,4 @@
-Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
+Lute - A structured Markdown engine for Go and JavaScript
 Copyright (c) {{.Year}}, {{.Owner}}
 
 Lute is licensed under Mulan PSL v2.

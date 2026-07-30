@@ -95,7 +95,6 @@ left:${left || "auto"};top:${top || "auto"}">
     public destroy(options?: IObject) {
         this.element.classList.remove("b3-dialog--open");
         setTimeout(() => {
-            // av 修改列头emoji后点击关闭emoji图标
             if ((this.element.querySelector(".b3-dialog") as HTMLElement).style.zIndex < window.scribli.menus.menu.element.style.zIndex) {
                 // 
                 window.scribli.menus.menu.remove();

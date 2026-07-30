@@ -23,7 +23,6 @@ export const getAVTemplateHTML = (content: string) => {
     if (window.scribli.config.editor.allowHTMLBLockScript) {
         return content;
     }
-    // 默认过滤危险标签和事件属性，避免数据库模板字段中的代码直接执行
     return window.DOMPurify.sanitize(content);
 };
 
@@ -149,7 +148,6 @@ export const genAVValueHTML = (value: IAVCellValue) => {
                     if (item?.isDetached) {
                         html += `<span data-row-id="${rowID}" class="av__cell--relation"><span><svg style="height: 26px"><use xlink:href="#iconLine"></use></svg><span class="fn__space--5"></span></span><span class="av__celltext">${Lute.EscapeHTMLStr(item.block.content || window.scribli.languages.untitled)}</span></span>`;
                     } else {
-                        // data-block-id 用于更新 emoji
                         html += `<span data-row-id="${rowID}" class="av__cell--relation" data-block-id="${item.block.id}"><span class="b3-menu__avemoji" data-unicode="${item.block.icon || ""}">${unicode2Emoji(item.block.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file)}</span><span data-type="block-ref" data-id="${item.block.id}" data-subtype="s" class="av__celltext av__celltext--ref">${Lute.EscapeHTMLStr(item.block.content || window.scribli.languages.untitled)}</span></span>`;
                     }
                 }
@@ -237,7 +235,6 @@ class="fn__flex-1 fn__flex${["url", "text", "number", "email", "phone", "block"]
             html += `<div data-av-id="${table.avID}" data-av-type="table" data-node-id="${id}" data-type="NodeAttributeView">${innerHTML}</div>`;
 
             if (element.innerHTML) {
-                // 防止 blockElement 找不到
                 const blockElement = element.querySelector(`[data-node-id="${id}"][data-av-id="${table.avID}"]`);
                 if (blockElement) {
                     blockElement.innerHTML = innerHTML;

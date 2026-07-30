@@ -70,7 +70,7 @@ func (p *Book) open(n string) (io.ReadCloser, error) {
 		return nil, errors.New(n + " not found")
 	}
 
-	// Improve EPUB asset file content parsing https://github.com/siyuan-note/siyuan/issues/9072
+	// Improve EPUB asset file content parsing
 	nn := strings.ReplaceAll(n, "-", "")
 	nn = strings.ReplaceAll(nn, "_", "")
 	for _, f := range p.fd.File {

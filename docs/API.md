@@ -2,8 +2,6 @@
 
 <!-- markdownlint-disable MD013 MD031 MD033 MD060 -->
 
-**English** | [日本語](API.ja.md)
-
 * [Specification](#specification)
   * [Parameters and return values](#parameters-and-return-values)
   * [Authentication](#authentication)
@@ -620,8 +618,8 @@ Move documents by `id`:
     * `"/assets/"`: workspace/data/assets/ folder
     * `"/assets/sub/"`: workspace/data/assets/sub/ folder
 
-      Under normal circumstances, it is recommended to use the first method, which is stored in the assets folder of the
-      workspace, putting in a subdirectory has some side effects, please refer to the assets chapter of the user guide.
+      Under normal circumstances, it is recommended to use the first method, which stores assets in the workspace-level
+      assets folder. Storing assets in a subdirectory can affect document portability and should be tested with the target workflow.
   * `file[]`: Uploaded file list
 * Return value
 
@@ -1662,7 +1660,7 @@ The field types (`keyType`) are:
     "code": 0,
     "msg": "",
     "data": {
-      "name": "API 测试",
+      "name": "API Test",
       "id": "20240118120204-kwyzf77",
       "viewType": "table",
       "viewID": "20240118120204-7rnmyc1",
@@ -1671,7 +1669,7 @@ The field types (`keyType`) are:
         {
           "id": "20240118120204-7rnmyc1",
           "icon": "",
-          "name": "表格",
+          "name": "Table",
           "desc": "",
           "hideAttrViewName": false,
           "type": "table",
@@ -1681,7 +1679,7 @@ The field types (`keyType`) are:
       "view": {
         "id": "20240118120204-7rnmyc1",
         "icon": "",
-        "name": "表格",
+        "name": "Table",
         "desc": "",
         "hideAttrViewName": false,
         "filters": [],
@@ -1695,7 +1693,7 @@ The field types (`keyType`) are:
         "columns": [
           {
             "id": "20240118120204-w6cggab",
-            "name": "主键",
+            "name": "Primary Key",
             "type": "block",
             "icon": "",
             "wrap": false,
@@ -1770,12 +1768,12 @@ The field types (`keyType`) are:
       "av": {
         "spec": 4,
         "id": "20240118120204-kwyzf77",
-        "name": "API 测试",
+        "name": "API Test",
         "keyValues": [
           {
             "key": {
               "id": "20240118120204-w6cggab",
-              "name": "主键",
+              "name": "Primary Key",
               "type": "block",
               "icon": "",
               "desc": "",
@@ -1806,7 +1804,7 @@ The field types (`keyType`) are:
           {
             "id": "20240118120204-7rnmyc1",
             "icon": "",
-            "name": "表格",
+            "name": "Table",
             "hideAttrViewName": false,
             "desc": "",
             "pageSize": 50,
@@ -1867,12 +1865,12 @@ The field types (`keyType`) are:
     "code": 0,
     "msg": "",
     "data": {
-      "name": "API 测试",
+      "name": "API Test",
       "blockIDs": ["20240118120201-kldj15t"],
       "rows": {
         "key": {
           "id": "20240118120204-w6cggab",
-          "name": "主键",
+          "name": "Primary Key",
           "type": "block",
           "icon": "",
           "desc": "",
@@ -1927,21 +1925,21 @@ The field types (`keyType`) are:
       "results": [
         {
           "avID": "20240118120204-kwyzf77",
-          "avName": "API 测试",
+          "avName": "API Test",
           "viewName": "",
           "viewID": "",
           "viewLayout": "",
           "blockID": "20240118120201-kldj15t",
-          "hPath": "正在跟进的问题/数据库/API",
+          "hPath": "Tracked Issues/Database/API",
           "children": [
             {
               "avID": "20240118120204-kwyzf77",
-              "avName": "API 测试",
-              "viewName": "表格",
+              "avName": "API Test",
+              "viewName": "Table",
               "viewID": "20240118120204-7rnmyc1",
               "viewLayout": "table",
               "blockID": "20240118120201-kldj15t",
-              "hPath": "正在跟进的问题/数据库/API"
+              "hPath": "Tracked Issues/Database/API"
             }
           ]
         }
@@ -2313,7 +2311,7 @@ Adds a new field (column). The field is appended to every view (table/gallery/ka
   {
     "avID": "20240118120204-kwyzf77",
     "keyID": "20240118120204-7k9wzbp",
-    "keyName": "状态",
+    "keyName": "Status",
     "keyType": "select",
     "keyIcon": "",
     "previousKeyID": "20240118120204-w6cggab"

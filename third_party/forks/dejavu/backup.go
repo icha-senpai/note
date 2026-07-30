@@ -41,7 +41,6 @@ func (repo *Repo) DownloadTagIndex(tag, id string, context map[string]interface{
 
 	downloadFileCount, downloadChunkCount, downloadBytes, err = repo.downloadIndex(id, context)
 
-	// 更新本地标签
 	err = repo.AddTag(id, tag)
 	if nil != err {
 		logging.LogErrorf("add tag failed: %s", err)
@@ -52,7 +51,6 @@ func (repo *Repo) DownloadTagIndex(tag, id string, context map[string]interface{
 }
 
 func (repo *Repo) downloadIndex(id string, context map[string]interface{}) (downloadFileCount, downloadChunkCount int, downloadBytes int64, err error) {
-	// 从云端下载标签指向的索引
 	length, index, err := repo.downloadCloudIndex(id, context)
 	if nil != err {
 		logging.LogErrorf("download cloud index failed: %s", err)
@@ -62,14 +60,12 @@ func (repo *Repo) downloadIndex(id string, context map[string]interface{}) (down
 	downloadBytes += length
 	apiGet := 1
 
-	// 计算本地缺失的文件
 	fetchFileIDs, err := repo.localNotFoundFiles(index.Files)
 	if nil != err {
 		logging.LogErrorf("get local not found files failed: %s", err)
 		return
 	}
 
-	// 从云端下载缺失文件并入库
 	length, fetchedFiles, err := repo.downloadCloudFilesPut(fetchFileIDs, context)
 	if nil != err {
 		logging.LogErrorf("download cloud files put failed: %s", err)
@@ -79,30 +75,25 @@ func (repo *Repo) downloadIndex(id string, context map[string]interface{}) (down
 	downloadFileCount = len(fetchFileIDs)
 	apiGet += downloadFileCount
 
-	// 从文件列表中得到去重后的分块列表
 	cloudChunkIDs := repo.getChunks(fetchedFiles)
 
-	// 计算本地缺失的分块
 	fetchChunkIDs, err := repo.localNotFoundChunks(cloudChunkIDs)
 	if nil != err {
 		logging.LogErrorf("get local not found chunks failed: %s", err)
 		return
 	}
 
-	// 从云端获取分块并入库
 	length, err = repo.downloadCloudChunksPut(fetchChunkIDs, context)
 	downloadBytes += length
 	downloadChunkCount = len(fetchChunkIDs)
 	apiGet += downloadChunkCount
 
-	// 更新本地索引
 	err = repo.store.PutIndex(index)
 	if nil != err {
 		logging.LogErrorf("put index failed: %s", err)
 		return
 	}
 
-	// 统计流量
 	go repo.cloud.AddTraffic(&cloud.Traffic{DownloadBytes: downloadBytes, APIGet: apiGet})
 	return
 }
@@ -118,7 +109,6 @@ func (repo *Repo) UploadTagIndex(tag, id string, context map[string]interface{})
 			return
 		}
 
-		// 索引时正常，但是上传时可能因为外部变更导致对象（文件或者分块）不存在，此时需要告知用户数据仓库已经损坏，需要重置数据仓库
 		logging.LogErrorf("upload tag index failed: %s", err)
 		err = ErrRepoFatal
 	}
@@ -138,7 +128,6 @@ func (repo *Repo) uploadTagIndex(tag, id string, context map[string]interface{})
 		return
 	}
 
-	// 获取云端数据仓库统计信息
 	cloudRepoSize, cloudBackupCount, err := repo.getCloudRepoStat()
 	if nil != err {
 		logging.LogErrorf("get cloud repo stat failed: %s", err)
@@ -154,7 +143,6 @@ func (repo *Repo) uploadTagIndex(tag, id string, context map[string]interface{})
 		return
 	}
 
-	// 从云端获取文件列表
 	cloudFileIDs, refs, err := repo.cloud.GetRefsFiles()
 	if nil != err {
 		logging.LogErrorf("get cloud repo refs files failed: %s", err)
@@ -162,7 +150,6 @@ func (repo *Repo) uploadTagIndex(tag, id string, context map[string]interface{})
 	}
 	apiGet := len(refs) + 1
 
-	// 计算云端缺失的文件
 	var uploadFiles []*entity.File
 	for _, localFileID := range index.Files {
 		if !gulu.Str.Contains(localFileID, cloudFileIDs) {
@@ -176,10 +163,8 @@ func (repo *Repo) uploadTagIndex(tag, id string, context map[string]interface{})
 		}
 	}
 
-	// 从文件列表中得到去重后的分块列表
 	uploadChunkIDs := repo.getChunks(uploadFiles)
 
-	// 计算云端缺失的分块
 	uploadChunkIDs, err = repo.cloud.GetChunks(uploadChunkIDs)
 	if nil != err {
 		logging.LogErrorf("get cloud repo upload chunks failed: %s", err)
@@ -187,7 +172,6 @@ func (repo *Repo) uploadTagIndex(tag, id string, context map[string]interface{})
 	}
 	apiGet += len(uploadChunkIDs)
 
-	// 上传分块
 	length, err := repo.uploadChunks(uploadChunkIDs, context)
 	if nil != err {
 		logging.LogErrorf("upload chunks failed: %s", err)
@@ -197,7 +181,6 @@ func (repo *Repo) uploadTagIndex(tag, id string, context map[string]interface{})
 	uploadBytes += length
 	apiPut := uploadChunkCount
 
-	// 上传文件
 	length, err = repo.uploadFiles(uploadFiles, context)
 	if nil != err {
 		logging.LogErrorf("upload files failed: %s", err)
@@ -207,19 +190,16 @@ func (repo *Repo) uploadTagIndex(tag, id string, context map[string]interface{})
 	uploadBytes += length
 	apiPut += uploadFileCount
 
-	// 上传索引
 	length, err = repo.uploadIndex(index, context)
 	uploadFileCount++
 	uploadBytes += length
 	apiPut++
 
-	// 上传标签
 	length, err = repo.updateCloudRef("refs/tags/"+tag, context)
 	uploadFileCount++
 	uploadBytes += length
 	apiPut++
 
-	// 统计流量
 	go repo.cloud.AddTraffic(&cloud.Traffic{UploadBytes: uploadBytes, APIGet: apiGet, APIPut: apiPut})
 	return
 }

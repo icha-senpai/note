@@ -48,8 +48,7 @@ export const commandPanel = (app: App) => {
     const listElement = dialog.element.querySelector("#commands");
     let html = "";
     Object.keys(window.scribli.config.keymap.general).forEach((key) => {
-        let keys;
-        keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "inbox", "backlinks",
+        const keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "inbox", "backlinks",
             "graphView", "globalGraph", "closeAll", "closeLeft", "closeOthers", "closeRight", "closeTab",
             "closeUnmodified", "config", "dataHistory", "editReadonly", "enter", "enterBack", "globalSearch", "goBack",
             "goForward", "goToEditTabNext", "goToEditTabPrev", "goToTab1", "goToTab2", "goToTab3", "goToTab4",
@@ -278,7 +277,6 @@ export const execByCommand = async (options: {
         fileLiElements = Array.from(files.element.querySelectorAll(".b3-list-item--focus"));
     }
 
-    // 全局命令，在没有 protyle 和文件树没聚焦的情况下执行
     if ((!protyle && !isFileFocus) ||
         (isFileFocus && (!fileLiElements || fileLiElements.length === 0)) ||
         (isMobile() && !document.getElementById("empty").classList.contains("fn__none"))) {

@@ -75,7 +75,6 @@ const bindKeymapToolbar = (root: HTMLElement) => {
     });
 };
 
-/** 快捷键 Tab 挂载（面板页，不走注册表渲染） */
 export const mountKeymapTab = async (root: HTMLElement, keywords?: string) => {
     if (root.innerHTML === "") {
         root.innerHTML = genKeymapTabHtml();
@@ -98,8 +97,6 @@ export const mountKeymapTab = async (root: HTMLElement, keywords?: string) => {
         resetKeymapList(keymapListElement);
         return;
     }
-    // 设置窗口全局搜索进入快捷键 Tab，仅当命中具体命令名时才写入搜索框并筛选列表，
-    // 命中分组名时不写入搜索框，完整展示分组
     searchKeymapElement.value = "";
     searchKeymapElement.dataset.keymap = "";
     if (buildKeymapCommandTexts().some((text) => normalizeSearchText(text).includes(keywords))) {
@@ -120,11 +117,9 @@ export const collectKeymapTabSearchStrings = (): string[] => [
 ];
 
 const buildKeymapKeywords = (): string[] => [
-    // 输入框占位符和按钮文案
     window.scribli.languages.search,
     window.scribli.languages.keymap,
     window.scribli.languages.clear,
-    // 命令分组标题
     window.scribli.languages.general,
     window.scribli.languages.editor,
     window.scribli.languages.element,
@@ -132,9 +127,7 @@ const buildKeymapKeywords = (): string[] => [
     window.scribli.languages.list1,
     window.scribli.languages.table,
     window.scribli.languages.plugin,
-    // 命令名
     ...buildKeymapCommandTexts(),
-    // 有命令的插件名
     ...buildKeymapPluginDisplayNames(),
 ];
 
@@ -148,8 +141,6 @@ const buildKeymapCommandTexts = (): string[] => {
     };
     Object.keys(Constants.SCRIBLI_KEYMAP.general).forEach(pushKey);
     Object.keys(Constants.SCRIBLI_KEYMAP.editor.general).forEach((key) => {
-        // TODO 把 window.scribli.languages.duplicate 直接换成 "创建副本 / 创建镜像副本"，
-        // 原先使用 window.scribli.languages.duplicate 的其他地方换成用新的键
         if (key === "duplicate") {
             const duplicate = window.scribli.languages.duplicate;
             const duplicateMirror = window.scribli.languages.duplicateMirror;
@@ -250,7 +241,6 @@ const genKeymapRowHtml = (label: string, dataKey: string, custom: string, defaul
 </label>`;
 };
 
-/** 编辑器快捷键分组，与 {@link Config.IKeymapEditor} 的键一致 */
 const EDITOR_KEYMAP_SEGMENTS = ["general", "insert", "heading", "list", "table"] as const satisfies readonly (keyof Config.IKeymapEditor)[];
 
 const isEditorKeymapSegment = (key: string): key is keyof Config.IKeymapEditor =>
@@ -279,8 +269,6 @@ const getKeymapTemplateAndConfig = (keys: string): {
 const genKeymapItem = (keys: string) => {
     const {template, config} = getKeymapTemplateAndConfig(keys);
     const html: string[] = [];
-    // 使用固定的 Constants.SCRIBLI_KEYMAP 来保证每次生成的选项顺序一致
-    // 避免在设置快捷键之后关闭设置重新打开设置之后选项顺序改变
     for (const key of Object.keys(template)) {
         if (!window.scribli.languages[key]) {
             continue;
@@ -369,8 +357,6 @@ const bindKeymapList = (root: HTMLElement) => {
     searchKeymapElement.addEventListener("blur", () => {
         sendGlobalShortcut(window.scribli.ws.app);
     });
-    // 捕获阶段优先于其它监听，确保 keydown 在 IME/全局逻辑之前处理
-    // 按键搜索框只录物理键位，不接收文本输入；readonly 可避免 IME 抢占 keydown
     searchKeymapElement.addEventListener("keydown", (event: KeyboardEvent) => {
         event.stopPropagation();
         event.preventDefault();
@@ -461,7 +447,6 @@ const bindKeymapList = (root: HTMLElement) => {
                 !hasConflict && (RESERVED_KEYMAPS.includes(keymapStr) || !matchHotKey(keymapStr, event) ||
                 (isMac() && keys[0] === "general" && ["goToEditTabNext", "goToEditTabPrev"].includes(keys[1]) && keymapStr.includes("⌘")))
             ) {
-                // TODO 还应该禁止单个数字或字母作为快捷键？
                 showMessage(`${window.scribli.languages.invalid} [${adoptKeymapStr}]`, undefined, undefined, "keymapInvalid");
                 hasConflict = true;
             } else {
@@ -484,7 +469,6 @@ const bindKeymapList = (root: HTMLElement) => {
                     tipParts.push(thirdElement.querySelector(".b3-list-item__text").textContent.trim());
                     conflictTips.push(tipParts.join("-"));
                 }
-                // 目前插件注册的命令没有限制跟已有命令重复，所以这里可能有多个冲突
                 if (conflictTips.length > 0) {
                     showMessage(`${adoptKeymapStr} ${window.scribli.languages.conflict} [${conflictTips.join("] [")}]`, undefined, undefined, "keymapConflict");
                     hasConflict = true;

@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -35,7 +34,6 @@ func (r *HtmlRenderer) renderCodeBlock(node *ast.Node, entering bool) ast.WalkSt
 
 	if !node.IsFencedCodeBlock {
 		if entering {
-			// 缩进代码块处理
 			rendered := false
 			tokens := node.FirstChild.Tokens
 			if r.Options.CodeSyntaxHighlight {
@@ -62,7 +60,6 @@ func (r *HtmlRenderer) renderCodeBlock(node *ast.Node, entering bool) ast.WalkSt
 	return ast.WalkContinue
 }
 
-// renderCodeBlockCode 进行代码块 HTML 渲染，实现语法高亮。
 func (r *HtmlRenderer) renderCodeBlockCode(node *ast.Node, entering bool) ast.WalkStatus {
 	var language string
 	if 0 < len(node.Previous.CodeBlockInfo) {
@@ -79,7 +76,6 @@ func (r *HtmlRenderer) renderCodeBlockCode(node *ast.Node, entering bool) ast.Wa
 		if 0 < len(node.Previous.CodeBlockInfo) {
 			rendered := false
 			if isGo(language) {
-				// Go 代码块自动格式化 https://github.com/b3log/lute/issues/37
 				if buf, err := format.Source(tokens); nil == err {
 					tokens = buf
 				}
@@ -207,7 +203,6 @@ func isGo(language string) bool {
 	return strings.EqualFold(language, "go") || strings.EqualFold(language, "golang")
 }
 
-// github.com/src-d/enry/v2 不怎么准确
 //
 //var candidateLangs = []string{
 //	"bash", "csharp", "cpp", "css", "go", "html", "xml", "java", "js", "json", "kotlin", "less", "lua", "makefile", "markdown",

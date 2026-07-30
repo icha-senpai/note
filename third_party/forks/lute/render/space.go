@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -18,7 +17,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/width"
 )
 
-// Space 会把 tokens 中的中西文之间加上空格。
 func (r *BaseRenderer) Space(tokens []byte) []byte {
 	text := string(tokens)
 	text = Space0(text)
@@ -32,7 +30,6 @@ func Space0(text string) (ret string) {
 	for i := 0; i < length; {
 		r = runes[i]
 		if i < length-3 && 'i' == runes[i+1] && 'n' == runes[i+2] && 'g' == runes[i+3] && unicode.Is(unicode.Han, runes[i]) {
-			// ing 前不需要空格，如 打码ing https://github.com/icha-senpai/note/third_party/forks/lute/issues/9
 			ret += string(r) + "ing"
 			i += 4
 			continue
@@ -49,7 +46,6 @@ func addSpaceAtBoundary(prefix string, nextChar rune) string {
 	}
 
 	if "1" <= prefix && "9" >= prefix && 65039 == nextChar { // Emoji 1-9
-		// 在这里处理并不是太合适，应该在 emoji.go 中直接将 Unicode Emoji 解析为节点
 		return prefix + string(nextChar)
 	}
 

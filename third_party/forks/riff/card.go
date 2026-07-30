@@ -18,46 +18,32 @@ package riff
 
 import "time"
 
-// Card 描述了闪卡。
 type Card interface {
-	// ID 返回闪卡 ID。
 	ID() string
 
-	// BlockID 返回闪卡关联的内容块 ID。
 	BlockID() string
 
-	// NextDues 返回每种评分对应的下次到期时间。
 	NextDues() map[Rating]time.Time
 
-	// SetNextDues 设置每种评分对应的下次到期时间。
 	SetNextDues(map[Rating]time.Time)
 
-	// SetDue 设置到期时间。
 	SetDue(time.Time)
 
-	// GetLapses 返回闪卡的遗忘次数。
 	GetLapses() int
 
-	// GetReps 返回闪卡的复习次数。
 	GetReps() int
 
-	// GetState 返回闪卡状态。
 	GetState() State
 
-	// GetLastReview 返回闪卡的最后复习时间。
 	GetLastReview() time.Time
 
-	// Clone 返回闪卡的克隆。
 	Clone() Card
 
-	// Impl 返回具体的闪卡实现。
 	Impl() interface{}
 
-	// SetImpl 设置具体的闪卡实现。
 	SetImpl(c interface{})
 }
 
-// BaseCard 描述了基础的闪卡实现。
 type BaseCard struct {
 	CID   string
 	BID   string

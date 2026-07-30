@@ -20,12 +20,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/sql"
-	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 func getBookmarkLabels(c *gin.Context) {
@@ -85,13 +84,6 @@ func setBlockAttrs(c *gin.Context) {
 	}
 
 	attrs := arg["attrs"].(map[string]any)
-	if 1 == len(attrs) && "" != attrs["scroll"] {
-
-		if b := treenode.GetBlockTree(id); nil != b && (model.IsUserGuide(b.BoxID)) {
-			attrs["scroll"] = ""
-		}
-	}
-
 	nameValues := map[string]string{}
 	for name, value := range attrs {
 		if nil == value {

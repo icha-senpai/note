@@ -42,8 +42,7 @@ FunctionEnd
 !macro preInit
     ${IfNot} ${AtLeastWin10}
         !insertmacro WriteInstallLog "installer-rejected-unsupported-windows version=${VERSION}"
-        MessageBox MB_ICONEXCLAMATION "非常抱歉，Scribli无法在低于 Windows 10 的系统上进行安装$\n$\n\
-            Sorry, Scribli cannot be installed on systems below Windows 10$\n"
+        MessageBox MB_ICONEXCLAMATION "Sorry, Scribli cannot be installed on systems below Windows 10$\n"
         Quit
     ${EndIf}
 
@@ -63,8 +62,7 @@ FunctionEnd
     ${FindIt} "$INSTDIR" "data" $R0
     ${If} -1 != $R0
         !insertmacro WriteInstallLog "installer-rejected-workspace-data version=${VERSION} target=$INSTDIR detected=$R0"
-        MessageBox MB_ICONSTOP "检测到安装路径下包含了工作空间数据 $R0，请将工作空间文件夹移到其他位置后再试。$\n$\n\
-            The workspace data $R0 was detected in the installation path, please move the workspace folder to another location and try again.$\n"
+        MessageBox MB_ICONSTOP "Workspace data $R0 was detected in the installation path. Move the workspace folder to another location and try again.$\n"
         Quit
     ${EndIf}
     !insertmacro WriteInstallLog "installer-ready version=${VERSION} target=$INSTDIR"
@@ -73,8 +71,7 @@ FunctionEnd
 !macro customUnInit
     ${un.FindIt} "$INSTDIR" "data" $R0
     ${If} -1 != $R0
-        MessageBox MB_ICONSTOP "检测到安装路径下包含了工作空间数据 $R0，请将工作空间文件夹移到其他位置后再试。$\n$\n\
-            The workspace data $R0 was detected in the installation path, please move the workspace folder to another location and try again.$\n"
+        MessageBox MB_ICONSTOP "Workspace data $R0 was detected in the installation path. Move the workspace folder to another location and try again.$\n"
         Quit
     ${EndIf}
 !macroend
@@ -94,8 +91,7 @@ FunctionEnd
 !macro customUnInstall
     ${IfNot} ${isUpdated}
         IfFileExists "$PROFILE\.config\scribli\*.*" 0 skipConfigDelete
-            MessageBox MB_YESNO "是否需要彻底删除全局配置（$PROFILE\.config\scribli\）？$\n$\n\
-                Do you want to delete the global configuration ($PROFILE\.config\scribli\)?$\n" \
+            MessageBox MB_YESNO "Do you want to delete the global configuration ($PROFILE\.config\scribli\)?$\n" \
                 /SD IDYES IDYES AcceptedRMConf IDNO SkippedRMConf
                 AcceptedRMConf:
                     RMDir /r "$PROFILE\.config\scribli\"
@@ -105,8 +101,7 @@ FunctionEnd
 
     ${IfNot} ${isUpdated}
         IfFileExists "$PROFILE\Scribli\*.*" 0 skipWorkspaceDelete
-            MessageBox MB_YESNO "是否需要彻底删除默认工作空间（$PROFILE\Scribli\）？$\n$\n\
-                Do you want to completely delete the default workspace ($PROFILE\Scribli\)?$\n" \
+            MessageBox MB_YESNO "Do you want to completely delete the default workspace ($PROFILE\Scribli\)?$\n" \
                 /SD IDNO IDYES AcceptedRMWorkspace IDNO SkippedRMWrokspace
                 AcceptedRMWorkspace:
                     RMDir /r "$PROFILE\Scribli\"
@@ -188,7 +183,7 @@ Pop $R1
 Exch $R0
 FunctionEnd
 
-# 只能重复实现一遍，因为 un.FindIt 只能用在卸载过程中，这是 nsis 的命名限制
+# This duplicate is required because un.FindIt can only be used during uninstall; NSIS enforces that naming rule.
 !macro FindIt In For Result
 Push "${In}"
 Push "${For}"

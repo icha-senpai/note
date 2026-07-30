@@ -2,7 +2,7 @@
   "_meta": {
     "source": "https://openrouter.ai/api/v1/models",
     "fetchedAt": "2026-06-22",
-    "format": "OpenRouter: key 为模型 id 最后一段（provider 前缀已去除）；火山引擎豆包/零一/百川/InternLM/星火/盘古: key 为完整模型 id 或 OpenAI 兼容 model 名。contextLength 取同名模型最大值；已过滤 :free 后缀、末段等于 free、context_length 为 null/0 的条目。",
+    "format": "OpenRouter keys use the final model id segment after removing the provider prefix. Volcengine Doubao, 01.AI, Baichuan, InternLM, Spark, and Pangu keys use the full model id or OpenAI-compatible model name. contextLength uses the maximum value from matching model metadata. Entries with :free suffixes, final segment free, or null/zero context_length are filtered out.",
     "totalCount": 340,
     "nullFiltered": 0,
     "zeroFiltered": 0,

@@ -19,14 +19,14 @@ package plugin
 import (
 	"fmt"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
 )
 
-// injectSecretsVars adds siyuan.secrets and siyuan.vars to the plugin JS sandbox.
+// injectSecretsVars adds scribli.secrets and scribli.vars to the plugin JS sandbox.
 
-func injectSecretsVars(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
+func injectSecretsVars(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("injectSecretsVars: %v", r)
@@ -37,13 +37,13 @@ func injectSecretsVars(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (
 	lo.Must0(secrets.Set("resolve", rt.ToValue(makeResolver(func(tpl string) string {
 		return model.Conf.Secrets.Resolve(tpl)
 	}))))
-	lo.Must0(siyuan.Set("secrets", secrets))
+	lo.Must0(scribli.Set("secrets", secrets))
 
 	vars := rt.NewObject()
 	lo.Must0(vars.Set("resolve", rt.ToValue(makeResolver(func(tpl string) string {
 		return model.Conf.Variables.Resolve(tpl)
 	}))))
-	lo.Must0(siyuan.Set("vars", vars))
+	lo.Must0(scribli.Set("vars", vars))
 
 	return
 }

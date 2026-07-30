@@ -20,12 +20,12 @@ import (
 	"fmt"
 
 	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
-// injectEvent adds siyuan.event to the goja context.
-func injectEvent(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err error) {
+// injectEvent adds scribli.event to the goja context.
+func injectEvent(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("injectEvent: %v", r)
@@ -63,18 +63,18 @@ func injectEvent(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err er
 		}, func(rt *goja.Runtime, result any, err error) {
 			if lo.IsNil(err) {
 				if resolveErr := resolve(result); resolveErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.event.emit resolve: %v", p.Name, resolveErr)
+					logging.LogErrorf("[plugin:%s] scribli.event.emit resolve: %v", p.Name, resolveErr)
 				}
 			} else {
 				if rejectErr := reject(rt.NewGoError(err)); rejectErr != nil {
-					logging.LogErrorf("[plugin:%s] siyuan.event.emit reject: %v", p.Name, rejectErr)
+					logging.LogErrorf("[plugin:%s] scribli.event.emit reject: %v", p.Name, rejectErr)
 				}
 			}
 		})
 		if runErr != nil {
-			logging.LogErrorf("[plugin:%s] siyuan.event.emit worker run: %v", p.Name, runErr)
+			logging.LogErrorf("[plugin:%s] scribli.event.emit worker run: %v", p.Name, runErr)
 			if rejectErr := reject(rt.NewGoError(runErr)); rejectErr != nil {
-				logging.LogErrorf("[plugin:%s] siyuan.event.emit reject: %v", p.Name, rejectErr)
+				logging.LogErrorf("[plugin:%s] scribli.event.emit reject: %v", p.Name, rejectErr)
 			}
 		}
 
@@ -83,6 +83,6 @@ func injectEvent(p *KernelPlugin, rt *goja.Runtime, siyuan *goja.Object) (err er
 
 	lo.Must0(ObjectSeal(rt, event))
 
-	lo.Must0(siyuan.Set("event", event))
+	lo.Must0(scribli.Set("event", event))
 	return
 }

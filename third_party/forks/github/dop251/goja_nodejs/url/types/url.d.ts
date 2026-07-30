@@ -11,7 +11,6 @@ declare module 'url' {
      *
      * console.log(url.domainToASCII('español.com'));
      * // Prints xn--espaol-zwa.com
-     * console.log(url.domainToASCII('中文.com'));
      * // Prints xn--fiq228c.com
      * console.log(url.domainToASCII('xn--iñvalid.com'));
      * // Prints an empty string
@@ -31,7 +30,6 @@ declare module 'url' {
      * console.log(url.domainToUnicode('xn--espaol-zwa.com'));
      * // Prints español.com
      * console.log(url.domainToUnicode('xn--fiq228c.com'));
-     * // Prints 中文.com
      * console.log(url.domainToUnicode('xn--iñvalid.com'));
      * // Prints an empty string
      * ```
@@ -141,7 +139,6 @@ declare module 'url' {
          * ```
          *
          * ```js
-         * const idnURL = new URL('https://測試');
          * console.log(idnURL.origin);
          * // Prints https://xn--g6w251d
          *

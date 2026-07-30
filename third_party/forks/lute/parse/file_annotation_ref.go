@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -38,7 +37,7 @@ func (t *Tree) parseFileAnnotationRef(ctx *InlineContext) *ast.Node {
 	ctx.pos += 2
 	var ok, matched bool
 	var passed, remains []byte
-	for { // 这里使用 for 是为了简化逻辑，不是为了循环
+	for {
 		if ok, passed, remains = lex.Spnl(ctx.tokens[ctx.pos:]); !ok {
 			break
 		}
@@ -55,7 +54,6 @@ func (t *Tree) parseFileAnnotationRef(ctx *InlineContext) *ast.Node {
 		if 1 > len(remains) || !lex.IsWhitespace(remains[0]) {
 			break
 		}
-		// 跟空格的话后续尝试 title 解析
 		if ok, passed, remains = lex.Spnl(remains); !ok {
 			break
 		}

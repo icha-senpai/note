@@ -2,14 +2,12 @@ import {showMessage} from "../../dialog/message";
 import {fetchPost, fetchSyncPost} from "../../util/fetch";
 import {saveExportFile} from "../../protyle/util/compatibility";
 
-/** 按当前配置刷新同步 Tab 可见性与动态面板（供 syncRuntime 调用） */
 export const refreshSyncTabPanels = (root: Element) => {
     setSyncConfigItemVisible(root);
     setSyncModeRelatedConfigItemVisible(root);
     renderProviderConfig(root);
 };
 
-/** 仅刷新与同步模式相关的配置项可见性（供 syncRuntime 调用） */
 export const refreshSyncModeRelatedItems = (root: Element) => {
     setSyncModeRelatedConfigItemVisible(root);
 };
@@ -40,7 +38,6 @@ const setSyncModeRelatedConfigItemVisible = (root: Element) => {
     root.querySelector(`#${CSS.escape("sync.perception")}`)?.closest(".config-item")?.classList.add("fn__none");
 };
 
-/** 同步提供商配置区检索关键词（供 syncTab 注册 slot） */
 export const getSyncProviderConfigKeywords = (): string[] => buildProviderConfigKeywords();
 
 type SyncProviderConfigKey = Extract<keyof Config.ISync, "s3" | "webdav" | "local">;
@@ -161,18 +158,14 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
 
 const buildProviderConfigKeywords = (): string[] => {
     return [
-        // 服务不可用 / 本地等提示
         window.scribli.languages.syncProviderConfigTip,
         window.scribli.languages.mobileNotSupport,
-        // S3 / WebDAV / 本地第三方
         window.scribli.languages.syncThirdPartyProviderS3Intro,
         window.scribli.languages.syncThirdPartyProviderWebDAVIntro,
         window.scribli.languages.syncThirdPartyProviderLocalIntro,
         window.scribli.languages.syncThirdPartyProviderTip,
-        // 操作按钮
         window.scribli.languages.import,
         window.scribli.languages.export,
-        // 表单标签与选项（硬编码英文）
         "Endpoint",
         "Access Key",
         "Secret Key",
@@ -326,7 +319,6 @@ const saveSyncProviderConfigValues = (configElement: Element) => {
     }
     const data = readProviderConfigFields(configElement, def.getConfig());
     const configKey = def.configKey;
-    // 使用 fetchSyncPost：内核返回 code < 0 时 fetchPost 不会调用回调，此处需始终回写界面与已保存配置一致
     fetchSyncPost(def.api, {[configKey]: data})
         .then((response) => {
             if (response.code === 0 && response.data?.[configKey]) {

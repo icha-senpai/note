@@ -32,7 +32,7 @@ const renderRecentDocsContent = async (data: {
     let switchPath = "";
     if (tabHtml) {
         const pathResponse = await fetchSyncPost("/api/filetree/getFullHPathByID", {
-            id: data[0].rootID // 过滤后的第一个文档 ID
+            id: data[0].rootID
         });
         switchPath = escapeHtml(pathResponse.data);
     }
@@ -142,9 +142,7 @@ export const openRecentDocs = () => {
             }
         });
 
-        // 添加排序下拉框事件监听
         sortSelect.addEventListener("change", () => {
-            // 重新调用 API 获取排序后的数据
             fetchPost("/api/storage/getRecentDocs", {sortBy: sortSelect.value}, (newResponse) => {
                 response = newResponse;
                 renderRecentDocsContent(newResponse.data, dialog.element, searchElement.value);

@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -24,12 +23,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// VditorIRRenderer 描述了 Vditor Instant-Rendering DOM 渲染器。
 type VditorIRRenderer struct {
 	*BaseRenderer
 }
 
-// NewVditorIRRenderer 创建一个 Vditor Instant-Rendering DOM 渲染器。
 func NewVditorIRRenderer(tree *parse.Tree, options *Options, parseOptions *parse.Options) *VditorIRRenderer {
 	ret := &VditorIRRenderer{BaseRenderer: NewBaseRenderer(tree, options, parseOptions)}
 	ret.RendererFuncs[ast.NodeDocument] = ret.renderDocument
@@ -963,7 +960,6 @@ func (r *VditorIRRenderer) renderImage(node *ast.Node, entering bool) ast.WalkSt
 		}
 		r.Tag("img", attrs, true)
 
-		// XSS 过滤
 		buf := r.Writer.Bytes()
 		idx := bytes.LastIndex(buf, []byte("<img src="))
 		imgBuf := buf[idx:]
@@ -1099,7 +1095,6 @@ func (r *VditorIRRenderer) renderText(node *ast.Node, entering bool) ast.WalkSta
 			tokens = r.FixTermTypo(tokens)
 		}
 
-		// 有的场景需要零宽空格撑起，但如果有其他文本内容的话需要把零宽空格删掉
 		if !bytes.EqualFold(tokens, []byte(editor.Caret+editor.Zwsp)) {
 			tokens = bytes.ReplaceAll(tokens, []byte(editor.Zwsp), nil)
 		}

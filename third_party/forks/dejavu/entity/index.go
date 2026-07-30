@@ -26,19 +26,18 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
-// Index 描述了快照索引。
 type Index struct {
 	ID              string   `json:"id"`              // Hash
-	Memo            string   `json:"memo"`            // 索引备注
-	Created         int64    `json:"created"`         // 索引时间
-	Files           []string `json:"files"`           // 文件列表
-	Count           int      `json:"count"`           // 文件总数
-	Size            int64    `json:"size"`            // 文件总大小
-	SystemID        string   `json:"systemID"`        // 系统 ID
-	SystemName      string   `json:"systemName"`      // 系统名称
-	SystemOS        string   `json:"systemOS"`        // 系统操作系统
+	Memo            string   `json:"memo"`
+	Created         int64    `json:"created"`
+	Files           []string `json:"files"`
+	Count           int      `json:"count"`
+	Size            int64    `json:"size"`
+	SystemID        string   `json:"systemID"`
+	SystemName      string   `json:"systemName"`
+	SystemOS        string   `json:"systemOS"`
 	CheckIndexID    string   `json:"checkIndexID"`    // Check Index ID
-	AesKeyVerifyVal string   `json:"aesKeyVerifyVal"` // Aes Key 校验值
+	AesKeyVerifyVal string   `json:"aesKeyVerifyVal"`
 }
 
 func (index *Index) String() string {
@@ -75,13 +74,9 @@ func (index *Index) VerifyAESKey(aesKey []byte) bool {
 	return "scribli" == string(plainData)
 }
 
-// CheckIndex 描述了一个 Index 对应的数据 ID，包括 File ID 和 Chunk ID。
 //
-// 该结构体在数据同步云端时根据本地 Latest Index 生成，在云端服务上用于校验数据完整性。
 //
-// 该数据结构仅保存 ID，因此不会影响端到端加密的安全性，不会对数据安全造成任何影响。
 //
-// 存放路径：repo/check/indexes/{id}。
 type CheckIndex struct {
 	ID      string            `json:"id"`      // Hash
 	IndexID string            `json:"indexID"` // Index ID

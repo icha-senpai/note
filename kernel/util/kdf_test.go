@@ -52,7 +52,7 @@ func TestAESGCMRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GenerateDEK failed: %v", err)
 	}
-	plaintext := []byte("hello 思源加密笔记本")
+	plaintext := []byte("hello encrypted notebook")
 	ct, err := Encrypt(key, plaintext)
 	if err != nil {
 		t.Fatalf("Encrypt failed: %v", err)

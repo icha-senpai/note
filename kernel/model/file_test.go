@@ -23,12 +23,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/filesys"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
 type fileOperationTestFixture struct {
@@ -154,14 +154,14 @@ func TestMoveDocsRejectsInvalidPathsBeforeMoving(t *testing.T) {
 
 func TestSortSearchDocResults(t *testing.T) {
 	results := []searchDocResult{
-		{data: map[string]string{"hPath": "A/初中数学"}},
-		{data: map[string]string{"hPath": "Z/数学"}, exact: true},
-		{data: map[string]string{"hPath": "A/数学/"}, exact: true},
-		{data: map[string]string{"hPath": "B/高等数学"}},
+		{data: map[string]string{"hPath": "A/middle-school-math"}},
+		{data: map[string]string{"hPath": "Z/math"}, exact: true},
+		{data: map[string]string{"hPath": "A/math/"}, exact: true},
+		{data: map[string]string{"hPath": "B/advanced-math"}},
 	}
 
 	sortSearchDocResults(results)
-	expected := []string{"A/数学/", "Z/数学", "A/初中数学", "B/高等数学"}
+	expected := []string{"A/math/", "Z/math", "A/middle-school-math", "B/advanced-math"}
 	for i, hPath := range expected {
 		if hPath != results[i].data["hPath"] {
 			t.Fatalf("unexpected search result order at %d: got %q, want %q", i, results[i].data["hPath"], hPath)

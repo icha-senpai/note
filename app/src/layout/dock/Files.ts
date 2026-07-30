@@ -118,7 +118,6 @@ export class Files extends Model {
                 } else if (type === "open") {
                     const notebookId = target.getAttribute("data-url");
                     const liElement = target.closest("li");
-                    // 加密笔记本关闭（锁定）时点"打开"先弹解锁框，解锁成功后再挂载
                     if (liElement && liElement.getAttribute("data-encrypted") === "true") {
                         openEncryptedNotebook(this.app, notebookId, liElement.querySelector(".b3-list-item__text").textContent);
                     } else {
@@ -134,7 +133,6 @@ export class Files extends Model {
                 target = target.parentElement;
             }
         });
-        // 为了快捷键的 dispatch
         this.actionsElement.querySelector('[data-type="collapse"]').addEventListener("click", () => {
             Array.from(this.element.children).forEach(item => {
                 const liElement = item.firstElementChild;
@@ -176,7 +174,6 @@ export class Files extends Model {
             }
         });
         this.element.addEventListener("mousedown", (event) => {
-            // 点击鼠标滚轮关闭
             if (event.button !== 1 || !window.scribli.config.fileTree.openFilesUseCurrentTab) {
                 return;
             }
@@ -320,7 +317,6 @@ export class Files extends Model {
                             target.classList.toggle("b3-list-item--focus");
                             this.lastSelectedElement = target;
                         } else if (event.shiftKey && !event.altKey && isNotCtrl(event)) {
-                            // Shift+click 多选文档
                             if (!document.contains(this.lastSelectedElement)) {
                                 this.lastSelectedElement = null;
                             }
@@ -334,18 +330,14 @@ export class Files extends Model {
                                 item.classList.remove("b3-list-item--focus");
                             });
 
-                            // 获取所有文档项
                             const allFiles = Array.from(this.element.querySelectorAll("li.b3-list-item"));
 
-                            // 获取起始和结束索引
                             const startIndex = allFiles.indexOf(this.lastSelectedElement);
                             const endIndex = allFiles.indexOf(target);
 
-                            // 确定选择范围
                             const start = Math.min(startIndex, endIndex);
                             const end = Math.max(startIndex, endIndex);
 
-                            // 添加新选择
                             for (let i = start; i <= end; i++) {
                                 (allFiles[i] as HTMLElement).classList.add("b3-list-item--focus");
                             }
@@ -354,7 +346,6 @@ export class Files extends Model {
                             this.setCurrent(target, false);
                             if (target.getAttribute("data-type") === "navigation-file" ||
                                 (target.getAttribute("data-type") === "navigation-root" && target.getAttribute("data-node-id"))) {
-                                // 更新最后点击的文档项
                                 needFocus = false;
                                 if (target.getAttribute("data-opening")) {
                                     return;
@@ -440,7 +431,7 @@ export class Files extends Model {
                     ghostElement.append(item.cloneNode(true));
                     item.style.opacity = "0.38";
                     const itemNodeId = item.dataset.nodeId ||
-                        item.dataset.path; // 拖拽笔记本时值不能为空，否则 drop 就不会继续排序
+                        item.dataset.path;
                     if (itemNodeId) {
                         ids += itemNodeId;
                         if (index < selectElements.length - 1) {
@@ -452,11 +443,9 @@ export class Files extends Model {
                 ghostElement.setAttribute("class", "b3-list b3-list--background");
                 document.body.append(ghostElement);
                 if (window.scribli.touchDragActive) {
-                    // 触屏保留 DOM ghost 供 touchDragBridge 跟随手指
                     event.dataTransfer.setDragImage(ghostElement, 16, 16);
                     window.scribli.touchDragGhost = ghostElement;
                 } else {
-                    // 桌面端隐藏原生 ghost，改用自定义双区跟随框
                     const transparentImg = new Image();
                     transparentImg.src = transparentImgSrc;
                     event.dataTransfer.setDragImage(transparentImg, 0, 0);
@@ -530,15 +519,12 @@ export class Files extends Model {
                     gutterType = item.type;
                 }
             }
-            // 标题/列表项等块标源拖到文档树的提示在下方 rAF 回调中根据高亮类判定
-            // 其余无法转换的块标源（如段落）不显示提示
             if (gutterType) {
                 const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
                 if (!["nodelistitem", "nodeheading"].includes(gutterTypes[0])) {
                     hideDragTip();
                 }
             }
-            // 文档→文档拖拽的提示在下方 rAF 回调中根据高亮类判定（需等高亮类确定后再显示）
             dragOverLastObj.rafId = requestAnimationFrame(() => {
                 dragOverLastObj.rafId = null;
                 let liElement = event.target.closest("li");
@@ -555,14 +541,12 @@ export class Files extends Model {
                 if (dragOverLastObj.element !== liElement) {
                     dragOverLastObj.element?.classList.remove("dragover", "dragover__bottom", "dragover__top");
                     if (gutterType) {
-                        // 块标拖拽
                         const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
                         if (!["nodelistitem", "nodeheading"].includes(gutterTypes[0])) {
                             event.preventDefault();
                             return;
                         }
                     } else if (liElement.classList.contains("b3-list-item--focus")) {
-                        // 选中的文档不能拖拽到自己上，但允许标题拖拽到文档树的选中文档上 
                         hideDragTip();
                         event.preventDefault();
                         return;
@@ -622,7 +606,6 @@ export class Files extends Model {
                     dragOverLastObj.element = liElement;
                 }
                 dragOverLastObj.positionY = event.clientY;
-                // 文档→文档拖拽：依据当前高亮类显示对应操作提示（带目标文档名）
                 if (!gutterType) {
                     const name = liElement.querySelector(".b3-list-item__text")?.textContent || "";
                     const title = window.scribli.dragTitle || "";
@@ -636,7 +619,6 @@ export class Files extends Model {
                         hideDragTip();
                     }
                 } else {
-                    // 块标（标题/列表项）→文档树：结合“转换为文档”和位置（带目标文档名）
                     const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
                     if (["nodelistitem", "nodeheading"].includes(gutterTypes[0])) {
                         const name = liElement.querySelector(".b3-list-item__text")?.textContent || "";
@@ -691,7 +673,6 @@ export class Files extends Model {
                     gutterType = item.type;
                 }
             }
-            // 块标拖拽
             if (gutterType) {
                 const gutterTypes = gutterType.replace(Constants.SCRIBLI_DROP_GUTTER, "").split(Constants.ZWSP);
                 if (["nodelistitem", "nodeheading"].includes(gutterTypes[0])) {
@@ -715,7 +696,6 @@ export class Files extends Model {
                         if (newElement.previousElementSibling) {
                             toDocOptions.previousPath = newElement.previousElementSibling.getAttribute("data-path");
                         } else {
-                            // 拖到第一个子文档上方，作为父文档的第一个子文档
                             const parentLi = newElement.parentElement.previousElementSibling as HTMLElement;
                             toDocOptions.targetPath = parentLi.getAttribute("data-path");
                             toDocOptions.toTop = true;
@@ -752,7 +732,6 @@ export class Files extends Model {
                         }
                     });
                     if (!isChild) {
-                        // 禁止父节点移动到子节点 
                         if (newElement.getAttribute("data-path").startsWith(item.dataset.path.replace(".sy", ""))) {
                             return;
                         }
@@ -1039,10 +1018,8 @@ export class Files extends Model {
             } else {
                 const hiddenElement = liElement.querySelector(".fn__hidden");
                 if (hiddenElement) {
-                    // 原先无子文档：显示展开箭头
                     hiddenElement.classList.remove("fn__hidden");
                 } else if (liElement.querySelector(".b3-list-item__arrow--open")) {
-                    // 父文档已展开：刷新子列表
                     this.getLeaf(liElement, notebookId, true);
                 }
                 break;
@@ -1052,7 +1029,6 @@ export class Files extends Model {
 
     private genNotebook(item: INotebook) {
         const editingPublishAccess = this.element.classList.contains("file-tree__publish-access--active");
-        // 加密笔记本关闭（锁定）时用 🔒 提示需解锁；打开（解锁）后恢复正常 emoji
         const iconContent = (item.encrypted && item.closed)
             ? "🔒️"
             : unicode2Emoji(item.icon || window.scribli.storage[Constants.LOCAL_IMAGES].note);
@@ -1145,7 +1121,6 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
     }
 
     private onRemove(data: IWebSocketData) {
-        // "doc2heading" 后删除文件或挂载帮助文档前的 unmount
         if (data.cmd === "closeBox" || data.cmd === "removeBox") {
             setNoteBook((notebooks) => {
                 const targetElement = this.element.querySelector(`ul[data-url="${data.data.box}"] li[data-path="${"/"}"]`);
@@ -1181,11 +1156,9 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
         data.data.ids.forEach((item: string) => {
             const targetElement = this.element.querySelector(`li.b3-list-item[data-node-id="${item}"]`);
             if (targetElement) {
-                // 子节点展开则删除
                 if (targetElement.nextElementSibling?.tagName === "UL") {
                     targetElement.nextElementSibling.remove();
                 }
-                // 移除当前节点
                 const parentElement = targetElement.parentElement.previousElementSibling as HTMLElement;
                 if (targetElement.parentElement.childElementCount === 1) {
                     if (parentElement) {
@@ -1292,7 +1265,6 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
             }
         }
         const newElement = this.element.querySelector(`[data-url="${response.data.toNotebook}"] li[data-path="${response.data.toPath}"]`) as HTMLElement;
-        // 更新移动到的新文件夹
         if (newElement) {
             newElement.querySelector(".b3-list-item__toggle").classList.remove("fn__hidden");
             if (newElement.getAttribute("data-type") === "navigation-root") {
@@ -1324,10 +1296,8 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
         });
         let nextElement = liElement.nextElementSibling;
         if (nextElement && nextElement.tagName === "UL") {
-            // 文件展开时，刷新
             const tempElement = document.createElement("template");
             tempElement.innerHTML = fileHTML;
-            // 保持文件夹展开状态
             nextElement.querySelectorAll(":scope > .b3-list-item > .b3-list-item__toggle> .b3-list-item__arrow--open").forEach(item => {
                 const openLiElement = hasClosestByClassName(item, "b3-list-item");
                 if (openLiElement) {
@@ -1373,7 +1343,6 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
             return;
         }
         if (liElement.nextElementSibling && liElement.nextElementSibling.tagName === "UL") {
-            // 文件展开时，刷新
             liElement.nextElementSibling.remove();
         }
         const arrowElement = liElement.querySelector(".b3-list-item__arrow");
@@ -1434,7 +1403,6 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
                 leafElement.remove();
                 this.getOpenPaths();
             } else {
-                // 没有UL，直接更新路径
                 this.getOpenPaths();
             }
             return;
@@ -1461,7 +1429,6 @@ data-type="navigation-root" data-path="/" data-count="${item.subFileCount || 0}"
         filePath = filePath.replace(/\/\/+/g, "/");
         const treeElement = this.element.querySelector(`[data-url="${notebookId}"]`);
         if (!treeElement) {
-            // 有文件树和编辑器的布局初始化时，文件树还未挂载
             return;
         }
         const boxDocID = window.scribli.config.fileTree.boxDocEnabled ? notebookId : "";

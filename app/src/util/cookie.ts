@@ -21,7 +21,7 @@ const readCookieValue = (name: string, maxAge: number = COOKIE_MAX_AGE, path: st
         try {
             value = decodeURIComponent(value);
         } catch {
-            // 保持原始值
+            // Intentionally empty.
         }
         refreshCookie(name, value, maxAge, path);
         return value;
@@ -36,7 +36,7 @@ const refreshCookie = (name: string, value: string, maxAge: number = COOKIE_MAX_
 export const desktopModeCookie = {
     read: () => {
         const raw = readCookieValue("scribli-desktop-mode");
-        return raw === "true" || (raw !== "false" && !isMobile()); // 考虑存在 cookie 和不存在 cookie 的情况
+        return raw === "true" || (raw !== "false" && !isMobile());
     },
     set: (enabled: boolean) => {
         document.cookie = "scribli-desktop-mode=" + (enabled ? "true" : "false") + ";path=/;max-age=" + COOKIE_MAX_AGE;

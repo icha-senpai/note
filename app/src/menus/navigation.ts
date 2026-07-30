@@ -277,8 +277,7 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
                 }
             }, () => {
                 liElement.parentElement.setAttribute("data-sortmode", sort.toString());
-                let files;
-                files = (getDockByType("file").data["file"] as Files);
+                const files = (getDockByType("file").data["file"] as Files);
                 const toggleElement = liElement.querySelector(".b3-list-item__arrow--open");
                 if (toggleElement) {
                     toggleElement.classList.remove("b3-list-item__arrow--open");
@@ -352,18 +351,16 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
     }
     if (!window.scribli.config.readonly) {
         window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
-        if (!Object.values(Constants.HELP_PATH).includes(notebookId)) {
-            window.scribli.menus.menu.append(new MenuItem({
-                id: "close",
-                label: window.scribli.languages.close,
-                icon: "iconClose",
-                click: () => {
-                    fetchPost("/api/notebook/closeNotebook", {
-                        notebook: notebookId
-                    });
-                }
-            }).element);
-        }
+        window.scribli.menus.menu.append(new MenuItem({
+            id: "close",
+            label: window.scribli.languages.close,
+            icon: "iconClose",
+            click: () => {
+                fetchPost("/api/notebook/closeNotebook", {
+                    notebook: notebookId
+                });
+            }
+        }).element);
         window.scribli.menus.menu.append(new MenuItem({
             id: "delete",
             icon: "iconTrashcan",
@@ -695,8 +692,7 @@ export const genImportMenu = (notebookId: string, pathString: string) => {
         return;
     }
     const reloadDocTree = () => {
-        let files;
-        files = (getDockByType("file").data["file"] as Files);
+        const files = (getDockByType("file").data["file"] as Files);
         const liElement = files.element.querySelector(`[data-path="${pathString}"]`);
         liElement.querySelector(".b3-list-item__toggle").classList.remove("fn__hidden");
         files.getLeaf(liElement, notebookId, true);

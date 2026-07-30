@@ -27,20 +27,18 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/github/vmihailenco/msgpack/v5"
 )
 
-// Deck 描述了一套闪卡包。
 type Deck struct {
 	ID      string // ID
-	Name    string // 名称
-	Algo    Algo   // 间隔重复算法
-	Desc    string // 描述
-	Created int64  // 创建时间
-	Updated int64  // 更新时间
+	Name    string
+	Algo    Algo
+	Desc    string
+	Created int64
+	Updated int64
 
-	store Store // 底层存储
+	store Store
 	lock  *sync.Mutex
 }
 
-// LoadDeck 从文件夹 saveDir 路径上加载 id 闪卡包。
 func LoadDeck(saveDir, id string, requestRetention float64, maximumInterval int, weights string) (deck *Deck, err error) {
 	created := time.Now().UnixMilli()
 	deck = &Deck{
@@ -84,7 +82,6 @@ func LoadDeck(saveDir, id string, requestRetention float64, maximumInterval int,
 	return
 }
 
-// AddCard 新建一张闪卡。
 func (deck *Deck) AddCard(cardID, blockID string) {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -98,7 +95,6 @@ func (deck *Deck) AddCard(cardID, blockID string) {
 	deck.Updated = time.Now().UnixMilli()
 }
 
-// RemoveCard 删除一张闪卡。
 func (deck *Deck) RemoveCard(cardID string) {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -107,7 +103,6 @@ func (deck *Deck) RemoveCard(cardID string) {
 	deck.Updated = time.Now().UnixMilli()
 }
 
-// SetCard 设置一张闪卡。
 func (deck *Deck) SetCard(card Card) {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -115,7 +110,6 @@ func (deck *Deck) SetCard(card Card) {
 	deck.store.SetCard(card)
 }
 
-// GetCard 根据闪卡 ID 获取对应的闪卡。
 func (deck *Deck) GetCard(cardID string) Card {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -129,7 +123,6 @@ func (deck *Deck) GetCardsByBlockID(blockID string) (ret []Card) {
 	return deck.store.GetCardsByBlockID(blockID)
 }
 
-// GetCardsByBlockIDs 获取指定内容块的所有卡片。
 func (deck *Deck) GetCardsByBlockIDs(blockIDs []string) (ret []Card) {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -151,7 +144,6 @@ func (deck *Deck) GetDueCardsByBlockIDs(blockIDs []string) (ret []Card) {
 	return deck.store.GetDueCardsByBlockIDs(blockIDs)
 }
 
-// GetBlockIDs 获取所有内容块 ID。
 func (deck *Deck) GetBlockIDs() (ret []string) {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -159,7 +151,6 @@ func (deck *Deck) GetBlockIDs() (ret []string) {
 	return deck.store.GetBlockIDs()
 }
 
-// CountCards 获取卡包中的闪卡数量。
 func (deck *Deck) CountCards() int {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -167,7 +158,6 @@ func (deck *Deck) CountCards() int {
 	return deck.store.CountCards()
 }
 
-// Save 保存闪卡包。
 func (deck *Deck) Save() (err error) {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -193,7 +183,6 @@ func (deck *Deck) Save() (err error) {
 	return
 }
 
-// SaveLog 保存闪卡包的复习日志。
 func (deck *Deck) SaveLog(log *Log) (err error) {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -201,7 +190,6 @@ func (deck *Deck) SaveLog(log *Log) (err error) {
 	return deck.store.SaveLog(log)
 }
 
-// Review 复习一张闪卡，rating 为复习评分结果。
 func (deck *Deck) Review(cardID string, rating Rating) (ret *Log) {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()
@@ -211,7 +199,6 @@ func (deck *Deck) Review(cardID string, rating Rating) (ret *Log) {
 	return
 }
 
-// Dues 返回所有到期的闪卡。
 func (deck *Deck) Dues() (ret []Card) {
 	deck.lock.Lock()
 	defer deck.lock.Unlock()

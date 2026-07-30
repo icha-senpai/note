@@ -47,7 +47,7 @@ Division of labor among the four paths:
   "Properties": {
     "icon": "1f4f0",
     "id": "20200825162036-4dx365o",
-    "title": "排版元素",
+    "title": "Typography Elements",
     "type": "doc",
     "updated": "20260616224229"
   },
@@ -312,7 +312,7 @@ Notes:
 ### 5.12 HTML / IFrame / Video / Audio blocks (leaf; content in the top-level `Data`)
 
 ```json
-{ "Type": "NodeHTMLBlock", "ID": "...", "Data": "<div>\n<ruby>你<rt>nǐ</rt>...</div>", "Properties": { "id": "..." } }
+{ "Type": "NodeHTMLBlock", "ID": "...", "Data": "<div>\n<ruby>you<rt>you</rt>...</div>", "Properties": { "id": "..." } }
 { "Type": "NodeIFrame", "ID": "...", "Data": "<iframe src=\"...\"></iframe>", "Properties": { "id": "..." } }
 { "Type": "NodeVideo", "ID": "...", "Data": "<video controls src=\"assets/x.mp4\"></video>", "Properties": { "id": "..." } }
 { "Type": "NodeAudio", "ID": "...", "Data": "<audio controls src=\"assets/x.wav\"></audio>", "Properties": { "id": "..." } }
@@ -590,8 +590,7 @@ When generating a `.sy` that Scribli can load cleanly, verify item by item:
 
 ## Appendix: verification sources
 
-- Sample 1: `app/guide/.../20200825162036-4dx365o.sy` (formatting elements — covers nearly all block types)
-- Sample 2: `app/guide/.../20200905090211-2vixtlf.sy` (block types — incl. compact lists, AttributeView)
+- Scribli no longer ships the upstream `app/guide` notebooks; use exported workspace fixtures or freshly created sample documents when verifying `.sy` generation.
 - Node-type constants and serialization logic: `lute/ast/node.go`, `lute/render/json_renderer.go`, `dataparser/sy.go`
 - List containment check: `lute/ast/node.go:988` (`CanContain`)
 - Disabled-syntax config: `kernel/util/lute.go:51` (`NewLute`)

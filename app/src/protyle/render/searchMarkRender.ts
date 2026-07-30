@@ -25,7 +25,6 @@ export const searchMarkRender = (protyle: IProtyle, keys: string[], hlId?: strin
             hlBlockElement = protyle.title.element;
         }
 
-        // 准备一个数组来保存所有文本节点
         const textNodes: Node[] = [];
         const textNodesSize: number[] = [];
         let currentSize = 0;
@@ -80,7 +79,6 @@ export const searchMarkRender = (protyle: IProtyle, keys: string[], hlId?: strin
             });
         }
 
-        // 没有匹配到关键字，但是有高亮块时，需将其添加进去
         if (!isSetHL && hlBlockElement) {
             const startIndex = text.indexOf(hlBlockElement.textContent);
             if (startIndex > -1) {

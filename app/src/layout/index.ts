@@ -79,7 +79,6 @@ export class Layout {
                         this.children.splice(index, 0, child);
                     }
                     if (this.direction === "lr") {
-                        // 向右分屏，左侧文档抖动，移除动画和边距
                         item.element.querySelectorAll(".protyle-content").forEach((element: HTMLElement) => {
                             if (!element.parentElement.classList.contains("fn__none")) {
                                 element.classList.remove("protyle-content--transition");

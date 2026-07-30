@@ -30,9 +30,7 @@ func isContextOverflow(err error) bool {
 		strings.Contains(msg, "reduce the length") ||
 		strings.Contains(msg, "too many tokens") ||
 		strings.Contains(msg, "input is too long") ||
-		strings.Contains(msg, "exceeds the context window") ||
-		strings.Contains(msg, "超出上下文") ||
-		strings.Contains(msg, "上下文长度")
+		strings.Contains(msg, "exceeds the context window")
 }
 
 func compactMessages(msgs []openai.ChatCompletionMessage, keepLastUserMessages int) []openai.ChatCompletionMessage {

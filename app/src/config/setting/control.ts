@@ -9,9 +9,7 @@ type SelectOption = {
 
 type ControlBase = {
     id: string;
-    /** mount 时从 config 读取初值（含自定义逻辑） */
     readConfig(): unknown;
-    /** change 时从 DOM 解析提交值 */
     readValue(el: HTMLElement): unknown;
     afterMount?: (root: HTMLElement) => void | Promise<void>;
 };

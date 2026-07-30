@@ -26,13 +26,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/kernel/util"
 	ginSessions "github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sessions"
 	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/third_party/forks/github/gorilla/websocket"
-	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/github/steambap/captcha"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 var (
@@ -273,7 +273,7 @@ func CheckAuth(c *gin.Context) {
 			("" != host && !util.IsLocalHost(host)) ||
 			("" != origin && !util.IsLocalOrigin(origin)) ||
 			("" != forwardedHost && !util.IsLocalHost(forwardedHost)) {
-			c.JSON(http.StatusUnauthorized, map[string]any{"code": -1, "msg": "Auth failed: for security reasons, please set [Lock screen password] when using non-127.0.0.1 access\n\n为安全起见，使用非 127.0.0.1 访问时请设置 [锁屏密码]"})
+			c.JSON(http.StatusUnauthorized, map[string]any{"code": -1, "msg": "Auth failed: for security reasons, please set [Lock screen password] when using non-127.0.0.1 access"})
 			c.Abort()
 			return
 		}

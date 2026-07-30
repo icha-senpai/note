@@ -21,9 +21,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 )
 
 func TestCheckBlockTreeAccessableByPublishAccess(t *testing.T) {
@@ -152,7 +152,7 @@ func TestFilterEmbedBlocksByPublishAccessDropsInaccessibleResults(t *testing.T) 
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 	c.Request = httptest.NewRequest(http.MethodGet, "/", nil)
 	if filtered := FilterEmbedBlocksByPublishAccess(c, publishAccess, embedBlocks); 0 != len(filtered) {
-		t.Fatalf("不可访问的嵌入块结果不应返回：%+v", filtered)
+		t.Fatalf("inaccessible embedded block results should not be returned: %+v", filtered)
 	}
 
 	c.Request.AddCookie(&http.Cookie{
@@ -161,6 +161,6 @@ func TestFilterEmbedBlocksByPublishAccessDropsInaccessibleResults(t *testing.T) 
 	})
 	filtered := FilterEmbedBlocksByPublishAccess(c, publishAccess, embedBlocks)
 	if 1 != len(filtered) || "20260720000005-protect" != filtered[0].Block.ID {
-		t.Fatalf("密码验证后应仅返回已授权结果：%+v", filtered)
+		t.Fatalf("password verification should return only authorized results: %+v", filtered)
 	}
 }

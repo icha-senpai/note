@@ -133,7 +133,7 @@ func Boot() {
 	accessAuthCode := flag.String("accessAuthCode", "", "access auth code")
 	ssl := flag.Bool("ssl", false, "for https and wss")
 	attachUI := flag.Bool("attach-ui", false, "attach kernel lifecycle to desktop UI process (used by Electron)")
-	lang := flag.String("lang", "", "ar/de/en/es/fr/he/hi/id/it/ja/ko/nl/pl/pt-BR/ru/sk/th/tr/uk/zh-CN/zh-TW")
+	lang := flag.String("lang", "", "en")
 	mode := flag.String("mode", "prod", "dev/prod")
 	safeMode := flag.Bool("safe-mode", false, "boot in safe mode")
 	flag.Parse()

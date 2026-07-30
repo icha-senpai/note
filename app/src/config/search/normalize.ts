@@ -1,6 +1,5 @@
 import type {RowPart} from "../render/parts";
 
-/** 检索文案：去 HTML、trim、toLowerCase */
 export const normalizeSearchText = (text: string): string => {
     let plain = text || "";
     if (plain.includes("<")) {
@@ -11,14 +10,12 @@ export const normalizeSearchText = (text: string): string => {
     return plain.trim().toLowerCase();
 };
 
-/** 获取设置对话框搜索框关键词 */
 export const getSearchKeywordsLower = (dialogElement: HTMLElement): string | undefined => {
     const searchInput = dialogElement.querySelector(".config__tab-head .b3-text-field") as HTMLInputElement | null;
     const keywords = normalizeSearchText(searchInput?.value ?? "");
     return keywords || undefined;
 };
 
-/** 注册时构建检索索引（normalize、去重） */
 export const buildSearchIndex = (rawStrings: readonly string[]): readonly string[] => {
     const strings: string[] = [];
     for (const text of rawStrings) {
@@ -30,7 +27,6 @@ export const buildSearchIndex = (rawStrings: readonly string[]): readonly string
     return [...new Set(strings)];
 };
 
-/** 注册时构建条目检索索引（normalize、去重） */
 export const buildItemSearchIndex = (item: {
     kind: string;
     rowParts?: RowPart[];

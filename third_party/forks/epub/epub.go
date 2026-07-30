@@ -65,7 +65,7 @@ func Reader(filename string, onChapter func(chapter string, data []byte) bool) e
 			name := np.Text
 			data, err := readerF(np.Content.Src)
 			if err != nil {
-				// Improve EPUB asset file content parsing https://github.com/siyuan-note/siyuan/issues/9072
+				// Improve EPUB asset file content parsing
 				// Ignore error
 				return nil
 			}

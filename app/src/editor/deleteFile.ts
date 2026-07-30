@@ -4,7 +4,6 @@ import {confirmDialog} from "../dialog/confirmDialog";
 import {hasTopClosestByTag} from "../protyle/util/hasClosest";
 import {showMessage} from "../dialog/message";
 import {escapeHtml} from "../util/escape";
-import {Constants} from "../constants";
 
 export const deleteFile = (notebookId: string, pathString: string) => {
     if (window.scribli.config.fileTree.removeDocWithoutConfirm) {
@@ -47,9 +46,8 @@ export const deleteFiles = (liElements: Element[]) => {
             if (liElements[0].getAttribute("data-type") === "navigation-file") {
                 deleteFile(itemNotebookId, liElements[0].getAttribute("data-path"));
             } else {
-                const isHelpNotebook = Object.values(Constants.HELP_PATH).includes(itemNotebookId);
-                confirmDialog(isHelpNotebook ? "" : window.scribli.languages.deleteOpConfirm,
-                    isHelpNotebook ? "" : `${window.scribli.languages.confirmDeleteTip.replace("${x}", Lute.EscapeHTMLStr(getNotebookName(itemNotebookId)))}
+                confirmDialog(window.scribli.languages.deleteOpConfirm,
+                    `${window.scribli.languages.confirmDeleteTip.replace("${x}", Lute.EscapeHTMLStr(getNotebookName(itemNotebookId)))}
 <div class="fn__hr"></div>
 <div class="ft__smaller ft__on-surface">${window.scribli.languages.rollbackTip.replace("${x}", window.scribli.config.editor.historyRetentionDays)}</div>`, () => {
                         fetchPost("/api/notebook/removeNotebook", {

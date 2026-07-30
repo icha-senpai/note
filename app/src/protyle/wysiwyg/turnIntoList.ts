@@ -8,7 +8,6 @@ export const turnIntoTaskList = (protyle: IProtyle, type: string, blockElement: 
     const html = decodeHTML(editElement.innerHTML);
     const dataTask = html.substring(0, 3).match(/^[\[【]([^\x80-\uffff\[\]【】])[\]】]$/);
     if (type !== "NodeCodeBlock" &&
-        // 任务列表首块不需要再更新为任务列表
         !blockElement.previousElementSibling?.classList.contains("protyle-action--task") &&
         (
             dataTask ||
@@ -27,7 +26,6 @@ export const turnIntoTaskList = (protyle: IProtyle, type: string, blockElement: 
         if (blockElement.parentElement.classList.contains("li") &&
             blockElement.parentElement.childElementCount === 3  // 
         ) {
-            // 仅有一项的列表才可转换
             if (!blockElement.parentElement.parentElement.classList.contains("protyle-wysiwyg") && // 
                 blockElement.parentElement.parentElement.childElementCount === 2) {
                 const liElement = blockElement.parentElement.parentElement;

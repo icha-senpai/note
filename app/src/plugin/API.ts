@@ -28,16 +28,14 @@ import type {Files} from "../layout/dock/Files";
 import {ProtyleMethod} from "./ProtyleMethod";
 import {openEmojiPanel} from "../emoji";
 
-let openTab;
-let openWindow;
-openWindow = (options: {
+const openWindow = (options: {
     position?: IPosition,
     height?: number,
     width?: number,
     tab?: Tab,
     alwaysOnTop?: boolean,
     doc?: {
-        id: string,     // 块 id
+        id: string,
     },
 }) => {
     if (options.doc && options.doc.id) {
@@ -60,17 +58,17 @@ openWindow = (options: {
     }
 };
 
-openTab = (options: {
+const openTab = (options: {
     app: App,
     doc?: {
-        id: string,     // 块 id
-        action?: TProtyleAction [] // cb-get-all：获取所有内容；cb-get-focus：打开后光标定位在 id 所在的块；cb-get-hl: 打开后 id 块高亮
-        zoomIn?: boolean // 是否缩放
-        mode?: TEditorMode  // 文档打开模式，默认 "wysiwyg"
+        id: string,
+        action?: TProtyleAction []
+        zoomIn?: boolean
+        mode?: TEditorMode
     },
     pdf?: {
         path: string,
-        page?: number,  // pdf 页码
+        page?: number,
         id?: string,    // File Annotation id
     },
     asset?: {
@@ -79,8 +77,8 @@ openTab = (options: {
     search?: Config.IUILayoutTabSearchConfig
     card?: {
         type: TCardType,
-        id?: string, //  cardType 为 all 时不传，否则传文档或笔记本 id
-        title?: string //  cardType 为 all 时不传，否则传文档或笔记本名称
+        id?: string,
+        title?: string
     },
     custom?: {
         title: string,
@@ -89,9 +87,9 @@ openTab = (options: {
         id: string
     }
     position?: "right" | "bottom",
-    keepCursor?: boolean // 是否跳转到新 tab 上
-    removeCurrentTab?: boolean // 在当前页签打开时需移除原有页签
-    afterOpen?: (model?: Model) => void // 打开后回调
+    keepCursor?: boolean
+    removeCurrentTab?: boolean
+    afterOpen?: (model?: Model) => void
 }) => {
     if (options.doc) {
         if (options.doc.zoomIn) {
@@ -184,10 +182,10 @@ const getModelByDockType = (type: TDock | string) => {
 };
 
 const openAttributePanel = (options: {
-    data?: Record<string, string>  // 块属性值
-    nodeElement?: HTMLElement,  // 块元素
-    focusName: "bookmark" | "name" | "alias" | "memo" | "av" | "custom",    // av 为数据库页签，custom 为自定义页签，其余为内置输入框
-    protyle?: IProtyle, // 有数据库时需要传入 protyle
+    data?: Record<string, string>
+    nodeElement?: HTMLElement,
+    focusName: "bookmark" | "name" | "alias" | "memo" | "av" | "custom",
+    protyle?: IProtyle,
 }) => {
     if (options.data) {
         openFileAttr(options.data, options.focusName, options.protyle);

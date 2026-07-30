@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -108,7 +107,6 @@ var EmojiAliasUnicode = map[string]string{
 	"avocado":                              "🥑",
 	"azerbaijan":                           "🇦🇿",
 	"b":                                    "🅱️",
-	"b3log":                                "${emojiSite}/b3log.png",
 	"baby":                                 "👶️",
 	"baby_bottle":                          "🍼",
 	"baby_chick":                           "🐤",
@@ -617,7 +615,6 @@ var EmojiAliasUnicode = map[string]string{
 	"guitar":                               "🎸",
 	"gun":                                  "🔫",
 	"guyana":                               "🇬🇾",
-	"hacpai":                               "${emojiSite}/hacpai.png",
 	"haircut":                              "💇",
 	"haircut_man":                          "💇‍♂️",
 	"haircut_woman":                        "💇‍♀️",
@@ -758,7 +755,6 @@ var EmojiAliasUnicode = map[string]string{
 	"leopard":                              "🐆",
 	"lesotho":                              "🇱🇸",
 	"level_slider":                         "🎚️",
-	"liandi":                               "${emojiSite}/liandi.png",
 	"liberia":                              "🇱🇷",
 	"libra":                                "♎️",
 	"libya":                                "🇱🇾",
@@ -1189,7 +1185,6 @@ var EmojiAliasUnicode = map[string]string{
 	"signal_strength":                      "📶",
 	"singapore":                            "🇸🇬",
 	"sint_maarten":                         "🇸🇽",
-	"siyuan":                               "${emojiSite}/siyuan.svg",
 	"six":                                  "6️⃣",
 	"six_pointed_star":                     "🔯",
 	"ski":                                  "🎿",

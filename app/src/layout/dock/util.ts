@@ -61,7 +61,6 @@ export const openBacklink = async (options: {
                 app: options.app,
                 type: "local",
                 tab,
-                // 通过搜索打开的包含上下文，但不是缩放，因此需要传 rootID 
                 blockId: options.useBlockId ? options.blockId : options.rootId,
                 rootId: options.rootId,
             }));

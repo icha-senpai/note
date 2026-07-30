@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -30,9 +29,7 @@ func isFileExt(pos, length int, runes *[]rune) bool {
 var commonFileTypesLen = len(commonFileTypes)
 var maxCommonFileTypeLen = 10 // textbundle
 
-// commonFileTypes 列出了常见的文件后缀，主要用于判断是否需要将英文句号.转换为中文句号。
 var commonFileTypes = []string{
-	// 图片
 
 	"jpg",
 	"png",
@@ -47,7 +44,6 @@ var commonFileTypes = []string{
 	"ico",
 	"dwg",
 
-	// 视频
 
 	"mp4",
 	"m4v",
@@ -60,7 +56,6 @@ var commonFileTypes = []string{
 	"flv",
 	"3gp",
 
-	// 音频
 
 	"mid",
 	"mp3",
@@ -71,7 +66,6 @@ var commonFileTypes = []string{
 	"amr",
 	"aac",
 
-	// 压缩包
 
 	"epub",
 	"zip",
@@ -100,7 +94,6 @@ var commonFileTypes = []string{
 	"elf",
 	"dcm",
 
-	// 文件
 
 	"doc",
 	"docx",
@@ -111,19 +104,16 @@ var commonFileTypes = []string{
 	"md",
 	"txt",
 
-	// 字体
 
 	"woff",
 	"woff2",
 	"ttf",
 	"otf",
 
-	// 应用程序
 
 	"wasm",
 	"exe",
 
-	// 编程语言
 
 	"html",
 	"js",
@@ -131,7 +121,6 @@ var commonFileTypes = []string{
 	"go",
 	"java",
 
-	// 其他
 
 	"textbundle",
 }

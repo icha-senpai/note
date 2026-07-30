@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -20,15 +19,14 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 )
 
-// delimiter 描述了强调、链接和图片解析过程中用到的分隔符（[, ![, *, _, ~）相关信息。
 type delimiter struct {
-	node           *ast.Node  // 分隔符对应的文本节点
-	typ            byte       // 分隔符字节 [*_~
-	num            int        // 分隔符字节数
-	originalNum    int        // 原始分隔符字节数
-	canOpen        bool       // 是否是开始分隔符
-	canClose       bool       // 是否是结束分隔符
-	previous, next *delimiter // 双向链表前后节点
+	node           *ast.Node
+	typ            byte
+	num            int
+	originalNum    int
+	canOpen        bool
+	canClose       bool
+	previous, next *delimiter
 
 	active            bool
 	image             bool
@@ -37,9 +35,7 @@ type delimiter struct {
 	previousDelimiter *delimiter
 }
 
-// 嵌套强调和链接的解析算法的中文解读可参考这里 https://ld246.com/article/1566893557720
 
-// handleDelim 将分隔符 *_~ 入栈。
 func (t *Tree) handleDelim(block *ast.Node, ctx *InlineContext) {
 	startPos := ctx.pos
 	delim := t.scanDelims(ctx)
@@ -48,7 +44,6 @@ func (t *Tree) handleDelim(block *ast.Node, ctx *InlineContext) {
 	node := &ast.Node{Type: ast.NodeText, Tokens: text}
 	block.AppendChild(node)
 
-	// 将这个分隔符入栈
 	if delim.canOpen || delim.canClose {
 		ctx.delimiters = &delimiter{
 			typ:         delim.typ,
@@ -66,7 +61,6 @@ func (t *Tree) handleDelim(block *ast.Node, ctx *InlineContext) {
 	}
 }
 
-// processEmphasis 处理强调、加粗以及删除线。
 func (t *Tree) processEmphasis(stackBottom *delimiter, ctx *InlineContext) {
 	if nil == ctx.delimiters {
 		return
@@ -226,7 +220,7 @@ func (t *Tree) processEmphasis(stackBottom *delimiter, ctx *InlineContext) {
 					openMarker.Type = ast.NodeEmU8eOpenMarker
 					closeMarker.Type = ast.NodeEmU8eCloseMarker
 				} else if lex.ItemTilde == closercc {
-					if t.Context.ParseOption.Sub { // 优先下标
+					if t.Context.ParseOption.Sub {
 						emStrongDelMark.Type = ast.NodeSub
 						openMarker.Type = ast.NodeSubOpenMarker
 						closeMarker.Type = ast.NodeSubCloseMarker
@@ -286,8 +280,8 @@ func (t *Tree) processEmphasis(stackBottom *delimiter, ctx *InlineContext) {
 				tmp = next
 			}
 
-			emStrongDelMark.PrependChild(openMarker) // 插入起始标记符
-			emStrongDelMark.AppendChild(closeMarker) // 插入结束标记符
+			emStrongDelMark.PrependChild(openMarker)
+			emStrongDelMark.AppendChild(closeMarker)
 			openerInl.InsertAfter(emStrongDelMark)
 
 			// remove elts between opener and closer in delimiters stack
@@ -321,7 +315,6 @@ func (t *Tree) processEmphasis(stackBottom *delimiter, ctx *InlineContext) {
 		}
 	}
 
-	// 移除所有分隔符
 	for nil != ctx.delimiters && ctx.delimiters != stackBottom {
 		t.removeDelimiter(ctx.delimiters, ctx)
 	}
@@ -332,7 +325,6 @@ func (t *Tree) scanDelims(ctx *InlineContext) *delimiter {
 	token := ctx.tokens[startPos]
 	delimitersCount := 0
 	for i := ctx.pos; i < ctx.tokensLen && token == ctx.tokens[i]; i++ {
-		// #Tag# 标记使用一个井号，不贪婪合并连续井号，否则相邻标签（如 #foo##bar#）会被错误解析 https://github.com/siyuan-note/siyuan/issues/18191
 		if lex.ItemCrosshatch == token && t.Context.ParseOption.Tag && delimitersCount >= 1 {
 			break
 		}
@@ -350,7 +342,6 @@ func (t *Tree) scanDelims(ctx *InlineContext) *delimiter {
 		}
 
 		if (t.Context.ParseOption.VditorWYSIWYG || t.Context.ParseOption.VditorIR || t.Context.ParseOption.VditorSV || t.Context.ParseOption.ProtyleWYSIWYG) && editor.Caret == string(tokenBefore) {
-			// 跳过插入符位置向前看
 			caretLen := len(editor.Caret)
 			if 0 < startPos-caretLen {
 				c = ctx.tokens[startPos-caretLen-1]
@@ -388,10 +379,8 @@ func (t *Tree) scanDelims(ctx *InlineContext) *delimiter {
 	}
 
 	if t.Context.ParseOption.ProtyleWYSIWYG {
-		// Markdown 中 ** 加粗失效问题 https://ld246.com/article/1597581380183
 		afterIsPunct, beforeIsPunct = false, false
 
-		// _foo_ 优化 https://github.com/siyuan-note/siyuan/issues/17769
 		if lex.ItemUnderscore == token && editor.Caret == string(tokenBefore) {
 			afterIsWhitespace = true
 		}
@@ -408,21 +397,21 @@ func (t *Tree) scanDelims(ctx *InlineContext) *delimiter {
 		canClose = isRightFlanking && (!isLeftFlanking || afterIsPunct)
 	} else {
 		if lex.ItemEqual == token {
-			if !t.Context.ParseOption.Mark || 2 != delimitersCount /* ==Mark== 标记使用两个等号 */ {
+			if !t.Context.ParseOption.Mark || 2 != delimitersCount  {
 				canOpen, canClose = false, false
 			} else {
 				canOpen = isLeftFlanking
 				canClose = isRightFlanking
 			}
 		} else if lex.ItemCrosshatch == token {
-			if !t.Context.ParseOption.Tag || 1 != delimitersCount /* #Tag# 标记使用一个井号 */ {
+			if !t.Context.ParseOption.Tag || 1 != delimitersCount  {
 				canOpen, canClose = false, false
 			} else {
 				canOpen = isLeftFlanking
 				canClose = isRightFlanking
 			}
 		} else if lex.ItemCaret == token {
-			if !t.Context.ParseOption.Sup || 1 != delimitersCount /* ^Sup^ 标记使用一个 ^ */ {
+			if !t.Context.ParseOption.Sup || 1 != delimitersCount  {
 				canOpen, canClose = false, false
 			} else {
 				canOpen = isLeftFlanking
@@ -430,10 +419,10 @@ func (t *Tree) scanDelims(ctx *InlineContext) *delimiter {
 			}
 		} else if lex.ItemTilde == token {
 			if t.Context.ParseOption.Sub {
-				if t.Context.ParseOption.GFMStrikethrough && 3 == delimitersCount { // 单独处理 ~~~foo~~~ 的情况，即下标嵌套删除线
+				if t.Context.ParseOption.GFMStrikethrough && 3 == delimitersCount {
 					canOpen = isLeftFlanking
 					canClose = isRightFlanking
-				} else if 1 != delimitersCount { // ~Sub~ 标记使用一个 ~
+				} else if 1 != delimitersCount {
 					canOpen, canClose = false, false
 					if t.Context.ParseOption.GFMStrikethrough && 2 == delimitersCount {
 						canOpen = isLeftFlanking
@@ -473,7 +462,7 @@ func (t *Tree) removeDelimiter(delim *delimiter, ctx *InlineContext) (ret *delim
 		delim.previous.next = delim.next
 	}
 	if nil == delim.next {
-		ctx.delimiters = delim.previous // 栈顶
+		ctx.delimiters = delim.previous
 	} else {
 		delim.next.previous = delim.previous
 	}

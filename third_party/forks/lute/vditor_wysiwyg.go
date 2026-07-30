@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -24,13 +23,11 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// Md2HTML 将 markdown 转换为标准 HTML，用于源码模式预览。
 func (lute *Lute) Md2HTML(markdown string) (sHTML string) {
 	sHTML = lute.MarkdownStr("", markdown)
 	return
 }
 
-// SpinVditorDOM 自旋 Vditor DOM，用于所见即所得模式下的编辑。
 func (lute *Lute) SpinVditorDOM(ivHTML string) (ovHTML string) {
 	ivHTML = strings.ReplaceAll(ivHTML, editor.FrontEndCaret, editor.Caret)
 	markdown := lute.vditorDOM2Md(ivHTML)
@@ -41,7 +38,6 @@ func (lute *Lute) SpinVditorDOM(ivHTML string) (ovHTML string) {
 	return
 }
 
-// HTML2VditorDOM 将 HTML 转换为 Vditor DOM，用于所见即所得模式下粘贴。
 func (lute *Lute) HTML2VditorDOM(sHTML string) (vHTML string) {
 	markdown, err := lute.HTML2Markdown(sHTML)
 	if nil != err {
@@ -59,14 +55,12 @@ func (lute *Lute) HTML2VditorDOM(sHTML string) (vHTML string) {
 	return
 }
 
-// VditorDOM2HTML 将 Vditor DOM 转换为 HTML，用于 Vditor.getHTML() 接口。
 func (lute *Lute) VditorDOM2HTML(vhtml string) (sHTML string) {
 	markdown := lute.vditorDOM2Md(vhtml)
 	sHTML = lute.Md2HTML(markdown)
 	return
 }
 
-// Md2VditorDOM 将 markdown 转换为 Vditor DOM，用于从源码模式切换至所见即所得模式。
 func (lute *Lute) Md2VditorDOM(markdown string) (vHTML string) {
 	tree := parse.Parse("", []byte(markdown), lute.ParseOptions)
 	renderer := render.NewVditorRenderer(tree, lute.RenderOptions, lute.ParseOptions)
@@ -78,7 +72,6 @@ func (lute *Lute) Md2VditorDOM(markdown string) (vHTML string) {
 	return
 }
 
-// VditorDOM2Md 将 Vditor DOM 转换为 markdown，用于从所见即所得模式切换至源码模式。
 func (lute *Lute) VditorDOM2Md(htmlStr string) (markdown string) {
 	htmlStr = strings.ReplaceAll(htmlStr, editor.Zwsp, "")
 	markdown = lute.vditorDOM2Md(htmlStr)
@@ -86,7 +79,6 @@ func (lute *Lute) VditorDOM2Md(htmlStr string) (markdown string) {
 	return
 }
 
-// RenderEChartsJSON 用于渲染 ECharts JSON 格式数据。
 func (lute *Lute) RenderEChartsJSON(markdown string) (json string) {
 	tree := parse.Parse("", []byte(markdown), lute.ParseOptions)
 	renderer := render.NewEChartsJSONRenderer(tree, lute.RenderOptions, lute.ParseOptions)
@@ -95,7 +87,6 @@ func (lute *Lute) RenderEChartsJSON(markdown string) (json string) {
 	return
 }
 
-// RenderKityMinderJSON 用于渲染 KityMinder JSON 格式数据。
 func (lute *Lute) RenderKityMinderJSON(markdown string) (json string) {
 	tree := parse.Parse("", []byte(markdown), lute.ParseOptions)
 	renderer := render.NewKityMinderJSONRenderer(tree, lute.RenderOptions, lute.ParseOptions)
@@ -104,7 +95,6 @@ func (lute *Lute) RenderKityMinderJSON(markdown string) (json string) {
 	return
 }
 
-// HTML2Md 用于将 HTML 转换为 markdown。
 func (lute *Lute) HTML2Md(html string) (markdown string) {
 	markdown, err := lute.HTML2Markdown(html)
 	if nil != err {
@@ -115,42 +105,34 @@ func (lute *Lute) HTML2Md(html string) (markdown string) {
 }
 
 func (lute *Lute) vditorDOM2Md(htmlStr string) (markdown string) {
-	// 删掉插入符
 	htmlStr = strings.ReplaceAll(htmlStr, editor.FrontEndCaret, "")
 
-	// 替换结尾空白，否则 HTML 解析会产生冗余节点导致生成空的代码块
 	htmlStr = strings.ReplaceAll(htmlStr, "\t\n", "\n")
 	htmlStr = strings.ReplaceAll(htmlStr, "    \n", "  \n")
 
-	// 将字符串解析为 DOM 树
 	htmlRoot := util.ParseHTML(htmlStr)
 	if nil == htmlRoot {
 		return
 	}
 
-	// 调整 DOM 结构
 	lute.adjustVditorDOM(htmlRoot)
 
-	// 将 HTML 树转换为 Markdown AST
 	tree := &parse.Tree{Name: "", Root: &ast.Node{Type: ast.NodeDocument}, Context: &parse.Context{ParseOption: lute.ParseOptions}}
 	tree.Context.Tip = tree.Root
 	for c := htmlRoot.FirstChild; nil != c; c = c.NextSibling {
 		lute.genASTByVditorDOM(c, tree)
 	}
 
-	// 调整树结构
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if entering {
 			switch n.Type {
 			case ast.NodeInlineHTML, ast.NodeCodeSpan, ast.NodeInlineMath, ast.NodeHTMLBlock, ast.NodeCodeBlockCode, ast.NodeMathBlockContent:
 				n.Tokens = html.UnescapeHTML(n.Tokens)
 				if nil != n.Next && ast.NodeCodeSpan == n.Next.Type && n.CodeMarkerLen == n.Next.CodeMarkerLen {
-					// 合并代码节点 https://github.com/Vanessa219/vditor/issues/167
 					n.FirstChild.Next.Tokens = append(n.FirstChild.Next.Tokens, n.Next.FirstChild.Next.Tokens...)
 					n.Next.Unlink()
 				}
 			case ast.NodeList:
-				// 浏览器生成的子列表是 ul.ul 形式，需要将其调整为 ul.li.ul
 				if nil != n.Parent && ast.NodeList == n.Parent.Type {
 					if previousLi := n.Previous; nil != previousLi {
 						previousLi.AppendChild(n)
@@ -161,7 +143,6 @@ func (lute *Lute) vditorDOM2Md(htmlStr string) (markdown string) {
 		return ast.WalkContinue
 	})
 
-	// 将 AST 进行 Markdown 格式化渲染
 	options := render.NewOptions()
 	options.AutoSpace = false
 	options.FixTermTypo = false
@@ -260,7 +241,6 @@ func (lute *Lute) adjustTag(n *html.Node) {
 	}
 
 	if html.ElementNode == n.Type && 0 == n.DataAtom {
-		// 将某些自定义标签转换为标准标签
 		if "ucapcontent" == n.Data {
 			n.DataAtom = atom.Div
 		} else if "ucaptitle" == n.Data {
@@ -275,7 +255,6 @@ func (lute *Lute) adjustTag(n *html.Node) {
 		}
 	} else if html.TextNode == n.Type && 0 == n.DataAtom && !lute.parentIs(n, atom.Table) {
 		if lute.ParseOptions.ProtyleWYSIWYG {
-			// 将非表格内的文本节点中的 <br> 转换为 \n https://github.com/siyuan-note/siyuan/issues/15373
 			n.Data = strings.ReplaceAll(n.Data, "<br>", "\n")
 			n.Data = strings.ReplaceAll(n.Data, "<br/>", "\n")
 			n.Data = strings.ReplaceAll(n.Data, "<br />", "\n")
@@ -327,7 +306,6 @@ func (lute *Lute) adjustMath(n *html.Node) {
 				}
 
 				if idx := strings.LastIndex(tex, "\n\n\n\n"); 0 < idx {
-					// 根据最后 4 个换行符分隔公式内容，适配 CSDN 公式剪藏
 					tex = tex[idx+4:]
 				}
 
@@ -425,9 +403,6 @@ func (lute *Lute) adjustMath(n *html.Node) {
 
 func (lute *Lute) adjustTableCode(n *html.Node) {
 	if atom.Table == n.DataAtom {
-		// 表格类型的代码块进行预处理 https://github.com/siyuan-note/siyuan/issues/11540
-		// 移除 <td class="gutter">
-		// td class="code"> 下的 <div class="container"> 改为 <pre>
 
 		tds := util.DomChildrenByType(n, atom.Td)
 		var unlinks []*html.Node
@@ -438,7 +413,6 @@ func (lute *Lute) adjustTableCode(n *html.Node) {
 				continue
 			}
 
-			// 移除 <span class="lnt"> 格式的行号 https://github.com/siyuan-note/siyuan/issues/13242
 			spans := util.DomChildrenByType(td, atom.Span)
 			removed := false
 			for _, span := range spans {
@@ -501,7 +475,6 @@ func (lute *Lute) mergeSameStrong(n *html.Node) {
 	}
 }
 
-// adjustVditorDOMListList 用于将 ul.ul 调整为 ul.li.ul。
 func (lute *Lute) adjustVditorDOMListList(n *html.Node) {
 	if atom.Ul != n.DataAtom && atom.Ol != n.DataAtom && atom.Li != n.DataAtom {
 		return
@@ -509,7 +482,6 @@ func (lute *Lute) adjustVditorDOMListList(n *html.Node) {
 
 	if atom.Li == n.DataAtom {
 		if nil != n.FirstChild && atom.Br == n.FirstChild.DataAtom {
-			// 规范化换行时 li 的结构，对调 ZWSP 和 <br> 的位置
 			n.FirstChild.DataAtom = 0
 			n.FirstChild.Data = editor.Zwsp
 			if nextLi := n.NextSibling; nil != n.NextSibling && atom.Li == n.NextSibling.DataAtom {
@@ -570,9 +542,7 @@ func (lute *Lute) searchEmptyNodes(n *html.Node, emptyNodes *[]*html.Node) {
 	switch n.DataAtom {
 	case 0:
 		if lute.isInline(n.PrevSibling) || lute.isInline(n.NextSibling) || lute.isInline(n.Parent) {
-			// 前节点或者后节点是行级节点的话保留该空白
 			if html.TextNode == n.Type && nil != n.PrevSibling && atom.Strong == n.PrevSibling.DataAtom {
-				// 前节点是加粗节点的话去掉 ZWSP https://github.com/siyuan-note/siyuan/issues/16896
 				data := strings.TrimPrefix(n.Data, editor.Zwsp)
 				data = strings.TrimSuffix(data, editor.Zwsp)
 				n.Data = data
@@ -584,7 +554,6 @@ func (lute *Lute) searchEmptyNodes(n *html.Node, emptyNodes *[]*html.Node) {
 			data := strings.TrimLeft(n.Data, " ")
 			data = strings.TrimRight(data, " ")
 			for strings.Contains(data, "\n\n") {
-				// 浏览器剪藏扩展列表下方段落缩进成为子块 https://github.com/siyuan-note/siyuan/issues/6289
 				data = strings.ReplaceAll(data, "\n\n", "")
 			}
 			if "" == data {
@@ -612,13 +581,10 @@ func (lute *Lute) searchEmptyNodes(n *html.Node, emptyNodes *[]*html.Node) {
 		}
 	case atom.Span:
 		if lc := n.LastChild; nil != lc && atom.Br == lc.DataAtom {
-			// 如果行级标记节点最后一个子节点是 <br>，则将该 <br> 移动到该行级标记节点的后面
-			// 表格内多个连续的超链接无法换行显示 https://github.com/siyuan-note/siyuan/issues/5966
 			n.InsertAfter(lc)
 		}
 
 		if util.IsTempMarkSpan(n) {
-			// 将嵌套在临时标记中的节点提升到临时标记节点之前
 			*emptyNodes = append(*emptyNodes, n)
 			var children []*html.Node
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
@@ -743,19 +709,16 @@ func (lute *Lute) adjustVditorDOMListTight0(n *html.Node) {
 func (lute *Lute) adjustVditorDOMListItemInP(n *html.Node) {
 	switch n.DataAtom {
 	case atom.Li:
-		// li 换行时 id 重复需要重新生成
 		if nil != n.PrevSibling && util.DomAttrValue(n.PrevSibling, "data-node-id") == util.DomAttrValue(n, "data-node-id") {
 			lute.setDOMAttrValue(n, "data-node-id", ast.NewNodeID())
 		}
-		// 松散 li 换行时和上一个 li.last id 重复
 		if nil != n.PrevSibling && nil != n.FirstChild {
-			id := util.DomAttrValue(n.FirstChild, "data-node-id") // id 为空的话是行级节点，列表项行级排版自动换行问题 https://github.com/siyuan-note/siyuan/issues/379
+			id := util.DomAttrValue(n.FirstChild, "data-node-id")
 			if "" != id && nil != n.PrevSibling.LastChild && util.DomAttrValue(n.PrevSibling.LastChild, "data-node-id") == id {
 				lute.setDOMAttrValue(n.FirstChild, "data-node-id", ast.NewNodeID())
 			}
 		}
 
-		// 在 li 下的每个非容器块节点用 p 包裹
 		for c := n.FirstChild; nil != c; c = c.NextSibling {
 			if lute.listItemEnter(n) {
 				p := &html.Node{Type: html.ElementNode, Data: "p", DataAtom: atom.P}
@@ -790,7 +753,6 @@ func (lute *Lute) adjustVditorDOMListItemInP(n *html.Node) {
 
 func (lute *Lute) removeCodeCode(n *html.Node) {
 	if atom.Code == n.DataAtom && nil != n.FirstChild && atom.Code == n.FirstChild.DataAtom {
-		// code.code 重复嵌套，则不处理外层 code
 		for c := n.FirstChild; nil != c; {
 			next := c.NextSibling
 			c.Unlink()
@@ -808,9 +770,8 @@ func (lute *Lute) removeCodeCode(n *html.Node) {
 	}
 }
 func (lute *Lute) adjustVditorDOMCodeA(n *html.Node) {
-	// https://github.com/siyuan-note/siyuan/issues/11370
+	//
 	if atom.Code == n.DataAtom && nil != n.FirstChild && atom.A == n.FirstChild.DataAtom && n.FirstChild == n.LastChild {
-		// code.a 的情况将 a 移到 code 外层，即 a.code
 		prev := n.PrevSibling
 		next := n.NextSibling
 		parent := n.Parent
@@ -845,7 +806,6 @@ func (lute *Lute) adjustVditorDOMCodeA(n *html.Node) {
 	}
 }
 
-// forwardNextBlock 向前移动至下一个块级节点，即跳过行级节点。
 func (lute *Lute) forwardNextBlock(spanNode *html.Node) (spans []*html.Node, nextBlock *html.Node) {
 	for next := spanNode; nil != next; next = next.NextSibling {
 		switch next.DataAtom {
@@ -894,10 +854,9 @@ func (lute *Lute) isTightList(list *html.Node) string {
 	return "true"
 }
 
-// genASTByVditorDOM 根据指定的 Vditor DOM 节点 n 进行深度优先遍历并逐步生成 Markdown 语法树 tree。
 func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 	dataRender := util.DomAttrValue(n, "data-render")
-	if "1" == dataRender || "2" == dataRender { // 1：浮动工具栏，2：preview 代码块、数学公式块
+	if "1" == dataRender || "2" == dataRender {
 		return
 	}
 
@@ -927,7 +886,7 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 				if err := html.Render(originalHTML, li); nil == err {
 					md := lute.vditorDOM2Md("<ol data-type=\"footnotes-defs-ol\">" + originalHTML.String() + "</ol>")
 					label := util.DomAttrValue(li, "data-marker")
-					md = md[3:] // 去掉列表项标记符 1.
+					md = md[3:]
 					lines := strings.Split(md, "\n")
 					md = ""
 					for i, line := range lines {
@@ -1073,7 +1032,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 					}
 					if "1." != marker && "1)" != marker && nil != n.PrevSibling && atom.Li != n.PrevSibling.DataAtom &&
 						nil != n.Parent.Parent && (atom.Ol == n.Parent.Parent.DataAtom || atom.Ul == n.Parent.Parent.DataAtom) {
-						// 子有序列表第一项必须从 1 开始
 						marker = "1."
 					}
 					if "1." != marker && "1)" != marker && atom.Ol == n.Parent.DataAtom && n.Parent.FirstChild == n && "" == util.DomAttrValue(n.Parent, "start") {
@@ -1181,7 +1139,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			if "_" == marker {
 				node.AppendChild(&ast.Node{Type: ast.NodeEmU8eCloseMarker, Tokens: []byte(marker)})
@@ -1193,7 +1150,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 
 		n.FirstChild.Data = strings.ReplaceAll(n.FirstChild.Data, editor.Zwsp, "")
 
-		// 开头结尾空格后会形成 * foo * 导致强调、加粗删除线标记失效，这里将空格移到右标记符前后 _*foo*_
 		if strings.HasPrefix(n.FirstChild.Data, " ") && nil == n.FirstChild.PrevSibling {
 			n.FirstChild.Data = strings.TrimLeft(n.FirstChild.Data, " ")
 			node.InsertBefore(&ast.Node{Type: ast.NodeText, Tokens: []byte(" ")})
@@ -1240,7 +1196,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			if "__" == marker {
 				node.AppendChild(&ast.Node{Type: ast.NodeStrongU8eCloseMarker, Tokens: []byte(marker)})
@@ -1294,7 +1249,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			if "~" == marker {
 				node.AppendChild(&ast.Node{Type: ast.NodeStrikethrough1CloseMarker, Tokens: []byte(marker)})
@@ -1348,7 +1302,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			if "=" == marker {
 				node.AppendChild(&ast.Node{Type: ast.NodeMark1CloseMarker, Tokens: []byte(marker)})
@@ -1389,7 +1342,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 		}
 		codeTokens := []byte(contentStr)
 		if "html-inline" == dataType {
-			// 所见即所得行级 HTML 解析 https://github.com/Vanessa219/vditor/issues/1156
 			node.Type = ast.NodeInlineHTML
 			node.Tokens = codeTokens
 			tree.Context.Tip.AppendChild(node)
@@ -1418,7 +1370,7 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 					return
 				}
 				if nil == n.NextSibling {
-					return // 删掉表格中结尾的 br
+					return
 				}
 
 				node.Type = ast.NodeInlineHTML
@@ -1500,11 +1452,9 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 		defer tree.Context.ParentTip()
 	case atom.Input:
 		if nil == n.Parent || nil == n.Parent.Parent || (atom.P != n.Parent.DataAtom && atom.Li != n.Parent.DataAtom) {
-			// 仅允许 input 出现在任务列表中
 			return
 		}
 		if nil != n.NextSibling && atom.Span == n.NextSibling.DataAtom {
-			// 在任务列表前退格
 			n.NextSibling.FirstChild.Data = strings.TrimSpace(n.NextSibling.FirstChild.Data)
 			break
 		}
@@ -1612,7 +1562,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			node.AppendChild(&ast.Node{Type: ast.NodeSupCloseMarker, Tokens: []byte(marker)})
 			return
@@ -1662,7 +1611,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 		tree.Context.Tip.AppendChild(node)
 
 		if nil != n.FirstChild && editor.Caret == n.FirstChild.Data && nil != n.LastChild && "br" == n.LastChild.Data {
-			// 处理结尾换行
 			node.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: editor.CaretTokens})
 			node.AppendChild(&ast.Node{Type: ast.NodeSubCloseMarker, Tokens: []byte(marker)})
 			return
@@ -1714,7 +1662,6 @@ func (lute *Lute) genASTByVditorDOM(n *html.Node, tree *parse.Tree) {
 			node.Type = ast.NodeText
 			content := "[" + n.FirstChild.Data + "][" + util.DomAttrValue(n, "data-link-label") + "]"
 			if nil != n.NextSibling && "2" == util.DomAttrValue(n.NextSibling, "data-render") {
-				// 图片引用风格 ![text][label]
 				content = "!" + content
 			}
 			node.Tokens = []byte(content)

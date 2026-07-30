@@ -25,12 +25,10 @@ export const cancelSB = async (protyle: IProtyle, nodeElement: Element, range?: 
     nodeElement.removeAttribute("select-start");
     nodeElement.removeAttribute("select-end");
     const id = nodeElement.getAttribute("data-node-id");
-    // 先清理拖拽手柄，避免手柄被克隆进撤销用的 SB 副本，导致恢复后残留多余手柄
     nodeElement.querySelectorAll(".sb__resize").forEach(handle => handle.remove());
     const sbElement = nodeElement.cloneNode() as HTMLElement;
     sbElement.innerHTML = nodeElement.lastElementChild.outerHTML;
     let parentID = getEmbedChildOperationParentID(nodeElement) || getParentBlock(nodeElement)?.getAttribute("data-node-id");
-    // 缩放和反链需要接口获取
     if (!previousId && !parentID) {
         if (protyle.block.showAll || protyle.options.backlinkData) {
             const idData = await fetchSyncPost("/api/block/getBlockSiblingID", {
@@ -81,7 +79,6 @@ export const cancelSB = async (protyle: IProtyle, nodeElement: Element, range?: 
         previousId = item.getAttribute("data-node-id");
     });
     mathRender(protyle.wysiwyg.element);
-    // 超级块内嵌入块无面包屑，需重新渲染 
     doOperations.forEach(item => {
         const element = protyle.wysiwyg.element.querySelector(`[data-node-id="${item.id}"]`);
         if (element && element.getAttribute("data-type") === "NodeBlockQueryEmbed") {
@@ -104,7 +101,6 @@ export const genSBElement = (layout: string, id?: string, attrHTML?: string) => 
     return sbElement;
 };
 
-// 刷新超级块横向布局下的拖拽手柄：col 布局在每两个相邻子块间插入 sb__resize，非 col 移除全部
 export const refreshSbResize = (sbElement: Element) => {
     if (!sbElement || !sbElement.classList.contains("sb")) {
         return;
@@ -122,9 +118,6 @@ export const refreshSbResize = (sbElement: Element) => {
     }
 };
 
-// 子块进出超级块后，重新分配所有子块的宽度（按比例均摊 gap），避免 gap 不均或换行
-// 仅当超级块中已有子块设置了宽度时才调整（否则保持 CSS 默认等分）
-// 返回被改动的块信息（id + 改前 HTML），供调用方持久化
 export const rebalanceSbWidth = (sbElement: Element): Array<{id: string, oldHTML: string}> => {
     if (!sbElement || sbElement.getAttribute("data-sb-layout") !== "col") {
         return [];
@@ -133,11 +126,9 @@ export const rebalanceSbWidth = (sbElement: Element): Array<{id: string, oldHTML
     if (children.length < 2) {
         return [];
     }
-    // 没有任何子块设了宽度，保持 CSS 默认等分
     if (!children.some(c => c.style.width)) {
         return [];
     }
-    // 读取手柄实际占用宽度（width + margin）
     const handle = sbElement.querySelector(":scope > .sb__resize") as HTMLElement;
     let gapPx = 20;
     if (handle) {
@@ -146,15 +137,12 @@ export const rebalanceSbWidth = (sbElement: Element): Array<{id: string, oldHTML
     }
     const childCount = children.length;
     const gapShare = ((childCount - 1) * gapPx) / childCount + 0.5;
-    // 读取各块当前比例：有 width 的取 calc 百分比，无 width 的（新移入）按平均比例参与
     const avgRatio = 1 / childCount;
     const ratios: number[] = children.map(c => {
         const match = c.style.width.match(/calc\(([\d.]+)%/);
         return match ? parseFloat(match[1]) / 100 : avgRatio;
     });
-    // 归一化到总和 1，使子块填满整个超级块（删除/移入后不留空白）
     const totalRatio = ratios.reduce((s, r) => s + r, 0) || 1;
-    // 记录改前 HTML 用于持久化
     const changes: Array<{id: string, oldHTML: string}> = [];
     children.forEach((child, i) => {
         const oldHTML = child.outerHTML;
@@ -166,9 +154,6 @@ export const rebalanceSbWidth = (sbElement: Element): Array<{id: string, oldHTML
     return changes;
 };
 
-// 刷新超级块的拖拽手柄并重新分配子块宽度，把变更持久化到 do/undo operations
-// 宽度撤销插入到 undoOperations 头部，确保 update undo 先于 move undo 执行（位置恢复后再还原宽度会错位）
-// 已脱离 DOM 的超级块会被跳过（cancelSB 可能已将其删除）
 export const refreshSbAndPersistWidth = (sbElement: Element,
                                           doOperations: IOperation[], undoOperations: IOperation[]) => {
     if (!sbElement || !sbElement.parentElement) {
@@ -281,7 +266,6 @@ export const insertEmptyBlock = async (protyle: IProtyle, position: InsertPositi
         }];
         if (blockElement.parentElement.classList.contains("sb") &&
             blockElement.parentElement.getAttribute("data-sb-layout") === "col") {
-            // 合并到同一个 transaction，避免新超级块 id 在第二个 transaction 中找不到
             const mergeOperations = await turnsIntoOneTransaction({
                 protyle,
                 selectsElement: position === "afterend" ? [blockElement, blockElement.nextElementSibling] : [blockElement.previousElementSibling, blockElement],

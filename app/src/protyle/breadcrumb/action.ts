@@ -23,7 +23,7 @@ export const net2LocalAssets = (protyle: IProtyle, type: "Assets" | "Img") => {
 export const fullscreen = (element: Element, btnElement?: Element) => {
     setTimeout(() => {
         hideAllElements(["gutter"]);
-    }, Constants.TIMEOUT_TRANSITION);   // 等待页面动画结束
+    }, Constants.TIMEOUT_TRANSITION);
 
     const isFullscreen = element.className.includes("fullscreen");
     if (isFullscreen) {

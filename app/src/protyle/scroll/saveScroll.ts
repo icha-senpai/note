@@ -11,7 +11,6 @@ import {getContenteditableElement} from "../wysiwyg/getBlock";
 export const saveScroll = (protyle: IProtyle, getObject = false) => {
     if (!protyle.wysiwyg.element.firstElementChild || window.scribli.config.readonly ||
         (protyle.element.dataset.databaseRowId && !getObject)) {
-        // 报错或者空白页面
         return undefined;
     }
     const attr: IScrollAttr = {
@@ -24,7 +23,6 @@ export const saveScroll = (protyle: IProtyle, getObject = false) => {
     if (getSelection().rangeCount > 0) {
         range = getSelection().getRangeAt(0);
     }
-    // 光标位于文档标题时用文档 id 作为焦点标识 
     if (range && protyle.title?.editElement?.contains(range.startContainer)) {
         const position = getSelectionOffset(protyle.title.editElement, undefined, range);
         attr.focusId = protyle.block.rootID;

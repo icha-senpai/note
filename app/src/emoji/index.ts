@@ -43,8 +43,7 @@ export const unicode2Emoji = (unicode: string, className = "", needSpan = false,
                 emoji = `<span class="${className}">${emoji}</span>`;
             }
         } catch (e) {
-            // 自定义表情搜索报错 
-            // 这里忽略错误不做处理
+            // Ignore invalid custom emoji search values.
         }
     }
     return emoji;
@@ -111,9 +110,7 @@ export const filterEmoji = (key = "", max?: number, hideCustom = false) => {
                 if (window.scribli.config.editor.emoji.includes(emoji.unicode) &&
                     (unicode2Emoji(emoji.unicode) === key ||
                         emoji.keywords.toLowerCase().indexOf(key.toLowerCase()) > -1 ||
-                        emoji.description.toLowerCase().indexOf(key.toLowerCase()) > -1 ||
-                        emoji.description_zh_cn.toLowerCase().indexOf(key.toLowerCase()) > -1 ||
-                        emoji.description_ja_jp.toLowerCase().indexOf(key.toLowerCase()) > -1)
+                        emoji.description.toLowerCase().indexOf(key.toLowerCase()) > -1)
                 ) {
                     recentEmojis.push(emoji);
                 }
@@ -122,9 +119,7 @@ export const filterEmoji = (key = "", max?: number, hideCustom = false) => {
                 }
                 if (unicode2Emoji(emoji.unicode) === key ||
                     emoji.keywords.toLowerCase().indexOf(key.toLowerCase()) > -1 ||
-                    emoji.description.toLowerCase().indexOf(key.toLowerCase()) > -1 ||
-                    emoji.description_zh_cn.toLowerCase().indexOf(key.toLowerCase()) > -1 ||
-                    emoji.description_ja_jp.toLowerCase().indexOf(key.toLowerCase()) > -1) {
+                    emoji.description.toLowerCase().indexOf(key.toLowerCase()) > -1) {
                     if (category.id === "custom") {
                         customStore.push(emoji);
                     } else {
@@ -198,26 +193,11 @@ export const addEmoji = (unicode: string) => {
     fetchPost("/api/setting/setEmoji", {emoji: window.scribli.config.editor.emoji});
 };
 
-const genWeekdayOptions = (lang: string, weekdayType: string) => {
-    const dynamicWeekdayLang = {
-        "1": ["Sun", "周日", "週日"],
-        "2": ["SUN", "周天", "週天"],
-        "3": ["Sunday", "星期日", "星期日"],
-        "4": ["SUNDAY", "星期天", "星期天"],
-    };
-    let currentLang = 0;
-    if (lang === "") {
-        lang = window.scribli.config.lang;
-    }
-    if (lang === "zh-CN") {
-        currentLang = 1;
-    } else if (lang === "zh-TW") {
-        currentLang = 2;
-    }
-    return `<option value="1" ${weekdayType === "1" ? " selected" : ""}>${dynamicWeekdayLang[1][currentLang]}</option>
-<option value="2" ${weekdayType === "2" ? " selected" : ""}>${dynamicWeekdayLang[2][currentLang]}</option>
-<option value="3" ${weekdayType === "3" ? " selected" : ""}>${dynamicWeekdayLang[3][currentLang]}</option>
-<option value="4" ${weekdayType === "4" ? " selected" : ""}>${dynamicWeekdayLang[4][currentLang]}</option>`;
+const genWeekdayOptions = (weekdayType: string) => {
+    return `<option value="1" ${weekdayType === "1" ? " selected" : ""}>Sun</option>
+<option value="2" ${weekdayType === "2" ? " selected" : ""}>SUN</option>
+<option value="3" ${weekdayType === "3" ? " selected" : ""}>Sunday</option>
+<option value="4" ${weekdayType === "4" ? " selected" : ""}>SUNDAY</option>`;
 };
 
 const renderEmojiContent = (previousIndex: string, previousContentElement: Element) => {
@@ -264,8 +244,7 @@ export const openEmojiPanel = (
         if (!dynamicCurrentObj.color.startsWith("#")) {
             dynamicCurrentObj.color = "#" + dynamicCurrentObj.color;
         }
-        const lang = dynamicCurrentUrl.get("lang") || "";
-        dynamicCurrentObj.lang = ({zh_CN: "zh-CN", zh_CHT: "zh-TW", en_US: "en"} as IObject)[lang] || lang;
+        dynamicCurrentObj.lang = "en";
         dynamicCurrentObj.date = dynamicCurrentUrl.get("date") || "";
         dynamicCurrentObj.weekdayType = dynamicCurrentUrl.get("weekdayType") || "1";
         dynamicCurrentObj.type = dynamicCurrentUrl.get("type") || "1";
@@ -338,10 +317,7 @@ export const openEmojiPanel = (
                 <span class="fn__flex-center ft__on-surface" style="width: 89px">${window.scribli.languages.language}</span>
                 <span class="fn__space--small"></span>
                 <select class="b3-select fn__flex-1">
-                    <option value="" ${dynamicCurrentObj.lang === "" ? " selected" : ""}>${window.scribli.languages.themeOS}</option>
-                    <option value="en" ${dynamicCurrentObj.lang === "en" ? " selected" : ""}>English (en)</option>
-                    <option value="zh-TW" ${dynamicCurrentObj.lang === "zh-TW" ? " selected" : ""}>繁體中文 (zh-TW)</option>
-                    <option value="zh-CN" ${dynamicCurrentObj.lang === "zh-CN" ? " selected" : ""}>简体中文 (zh-CN)</option>
+                    <option value="en" selected>English (en)</option>
                 </select>
                 <span class="fn__space"></span>
             </div>
@@ -361,7 +337,7 @@ export const openEmojiPanel = (
                 <span class="fn__flex-center ft__on-surface" style="width: 89px">${window.scribli.languages.format}</span>
                 <span class="fn__space--small"></span>
                 <select class="b3-select fn__flex-1">
-                    ${genWeekdayOptions(dynamicCurrentObj.lang, dynamicCurrentObj.weekdayType)}
+                    ${genWeekdayOptions(dynamicCurrentObj.weekdayType)}
                 </select>
                 <span class="fn__space"></span>
             </div>
@@ -548,7 +524,6 @@ export const openEmojiPanel = (
     }
     lazyLoadEmoji(dialog.element);
     lazyLoadEmojiImg(dialog.element);
-    // 不能使用 getEventName 否则 
     dialog.element.addEventListener("click", (event) => {
         let target = event.target as HTMLElement;
         while (target && target !== dialog.element) {
@@ -562,7 +537,6 @@ export const openEmojiPanel = (
                     }
                     emojisContentElement.scrollTo({
                         top: titleElement.offsetTop - 77,
-                        // behavior: "smooth"  不能使用，否则无法定位
                     });
                 }
                 break;
@@ -597,7 +571,6 @@ export const openEmojiPanel = (
                     unicode = target.getAttribute("src");
                     dialog.destroy();
                 } else {
-                    // 随机
                     unicode = getRandomEmoji();
                 }
                 if (type === "notebook") {
@@ -661,7 +634,7 @@ export const openEmojiPanel = (
                 url.delete("lang");
             }
             item.setAttribute("src", dynamicURL + url.toString());
-            dynamicLangElements[1].innerHTML = genWeekdayOptions(dynamicLangElements[0].value, dynamicLangElements[1].value);
+            dynamicLangElements[1].innerHTML = genWeekdayOptions(dynamicLangElements[1].value);
         });
     });
     dynamicLangElements[1].addEventListener("change", () => {
@@ -734,22 +707,10 @@ export const updateFileTreeEmoji = (unicode: string, id: string, icon = "iconFil
 };
 
 export const getEmojiDesc = (emoji: IEmojiItem) => {
-    if (window.scribli.config.lang === "zh-CN") {
-        return emoji.description_zh_cn;
-    }
-    if (window.scribli.config.lang === "ja") {
-        return emoji.description_ja_jp;
-    }
     return emoji.description;
 };
 
 export const getEmojiTitle = (index: number) => {
-    if (window.scribli.config.lang === "zh-CN") {
-        return window.scribli.emojis[index].title_zh_cn;
-    }
-    if (window.scribli.config.lang === "ja") {
-        return window.scribli.emojis[index].title_ja_jp;
-    }
     return window.scribli.emojis[index].title;
 };
 
@@ -760,7 +721,7 @@ const putEmojis = (protyle: IProtyle) => {
         window.scribli.emojis[0].items.forEach(emojiITem => {
             emojis[emojiITem.keywords] = protyle.options.hint.emojiPath + "/" + emojiITem.unicode;
         });
-        // Lute 已为所有编辑器共享单例，PutEmojis 只需调用一次
+        // Lute is shared by all editors, so PutEmojis only needs to run once.
         lute.PutEmojis(emojis);
     }
 };

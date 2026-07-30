@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -21,7 +20,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// parseInline 解析并生成块节点 block 的行级子节点。
 func (t *Tree) parseInline(block *ast.Node, ctx *InlineContext) {
 	for ctx.pos < ctx.tokensLen {
 		token := ctx.tokens[ctx.pos]
@@ -47,7 +45,6 @@ func (t *Tree) parseInline(block *ast.Node, ctx *InlineContext) {
 					if n = t.parseFileAnnotationRef(ctx); nil == n {
 						n = t.parseInlineHTML(ctx)
 						if t.Context.ParseOption.ProtyleWYSIWYG && nil != n && ast.NodeInlineHTML == n.Type {
-							// Protyle 中不存在内联 HTML，使用文本
 							n.Type = ast.NodeText
 						}
 					}
@@ -152,7 +149,6 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 	ctx.pos++
 	startPos := ctx.pos
 
-	// 获取最新一个 [ 或者 ![
 	opener := ctx.brackets
 	if nil == opener {
 		return &ast.Node{Type: ast.NodeText, Tokens: closeBracket}
@@ -165,18 +161,16 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 
 	isImage := opener.image
 
-	// 检查是否满足链接或者图片规则
 
 	var openParen, dest, space, title, closeParen []byte
 	savepos := ctx.pos
 	matched := false
-	// 尝试解析内联链接 [text](url "tile")
 	if ctx.pos+1 < ctx.tokensLen && lex.ItemOpenParen == ctx.tokens[ctx.pos] {
 		ctx.pos++
 		isLink := false
 		var passed, remains []byte
 
-		for { // 这里使用 for 是为了简化逻辑，不是为了循环
+		for {
 			if isLink, passed, remains = lex.Spnl(ctx.tokens[ctx.pos-1:]); !isLink {
 				break
 			}
@@ -194,8 +188,6 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 			closeParen = passed[len(passed)-1:]
 			matched = lex.ItemCloseParen == passed[len(passed)-1]
 			if matched && 1 < len(remains) {
-				// 如果 passed 是 ) 结尾，则继续判断 remains 是否以 空格" 开头
-				// 解决 [foo](bar.com(baz) "bar.com(baz)") 这种情况，测试用例 debug_test.go #75
 				matched = !lex.IsWhitespace(remains[0]) && lex.ItemDoublequote != remains[1]
 			}
 
@@ -206,7 +198,6 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 			if 1 > len(remains) || !lex.IsWhitespace(remains[0]) {
 				break
 			}
-			// 跟空格的话后续尝试 title 解析
 			if isLink, passed, remains = lex.Spnl(remains); !isLink {
 				break
 			}
@@ -230,19 +221,16 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 				if t.Context.ParseOption.VditorWYSIWYG || t.Context.ParseOption.VditorIR || t.Context.ParseOption.VditorSV || t.Context.ParseOption.ProtyleWYSIWYG {
 					if bytes.HasPrefix(remains, []byte(editor.Caret+")")) {
 						if 0 < len(title) {
-							// 将 ‸) 换位为 )‸
 							remains = remains[len([]byte(editor.Caret+")")):]
 							remains = append([]byte(")"+editor.Caret), remains...)
-							copy(ctx.tokens[ctx.pos-1:], remains) // 同时也将 tokens 换位，后续解析从插入符位置开始
+							copy(ctx.tokens[ctx.pos-1:], remains)
 						} else {
-							// 将 ""‸ 换位为 "‸"
 							title = editor.CaretTokens
 							remains = remains[len(editor.CaretTokens):]
 							ctx.pos += 3
 						}
 					} else if bytes.HasPrefix(remains, []byte(")"+editor.Caret)) {
 						if 0 == len(title) {
-							// 将 "")‸ 换位为 "‸")
 							title = editor.CaretTokens
 							remains = bytes.ReplaceAll(remains, editor.CaretTokens, nil)
 							ctx.pos += 3
@@ -262,14 +250,12 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 	var reflabel []byte
 	var linkType int
 	if !matched {
-		// 尝试解析链接 label
 		var beforelabel = ctx.pos
 		n, _, label := t.Context.parseLinkLabel(ctx.tokens[beforelabel:])
-		if 2 < n { // label 解析出来的话说明满足格式 [text][label]
+		if 2 < n {
 			reflabel = label
 			ctx.pos += n
 		} else if !opener.bracketAfter {
-			// [text][] 格式，将 text 视为 label 进行解析
 			start := opener.index
 			if lex.ItemOpenBracket == ctx.tokens[start] {
 				start++
@@ -282,7 +268,6 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 		}
 		if nil != reflabel {
 			if t.Context.ParseOption.Footnotes {
-				// 查找脚注
 				if idx, footnotesDef := t.FindFootnotesDef(reflabel); nil != footnotesDef {
 					t.removeBracket(ctx)
 
@@ -305,7 +290,6 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 				}
 			}
 
-			// 查找链接引用定义
 			if link := t.FindLinkRefDefLink(reflabel); nil != link {
 				dest = link.ChildByType(ast.NodeLinkDest).Tokens
 				titleNode := link.ChildByType(ast.NodeLinkTitle)
@@ -378,7 +362,7 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 		}
 
 		return node
-	} else { // 没有匹配到
+	} else {
 		t.removeBracket(ctx)
 		ctx.pos = startPos
 		return &ast.Node{Type: ast.NodeText, Tokens: closeBracket}
@@ -389,7 +373,6 @@ func (t *Tree) parseOpenBracket(ctx *InlineContext) (ret *ast.Node) {
 	startPos := ctx.pos
 	ctx.pos++
 	ret = &ast.Node{Type: ast.NodeText, Tokens: ctx.tokens[startPos:ctx.pos]}
-	// 将 [ 入栈
 	t.addBracket(ret, ctx.pos-1, false, ctx)
 	return
 }

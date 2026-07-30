@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -19,7 +18,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// MathBlockStart 判断数学公式块（$$）是否开始。
 func MathBlockStart(t *Tree, container *ast.Node) int {
 	if t.Context.indented {
 		return 0
@@ -43,7 +41,6 @@ func MathBlockContinue(mathBlock *ast.Node, context *Context) int {
 		context.finalize(mathBlock)
 		return 2
 	} else {
-		// 跳过 $ 之前可能存在的空格
 		i := mathBlock.MathBlockDollarOffset
 		var token byte
 		for i > 0 {
@@ -75,21 +72,18 @@ func (context *Context) mathBlockFinalize(mathBlock *ast.Node) {
 		mathBlock.AppendChild(&ast.Node{Type: ast.NodeMathBlockCloseMarker})
 		return
 	}
-	tokens := mathBlock.Tokens[2:] // 剔除开头的 $$
+	tokens := mathBlock.Tokens[2:]
 	tokens = lex.TrimWhitespace(tokens)
 	if context.ParseOption.VditorWYSIWYG || context.ParseOption.VditorIR || context.ParseOption.VditorSV || context.ParseOption.ProtyleWYSIWYG {
 		if bytes.HasSuffix(tokens, MathBlockMarkerCaret) {
-			// 剔除结尾的 $$‸
 			tokens = bytes.TrimSuffix(tokens, MathBlockMarkerCaret)
-			// 把 Vditor 插入符移动到内容末尾
 			tokens = append(tokens, editor.CaretTokens...)
 		}
 	}
 	if bytes.HasSuffix(tokens, MathBlockMarker) {
-		tokens = tokens[:len(tokens)-2] // 剔除结尾的 $$
+		tokens = tokens[:len(tokens)-2]
 	}
 	if bytes.Contains(tokens, []byte("<span data-type=")) {
-		// 行级元素转换为块级元素 https://ld246.com/article/1730804245164
 		inlineTree := Inline("", tokens, context.ParseOption)
 		if nil != inlineTree {
 			tokens = []byte(inlineTree.Root.Content())
@@ -122,7 +116,6 @@ func (t *Tree) parseMathBlock() (ok bool, mathBlockDollarOffset int) {
 
 func (context *Context) isMathBlockClose(tokens []byte) bool {
 	if context.ParseOption.KramdownBlockIAL && simpleCheckIsBlockIAL(tokens) {
-		// 判断 IAL 打断
 		if ial := context.parseKramdownBlockIAL(tokens); 0 < len(ial) {
 			context.Tip.ID = IAL2Map(ial)["id"]
 			context.Tip.KramdownIAL = ial

@@ -64,7 +64,7 @@ export const onGetConfig = (isStart: boolean, app: App) => {
             JSONToLayout(app, isStart);
             setTimeout(() => {
                 adjustLayout();
-            }); // 等待 dock 中 !this.pin 的 setTimeout
+            });
             /// #if !BROWSER
             sendGlobalShortcut(app);
             /// #endif
@@ -86,7 +86,6 @@ export const onGetConfig = (isStart: boolean, app: App) => {
     setInlineStyle();
     renderSnippet();
     if (window.scribli.config.system.safeMode) {
-        // 安全模式已禁用代码片段、插件、自定义主题和图标
         showMessage(window.scribli.languages.safeModeTip);
     }
     let resizeTimeout = 0;
@@ -129,7 +128,6 @@ export const initWindow = async (app: App) => {
         exportLayout({
             cb() {
                 if (window.scribli.config.appearance.closeButtonBehavior === 1 && !close) {
-                    // 最小化
                     if ("windows" === window.scribli.config.system.os) {
                         ipcRenderer.send(Constants.SCRIBLI_CONFIG_TRAY, {
                             languages: window.scribli.languages["_trayMenu"],
@@ -148,7 +146,6 @@ export const initWindow = async (app: App) => {
     ipcRenderer.send(Constants.SCRIBLI_EVENT);
     ipcRenderer.on(Constants.SCRIBLI_EVENT, (event, cmd) => {
         if (cmd === "focus") {
-            // 由于  和新版 electron 应用切出再切进会保持光标，故移除 focus
             window.scribli.altIsPressed = false;
             window.scribli.ctrlIsPressed = false;
             window.scribli.shiftIsPressed = false;
@@ -157,12 +154,10 @@ export const initWindow = async (app: App) => {
             document.body.classList.add("body--blur");
         } else if (cmd === "enter-full-screen") {
             document.body.classList.add("body--fullscreen");
-            // 全屏下红绿灯隐藏，清除缩放补偿让 body--fullscreen 的 5px 生效
             setToolbarLeftMac(window.scribli.storage[Constants.LOCAL_ZOOM]);
             setTabPosition();
         } else if (cmd === "leave-full-screen") {
             document.body.classList.remove("body--fullscreen");
-            // 退出全屏后按当前缩放重新补偿
             setToolbarLeftMac(window.scribli.storage[Constants.LOCAL_ZOOM]);
             setTabPosition();
         } else if (cmd === "maximize") {
@@ -329,7 +324,6 @@ ${response.data.replace("%pages", "<span class=totalPages></span>").replace("%pa
     if (isFullScreen) {
         document.body.classList.add("body--fullscreen");
     }
-    // 全屏状态恢复后再同步一次，避免启动时按缩放设置的补偿覆盖 body--fullscreen 的 5px
     setToolbarLeftMac(window.scribli.storage[Constants.LOCAL_ZOOM]);
     const isMaximized = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
         cmd: "isMaximized",
@@ -341,7 +335,6 @@ ${response.data.replace("%pages", "<span class=totalPages></span>").replace("%pa
     if ("darwin" !== window.scribli.config.system.os) {
         document.body.classList.add("body--win32");
 
-        // 添加窗口控件
         const controlsHTML = `<div class="toolbar__item ariaLabel toolbar__item--win" aria-label="${window.scribli.languages.min}" id="minWindow">
     <svg>
         <use xlink:href="#iconMin"></use>

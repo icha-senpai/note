@@ -4,7 +4,7 @@ import {ipcRenderer} from "electron";
 /// #endif
 import {openHistory} from "../history/history";
 import {getOpenNotebookCount, originalPath, pathPosix, useShell} from "../util/pathName";
-import {fetchNewDailyNote, mountHelp, newDailyNote} from "../util/mount";
+import {fetchNewDailyNote, newDailyNote} from "../util/mount";
 import {fetchPost} from "../util/fetch";
 import {Constants} from "../constants";
 import {isIPad, setStorageVal, writeText} from "../protyle/util/compatibility";
@@ -547,15 +547,6 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
             }
             window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
         }
-        window.scribli.menus.menu.append(new MenuItem({
-            id: "userGuide",
-            label: window.scribli.languages.userGuide,
-            icon: "iconHelp",
-            ignore: window.scribli.config.readonly,
-            click: () => {
-                mountHelp();
-            }
-        }).element);
         /// #if !BROWSER
         window.scribli.menus.menu.append(new MenuItem({
             id: "debug",

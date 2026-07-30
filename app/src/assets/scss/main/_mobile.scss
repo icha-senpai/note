@@ -162,7 +162,6 @@
     transform: translateY(-200vh);
   }
 
-  // 窄屏下 dock 图标过多时左侧可横向滚动，关闭按钮固定在右侧始终可触达
   & > .toolbar--border > .toolbar__scroll {
     flex: 1;
     min-width: 0;
@@ -421,14 +420,12 @@
     font-size: 14px;
   }
 
-  // iPhone 右上角属性中对不齐
   &-wysiwyg--attr .protyle-attr > div:not(.protyle-attr--memo):not(.protyle-attr--refcount) {
     max-width: 26vw;
     white-space: nowrap;
     display: block;
   }
 
-  // 移动端键盘弹起和点击加号需保持滚动高度一致
   &-background__img img {
     height: 200px;
   }
@@ -454,7 +451,6 @@
 
     & > div {
       margin-right: 0;
-      // 桌面端拖拽后子块带内联 calc(%) 宽度，移动端垂直堆叠时需重置以铺满
       width: auto !important;
       flex: 0 1 auto;
     }

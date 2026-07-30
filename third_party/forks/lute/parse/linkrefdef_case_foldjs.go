@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -36,8 +35,6 @@ func (t *Tree) FindLinkRefDefLink(label []byte) (link *ast.Node) {
 			link = n.FirstChild
 			return ast.WalkStop
 		}
-		// JS 版不支持 Unicode case fold https://spec.commonmark.org/0.30/#example-539
-		// 因为引入 github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/cases 后打包体积太大
 		return ast.WalkContinue
 	})
 	return

@@ -145,7 +145,6 @@ export const assetMenu = (protyle: IProtyle, position: IPosition, callback?: (ur
                         window.scribli.menus.menu.remove();
                         focusByRange(protyle.toolbar.range);
                     }
-                    // 空行处插入 mp3 会多一个空的 mp3 块
                     event.preventDefault();
                     event.stopPropagation();
                 } else if (event.key === "Escape") {
@@ -347,7 +346,6 @@ export const refMenu = (protyle: IProtyle, element: HTMLElement) => {
                 inputElement.value = element.getAttribute("data-subtype") === "d" ? "" : element.textContent;
                 inputElement.addEventListener("input", () => {
                     if (inputElement.value) {
-                        // 不能使用 textContent，否则 < 会变为 &lt;
                         element.innerHTML = Lute.EscapeHTMLStr(inputElement.value).trim() || refBlockId;
                     } else {
                         fetchPost("/api/block/getRefText", {id: refBlockId}, (response) => {
@@ -689,7 +687,6 @@ export const contentMenu = (protyle: IProtyle, nodeElement: Element) => {
             accelerator: "⌘C",
             label: window.scribli.languages.copy,
             click() {
-                // range 需要重新计算 
                 focusByRange(getEditorRange(nodeElement));
                 document.execCommand("copy");
             }
@@ -974,13 +971,11 @@ export const zoomOut = (options: {
                 focusElement = options.protyle.wysiwyg.element.querySelector(`[data-node-id="${unfoldResponse.data.parentID}"]`);
             }
             if (focusElement) {
-                // 退出聚焦后块在折叠中 
                 let showElement = focusElement;
                 while (showElement.getBoundingClientRect().height === 0) {
                     showElement = showElement.parentElement;
                 }
                 if (showElement.classList.contains("protyle-wysiwyg")) {
-                    // 闪卡退出聚焦元素被隐藏 
                     showElement = focusElement.previousElementSibling || focusElement.nextElementSibling;
                 } else {
                     showElement = getFirstBlock(showElement);
@@ -1002,7 +997,7 @@ export const zoomOut = (options: {
                     });
                 });
                 return;
-            } else if (options.id === options.protyle.block.rootID) { // 聚焦返回后，该块是动态加载的，但是没加载出来
+            } else if (options.id === options.protyle.block.rootID) {
                 const getDocParam: IObject = {
                     id: options.focusId,
                     mode: 3,

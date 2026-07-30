@@ -32,7 +32,6 @@ export const renderBacklink = (protyle: IProtyle, backlinkData: {
     }
 };
 
-// 传递型折叠处理
 export const foldPassiveType = (expand: boolean, element: HTMLElement | DocumentFragment) => {
     if (element.firstElementChild.classList.contains("li")) {
         if (expand) {

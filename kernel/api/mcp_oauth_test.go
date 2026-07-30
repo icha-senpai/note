@@ -40,13 +40,13 @@ func TestPreserveMCPServerIDsForOlderFrontend(t *testing.T) {
 }
 
 func TestRenderMCPOAuthCallbackPage(t *testing.T) {
-	page := string(renderMCPOAuthCallbackPage("zh-CN", "已收到<script>", "返回思源 & 查看状态", true))
-	for _, expected := range []string{`lang="zh-CN"`, "已收到&lt;script&gt;", "返回思源 &amp; 查看状态"} {
+	page := string(renderMCPOAuthCallbackPage("en", "Received<script>", "Return to Scribli & view status", true))
+	for _, expected := range []string{`lang="en"`, "Received&lt;script&gt;", "Return to Scribli &amp; view status"} {
 		if !strings.Contains(page, expected) {
 			t.Fatalf("OAuth callback page does not contain %q: %s", expected, page)
 		}
 	}
-	if strings.Contains(page, "window.close") || strings.Contains(page, "已收到<script>") {
+	if strings.Contains(page, "window.close") || strings.Contains(page, "Received<script>") {
 		t.Fatalf("OAuth callback page contains unsafe or auto-close content: %s", page)
 	}
 	failurePage := string(renderMCPOAuthCallbackPage("en", "Authorization failed", "Try again", false))

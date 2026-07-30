@@ -199,7 +199,6 @@ const registerAiEmbeddingGroup = (tab: SettingTabBuilder) => {
         unit: "s",
     });
 
-    // 独立的嵌入索引重建按钮，不与全局重建索引耦合
     group.button({
         id: "rebuildEmbeddingIndex",
         title: window.scribli.languages.rebuildEmbeddingIndex,
@@ -218,7 +217,6 @@ const registerAiEmbeddingGroup = (tab: SettingTabBuilder) => {
         },
     });
 
-    // 嵌入索引进度条 + 统计数字（只读展示，slot 注入）
     group.slot({
         key: "embeddingStats",
         keywords: getEmbeddingStatsKeywords(),

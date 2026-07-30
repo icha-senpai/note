@@ -35,7 +35,6 @@ export const loadAssets = (data: Config.IAppearance) => {
     if (defaultStyleElement) {
         if (!defaultStyleElement.getAttribute("href").startsWith(defaultThemeAddress)) {
             const newStyleElement = document.createElement("link");
-            // 等待新样式表加载完成再移除旧样式表
             new Promise((resolve) => {
                 newStyleElement.rel = "stylesheet";
                 newStyleElement.href = defaultThemeAddress;
@@ -103,13 +102,11 @@ export const loadAssets = (data: Config.IAppearance) => {
     const isBuiltInIcon = data.icon === "litheness";
     const iconScriptElement = document.getElementById("iconScript");
     const iconDefaultScriptElement = document.getElementById("iconDefaultScript");
-    // 不能使用 data.iconVer，因为其他主题也需要加载默认图标，此时 data.iconVer 为其他图标的版本号
     const iconDefaultURL = `/appearance/icons/litheness/icon.js?v=${Constants.SCRIBLI_VERSION}`;
     const iconThirdURL = `/appearance/icons/${data.icon}/icon.js?v=${data.iconVer}`;
 
     if ((isBuiltInIcon && iconDefaultScriptElement && iconDefaultScriptElement.getAttribute("src").startsWith(iconDefaultURL)) ||
         (!isBuiltInIcon && iconScriptElement && iconScriptElement.getAttribute("src").startsWith(iconThirdURL))) {
-        // 第三方图标切换到默认 litheness
         if (isBuiltInIcon) {
             iconScriptElement?.remove();
             Array.from(document.body.children).forEach((item) => {
@@ -181,8 +178,6 @@ export const initAssets = () => {
 
 export const setInlineStyle = async (set = true, servePath = "../../../") => {
     let style;
-    // Emojis Reset: 字体中包含了 emoji，需重置
-    // Emojis Additional： 苹果/win11 字体中没有的 emoji
     if (isMac() || isIPad() || isIPhone()) {
         style = `@font-face {
   font-family: "Emojis Additional";
@@ -262,7 +257,6 @@ export const setInlineStyle = async (set = true, servePath = "../../../") => {
     if (window.scribli.config.editor.fontFamily) {
         style += `\n.b3-typography:not(.b3-typography--default), .protyle-wysiwyg, .protyle-title {${window.scribli.config.editor.fontWeight ? `font-weight: ${window.scribli.config.editor.fontWeight};` : ""}font-family: "Emojis Additional", "Emojis Reset", "${window.scribli.config.editor.fontFamily}", var(--b3-font-family)}`;
     }
-    // pad 端菜单移除显示，如工作空间
     if ("ontouchend" in document) {
         style += "\n.b3-menu .b3-menu__action {opacity: 0.68;}";
     }
@@ -308,26 +302,23 @@ export const setBodyHighlight = () => {
         return;
     }
 
-    // 预定义颜色：赤橙黄绿青蓝紫（提高饱和度和亮度）
     const colors = [
-        {h: 0, s: 85, l: 50},    // 赤 - 鲜艳红
-        {h: 30, s: 90, l: 52},   // 橙 - 亮橙色
-        {h: 50, s: 88, l: 50},   // 黄 - 金黄色
-        {h: 140, s: 80, l: 48},  // 绿 - 翠绿色
-        {h: 185, s: 85, l: 50},  // 青 - 亮青色
-        {h: 230, s: 82, l: 52},  // 蓝 - 宝蓝色
-        {h: 280, s: 85, l: 50},  // 紫 - 亮紫色
+        {h: 0, s: 85, l: 50},
+        {h: 30, s: 90, l: 52},
+        {h: 50, s: 88, l: 50},
+        {h: 140, s: 80, l: 48},
+        {h: 185, s: 85, l: 50},
+        {h: 230, s: 82, l: 52},
+        {h: 280, s: 85, l: 50},
     ];
 
     let hue, saturation, lightness;
 
     if (name === "Scribli") {
-        // Scribli 专用：更艳丽的紫色
         hue = 280;
         saturation = 85;
         lightness = 48;
     } else {
-        // 根据工作空间名生成稳定的索引
         let hash = 0;
         for (let i = 0; i < name.length; i++) {
             hash = (hash << 5) - hash + name.charCodeAt(i);

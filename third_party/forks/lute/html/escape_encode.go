@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -61,7 +60,7 @@ func EscapeHTML(html []byte) (ret []byte) {
 	for ; i < length; i++ {
 		switch html[i] {
 		case lex.ItemAmpersand:
-			if !inited { // 通过延迟初始化减少内存分配，下同
+			if !inited {
 				ret = make([]byte, 0, length+128)
 				inited = true
 			}
@@ -107,7 +106,6 @@ func EscapeHTML(html []byte) (ret []byte) {
 // - excluded characters ([;/?:@&=+$,-_.!~*'()#]).
 // Invalid UTF-8 sequences are replaced with U+FFFD.
 func EncodeDestination(rawurl []byte) (ret []byte) {
-	// 鸣谢 https://gitlab.com/golang-commonmark/mdurl
 
 	const hexdigit = "0123456789ABCDEF"
 	ret = make([]byte, 0, 256)
@@ -153,7 +151,6 @@ func EncodeDestination(rawurl []byte) (ret []byte) {
 // Invalid percent-encoded sequences are left as is.
 // Invalid UTF-8 sequences are replaced with U+FFFD.
 func DecodeDestination(rawurl []byte) []byte {
-	// 鸣谢 https://gitlab.com/golang-commonmark/mdurl
 
 	var buf bytes.Buffer
 	i := 0

@@ -272177,7 +272177,7 @@ static int fts5TriTokenize(
 }
 
 ////////////////////////////////////
-// 思源中文单字分词
+// Scribli Han single-character tokenizer
 
 /*
 ** Traditional -> Simplified Chinese single-character mapping for the
@@ -274587,8 +274587,8 @@ static void strHanToSimpExt(char* pString, int nBytes)
 }
 
 typedef struct ScribliTokenizer {
-    int caseSensitive; // 0：大小写敏感，1：大小写不敏感（转换为小写）
-    int hanInsensitive; // 0：区分繁简，1：繁简不敏感（繁体单字折叠为简体）
+    int caseSensitive; // 0: case-sensitive, 1: case-insensitive through lowercase folding
+    int hanInsensitive; // 0: Han-sensitive, 1: Han-insensitive through Traditional-to-Simplified folding
 }ScribliTokenizer;
 
 static const char CharacterBytesForUTF8[256] = {
@@ -275462,10 +275462,10 @@ static int fts5ScribliTokenize(Fts5Tokenizer* tokenizer_ptr, void* pCtx, int fla
         memcpy(zFold, pText, nText);
         zFold[nText] = 0;
         if (1 == p->caseSensitive) {
-            strToLwrExt(zFold); // 转换为 Unicode 小写折叠
+            strToLwrExt(zFold); // Apply Unicode lowercase folding
         }
         if (1 == p->hanInsensitive) {
-            strHanToSimpExt(zFold, nText); // 繁体单字折叠为简体
+            strHanToSimpExt(zFold, nText); // Fold Traditional Han characters to Simplified
         }
         pLwrText = zFold;
     }
@@ -275481,13 +275481,13 @@ static int fts5ScribliTokenize(Fts5Tokenizer* tokenizer_ptr, void* pCtx, int fla
 
         rc = xToken(pCtx, 0, pLwrText + iStart, length, iStart, iEnd);
         if (rc != SQLITE_OK) {
-            break; /* xToken 返回 SQLITE_DONE（提前终止）或错误时停止分词 */
+            break; /* Stop tokenizing when xToken returns SQLITE_DONE for early termination or an error */
         }
         iStart = iEnd;
     }
     sqlite3_free(zFold);
     if (SQLITE_DONE == rc) {
-        rc = SQLITE_OK; /* 与 porter 等内置分词器一致：提前终止视为成功 */
+        rc = SQLITE_OK; /* Match built-in tokenizers such as porter: early termination is successful */
     }
 	return rc;
 }

@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -23,7 +22,7 @@ type JSONRenderer struct {
 }
 
 func NewJSONRenderer(tree *parse.Tree, options *Options, parseOptions *parse.Options) Renderer {
-	var ials []*ast.Node // 渲染器剔除语法树块级 IAL 节点
+	var ials []*ast.Node
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		if !entering {
 			return ast.WalkContinue
@@ -60,7 +59,7 @@ func (r *JSONRenderer) renderNode(node *ast.Node, entering bool) ast.WalkStatus 
 			return ast.WalkStop
 		}
 		n := util.BytesToStr(data)
-		n = n[:len(n)-1] // 去掉结尾的 }
+		n = n[:len(n)-1]
 		r.WriteString(n)
 		if nil != node.FirstChild {
 			r.WriteString(",\"Children\":[")

@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -16,7 +15,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 )
 
-// 判断分隔线（--- ***）是否开始。
 func ThematicBreakStart(t *Tree, container *ast.Node) int {
 	if t.Context.indented {
 		return 0

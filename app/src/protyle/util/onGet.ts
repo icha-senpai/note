@@ -33,8 +33,7 @@ export const onGet = (options: {
     }
     options.protyle.wysiwyg.element.removeAttribute("data-top");
     if (options.data.code === 1) {
-        // 其他报错
-        if (!options.action.includes(Constants.CB_GET_APPEND)) {    // 向下加载时块可能还没有创建 
+        if (!options.action.includes(Constants.CB_GET_APPEND)) {
             if (options.protyle.model) {
                 options.protyle.model.parent.parent.removeTab(options.protyle.model.parent.id);
             } else {
@@ -70,14 +69,14 @@ export const onGet = (options: {
     options.protyle.block.scroll = options.data.data.scroll;
     options.protyle.block.action = options.action;
     if (!options.action.includes(Constants.CB_GET_UNCHANGEID)) {
-        options.protyle.block.id = options.data.data.id;    // 非缩放情况时不一定是 rootID（搜索打开页签）；缩放时必为缩放 id，否则需查看代码
+        options.protyle.block.id = options.data.data.id;
         options.protyle.scroll.lastScrollTop = 0;
         options.protyle.contentElement.scrollTop = 0;
         options.protyle.wysiwyg.element.setAttribute("data-doc-type", options.data.data.type);
     }
 
     if (options.protyle.options.render.title && options.protyle.title.element.getAttribute("data-render") !== "true") {
-        // 文档A的大纲，关闭文档A后，点击大纲无法渲染头部
+        // Intentionally empty.
     } else if (options.action.includes(Constants.CB_GET_APPEND) || options.action.includes(Constants.CB_GET_BEFORE) || options.action.includes(Constants.CB_GET_HTML)) {
         if (options.protyle.options.render.title && options.protyle.options.render.hideTitleOnZoom) {
             if (options.protyle.block.showAll) {
@@ -86,7 +85,6 @@ export const onGet = (options: {
                 options.protyle.title.element.classList.remove("fn__none");
             }
         }
-        // 防止动态加载加载过多的内容
         setHTML({
             content: options.data.data.content,
             expand: options.data.data.isBacklinkExpand,
@@ -109,7 +107,6 @@ export const onGet = (options: {
     }
     fetchPost("/api/block/getDocInfo", docInfoParam, (response) => {
         if (options.protyle.options.render.title) {
-            // 页签没有打开
             options.protyle.title.render(options.protyle, response);
         } else {
             if (options.protyle.options.render.background) {
@@ -159,7 +156,6 @@ const setHTML = (options: {
     const REMOVED_OVER_HEIGHT = protyle.contentElement.clientHeight * 8;
     const updateReadonly = typeof options.updateReadonly === "undefined" ? protyle.wysiwyg.element.innerHTML === "" : options.updateReadonly;
     if (options.action.includes(Constants.CB_GET_APPEND)) {
-        // 动态加载移除
         if (!protyle.wysiwyg.element.querySelector(".protyle-wysiwyg--select") && !protyle.scroll.keepLazyLoad && protyle.contentElement.scrollHeight > REMOVED_OVER_HEIGHT) {
             let removeElement = protyle.wysiwyg.element.firstElementChild as HTMLElement;
             const removeElements = [];
@@ -187,7 +183,6 @@ const setHTML = (options: {
         protyle.wysiwyg.element.insertAdjacentHTML("afterbegin", options.content);
         protyle.contentElement.scrollTop = protyle.contentElement.scrollTop + (firstElement.getBoundingClientRect().top - lastTop);
         protyle.scroll.lastScrollTop = protyle.contentElement.scrollTop;
-        // 动态加载移除
         if (!protyle.wysiwyg.element.querySelector(".protyle-wysiwyg--select") && !protyle.scroll.keepLazyLoad) {
             const removeElements: Element[] = [];
             let childCount = protyle.wysiwyg.element.childElementCount;
@@ -197,7 +192,7 @@ const setHTML = (options: {
                 removeElements.push(lastElement);
                 lastElement = lastElement.previousElementSibling;
                 childCount--;
-                scrollHeight -= lastElement.clientHeight + 8;   // 大部分元素的 margin
+                scrollHeight -= lastElement.clientHeight + 8;
             }
             removeElements.forEach((item) => {
                 item.remove();
@@ -206,7 +201,6 @@ const setHTML = (options: {
         }
     } else {
         protyle.wysiwyg.element.innerHTML = options.content;
-        // 设置 innerHTML 会导致浏览器将 scrollTop 重置为 0，此处立即恢复以避免页面跳转到开头
         // 
         if (options.scrollAttr && typeof options.scrollAttr.scrollTop === "number") {
             protyle.contentElement.scrollTop = options.scrollAttr.scrollTop;
@@ -238,7 +232,6 @@ const setHTML = (options: {
         protyle.scroll.update(protyle);
     }
     if (options.action.includes(Constants.CB_GET_FOCUSFIRST)) {
-        // settimeout 时间需短一点，否则定位后快速滚动无效
         const headerHeight = protyle.wysiwyg.element.offsetTop - 16;
         preventScroll(protyle, headerHeight, Constants.TIMEOUT_INPUT);
         protyle.contentElement.scrollTop = headerHeight;
@@ -265,7 +258,6 @@ const setHTML = (options: {
     focusElementById(protyle, options.action, options.scrollAttr, options.scrollPosition);
 
     if (options.action.includes(Constants.CB_GET_SETID)) {
-        // 点击大纲后，如果需要动态加载，在定位后，需要重置 block.id 
         protyle.block.id = protyle.block.rootID;
         protyle.wysiwyg.element.setAttribute("data-doc-type", "NodeDocument");
     }
@@ -293,13 +285,11 @@ const setHTML = (options: {
     if (options.afterCB) {
         options.afterCB();
     }
-    // 需等待 afterCB 执行后 resize 计算出高度后再进行计算
-    // 屏幕太高的页签 
     if (options.scrollAttr && !protyle.scroll.element.classList.contains("fn__none") &&
-        !protyle.element.classList.contains("block__edit") &&   // 不能为浮窗，否则悬浮为根文档无法打开整个文档 
+        !protyle.element.classList.contains("block__edit") &&
         protyle.wysiwyg.element.lastElementChild.getAttribute("data-eof") !== "2" &&
-        protyle.contentElement.scrollHeight > 0 && // 没有激活的页签 
-        !options.action.includes(Constants.CB_GET_FOCUSFIRST) && // 防止 eof 为true 
+        protyle.contentElement.scrollHeight > 0 &&
+        !options.action.includes(Constants.CB_GET_FOCUSFIRST) &&
         protyle.contentElement.scrollHeight <= protyle.contentElement.clientHeight) {
         const getDocParam: IObject = {
             id: protyle.wysiwyg.element.lastElementChild.getAttribute("data-node-id"),
@@ -313,7 +303,6 @@ const setHTML = (options: {
             onGet({data: getResponse, protyle, action: [Constants.CB_GET_APPEND, Constants.CB_GET_UNCHANGEID]});
         });
     }
-    // 动态滚动条拖拽到最后几个块时需多加载一点块 
     if (options.action.includes(Constants.CB_GET_FOCUSFIRST) &&
         protyle.wysiwyg.element.getBoundingClientRect().top > protyle.breadcrumb.element.getBoundingClientRect().bottom) {
         const getDocParam: IObject = {
@@ -333,7 +322,6 @@ const setHTML = (options: {
         });
     }
     if (options.scrollAttr && !protyle.scroll.element.classList.contains("fn__none") && !protyle.element.classList.contains("fn__none")) {
-        // 使用动态滚动条定位到最后一个块，重启后无法触发滚动事件，需要再次更新 index
         const startId = options.scrollAttr.startId || protyle.wysiwyg.element.firstElementChild?.getAttribute("data-node-id");
         if (startId) {
             protyle.scroll.updateIndex(protyle, startId, (index) => {
@@ -376,7 +364,6 @@ export const disabledWYSIWYG = (element: HTMLElement) => {
     });
     element.style.userSelect = "text";
     element.setAttribute("contenteditable", "false");
-    // 用于区分移动端样式
     element.setAttribute("data-readonly", "true");
     element.querySelectorAll('[contenteditable="true"][spellcheck]').forEach(item => {
         item.setAttribute("contenteditable", "false");
@@ -386,7 +373,6 @@ export const disabledWYSIWYG = (element: HTMLElement) => {
     });
 };
 
-/** 禁用编辑器 */
 export const disabledProtyle = (protyle: IProtyle) => {
     window.scribli.menus.menu.remove();
     hideElements(["gutter", "toolbar", "select", "hint", "util"], protyle);
@@ -416,21 +402,17 @@ export const disabledProtyle = (protyle: IProtyle) => {
     hideTooltip();
 };
 
-/** 解除编辑器禁用 */
 export const enableProtyle = (protyle: IProtyle) => {
     if (protyle.element.getAttribute("disabled-forever") === "true") {
         return;
     }
     protyle.disabled = false;
     if (isMobile()) {
-        // Android 端空块输入法弹出会收起 
-        // iPhone，iPad 端 protyle.wysiwyg.element contenteditable 为 true 时，输入会在块中间插入 span 导致保存失败 
         document.getElementById("toolbarName").removeAttribute("readonly");
     } else {
         protyle.wysiwyg.element.setAttribute("contenteditable", "true");
         protyle.wysiwyg.element.style.userSelect = "";
     }
-    // 用于区分移动端样式
     protyle.wysiwyg.element.setAttribute("data-readonly", "false");
     if (protyle.title && protyle.title.editElement) {
         protyle.title.editElement.setAttribute("contenteditable", "true");
@@ -496,7 +478,7 @@ const focusElementById = (protyle: IProtyle, action: string[], scrollAttr?: IScr
         focusElement = protyle.wysiwyg.element.firstElementChild;
     }
     if (action.includes(Constants.CB_GET_HL)) {
-        preventScroll(protyle); // 搜索页签滚动会导致再次请求
+        preventScroll(protyle);
         bgFade(focusElement);
     }
     if (action.includes(Constants.CB_GET_FOCUS) || action.includes(Constants.CB_GET_FOCUSFIRST)) {
@@ -516,7 +498,6 @@ const focusElementById = (protyle: IProtyle, action: string[], scrollAttr?: IScr
     if (hasScrollTop) {
         protyle.contentElement.scrollTop = scrollAttr.scrollTop;
     }
-    // 下一个请求过来前需断开，否则 observerLoad 重新赋值后无法 disconnect 
     protyle.observerLoad?.disconnect();
     if (action.includes(Constants.CB_GET_FOCUS) || action.includes(Constants.CB_GET_SCROLL) || action.includes(Constants.CB_GET_HL) || action.includes(Constants.CB_GET_FOCUSFIRST)) {
         if (!hasScrollTop) {
@@ -525,8 +506,6 @@ const focusElementById = (protyle: IProtyle, action: string[], scrollAttr?: IScr
     } else {
         return;
     }
-    // 加强定位
-    // 使用 AbortController 监听用户手势（滚轮/触摸/方向键），一旦用户主动滚动即停止强制定位，否则顶部为数据库等异步渲染块撑高内容时会反复重置滚动位置
     const userScrollAbort = new AbortController();
     const onUserScroll = () => userScrollAbort.abort();
     protyle.contentElement.addEventListener("wheel", onUserScroll, {
@@ -545,14 +524,12 @@ const focusElementById = (protyle: IProtyle, action: string[], scrollAttr?: IScr
         signal: userScrollAbort.signal
     });
     protyle.contentElement.addEventListener("keydown", (event: KeyboardEvent) => {
-        // 仅拦截会触发滚动的按键，避免影响正常编辑输入
         if (["PageUp", "PageDown", "Home", "End", "ArrowUp", "ArrowDown", " "].includes(event.key)) {
             userScrollAbort.abort();
         }
     }, {capture: true, signal: userScrollAbort.signal});
     protyle.observerLoad = new ResizeObserver(() => {
         if (userScrollAbort.signal.aborted) {
-            // 用户已主动滚动，停止强制定位并将滚动权交还给用户
             protyle.observerLoad.disconnect();
             protyle.observer.observe(protyle.wysiwyg.element);
             return;

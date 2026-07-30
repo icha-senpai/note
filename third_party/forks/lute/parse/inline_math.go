@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -34,12 +33,10 @@ func (t *Tree) parseInlineMath(ctx *InlineContext) (ret *ast.Node) {
 	}
 	if 2 <= dollars {
 		if t.Context.ParseOption.ProtyleWYSIWYG {
-			// Protyle 不允许从行级派生块级
 			ctx.pos++
 			return &ast.Node{Type: ast.NodeText, Tokens: dollar}
 		}
 
-		// 块节点
 		matchBlock := false
 		blockEndPos := blockStartPos + dollars
 		var token byte
@@ -60,7 +57,7 @@ func (t *Tree) parseInlineMath(ctx *InlineContext) (ret *ast.Node) {
 		}
 	}
 
-	if !t.Context.ParseOption.InlineMathAllowDigitAfterOpenMarker && ctx.tokensLen > startPos+1 && lex.IsDigit(ctx.tokens[startPos+1]) { // $ 后面不能紧跟数字
+	if !t.Context.ParseOption.InlineMathAllowDigitAfterOpenMarker && ctx.tokensLen > startPos+1 && lex.IsDigit(ctx.tokens[startPos+1]) {
 		ctx.pos += 3
 		if len(ctx.tokens) < startPos+3 {
 			return &ast.Node{Type: ast.NodeText, Tokens: ctx.tokens[startPos:]}
@@ -77,7 +74,6 @@ func (t *Tree) parseInlineMath(ctx *InlineContext) (ret *ast.Node) {
 
 	if t.Context.ParseOption.TextMark {
 		if bytes.Contains(ctx.tokens[startPos+1:startPos+endPos+1], []byte("<span")) {
-			// 中间包含 span 节点的话打断公式，以 span 优先
 			ctx.pos++
 			return &ast.Node{Type: ast.NodeText, Tokens: dollar}
 		}

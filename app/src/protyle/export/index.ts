@@ -18,7 +18,6 @@ import {isEncryptedBox} from "../../util/pathName";
 const getPluginStyle = async () => {
     const response = await fetchSyncPost("/api/petal/loadPetals", {frontend: getFrontend()});
     let css = "";
-    // 为加快启动速度，不进行 await
     response.data.forEach((item: IPluginData) => {
         css += item.css || "";
     });
@@ -36,7 +35,6 @@ export const saveExport = (option: IExportOptions) => {
     if (["html", "htmlmd"].includes(option.type)) {
         const startExport = () => {
         const msgId = showMessage(window.scribli.languages.exporting, -1);
-        // 浏览器环境：先调用 API 生成资源文件，再在前端生成完整的 HTML
         const url = option.type === "htmlmd" ? "/api/export/exportMdHTML" : "/api/export/exportHTML";
         fetchPost(url, {
             id: option.id,
@@ -410,9 +408,7 @@ ${getIconScript(servePath)}
         width = width / parseFloat(document.querySelector("#scale").value);
         previewElement.style.width = width + "px";
         width = width - parseFloat(previewElement.style.paddingLeft) * 96 * 2;
-        // 为保持代码块宽度一致，全部都进行宽度设定  
         previewElement.querySelectorAll('.hljs').forEach((item) => {
-            // 强制换行 
             item.parentElement.setAttribute("linewrap", "true");
             item.parentElement.style.width = "";
             item.parentElement.style.boxSizing = "border-box";
@@ -421,7 +417,6 @@ ${getIconScript(servePath)}
         })
         Protyle.highlightRender(previewElement, "${servePath}stage/protyle", document.querySelector("#scale").value);
         previewElement.querySelectorAll('[data-type="NodeMathBlock"]').forEach((item) => {
-            // 超级块内不能移除 width 
             item.removeAttribute('data-render');
         })
         previewElement.querySelectorAll('[data-type="NodeCodeBlock"][data-subtype="mermaid"] svg').forEach((item) => {
@@ -553,7 +548,6 @@ ${getIconScript(servePath)}
                 if (target.tagName === "A") {
                     const linkAddress = target.getAttribute("href");
                     if (linkAddress.startsWith("#")) {
-                        // 导出预览模式点击块引转换后的脚注跳转不正确 
                         const hash = linkAddress.substring(1);
                         previewElement.querySelector('[data-node-id="' + hash + '"], [id="' + hash + '"]').scrollIntoView();
                         event.stopPropagation();
@@ -855,7 +849,6 @@ ${getIconScript(servePath)}
     });
 </script>
 ${getSnippetJS()}</body></html>`;
-    // 移动端导出 pdf、浏览器导出 HTML
     if (typeof filePath === "undefined") {
         return html;
     }

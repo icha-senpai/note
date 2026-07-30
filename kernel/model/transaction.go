@@ -29,11 +29,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/editor"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/filesys"
@@ -42,7 +37,12 @@ import (
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/editor"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
 func IsMoveOutlineHeading(transactions *[]*Transaction) bool {
@@ -2343,8 +2343,4 @@ func updateRefText(refNode *ast.Node, changedDefNodes map[string]*ast.Node) (cha
 }
 
 func checkUpsertInUserGuide(tree *parse.Tree) {
-	// In production mode, data reset warning pops up when editing data in the user guide
-	if "prod" == util.Mode && IsUserGuide(tree.Box) {
-		util.PushErrMsg(Conf.Language(52), 7000)
-	}
 }

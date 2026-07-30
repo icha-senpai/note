@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -25,7 +24,6 @@ func (context *Context) parseTable(paragraph *ast.Node) (retParagraph, retTable 
 		if context.ParseOption.ProtyleWYSIWYG {
 			lines := lex.Split(paragraph.Tokens, lex.ItemNewline)
 
-			// 没有 | 的行依旧归入段落中
 			var beforeTableLines [][]byte
 			for j := 0; j < len(lines); j++ {
 				if !bytes.Contains(lines[j], []byte("|")) {
@@ -60,8 +58,8 @@ func (context *Context) parseTable(paragraph *ast.Node) (retParagraph, retTable 
 					subTokens := th.Tokens[ialStart:]
 					if pos, ial := context.parseKramdownSpanIAL(subTokens); 0 < len(ial) {
 						ialTokens := subTokens[:pos+1]
-						if bytes.Contains(ialTokens, []byte("span")) || bytes.Contains(ialTokens, []byte("fn__none")) || // 合并单元格
-							bytes.Contains(ialTokens, []byte("width:")) /* width: 是为了兼容遗留数据 */ {
+						if bytes.Contains(ialTokens, []byte("span")) || bytes.Contains(ialTokens, []byte("fn__none")) ||
+							bytes.Contains(ialTokens, []byte("width:"))  {
 							th.KramdownIAL = ial
 							th.Tokens = th.Tokens[len(ialTokens):]
 							spanIAL := &ast.Node{Type: ast.NodeKramdownSpanIAL, Tokens: ialTokens}
@@ -81,8 +79,6 @@ func (context *Context) parseTable(paragraph *ast.Node) (retParagraph, retTable 
 				if nil == tableRow {
 					return
 				}
-				// 提取数据行单元格的 colspan/rowspan/fn__none 等结构 IAL（与表头行处理保持一致，
-				// 不受 KramdownSpanIAL 选项控制），使合并单元格信息能随 markdown 往返保留。
 				for td := tableRow.FirstChild; nil != td; td = td.Next {
 					ialStart := bytes.Index(td.Tokens, []byte("{:"))
 					if 0 != ialStart {
@@ -92,8 +88,8 @@ func (context *Context) parseTable(paragraph *ast.Node) (retParagraph, retTable 
 					subTokens := td.Tokens[ialStart:]
 					if pos, ial := context.parseKramdownSpanIAL(subTokens); 0 < len(ial) {
 						ialTokens := subTokens[:pos+1]
-						if bytes.Contains(ialTokens, []byte("span")) || bytes.Contains(ialTokens, []byte("fn__none")) || // 合并单元格
-							bytes.Contains(ialTokens, []byte("width:")) /* width: 是为了兼容遗留数据 */ {
+						if bytes.Contains(ialTokens, []byte("span")) || bytes.Contains(ialTokens, []byte("fn__none")) ||
+							bytes.Contains(ialTokens, []byte("width:"))  {
 							td.KramdownIAL = ial
 							td.Tokens = td.Tokens[len(ialTokens):]
 							spanIAL := &ast.Node{Type: ast.NodeKramdownSpanIAL, Tokens: ialTokens}
@@ -139,7 +135,6 @@ func (context *Context) parseTable0(tokens []byte) (ret *ast.Node) {
 
 	delimRow := lex.TrimWhitespace(lines[1])
 	if 2 > len(delimRow) {
-		// 换行+冒号会被识别为表格 https://github.com/icha-senpai/note/third_party/forks/lute/issues/198
 		return
 	}
 
@@ -149,9 +144,6 @@ func (context *Context) parseTable0(tokens []byte) (ret *ast.Node) {
 	}
 
 	if 2 == length && 1 == len(aligns) && 0 == aligns[0] && !bytes.Contains(tokens, []byte("|")) {
-		// 如果只有两行并且对齐方式是默认对齐且没有 | 时（foo\n---）就和 Setext 标题规则冲突了
-		// 但在块级解析时显然已经尝试进行解析 Setext 标题，还能走到这里说明 Setetxt 标题解析失败，
-		// 所以这里也不能当作表进行解析了，返回普通段落
 		return
 	}
 
@@ -160,8 +152,6 @@ func (context *Context) parseTable0(tokens []byte) (ret *ast.Node) {
 		return
 	}
 
-	// 提取表头单元格的结构 IAL（colspan/rowspan/fn__none），不受 KramdownSpanIAL 选项控制，
-	// 使合并单元格信息能随 markdown 往返保留。
 	for th := headRow.FirstChild; nil != th; th = th.Next {
 		ialStart := bytes.LastIndex(th.Tokens, []byte("{:"))
 		if 0 > ialStart {
@@ -190,7 +180,6 @@ func (context *Context) parseTable0(tokens []byte) (ret *ast.Node) {
 		if nil == tableRow {
 			return
 		}
-		// 提取数据行单元格的结构 IAL（同表头），不受 KramdownSpanIAL 选项控制。
 		for th := tableRow.FirstChild; nil != th; th = th.Next {
 			ialStart := bytes.LastIndex(th.Tokens, []byte("{:"))
 			if 0 > ialStart {
@@ -264,7 +253,7 @@ func (context *Context) parseTableRow(line []byte, aligns []int, isHead bool) (r
 
 	colsLen := len(cols)
 	alignsLen := len(aligns)
-	if isHead && colsLen > alignsLen { // 分隔符行定义了表的列数，如果表头列数还大于这个列数，则说明不满足表格式
+	if isHead && colsLen > alignsLen {
 		return nil
 	}
 
@@ -278,7 +267,6 @@ func (context *Context) parseTableRow(line []byte, aligns []int, isHead bool) (r
 		ret.AppendChild(cell)
 	}
 
-	// 可能需要补全剩余的列
 	for ; i < alignsLen; i++ {
 		cell := &ast.Node{Type: ast.NodeTableCell, TableCellAlign: aligns[i]}
 		ret.AppendChild(cell)

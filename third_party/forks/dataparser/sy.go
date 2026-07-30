@@ -1,7 +1,6 @@
 // SiYuan - Refactor your thinking
 // MIT License
 //
-// Copyright (c) 2019-present B3log 开源, b3log.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -91,7 +90,6 @@ func ParseJSON(jsonData []byte, options *parse.Options) (ret *parse.Tree, needFi
 	}
 
 	if nil == ret.Root.FirstChild {
-		// 如果是空文档的话挂一个空段落上去
 		newP := newParagraph()
 		ret.Root.AppendChild(newP)
 		ret.Root.SetIALAttr("updated", newP.ID[:14])
@@ -111,7 +109,6 @@ func genTreeByJSON(node *ast.Node, tree *parse.Tree, idMap *map[string]bool, nee
 	node.Properties = nil
 
 	if !ignoreFix {
-		// 历史数据订正
 
 		if -1 == node.Type {
 			*needFix = true
@@ -124,36 +121,36 @@ func genTreeByJSON(node *ast.Node, tree *parse.Tree, idMap *map[string]bool, nee
 		case ast.NodeList:
 			if 1 > len(node.Children) {
 				*needFix = true
-				return // 忽略空列表
+				return
 			}
 		case ast.NodeListItem:
 			if 1 > len(node.Children) {
 				*needFix = true
-				return // 忽略空列表项
+				return
 			}
 		case ast.NodeBlockquote:
 			if 2 > len(node.Children) {
 				*needFix = true
-				return // 忽略空引述
+				return
 			}
 		case ast.NodeSuperBlock:
 			if 4 > len(node.Children) {
 				*needFix = true
-				return // 忽略空超级块
+				return
 			}
 		case ast.NodeMathBlock:
 			if 1 > len(node.Children) {
 				*needFix = true
-				return // 忽略空公式
+				return
 			}
 		case ast.NodeBlockQueryEmbed:
 			if 1 > len(node.Children) {
 				*needFix = true
-				return // 忽略空查询嵌入块
+				return
 			}
 		case ast.NodeCodeBlock:
 			if 4 > len(node.Children) {
-				// https://ld246.com/article/1713689223067
+				//
 				existCode := false
 				for _, child := range node.Children {
 					if ast.NodeCodeBlockCode.String() == child.TypeStr {
@@ -163,7 +160,7 @@ func genTreeByJSON(node *ast.Node, tree *parse.Tree, idMap *map[string]bool, nee
 				}
 				if !existCode {
 					*needFix = true
-					return // 忽略空代码块
+					return
 				}
 			}
 		}
@@ -192,13 +189,11 @@ func fixLegacyData(tip, node *ast.Node, idMap *map[string]bool, needFix, needMig
 		}
 
 		if node.ID != node.IALAttr("id") {
-			//某些情况下会导致 ID 和属性 id 不相同 https://ld246.com/article/1722826829447
 			node.SetIALAttr("id", node.ID)
 			*needFix = true
 		}
 
 		if 0 < len(node.Children) && ast.NodeBr.String() == node.Children[len(node.Children)-1].TypeStr {
-			// 剔除块尾多余的软换行
 			node.Children = node.Children[:len(node.Children)-1]
 			*needFix = true
 		}
@@ -265,8 +260,6 @@ func fixLegacyData(tip, node *ast.Node, idMap *map[string]bool, needFix, needMig
 			}
 		}
 	case ast.NodeBlockRef:
-		// 建立索引时无法解析 `v2.2.0-` 版本的块引用
-		// 早先的迁移程序有缺陷，漏迁移了块引用节点，这里检测到块引用节点后标识需要迁移
 		*needMigrate2Spec1 = true
 	case ast.NodeInlineHTML:
 		*needFix = true

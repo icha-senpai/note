@@ -20,7 +20,6 @@ import {base64ToURL} from "../../util/image";
 import {resolveLinkDest} from "../toolbar/util";
 
 export const beforePaste = (protyle: IProtyle, blockElement: HTMLElement) => {
-    // 链接，备注，样式，引用，pdf标注粘贴 
     const range = getSelection().getRangeAt(0);
     protyle.toolbar.range = range;
     const inlineElement = range.startContainer.parentElement;
@@ -63,12 +62,10 @@ export const getTextStar = (blockElement: HTMLElement, contentOnly = false) => {
     } else if (["NodeCodeBlock", "NodeTable"].includes(dataType)) {
         refText = getPlainText(blockElement);
     } else if (blockElement.classList.contains("render-node")) {
-        // 需在嵌入块后，代码块前
         refText += blockElement.dataset.subtype || Lute.UnEscapeHTMLStr(blockElement.getAttribute("data-content"));
     } else if (["NodeBlockquote", "NodeList", "NodeSuperBlock", "NodeListItem"].includes(dataType)) {
         Array.from(blockElement.querySelectorAll<HTMLElement>("[data-node-id]")).find((item) => {
             if (!["NodeBlockquote", "NodeList", "NodeSuperBlock", "NodeListItem"].includes(item.getAttribute("data-type"))) {
-                // 获取子块内容，使用容器块本身的 ID
                 refText = getTextStar(item, true);
                 return true;
             }
@@ -104,7 +101,6 @@ export const getPlainText = (blockElement: HTMLElement, isNested = false) => {
     } else if ("NodeAudio" === dataType) {
         text += blockElement.querySelector("audio").getAttribute("src");
     } else if (blockElement.classList.contains("render-node")) {
-        // 需在嵌入块后，代码块前
         text += Lute.UnEscapeHTMLStr(blockElement.getAttribute("data-content"));
     } else if (["NodeHeading", "NodeParagraph"].includes(dataType)) {
         text += blockElement.querySelector("[spellcheck]").textContent;
@@ -133,16 +129,12 @@ export const getPlainText = (blockElement: HTMLElement, isNested = false) => {
 export const pasteEscaped = async (protyle: IProtyle, nodeElement: Element) => {
     try {
         let clipText = await readText() || "";
-        // 删掉 <span data-type\="text".*>text</span> 标签，只保留文本
         clipText = clipText.replace(/<span data-type="text".*?>(.*?)<\/span>/g, "$1");
 
         // 
         // A\B\C\D\
         // E
-        // task-blog-2~default~baiduj 无法原义粘贴含有 `~foo~` 的文本 
 
-        // 这里必须多加一个反斜杆，因为 Lute 在进行 Markdown 嵌套节点转换平铺标记节点时会剔除 Backslash 节点，
-        // 多加入的一个反斜杆会作为文本节点保留下来，后续 Spin 时刚好用于转义标记符
         clipText = clipText.replace(/\\/g, "\\\\")
             .replace(/\*/g, "\\*")
             .replace(/_/g, "\\_")
@@ -164,7 +156,6 @@ export const pasteEscaped = async (protyle: IProtyle, nodeElement: Element) => {
             .replace(/\^/g, "\\^")
             .replace(/\|/g, "\\|")
             .replace(/\./g, "\\.");
-        // 转义文本不能使用 DOM 结构 
         paste(protyle, {textPlain: clipText, textHTML: "", target: nodeElement as HTMLElement});
     } catch (e) {
         console.log(e);
@@ -190,38 +181,28 @@ export const pasteAsPlainText = async (protyle: IProtyle) => {
                 return;
             }
         }
-        // 对一些内置需要解析的 HTML 标签进行内部转移 Improve sub/sup pasting as plain text 
         textPlain = textPlain.replace(/<sub>/g, "__@sub@__").replace(/<\/sub>/g, "__@/sub@__");
         textPlain = textPlain.replace(/<sup>/g, "__@sup@__").replace(/<\/sup>/g, "__@/sup@__");
         textPlain = textPlain.replace(/<kbd>/g, "__@kbd@__").replace(/<\/kbd>/g, "__@/kbd@__");
         textPlain = textPlain.replace(/<u>/g, "__@u@__").replace(/<\/u>/g, "__@/u@__");
 
-        // 删掉 <span data-type\="text".*>text</span> 标签，只保留文本
         textPlain = textPlain.replace(/<span data-type="text".*?>(.*?)<\/span>/g, "$1");
 
-        // 对 <<assets/...>> 进行内部转义 
         textPlain = textPlain.replace(/<<assets\//g, "__@lt2assets/@__").replace(/>>/g, "__@gt2@__");
 
-        // 对 HTML 标签进行内部转义，避免被 Lute 解析以后变为小写 
         textPlain = textPlain.replace(/</g, ";;;lt;;;").replace(/>/g, ";;;gt;;;");
 
-        // 反转义 <<assets/...>>
         textPlain = textPlain.replace(/__@lt2assets\/@__/g, "<<assets/").replace(/__@gt2@__/g, ">>");
 
-        // 反转义内置需要解析的 HTML 标签
         textPlain = textPlain.replace(/__@sub@__/g, "<sub>").replace(/__@\/sub@__/g, "</sub>");
         textPlain = textPlain.replace(/__@sup@__/g, "<sup>").replace(/__@\/sup@__/g, "</sup>");
         textPlain = textPlain.replace(/__@kbd@__/g, "<kbd>").replace(/__@\/kbd@__/g, "</kbd>");
         textPlain = textPlain.replace(/__@u@__/g, "<u>").replace(/__@\/u@__/g, "</u>");
 
-        // 临界区：Lute 已是所有编辑器共享的单例，此处临时把 inline-syntax 标志置 true 再恢复。
-        // enable/transform/restore 必须保持同步执行，中间不得插入 await，否则并发编辑器的
-        // 转换调用（如实时输入的 SpinBlockDOM）会读到被改写的标志而产生错误输出。
         enableLuteMarkdownSyntax(protyle);
         const content = protyle.lute.BlockDOM2EscapeMarkerContent(protyle.lute.Md2BlockDOM(textPlain));
         restoreLuteMarkdownSyntax(protyle);
 
-        // insertHTML 会进行内部反转义
         insertHTML(content, protyle, false, false, true);
     }
 };
@@ -318,31 +299,26 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
     }
     /// #endif
     const originalTextHTML = textHTML;
-    // 浏览器地址栏拷贝处理
     if (textHTML.replace(/&amp;/g, "&").replace(/<(|\/)(html|body|meta)[^>]*?>/ig, "").trim() ===
         `<a href="${textPlain}">${textPlain}</a>` ||
         textHTML.replace(/&amp;/g, "&").replace(/<(|\/)(html|body|meta)[^>]*?>/ig, "").trim() ===
         `<!--StartFragment--><a href="${textPlain}">${textPlain}</a><!--EndFragment-->`) {
         textHTML = "";
     }
-    // 复制标题及其下方块使用 writeText，需将 textPlain 转换为 textHTML
     if (textPlain.endsWith(Constants.ZWSP) && !textHTML && !scribliHTML) {
         scribliHTML = textPlain.substr(0, textPlain.length - 1);
     }
-    // 复制/剪切折叠标题需获取 scribliHTML
     if (textHTML && textPlain && !scribliHTML) {
         const textObj = getTextScribliFromTextHTML(textHTML);
         scribliHTML = textObj.textScribli;
         textHTML = textObj.textHtml;
     }
-    // 剪切复制中首位包含空格或仅有空格 
     if (!scribliHTML) {
         // process word
         const doc = new DOMParser().parseFromString(textHTML, "text/html");
         if (doc.body && doc.body.innerHTML) {
             textHTML = doc.body.innerHTML;
         }
-        // windows 剪切板
         if (textHTML.startsWith("\n<!--StartFragment-->") && textHTML.endsWith("<!--EndFragment-->\n\n")) {
             textHTML = doc.body.innerHTML.trim().replace("<!--StartFragment-->", "").replace("<!--EndFragment-->", "");
         }
@@ -433,7 +409,6 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             document.body.removeChild(iframe);
         }
 
-        // 编辑器内部粘贴
         const tempElement = document.createElement("div");
         if (1024 * 512 < scribliHTML.length) {
             await streamInsert(tempElement, scribliHTML);
@@ -485,8 +460,6 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         const pastedBlockElements = tempElement.querySelectorAll("[data-node-id]");
         if (pastedBlockElements.length > 0) {
             isBlock = true;
-            // 剪切后粘贴时原块已被删除,保留原 ID 可避免该块被其他位置的引用失效;
-            // 仅当 ID 仍存在(复制粘贴)时才生成新 ID
             const oldIds: string[] = [];
             pastedBlockElements.forEach((e) => {
                 oldIds.push(e.getAttribute("data-node-id"));
@@ -494,18 +467,16 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             const existResponse = await fetchSyncPost("/api/block/checkBlocksExist", {ids: oldIds});
             pastedBlockElements.forEach((e) => {
                 const originalId = e.getAttribute("data-node-id");
-                const isCutPaste = existResponse.data[originalId] === false; // 剪切来的（原块已删）
+                const isCutPaste = existResponse.data[originalId] === false;
                 if (!isCutPaste) {
-                    // 复制粘贴：生成新 ID
                     e.setAttribute("data-node-id", Lute.NewNodeID());
                 }
-                clearBlockElement(e, isCutPaste); // 剪切粘贴保留引用角标
+                clearBlockElement(e, isCutPaste);
             });
         }
         if (nodeElement.classList.contains("table")) {
             isBlock = false;
         }
-        // 从历史中复制后粘贴
         tempElement.querySelectorAll('[contenteditable="false"][spellcheck]').forEach((e) => {
             e.setAttribute("contenteditable", "true");
         });
@@ -525,7 +496,6 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             }
         } else {
             if (-1 < tempInnerHTML.indexOf("NodeHTMLBlock")) {
-                // 复制 HTML 块粘贴出来的不是 HTML 块 
                 tempInnerHTML = Lute.UnEscapeHTMLStr(tempInnerHTML);
             }
 
@@ -537,7 +507,6 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         avRender(protyle.wysiwyg.element, protyle);
     } else if (code) {
         if (!code.startsWith('<div data-type="NodeCodeBlock" class="code-block" data-node-id="')) {
-            // 原有代码在行内元素中粘贴会嵌套
             insertHTML(code, protyle);
         } else {
             insertHTML(code, protyle, true, false, true);
@@ -549,16 +518,14 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         if (textHTML.replace("<!--StartFragment--><!--EndFragment-->", "").trim() !== "") {
             textHTML = textHTML.replace("<!--StartFragment-->", "").replace("<!--EndFragment-->", "").trim();
             if (files && files.length === 1 && (
-                textHTML.startsWith("<img") ||  // 浏览器上复制单个图片
-                (textHTML.startsWith("<table") && textHTML.indexOf("<img") > -1)  // Excel 或者浏览器中复制带有图片的表格
+                textHTML.startsWith("<img") ||
+                (textHTML.startsWith("<table") && textHTML.indexOf("<img") > -1)
             )) {
                 isHTML = false;
             } else {
-                // 需注意 Edge 中的划选不应识别为图片 
                 isHTML = true;
             }
 
-            // 判断是否包含多个换行，包含多个换行则很有可能是纯文本（豆包复制粘贴问题，纯文本外面会包裹一个 HTML 标签，但内部是 Markdown 纯文本）
             let containsNewlines = false;
             const tempDiv = document.createElement("div");
             tempDiv.innerHTML = textHTML;
@@ -582,12 +549,9 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                     0 > textHTMLLowercase.indexOf("</h1>") && 0 > textHTMLLowercase.indexOf("</h2>") &&
                     0 > textHTMLLowercase.indexOf("</h3>") && 0 > textHTMLLowercase.indexOf("</h4>") &&
                     0 > textHTMLLowercase.indexOf("</h5>") && 0 > textHTMLLowercase.indexOf("</h6>"))) {
-                // 豆包复制粘贴问题  
                 isHTML = false;
             }
         } else if (textPlain && textPlain.trimStart().startsWith("<")) {
-            // 剪贴板没有 text/html，但 text/plain 实际是 HTML 表格（如从纯文本编辑器复制的表格 HTML）
-            // Md2BlockDOM 会把标签当字面文本，需走 html2BlockDOM 解析
             // Improve pasting for tables containing merged cells 
             if (textPlain.toLowerCase().indexOf("</table>") > -1) {
                 textHTML = textPlain;
@@ -597,7 +561,6 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         if (isHTML) {
             const tempElement = document.createElement("div");
             tempElement.innerHTML = textHTML;
-            // 移除空的 A 标签
             tempElement.querySelectorAll("a").forEach((e) => {
                 if (e.innerHTML.trim() === "") {
                     e.remove();
@@ -657,7 +620,6 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                 if (isDynamicRef(textPlain)) {
                     const refElement = protyle.toolbar.setInlineMark(protyle, "block-ref", "range", {
                         type: "id",
-                        // range 不能 escape，否则 
                         color: `${textPlain.substring(2, 22 + 2)}${Constants.ZWSP}s${Constants.ZWSP}${range.toString()}`
                     });
                     if (refElement[0]) {

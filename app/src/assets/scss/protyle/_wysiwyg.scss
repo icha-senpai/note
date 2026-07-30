@@ -4,7 +4,6 @@
   padding: 16px 16px 16px 24px;
   cursor: text;
   box-sizing: border-box;
-  // 移除三击无法选中整个 
   user-select: auto;
   overflow-x: clip;
 
@@ -319,7 +318,6 @@
       position: absolute;
       right: 0;
       height: 4px;
-      // 横向插入线使用独立颜色变量，避免与 ::before 目标标记共用 --drag-base-bg 导致半透明叠加变深
       background-color: var(--drag-line-bg);
       pointer-events: none;
       left: var(--drag-line-left);
@@ -354,13 +352,10 @@
 
       &[data-sb-layout="col"] {
         flex-direction: row;
-        // nowrap：子块宽度用 calc(%) 计算时，容器缩窄通过 flex-shrink 等比收缩而非换行掉落
         flex-wrap: nowrap;
         justify-content: flex-start;
 
         & > div {
-          // 默认 1 1 0：未拖拽的子块均分填满超级块；容器缩窄时也可收缩
-          // 拖拽后由 inline style 覆盖为 flex:0 1 auto + calc(%)，锁定比例
           flex: 1 1 0;
           box-sizing: border-box;
           min-width: 0;
@@ -374,7 +369,6 @@
 
         > .sb__resize {
           align-self: stretch;
-          // 手柄不参与收缩，保持拖拽热区宽度恒定
           flex: 0 0 auto;
           width: 2px;
           border-radius: var(--b3-border-radius);
@@ -383,7 +377,6 @@
           opacity: 0;
           margin-right: 16px;
           background-color: var(--b3-border-color);
-          // 透明覆盖层扩展点击热区，让 4px 的细手柄也能轻松点中
           position: relative;
           z-index: 5;
 
@@ -402,7 +395,6 @@
           }
         }
 
-        // 拖拽中的百分比提示（复用 protyle-icon 样式，仅添加定位）
         > [data-node-id] .sb__resize-tip {
           position: absolute;
           top: 0;
@@ -431,7 +423,7 @@
       border-bottom: 1px solid;
       color: var(--b3-protyle-inline-tag-color);
       transition: var(--b3-transition);
-      cursor: pointer; // 预览导出无此元素，只读和编辑状态都需要点击 
+      cursor: pointer;
     }
 
     span[data-type~="a"] {
@@ -500,7 +492,6 @@
         max-width: 100%;
         padding: 2px 4px;
 
-        /* 选中块的高亮覆盖 border */
         &.protyle-wysiwyg--select::after,
         &.protyle-wysiwyg--hl::after {
           width: calc(100% + 2px);
@@ -509,7 +500,6 @@
           top: -1px;
         }
 
-        //  &  第一点无法进行以下设置
         //.protyle-attr--refcount {right: 0;}
 
         & > .protyle-wysiwyg__embed {
@@ -567,7 +557,6 @@
     .img {
 
       user-select: none;
-      // 不能放在 typography 下 
       &:not([style]) {
         display: initial;
       }
@@ -788,7 +777,6 @@
     @include mixin.text-clamp(1);
     opacity: .38;
 
-    // 隐藏容器块的后续子块，避免光标移入折叠内容带来的一系列问题
     &.bq > [data-node-id] ~ [data-node-id],
     &.callout > .callout-content > [data-node-id] ~ [data-node-id] {
       display: none;
@@ -846,7 +834,6 @@
 }
 
 .protyle .protyle-wysiwyg {
-  // 只读情况下列表前的圆点需要可以点击进行缩放
   .li[data-subtype="o"] > .protyle-action,
   .li[data-subtype="u"] > .protyle-action,
   &[data-readonly="false"] .li[data-subtype="t"] > .protyle-action {
@@ -861,18 +848,15 @@
     }
   }
 
-  // 复制粘贴序号会状态异常 
   .li > .protyle-action {
     user-select: none;
   }
 }
 
-// 在 Scribli 中，不论只读模式还是预览点击图片都可以进行预览
 .protyle .img > span:nth-child(2) {
   cursor: pointer;
 }
 
-// 导出 html 不需要编辑样式
 .protyle-wysiwyg[data-readonly="false"] {
   span[data-type~="inline-math"],
   .protyle-action__language,
@@ -984,7 +968,6 @@
   }
 }
 
-// export pdf 中需要使用 
 .protyle-cursor {
   position: absolute;
   right: 0;

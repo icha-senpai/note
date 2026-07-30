@@ -1,5 +1,5 @@
 function Span(el)
-  -- 辅助：解析颜色字符串为 6 位大写十六进制（不带 #），支持颜色名、#hex、#rgb、rgb()/rgba()
+  -- Helper: parse a color string as a six-digit uppercase hex value without #. Supports color names, #hex, #rgb, rgb(), and rgba().
   local function parse_color(s)
     if not s then return nil end
     s = s:gsub("%s+", "")
@@ -37,7 +37,7 @@ function Span(el)
       return h(r)..h(g)..h(b)
     end
 
-    -- rgba(r,g,b,a) -> 与白（或背景）合成，返回合成后的 hex
+    -- rgba(r,g,b,a) -> composite against white or the background and return the resulting hex value
     local ra,ga,ba,aa = s:match("rgba%((%d+),(%d+),(%d+),([%d%.]+)%)")
     if ra and ga and ba and aa then
       local R = tonumber(ra) or 0
@@ -75,7 +75,7 @@ function Span(el)
     local bg_hex = parse_color(bg_color_raw)
 
     if text_hex or bg_hex then
-      -- 将 Span 的内容 stringify 为纯文本并做 XML 转义
+      -- Stringify Span content as plain text and XML-escape it
       local text = pandoc.utils.stringify(el)
 
       local function xml_escape(s)

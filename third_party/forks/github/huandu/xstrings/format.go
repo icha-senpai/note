@@ -20,7 +20,6 @@ import (
 //
 //	ExpandTabs("a\tbc\tdef\tghij\tk", 4) => "a   bc  def ghij    k"
 //	ExpandTabs("abcdefg\thij\nk\tl", 4)  => "abcdefg hij\nk   l"
-//	ExpandTabs("z中\t文\tw", 4)           => "z中 文  w"
 func ExpandTabs(str string, tabSize int) string {
 	if tabSize <= 0 {
 		panic("tab size must be positive")

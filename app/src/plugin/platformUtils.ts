@@ -18,12 +18,10 @@ export const getLocalStorage = compatibility.getLocalStorage;
 export const setStorageVal = compatibility.setStorageVal;
 
 export const getStorageVal = (key: string): any => {
-    return window.scribli.storage?.[key] ?? null; // 不存在时与接口响应一致使用 null
+    return window.scribli.storage?.[key] ?? null;
 };
 
 /**
- * @param {string} [options.timeoutType="defalut"] 仅在 Windows 和 Linux 有效，"default" 表示使用默认的超时机制，"never" 表示通知将一直显示，直到用户手动关闭它。
- * @returns 通知 id
  */
 export const sendNotification = (options: {
     channel?: string,
@@ -37,7 +35,6 @@ export const sendNotification = (options: {
         const body = options.body || "";
         const delayInSeconds = options.delayInSeconds || 0;
         if (!title.trim() && !body.trim()) {
-            // 不能同时为空
             resolve(-1);
             return;
         }

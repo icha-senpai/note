@@ -54,7 +54,6 @@ export const init = (app: App) => {
             adjustLayout(window.scribli.layout.centerLayout);
         }
         afterLayout(app);
-        // 等待 dock 面板动画结束
         setTimeout(() => {
             setTabPosition();
         }, Constants.TIMEOUT_TRANSITION);

@@ -11,7 +11,7 @@
 
   &__ellipsis {
     @include mixin.text-clamp(1);
-    display: block; // 长名称需要保持块级布局 
+    display: block;
   }
 
   &__space {
@@ -128,7 +128,7 @@
     width: 100%;
     bottom: 0;
     align-content: center;
-    z-index: 3; // 需大于 database table view
+    z-index: 3;
     align-items: center;
   }
 

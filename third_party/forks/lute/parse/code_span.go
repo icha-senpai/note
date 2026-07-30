@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -47,7 +46,6 @@ func (t *Tree) parseCodeSpan(block *ast.Node, ctx *InlineContext) (ret *ast.Node
 	textTokens := ctx.tokens[startPos+n : endPos]
 	textTokens = lex.ReplaceAll(textTokens, lex.ItemNewline, lex.ItemSpace)
 	if 2 < len(textTokens) && lex.ItemSpace == textTokens[0] && lex.ItemSpace == textTokens[len(textTokens)-1] && !lex.IsBlankLine(textTokens) {
-		// 如果首尾是空格并且整行不是空行时剔除首尾的一个空格
 		openMarker.Tokens = append(openMarker.Tokens, textTokens[0])
 		closeMarker.Tokens = ctx.tokens[endPos-1 : endPos+n]
 		textTokens = textTokens[1 : len(textTokens)-1]
@@ -55,7 +53,6 @@ func (t *Tree) parseCodeSpan(block *ast.Node, ctx *InlineContext) (ret *ast.Node
 
 	if t.Context.ParseOption.GFMTable {
 		if ast.NodeTableCell == block.Type {
-			// 表格中的代码中带有管道符的处理 https://github.com/icha-senpai/note/third_party/forks/lute/issues/63
 			textTokens = bytes.ReplaceAll(textTokens, []byte("\\|"), []byte("|"))
 		}
 	}
@@ -64,16 +61,12 @@ func (t *Tree) parseCodeSpan(block *ast.Node, ctx *InlineContext) (ret *ast.Node
 	ret.AppendChild(openMarker)
 
 	if t.Context.ParseOption.ProtyleWYSIWYG {
-		// Improve `inline code` markdown editing https://github.com/siyuan-note/siyuan/issues/9978
+		// Improve `inline code` markdown editing
 
 		if !bytes.HasPrefix(textTokens, []byte("<span data-type=\"code\">")) {
-			// HTML 转换 Markdown 时需要转义 HTML 实体
 			textTokens = bytes.ReplaceAll(textTokens, []byte("&"), []byte("&amp;"))
 		}
 
-		// Code span 内容在 Protyle 下会再次调用 Inline 进行行级解析。
-		// 这里拷贝一份 ParseOption，只对这次二次解析关闭 autoLink，
-		// 避免反引号内的内容被自动转换，同时不影响外层普通文本的 autoLink。
 		codeParseOptions := *t.Context.ParseOption
 		codeParseOptions.ProtyleWYSIWYGAutoLink = false
 		inlineTree := Inline("", textTokens, &codeParseOptions)

@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -18,7 +17,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 )
 
-// BlockquoteStart 判断引述（>）是否开始。
 func BlockquoteStart(t *Tree, container *ast.Node) int {
 	if t.Context.indented {
 		return 0
@@ -32,7 +30,6 @@ func BlockquoteStart(t *Tree, container *ast.Node) int {
 	markers := []byte{marker}
 	t.Context.advanceNextNonspace()
 	t.Context.advanceOffset(1, false)
-	// > 后面的空格是可选的
 	whitespace := lex.Peek(t.Context.currentLine, t.Context.offset)
 	withSpace := lex.ItemSpace == whitespace || lex.ItemTab == whitespace
 	if withSpace {

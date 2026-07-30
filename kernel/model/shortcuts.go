@@ -28,12 +28,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
 func MoveLocalShorthands(boxID string) (retIDs []string, err error) {
@@ -339,10 +339,8 @@ func consumeShorthands() {
 	if "" == notebookID {
 		boxes := Conf.GetBoxes()
 		for _, box := range boxes {
-			if !IsUserGuide(box.ID) {
-				notebookID = box.ID
-				break
-			}
+			notebookID = box.ID
+			break
 		}
 	}
 

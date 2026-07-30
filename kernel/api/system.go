@@ -183,10 +183,8 @@ func getEmojiConf(c *gin.Context) {
 
 	customConfDir := filepath.Join(util.DataDir, "emojis")
 	custom := map[string]any{
-		"id":          "custom",
-		"title":       "Custom",
-		"title_zh_cn": "自定义",
-		"title_ja_jp": "カスタム",
+		"id":    "custom",
+		"title": "Custom",
 	}
 	items := []map[string]any{}
 	custom["items"] = items
@@ -261,11 +259,9 @@ func addCustomEmoji(name string, items *[]map[string]any) {
 	ext := filepath.Ext(name)
 	nameWithoutExt := strings.TrimSuffix(name, ext)
 	emoji := map[string]any{
-		"unicode":           name,
-		"description":       nameWithoutExt,
-		"description_zh_cn": nameWithoutExt,
-		"description_ja_jp": nameWithoutExt,
-		"keywords":          nameWithoutExt,
+		"unicode":     name,
+		"description": nameWithoutExt,
+		"keywords":    nameWithoutExt,
 	}
 	*items = append(*items, emoji)
 

@@ -17,7 +17,6 @@ import {removeLoading} from "../protyle/ui/initUI";
 import {switchSettingPanelSubTab} from "./setting/mount";
 import {BlockPanel} from "../block/Panel";
 
-/** 资源 Tab 侧栏 / 全局搜索索引文案 */
 export const collectAssetsTabSearchStrings = (): string[] => [
     window.scribli.languages.assets,
     window.scribli.languages.unreferencedAssets,
@@ -25,7 +24,6 @@ export const collectAssetsTabSearchStrings = (): string[] => [
     window.scribli.languages.missingAssets,
 ];
 
-/** 资源 Tab 挂载（面板页，不走注册表渲染） */
 export const mountAssetsTab = (root: HTMLElement, keywords?: string, app?: App) => {
     if (root.innerHTML === "") {
         assets.element = root;

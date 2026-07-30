@@ -147,11 +147,9 @@ export const upSelect = (options: {
         const innerText = nodeEditableElement.innerText;
         const isExpandUp = matchHotKey(window.scribli.config.keymap.editor.general.expandUp.custom, options.event);
         if (!isMac() && isExpandUp) {
-            // Windows 中 ⌥⇧↑ 默认无选中功能会导致 
+            // Intentionally empty.
         } else if (startIndex > 0) {
-            // 选中上一个节点的处理在 toolbar/index.ts 中 `shift+方向键或三击选中`
             if (innerText.substr(0, startIndex).indexOf("\n") === -1 &&
-                // 当第一行太长自然换行的情况
                 options.range.getBoundingClientRect().top - nodeEditableElement.getBoundingClientRect().top - parseInt(getComputedStyle(nodeEditableElement).paddingTop) < 14) {
                 setFirstNodeRange(nodeEditableElement, options.range);
                 options.event.preventDefault();
@@ -194,16 +192,12 @@ export const downSelect = (options: {
         const innerText = nodeEditableElement.innerText;
         const isExpandDown = matchHotKey(window.scribli.config.keymap.editor.general.expandDown.custom, options.event);
         if (!isMac() && isExpandDown) {
-            // Windows 中 ⌥⇧↓ 默认无选中功能会导致 
+            // Intentionally empty.
         } else if (endIndex < innerText.length) {
-            // 选中下一个节点的处理在 toolbar/index.ts 中 `shift+方向键或三击选中`
             if (!getNextBlock(options.nodeElement) && innerText.trimRight().substr(endIndex).indexOf("\n") === -1 &&
-                // 当最后一行太长自然换行的情况
                 nodeEditableElement.getBoundingClientRect().bottom - options.range.getBoundingClientRect().bottom - parseInt(getComputedStyle(nodeEditableElement).paddingBottom) < 14) {
-                // 当为最后一个块时应选中末尾
                 setLastNodeRange(nodeEditableElement, options.range, false);
                 if (options.nodeElement.classList.contains("code-block") && isExpandDown) {
-                    // 代码块中 shift+alt 向下选中到末尾时，最后一个字符无法选中
                     options.event.preventDefault();
                 }
             } else if (tdElement) {

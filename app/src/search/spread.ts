@@ -51,9 +51,7 @@ export const openSearch = async (options: {
         replaceTypes: Object.assign({}, localData.replaceTypes),
         page: options.key ? 1 : localData.page
     };
-    // 搜索中继续执行 ctrl+F/P 不退出 
     const exitDialog = window.scribli.dialogs.find((item) => {
-        // 再次打开
         if (item.element.querySelector("#searchList")) {
             const searchElement = item.element.querySelector(".b3-dialog__body");
             const cloneData = JSON.parse(JSON.stringify(item.data)) as Config.IUILayoutTabSearchConfig;

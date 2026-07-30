@@ -1,4 +1,3 @@
-/** 按实心点路径读取（与控件 `id` 点分约定一致） */
 export function getAtPath(root: unknown, dottedPath: string): unknown {
     const segments = dottedPath.split(".");
     let cur: unknown = root;
@@ -12,8 +11,6 @@ export function getAtPath(root: unknown, dottedPath: string): unknown {
 }
 
 /**
- * 按点分路径将叶子值合并进配置对象（浅拷贝根后不可变下钻）。
- * 供各设置 Tab 按控件 id 合并单项；具体读 DOM 仍由各面板实现。
  */
 function assignPathImmutable(
     obj: Record<string, unknown>,
@@ -35,7 +32,6 @@ function assignPathImmutable(
     };
 }
 
-/** 将叶子值合并到任意以字符串为键的配置对象（先浅拷贝根再按路径写入） */
 export function mergeRecordByDottedPath<T extends Record<string, unknown>>(
     base: T,
     dottedId: string,

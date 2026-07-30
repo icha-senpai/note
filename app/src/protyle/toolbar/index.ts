@@ -176,10 +176,9 @@ export class Toolbar {
         // 
         let hasText = false;
         Array.from(range.cloneContents().childNodes).find(item => {
-            // zwsp 不显示工具栏
             if (item.textContent.length > 0 && item.textContent !== Constants.ZWSP) {
                 if (item.nodeType === 1 && (item as HTMLElement).classList.contains("img")) {
-                    // 图片不显示工具栏
+                    // Intentionally empty.
                 } else {
                     hasText = true;
                     return true;
@@ -187,16 +186,14 @@ export class Toolbar {
             }
         });
         if (!hasText ||
-            // 拖拽图片到最右侧
             (range.commonAncestorContainer.nodeType !== 3 && (range.commonAncestorContainer as HTMLElement).classList.contains("img"))) {
             this.element.classList.add("fn__none");
             return;
         }
-        // shift+方向键或三击选中，不同的块 
         const startElement = hasClosestBlock(range.startContainer);
         const endElement = hasClosestBlock(range.endContainer);
         if (startElement && endElement && startElement !== endElement) {
-            if (event) { // 在 keyup 中使用 shift+方向键选中
+            if (event) {
                 if (event.key === "ArrowLeft") {
                     this.range = setLastNodeRange(getContenteditableElement(startElement), range, false);
                 } else if (event.key === "ArrowRight") {
@@ -220,7 +217,6 @@ export class Toolbar {
                 return;
             }
         }
-        // 需放在 range 修改之后，否则 
         if (nodeElement.getAttribute("data-type") === "NodeCodeBlock") {
             this.element.classList.add("fn__none");
             return;
@@ -303,7 +299,6 @@ export class Toolbar {
         if (!endElement) {
             return;
         }
-        // 三击后还没有重新纠正 range 时使用快捷键标记会导致异常 
         if (nodeElement !== endElement) {
             this.range = setLastNodeRange(getContenteditableElement(nodeElement), this.range, false);
         }
@@ -385,7 +380,6 @@ export class Toolbar {
                     )
                 ) &&
                 !(this.range.startOffset === 1 && this.range.startContainer.textContent.startsWith(Constants.ZWSP))) {
-                // 切割元素
                 const parentElement = this.range.startContainer.parentElement;
                 const afterElement = document.createElement("span");
                 const attributes = parentElement.attributes;
@@ -446,7 +440,6 @@ export class Toolbar {
                 emptyNode.remove();
             }
         }
-        // 选择 span 中的部分需进行包裹
         if (needWrapTarget) {
             const attributes = needWrapTarget.attributes;
             contents.childNodes.forEach(item => {
@@ -470,7 +463,6 @@ export class Toolbar {
         if (type === "clear" || actionBtn?.classList.contains("protyle-toolbar__item--current") || (
             action === "range" && rangeTypes.length > 0 && rangeTypes.includes(type) && !textObj
         )) {
-            // 移除
             if (type === "clear") {
                 toolbarElement.querySelectorAll('[data-type="strong"],[data-type="em"],[data-type="u"],[data-type="s"],[data-type="mark"],[data-type="sup"],[data-type="sub"],[data-type="kbd"],[data-type="mark"],[data-type="code"]').forEach(item => {
                     item.classList.remove("protyle-toolbar__item--current");
@@ -550,7 +542,6 @@ export class Toolbar {
                 }
             });
         } else {
-            // 添加
             if (!this.element.classList.contains("fn__none") && type !== "text" && actionBtn) {
                 actionBtn.classList.add("protyle-toolbar__item--current");
             }
@@ -558,7 +549,6 @@ export class Toolbar {
                 const inlineElement = document.createElement("span");
                 rangeTypes.push(type);
 
-                // 遇到以下类型结尾不应继承 
                 if (isEndSpan) {
                     let removeIndex = 0;
                     while (removeIndex < rangeTypes.length) {
@@ -615,7 +605,6 @@ export class Toolbar {
                     } else if (item.nodeType === 1) {
                         let types = (item.getAttribute("data-type") || "").split(" ");
                         for (let i = 0; i < types.length; i++) {
-                            // "backslash", "virtual-block-ref", "search-mark" 只能单独存在
                             if (["backslash", "virtual-block-ref", "search-mark"].includes(types[i])) {
                                 types.splice(i, 1);
                                 i--;
@@ -624,7 +613,6 @@ export class Toolbar {
                         if (!types.includes("img")) {
                             types.push(type);
                         }
-                        // 上标和下标不能同时存在 
                         if (type === "sub" && types.includes("sup")) {
                             types.find((item, index) => {
                                 if (item === "sup") {
@@ -642,7 +630,6 @@ export class Toolbar {
                                 }
                             });
                         } else if (type === "block-ref" && (types.includes("a") || types.includes("file-annotation-ref"))) {
-                            // 虚拟引用和链接/标注不能同时存在
                             types.find((item, index) => {
                                 if (item === "a" || item === "file-annotation-ref") {
                                     types.splice(index, 1);
@@ -650,7 +637,6 @@ export class Toolbar {
                                 }
                             });
                         } else if (type === "a" && (types.includes("block-ref") || types.includes("file-annotation-ref"))) {
-                            // 链接和引用/标注不能同时存在
                             types.find((item, index) => {
                                 if (item === "block-ref" || item === "file-annotation-ref") {
                                     types.splice(index, 1);
@@ -658,7 +644,6 @@ export class Toolbar {
                                 }
                             });
                         } else if (type === "file-annotation-ref" && (types.includes("block-ref") || types.includes("a"))) {
-                            // 引用和链接/标注不能同时存在
                             types.find((item, index) => {
                                 if (item === "block-ref" || item === "a") {
                                     types.splice(index, 1);
@@ -666,7 +651,6 @@ export class Toolbar {
                                 }
                             });
                         } else if (type === "inline-memo" && types.includes("inline-math")) {
-                            // 数学公式和备注不能同时存在
                             types.find((item, index) => {
                                 if (item === "inline-math") {
                                     types.splice(index, 1);
@@ -674,11 +658,9 @@ export class Toolbar {
                                 }
                             });
                             if (item.querySelector(".katex")) {
-                                // 选中完整的数学公式才进行备注 
                                 item.textContent = item.getAttribute("data-content");
                             }
                         } else if (type === "inline-math" && types.includes("inline-memo")) {
-                            // 数学公式和备注不能同时存在
                             types.find((item, index) => {
                                 if (item === "inline-memo") {
                                     types.splice(index, 1);
@@ -718,7 +700,6 @@ export class Toolbar {
                 });
             }
         }
-        // 插入元素
         for (let i = newNodes.length - 1; i > -1; i--) {
             this.range.insertNode(newNodes[i]);
         }
@@ -726,7 +707,6 @@ export class Toolbar {
             this.range.setStart(newNodes[0], 1);
             this.range.collapse(true);
             if (newNodes[0].nodeType !== 3) {
-                // 不选中后，ctrl+g 光标重置
                 const currentType = ((newNodes[0] as HTMLElement).getAttribute("data-type") || "").split(" ");
                 if (currentType.includes("code") || currentType.includes("tag") || currentType.includes("kbd")) {
                     keepZWPS = false;
@@ -734,7 +714,6 @@ export class Toolbar {
             }
         }
         if (!keepZWPS) {
-            // 合并元素
             for (let i = 0; i <= newNodes.length; i++) {
                 let previousElement = i === newNodes.length ? newNodes[i - 1] as HTMLElement : hasPreviousSibling(newNodes[i]) as HTMLElement;
                 if (previousElement.nodeType === 3 && previousElement.textContent === Constants.ZWSP) {
@@ -766,7 +745,6 @@ export class Toolbar {
                             }
                         }
                         if (currentType.includes("inline-math")) {
-                            // 数学公式合并 data-content 
                             currentNode.setAttribute("data-content", previousElement.getAttribute("data-content") + currentNode.getAttribute("data-content"));
                         } else if (currentType.includes("block-ref") && previousElement.getAttribute("data-id") === currentNode.getAttribute("data-id")) {
                             if (previousElement.dataset.subtype !== "d" || previousElement.dataset.subtype !== "d") {
@@ -774,11 +752,7 @@ export class Toolbar {
                                 currentNode.textContent = previousElement.textContent + currentNode.textContent;
                             }
                         } else {
-                            // 测试不存在  情况，故移除引用合并限制
-                            // 搜索结果引用被高亮隔断需进行合并 
-                            // textContent：防止赋值后 \n 转换为 br 导致后续 this.range.setStart 报错；innerText：获取 br 的 \n， 
                             currentNode.textContent = previousElement.innerText + currentNode.innerText;
-                            // 如果为备注时，合并备注内容
                             if (currentType.includes("inline-memo")) {
                                 currentNode.setAttribute("data-inline-memo-content", (previousElement.getAttribute("data-inline-memo-content") || "") +
                                     (currentNode.getAttribute("data-inline-memo-content") || ""));
@@ -810,7 +784,6 @@ export class Toolbar {
                     }
                 }
             }
-            // 整理 zwsp
             for (let i = 0; i <= newNodes.length; i++) {
                 const previousElement = i === newNodes.length ? newNodes[i - 1] as HTMLElement : hasPreviousSibling(newNodes[i]) as HTMLElement;
                 let currentNode = newNodes[i] as HTMLElement;
@@ -968,7 +941,6 @@ export class Toolbar {
         this.subElement.style.display = "flex";
         this.subElement.style.flexDirection = "column";
         if (!isMobile()) {
-            // 初始宽度由面板决定，滚动区与文本域 width:100% 跟随，拖拽缩放后由 moveResize 改写面板宽度
             this.subElement.style.width = Math.max(480, renderElement.clientWidth * 0.7) + "px";
         }
         this.subElement.innerHTML = `<div class="fn__flex-column"><div class="block__icons block__icons--menu fn__flex" style="border-radius: var(--b3-border-radius-b) var(--b3-border-radius-b) 0 0;">
@@ -992,15 +964,12 @@ export class Toolbar {
 <div class="resize__rd"></div><div class="resize__ld"></div><div class="resize__lt"></div><div class="resize__rt"></div><div class="resize__r"></div><div class="resize__d"></div><div class="resize__t"></div><div class="resize__l"></div>`;
         const gutter = this.subElement.querySelector(".protyle-linenumber__rows") as HTMLElement;
         const renderTextareaLineNumber = () => {
-            // textarea 末尾的 \n 视觉上会占一行空行，行号需保留该空行，故不去除末尾空串
             const lineList = textElement.value.split(/\r\n|\r|\n/);
-            // textarea 默认软换行，需用镜像元素测量每个源码行折行后的实际高度，行号才能与可视行对齐
             const textCs = window.getComputedStyle(textElement);
             const mirror = document.createElement("div");
             mirror.style.position = "absolute";
             mirror.style.visibility = "hidden";
             mirror.style.whiteSpace = "pre-wrap";
-            // textarea 的软换行接近 overflow-wrap: break-word，而非 word-break，否则长标识符断点不一致
             mirror.style.overflowWrap = "break-word";
             mirror.style.wordBreak = "normal";
             mirror.style.tabSize = textCs.tabSize;
@@ -1010,12 +979,10 @@ export class Toolbar {
             mirror.style.fontWeight = textCs.fontWeight;
             mirror.style.fontVariantLigatures = textCs.fontVariantLigatures;
             mirror.style.letterSpacing = textCs.letterSpacing;
-            // 宽度需与 textarea 文本区一致：clientWidth 减去左右内边距
             mirror.style.width = textElement.getBoundingClientRect().width + "px";
             mirror.style.boxSizing = "border-box";
             mirror.style.padding = "4px 8px";
             mirror.innerHTML = lineList.map(line => `<div>${line.trim() ? escapeHtml(line) : "&nbsp;"}</div>`).join("");
-            // 挂到行号栏所在容器，保证字体上下文一致
             (gutter.parentElement || document.body).appendChild(mirror);
             let spansHTML = "";
             for (let i = 0; i < lineList.length; i++) {
@@ -1169,7 +1136,6 @@ export class Toolbar {
         });
         textElement.addEventListener("keydown", (event: KeyboardEvent) => {
             event.stopPropagation();
-            // 阻止 ctrl+m 缩小窗口 
             if (matchHotKey(window.scribli.config.keymap.editor.insert["inline-math"].custom, event)) {
                 event.preventDefault();
                 return;
@@ -1196,15 +1162,12 @@ export class Toolbar {
             if (types.includes("NodeHTMLBlock") && !noChange) {
                 let htmlText = textElement.value;
                 if (htmlText) {
-                    // 需移除首尾的空白字符与连续的换行 (空行) 
                     htmlText = htmlText.trim().replace(/\n+/g, "\n");
-                    // 需一对 div 标签包裹，否则行内元素会解析错误 
                     if (!(htmlText.startsWith("<div>") && htmlText.endsWith("</div>"))) {
                         htmlText = `<div>\n${htmlText}\n</div>`;
                     }
                 }
                 renderElement.querySelector("protyle-html").setAttribute("data-content", Lute.EscapeHTMLStr(htmlText));
-                // HTML 块中包含多个 <pre> 时只能保存第一个 
                 const tempElement = document.createElement("template");
                 tempElement.innerHTML = protyle.lute.SpinBlockDOM(nodeElement.outerHTML);
                 if (tempElement.content.childElementCount > 1) {
@@ -1237,19 +1200,16 @@ export class Toolbar {
                             inlineLastNode = item;
                         }
                     } else if (item.nodeType !== 3) {
-                        // 行级备注自动移除换行  
                         item.setAttribute("data-inline-memo-content", window.DOMPurify.sanitize(textElement.value));
                     }
                 });
             } else if (types.includes("inline-math") && !noChange) {
-                // 行内数学公式不允许换行 
                 if (textElement.value) {
                     renderElement.setAttribute("data-content", Lute.EscapeHTMLStr(textElement.value));
                     renderElement.removeAttribute("data-render");
                     processRender(renderElement);
                 } else {
                     inlineLastNode = renderElement;
-                    // esc 后需要 focus range，但点击空白处不能 focus range，否则光标无法留在点击位置
                     renderElement.outerHTML = "<wbr>";
                 }
             } else if (!noChange) {
@@ -1262,9 +1222,7 @@ export class Toolbar {
                     processRender(renderElement);
                 }
             }
-            // 光标定位
             if (getSelection().rangeCount === 0 ||
-                // $$ 中间输入后再 ESC 光标无法定位
                 (getSelection().rangeCount > 0 && hasClosestByClassName(getSelection().getRangeAt(0).startContainer, "protyle-util"))
             ) {  // 
                 if (renderElement.tagName === "SPAN") {
@@ -1287,7 +1245,6 @@ export class Toolbar {
                     renderElement.classList.add("protyle-wysiwyg--select");
                 }
             } else {
-                // ctrl+M 后点击空白会留下 wbr
                 nodeElement.querySelector("wbr")?.remove();
             }
 
@@ -1366,11 +1323,8 @@ export class Toolbar {
         });
 
         const highlightText = (text: string, search: string) => {
-            // 转义正则特殊字符
             const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-            // 创建不区分大小写的正则表达式
             const regex = new RegExp(escapedSearch, "gi");
-            // 替换匹配内容并保留原始大小写
             return text.replace(regex, match =>
                 `<b>${match}</b>`
             );
@@ -1387,16 +1341,13 @@ export class Toolbar {
                 matchLanguages = hljsLanguages.filter(
                     item => item.toLowerCase().includes(lowerCaseValue)
                 ).sort((a, b) => {
-                    // 不区分大小写
                     const aStartsWith = a.toLowerCase().startsWith(lowerCaseValue);
                     const bStartsWith = b.toLowerCase().startsWith(lowerCaseValue);
 
-                    // 两者都匹配开头时，短字符串优先
                     if (aStartsWith && bStartsWith) return a.length - b.length;
                     if (aStartsWith) return -1;
                     if (bStartsWith) return 1;
 
-                    // 都不匹配时保持原顺序
                     return 0;
                 });
 
@@ -1842,7 +1793,7 @@ export class Toolbar {
     }
 
     public isMultiSelectMode() {
-        let result = false;
+        const result = false;
         return result;
     }
 
@@ -1890,7 +1841,6 @@ export class Toolbar {
         return menuItemObj.element;
     }
 
-    // 合并多个 text 为一个 text
     private mergeNode(nodes: NodeListOf<ChildNode>) {
         for (let i = 0; i < nodes.length; i++) {
             if (nodes[i].nodeType !== 3 && (nodes[i] as HTMLElement).tagName === "WBR") {

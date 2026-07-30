@@ -3,7 +3,7 @@ appId: "app.scribli.desktop"
 publish: null
 asar: false
 compression: "normal"
-copyright: "© 2020-present Scribli contributors"
+copyright: "Copyright (c) 2020-present Scribli"
 artifactName: "scribli-${version}-${os}.${ext}"
 extraMetadata:
   main: "electron/main.js"
@@ -46,14 +46,8 @@ extraResources:
     to: "changelogs"
   - from: "stage"
     to: "stage"
-  - from: "guide"
-    to: "guide"
-    filter: "!**/{.DS_Store,.git,.gitignore,.idea}"
   - from: "appearance/boot"
     to: "appearance/boot"
-    filter: "!**/{.DS_Store}"
-  - from: "appearance/covers"
-    to: "appearance/covers"
     filter: "!**/{.DS_Store}"
   - from: "appearance/icons"
     to: "appearance/icons"

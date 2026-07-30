@@ -82,7 +82,6 @@ ${padHTML}
                     event.stopPropagation();
                     break;
                 } else if (type === "doc") {
-                    // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 
                     if (event.shiftKey) {
                         const docInfoParam: IObject = {
                             id: protyle.block.rootID
@@ -532,7 +531,6 @@ ${padHTML}
                 id: "docInfo",
                 iconHTML: "",
                 type: "readonly",
-                // 不能换行，否则移动端间距过大
                 label: `<div class="fn__flex">${window.scribli.languages.runeCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.runeCount}</div><div class="fn__flex">${window.scribli.languages.wordCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.wordCount}</div><div class="fn__flex">${window.scribli.languages.linkCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.linkCount}</div><div class="fn__flex">${window.scribli.languages.imgCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.imageCount}</div><div class="fn__flex">${window.scribli.languages.refCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.refCount}</div><div class="fn__flex">${window.scribli.languages.blockCount}<span class="fn__space fn__flex-1"></span>${response.data.stat.blockCount}</div>`,
             }).element);
             window.scribli.menus.menu.popup(position);
@@ -548,7 +546,7 @@ ${padHTML}
         let range: Range;
         let blockElement: Element;
         if (nodeElement &&
-            !nodeElement.classList.contains("list")   // 列表 id 不会返回数据，因此不进行处理 
+            !nodeElement.classList.contains("list")
         ) {
             blockElement = nodeElement;
         } else if (getSelection().rangeCount > 0) {
@@ -568,7 +566,6 @@ ${padHTML}
             blockElement = getNoContainerElement(protyle.wysiwyg.element.firstElementChild) || protyle.wysiwyg.element.firstElementChild;
         }
         if (!blockElement) {
-            // 浮窗删除单个块后，面包屑无法获取到 blockElement，直接返回即可
             return;
         }
         const id = blockElement.getAttribute("data-node-id");
@@ -585,7 +582,6 @@ ${padHTML}
         this.id = id;
         const excludeTypes: string[] = [];
         if (this.element.parentElement?.parentElement && this.element.parentElement.parentElement.classList.contains("card__block")) {
-            // 闪卡面包屑不能显示答案
             excludeTypes.push("NodeTextMark-mark");
         }
         const breadcrumbParam: Record<string, any> = {id, excludeTypes};

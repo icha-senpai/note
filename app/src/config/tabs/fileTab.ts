@@ -140,7 +140,6 @@ const registerFileNewDocumentGroup = (tab: SettingTabBuilder) => {
     });
 
     if (isMobileKernelContainer()) {
-        // 仅移动端内核支持使用闪念速记 
         const shorthandTitle = window.scribli.languages.fileTree26;
         const shorthandDesc = window.scribli.languages.fileTree27;
         group.composite({

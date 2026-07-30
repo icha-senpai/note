@@ -26,7 +26,6 @@ func Subscribe(topic string, handler interface{}) error {
 	return bus.Subscribe(topic, handler)
 }
 
-// 消息推送事件。
 const (
 	CtxPushMsg = "pushMsg"
 
@@ -36,7 +35,6 @@ const (
 	CtxPushMsgToStatusBarAndProgress
 )
 
-// 数据库索引事件。
 const (
 	EvtSQLInsertBlocks       = "sql.insert.blocks"
 	EvtSQLInsertBlocksFTS    = "sql.insert.blocks_fts"
@@ -50,12 +48,10 @@ const (
 	EvtSQLIndexFlushed = "sql.index.flushed"
 )
 
-// 向量化事件。
 const (
 	EvtEmbeddingDirty = "embedding.dirty"
 )
 
-// 数据仓库本地事件。
 const (
 	EvtCheckoutBeforeWalkData    = "repo.checkout.beforeWalkData"
 	EvtCheckoutWalkData          = "repo.checkout.walkData"
@@ -71,7 +67,6 @@ const (
 	EvtIndexUpsertFile           = "repo.index.upsertFile"
 )
 
-// 数据仓库云端同步事件。
 const (
 	EvtCloudLock                   = "repo.cloudLock"
 	EvtCloudUnlock                 = "repo.cloudUnlock"
@@ -94,7 +89,6 @@ const (
 	EvtCloudCorrupted              = "repo.cloudCorrupted"
 )
 
-// 云端数据仓库清理事件。
 const (
 	EvtCloudPurgeListObjects     = "repo.cloudPurgeListObjects"
 	EvtCloudPurgeListIndexes     = "repo.cloudPurgeListIndexes"

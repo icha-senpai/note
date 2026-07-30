@@ -32,7 +32,6 @@ export const genTagList = (listElement: Element, k: string) => {
     });
 };
 
-// 需独立出来，否则移动端引用的时候会引入 pc 端大量无用代码
 export const renameTag = (labelName: string) => {
     const dialog = new Dialog({
         title: window.scribli.languages.rename,

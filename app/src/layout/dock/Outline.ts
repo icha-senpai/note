@@ -91,7 +91,7 @@ export class Outline extends Model {
         const inputElement = this.headerElement.querySelector("input.b3-text-field.search__label") as HTMLInputElement;
         inputElement.addEventListener("blur", () => {
             inputElement.classList.add("fn__none");
-            const filterIconElement = inputElement.nextElementSibling as HTMLElement; // search 图标
+            const filterIconElement = inputElement.nextElementSibling as HTMLElement;
             const value = inputElement.value;
             if (value) {
                 filterIconElement.classList.add("block__icon--active");
@@ -165,7 +165,6 @@ export class Outline extends Model {
                 });
             },
             altClick: (element: HTMLElement, event: MouseEvent) => {
-                // alt 点击箭头，切换同层级的所有标题的展开/折叠状态
                 const arrowElement = hasClosestByClassName(event.target as HTMLElement, "b3-list-item__toggle");
                 if (arrowElement) {
                     this.collapseSameLevel(element);
@@ -197,19 +196,16 @@ export class Outline extends Model {
             blockExtHTML: window.scribli.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
             topExtHTML: window.scribli.config.readonly ? undefined : '<span class="b3-list-item__action"><svg><use xlink:href="#iconMore"></use></svg></span>',
         });
-        // 为了快捷键的 dispatch
         options.tab.panelElement.querySelector('[data-type="collapse"]').addEventListener("click", () => {
             this.tree.collapseAll();
             this.saveExpendIds();
         });
 
-        // 普通的全部展开按钮
         options.tab.panelElement.querySelector('[data-type="expand"]').addEventListener("click", () => {
             this.tree.expandAll();
             this.saveExpendIds();
         });
 
-        // 保持当前标题展开功能
         options.tab.panelElement.querySelector('[data-type="keepCurrentExpand"]').addEventListener("click", (event: MouseEvent & {
             target: Element
         }) => {
@@ -240,7 +236,6 @@ export class Outline extends Model {
                     this.setCurrent(focusElement);
                 }
             }
-            // 保存keepCurrentExpand状态到localStorage
             setStorageVal(Constants.LOCAL_OUTLINE, window.scribli.storage[Constants.LOCAL_OUTLINE]);
         });
         options.tab.panelElement.addEventListener("click", (event: MouseEvent & { target: HTMLElement }) => {
@@ -301,7 +296,6 @@ export class Outline extends Model {
             id: this.blockId,
             preview: this.isPreview
         };
-        // 解析当前大纲面板所属 box：按 blockId 在已打开的编辑器里查找
         let notebookId: string;
         getAllModels().editor.some(item => {
             if (item.editor.protyle.block.rootID === this.blockId) {
@@ -438,7 +432,6 @@ export class Outline extends Model {
                 documentSelf.onselect = null;
                 ghostElement?.remove();
                 item.style.opacity = "";
-                // 清理滚动动画
                 stopScrollAnimation();
                 if (!selectItem) {
                     selectItem = this.element.querySelector(".dragover__top, .dragover__bottom, .dragover");
@@ -524,7 +517,6 @@ export class Outline extends Model {
                 docTitleElement.setAttribute("title", title);
                 docTitleElement.classList.remove("fn__none");
             }
-            // count 为 -1 时，不对数量进行更新
             if (typeof count === "number" && count !== -1) {
                 const counterElement = docTitleElement.querySelector(".counter") as HTMLElement;
                 if (count > 0) {
@@ -574,7 +566,6 @@ export class Outline extends Model {
                 id: this.blockId,
                 preview: this.isPreview
             };
-            // 解析当前大纲面板所属 box：按 blockId 在已打开的编辑器里查找
             let notebookId: string;
             getAllModels().editor.some(item => {
                 if (item.editor.protyle.block.rootID === this.blockId) {
@@ -586,7 +577,6 @@ export class Outline extends Model {
                 outlineParam.notebook = notebookId;
             }
             fetchPost("/api/outline/getDocOutline", outlineParam, response => {
-                // 文档切换后不再更新原有推送 
                 if (data.data.rootID !== this.blockId) {
                     return;
                 }
@@ -629,7 +619,6 @@ export class Outline extends Model {
                     id: nodeElement.getAttribute("data-node-id"),
                     excludeTypes: []
                 };
-                // 解析当前大纲面板所属 box：按 blockId 在已打开的编辑器里查找
                 let notebookId: string;
                 getAllModels().editor.some(editorItem => {
                     if (editorItem.editor.protyle.block.rootID === this.blockId) {
@@ -747,10 +736,8 @@ export class Outline extends Model {
     }
 
     /**
-     * 应用大纲筛选
      */
     private setFilter() {
-        // 还原 display
         this.element.querySelectorAll('li.b3-list-item[style$="display: none;"]').forEach((item: HTMLElement) => {
             item.style.display = "";
         });
@@ -759,7 +746,6 @@ export class Outline extends Model {
         });
         const keyword = (this.headerElement.querySelector("input.b3-text-field.search__label") as HTMLInputElement).value.toLowerCase();
         if (keyword) {
-            // 首次筛选时记录折叠状态
             if (!this.preFilterExpandIds) {
                 this.preFilterExpandIds = this.tree.getExpandIds();
             }
@@ -778,25 +764,21 @@ export class Outline extends Model {
 
                     const arrowElement = liItem.querySelector(".b3-list-item__arrow");
                     if ((liItem.querySelector(".b3-list-item__text")?.textContent || "").trim().toLowerCase().includes(keyword)) {
-                        // 当前标题命中
                         liItem.style.display = "";
                         hasMatch = true;
 
                         if (nextUlElement) {
                             nextUlElement.classList.remove("fn__none");
                             if (childResult.hasMatch || childResult.hasChildMatch) {
-                                // 子项也有命中
                                 arrowElement.classList.add("b3-list-item__arrow--open");
                                 nextUlElement.classList.remove("fn__none");
                             } else {
-                                // 子项无命中，折叠所有子项
                                 arrowElement.classList.remove("b3-list-item__arrow--open");
                                 arrowElement.parentElement.classList.add("fn__hidden");
                                 nextUlElement.classList.add("fn__none");
                             }
                         }
                     } else if (childResult.hasMatch || childResult.hasChildMatch) {
-                        // 当前标题未命中，但子级有命中
                         liItem.style.display = "";
                         hasChildMatch = true;
 
@@ -805,7 +787,6 @@ export class Outline extends Model {
                             arrowElement.classList.add("b3-list-item__arrow--open");
                         }
                     } else {
-                        // 当前标题和子级都未命中，隐藏
                         liItem.style.display = "none";
                         if (nextUlElement) {
                             nextUlElement.classList.add("fn__none");
@@ -818,40 +799,30 @@ export class Outline extends Model {
             processUL(this.element.firstElementChild);
             return;
         }
-        // 恢复折叠状态
         this.tree.setExpandIds(this.preFilterExpandIds);
         this.preFilterExpandIds = null;
     }
 
     /**
-     * 获取标题元素的实际标题级别（H1=1, H2=2, 等等）
-     * @param element li元素
-     * @returns 标题级别（1-6）
      */
     private getHeadingLevel(element: HTMLElement) {
         return parseInt(element.getAttribute("data-subtype")?.replace("h", "") || "0");
     }
 
     /**
-     * 展开到指定标题级别
-     * @param targetLevel 目标标题级别，1-6级（H1-H6），6级表示全部展开
      */
     private expandToLevel(targetLevel: number) {
         if (targetLevel >= 6) {
-            // 全部展开
             this.tree.expandAll();
         } else {
-            // 展开到指定标题级别
             this.element.querySelectorAll("li.b3-list-item").forEach(item => {
                 const headingLevel = this.getHeadingLevel(item as HTMLElement);
                 const arrowElement = item.querySelector(".b3-list-item__arrow");
                 if (item.nextElementSibling && item.nextElementSibling.tagName === "UL" && arrowElement) {
                     if (headingLevel > 0 && headingLevel < targetLevel) {
-                        // 当前标题级别小于目标级别，展开
                         arrowElement.classList.add("b3-list-item__arrow--open");
                         item.nextElementSibling.classList.remove("fn__none");
                     } else if (headingLevel >= targetLevel) {
-                        // 当前标题级别大于等于目标级别，折叠
                         arrowElement.classList.remove("b3-list-item__arrow--open");
                         item.nextElementSibling.classList.add("fn__none");
                     }
@@ -862,7 +833,6 @@ export class Outline extends Model {
     }
 
     /**
-     * 显示展开层级菜单
      */
     private showExpandLevelMenu(target: HTMLElement) {
         window.scribli.menus.menu.remove();
@@ -885,10 +855,8 @@ export class Outline extends Model {
     }
 
     /**
-     * 切换同层级的所有标题的展开/折叠状态（基于标题级别而不是DOM层级）
      */
     private collapseSameLevel(element: HTMLElement, expand?: boolean) {
-        // 获取所有相同标题级别的元素
         this.element.querySelectorAll(`li.b3-list-item[data-subtype="${element.getAttribute("data-subtype")}"]`).forEach(item => {
             const arrowElement = item.querySelector(".b3-list-item__arrow");
             if (typeof expand === "undefined") {
@@ -939,18 +907,16 @@ export class Outline extends Model {
     }
 
     /**
-     * 显示右键菜单
      */
     private showContextMenu(element: HTMLElement, event: MouseEvent) {
         if (this.isPreview) {
-            return; // 预览模式下不显示右键菜单
+            return;
         }
         const currentLevel = this.getHeadingLevel(element);
         window.scribli.menus.menu.remove();
         window.scribli.menus.menu.element.setAttribute("data-name", Constants.MENU_OUTLINE_CONTEXT);
         const id = element.getAttribute("data-node-id");
         if (!window.scribli.config.readonly) {
-            // 升级
             if (currentLevel > 1) {
                 window.scribli.menus.menu.append(new MenuItem({
                     id: "upgrade",
@@ -970,7 +936,6 @@ export class Outline extends Model {
                 }).element);
             }
 
-            // 降级
             if (currentLevel < 6) {
                 window.scribli.menus.menu.append(new MenuItem({
                     id: "downgrade",
@@ -990,7 +955,6 @@ export class Outline extends Model {
                 }).element);
             }
 
-            // 带子标题转换
             checkFold(id, (zoomIn) => {
                 openFileById({
                     app: this.app,
@@ -1032,7 +996,6 @@ export class Outline extends Model {
 
             window.scribli.menus.menu.append(new MenuItem({id: "separator_1", type: "separator"}).element);
 
-            // 在前面插入同级标题
             window.scribli.menus.menu.append(new MenuItem({
                 id: "insertSameLevelHeadingBefore",
                 icon: "iconBefore",
@@ -1062,7 +1025,6 @@ export class Outline extends Model {
                 }
             }).element);
 
-            // 在后面插入同级标题
             window.scribli.menus.menu.append(new MenuItem({
                 id: "insertSameLevelHeadingAfter",
                 icon: "iconAfter",
@@ -1099,8 +1061,7 @@ export class Outline extends Model {
                 }
             }).element);
 
-            // 添加子标题
-            if (currentLevel < 6) { // 只有当前级别小于6时才能添加子标题
+            if (currentLevel < 6) {
                 window.scribli.menus.menu.append(new MenuItem({
                     id: "addChildHeading",
                     icon: "iconAdd",
@@ -1152,7 +1113,6 @@ export class Outline extends Model {
             window.scribli.menus.menu.append(new MenuItem({id: "separator_2", type: "separator"}).element);
         }
 
-        // 复制带子标题
         window.scribli.menus.menu.append(new MenuItem({
             id: "copyHeadings1",
             icon: "iconCopy",
@@ -1169,7 +1129,6 @@ export class Outline extends Model {
         }).element);
 
         if (!window.scribli.config.readonly) {
-            // 剪切带子标题
             window.scribli.menus.menu.append(new MenuItem({
                 id: "cutHeadings1",
                 icon: "iconCut",
@@ -1211,7 +1170,6 @@ export class Outline extends Model {
                 }
             }).element);
 
-            // 删除
             window.scribli.menus.menu.append(new MenuItem({
                 id: "deleteHeadings1",
                 icon: "iconTrashcan",
@@ -1249,7 +1207,6 @@ export class Outline extends Model {
         }
         window.scribli.menus.menu.append(new MenuItem({id: "separator_3", type: "separator"}).element);
 
-        // 展开子标题
         window.scribli.menus.menu.append(new MenuItem({
             id: "expandChildHeading",
             icon: "iconExpand",
@@ -1258,7 +1215,6 @@ export class Outline extends Model {
             click: () => this.collapseChildren(element, true)
         }).element);
 
-        // 折叠子标题
         window.scribli.menus.menu.append(new MenuItem({
             id: "foldChildHeading",
             icon: "iconContract",
@@ -1267,7 +1223,6 @@ export class Outline extends Model {
             click: () => this.collapseChildren(element, false)
         }).element);
 
-        // 展开同级标题
         window.scribli.menus.menu.append(new MenuItem({
             id: "expandSameLevelHeading",
             icon: "iconExpand",
@@ -1276,7 +1231,6 @@ export class Outline extends Model {
             click: () => this.collapseSameLevel(element, true)
         }).element);
 
-        // 折叠同级标题
         window.scribli.menus.menu.append(new MenuItem({
             id: "foldSameLevelHeading",
             icon: "iconContract",
@@ -1285,7 +1239,6 @@ export class Outline extends Model {
             click: () => this.collapseSameLevel(element, false)
         }).element);
 
-        // 全部展开
         window.scribli.menus.menu.append(new MenuItem({
             id: "expandAll",
             icon: "iconExpand",
@@ -1296,7 +1249,6 @@ export class Outline extends Model {
             }
         }).element);
 
-        // 全部折叠
         window.scribli.menus.menu.append(new MenuItem({
             id: "foldAll",
             icon: "iconContract",
@@ -1334,7 +1286,6 @@ export class Outline extends Model {
     }
 
     /**
-     * 生成标题级别转换菜单项
      */
     private genHeadingTransform(id: string, level: number) {
         return {
@@ -1363,7 +1314,6 @@ export class Outline extends Model {
                         protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.id}"]`).forEach((itemElement: HTMLElement) => {
                             itemElement.outerHTML = operation.data;
                         });
-                        // 使用 outer 后元素需要重新查询
                         protyle.wysiwyg.element.querySelectorAll(`[data-node-id="${operation.id}"]`).forEach((itemElement: HTMLElement) => {
                             mathRender(itemElement);
                         });

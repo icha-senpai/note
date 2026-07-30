@@ -75,6 +75,8 @@ Prefer repo-local Go caches for Windows work:
 $env:GOPATH=(Resolve-Path "..\.tools").Path + "\go-path"
 $env:GOCACHE=(Resolve-Path "..\.tools").Path + "\go-build-cache"
 $env:GOMODCACHE=(Resolve-Path "..\.tools").Path + "\go-mod-cache"
+$env:APPDATA=(Resolve-Path "..\.tools\appdata").Path
+go telemetry off
 ```
 
 ---
@@ -111,6 +113,8 @@ $env:PATH=(Resolve-Path "..\.tools\w64devkit\bin").Path + ";" + $env:PATH
 $env:GOPATH=(Resolve-Path "..\.tools").Path + "\go-path"
 $env:GOCACHE=(Resolve-Path "..\.tools").Path + "\go-build-cache"
 $env:GOMODCACHE=(Resolve-Path "..\.tools").Path + "\go-mod-cache"
+$env:APPDATA=(Resolve-Path "..\.tools\appdata").Path
+go telemetry off
 $env:CGO_ENABLED="1"
 $env:CC=(Resolve-Path "..\.tools\w64devkit\bin\gcc.exe").Path
 go test ./...
@@ -127,7 +131,6 @@ Do not call work verified if a build or test command failed because of a local c
 - `app/stage/protyle/js/lute/lute.min.js`
 - `app/stage/build/**`
 - `app/src/types/dist/**`
-- `app/changelogs/**`
 - `app/kernel/Scribli-Kernel*`
 - `*.syso`
 - `kernel/kernel.aar`
@@ -160,6 +163,7 @@ Generated build outputs may change when running build/package commands, but do n
 4. Do not add upstream hosted domains, upstream social links, upstream pricing links, or claims that Scribli provides official cloud services.
 5. Public README/docs must clearly state that Scribli is based on SiYuan and remains AGPL-3.0 licensed.
 6. Do not remove inherited upstream copyright notices from source files.
+7. Changelogs are part of Scribli's public project surface and may be hand-edited to remove obsolete upstream cloud, account, payment, marketplace, mobile, macOS, Linux, and branding references.
 
 ---
 

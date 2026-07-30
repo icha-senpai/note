@@ -26,17 +26,14 @@ const focusStack = async (app: App, stack: IBackStack) => {
     if (!document.contains(stack.protyle.element)) {
         const response = await fetchSyncPost("/api/block/checkBlockExist", {id: stack.protyle.block.rootID});
         if (!response.data) {
-            // 页签删除
             return false;
         }
         let wnd: Wnd;
-        // 获取光标所在 tab
         const element = document.querySelector(".layout__wnd--active");
         if (element) {
             wnd = getInstanceById(element.getAttribute("data-id")) as Wnd;
         }
         if (!wnd) {
-            // 中心 tab
             wnd = getWndByLayout(window.scribli.layout.centerLayout);
         }
         if (wnd) {
@@ -72,7 +69,6 @@ const focusStack = async (app: App, stack: IBackStack) => {
             });
             if (window.scribli.config.fileTree.openFilesUseCurrentTab) {
                 let unUpdateTab: Tab;
-                // 不能 reverse, 找到也不能提前退出循环，否则 
                 wnd.children.forEach((item) => {
                     if (item.headElement && item.headElement.classList.contains("item--unupdate") && !item.headElement.classList.contains("item--pin")) {
                         unUpdateTab = item;
@@ -86,7 +82,6 @@ const focusStack = async (app: App, stack: IBackStack) => {
                 wnd.addTab(tab);
             }
             wnd.showHeading();
-            // 替换被关闭的 protyle
             const protyle = (tab.model as Editor).editor.protyle;
             stack.protyle = protyle;
             forwardStack.forEach(item => {
@@ -120,7 +115,6 @@ const focusStack = async (app: App, stack: IBackStack) => {
     const currentZoomId = stack.protyle.block.showAll ? stack.protyle.block.id : undefined;
     const focusTitle = () => {
         if (stack.protyle.title.editElement.getBoundingClientRect().height === 0) {
-            // 切换 tab
             stack.protyle.model.parent.parent.switchTab(stack.protyle.model.parent.headElement);
             stack.protyle.toolbar.range = undefined;
         }
@@ -146,11 +140,9 @@ const focusStack = async (app: App, stack: IBackStack) => {
         }
     });
     if (blockElement &&
-        // 即使块存在，折叠的情况需要也需要 zoomOut，否则折叠块内的光标无法定位
         currentZoomId === stack.zoomId
     ) {
         if (blockElement.getBoundingClientRect().height === 0) {
-            // 切换 tab
             stack.protyle.model.parent.parent.switchTab(stack.protyle.model.parent.headElement);
         }
         focusByOffset(getContenteditableElement(blockElement), stack.position.start, stack.position.end);
@@ -165,13 +157,11 @@ const focusStack = async (app: App, stack: IBackStack) => {
     if (stack.protyle.element.parentElement) {
         const response = await fetchSyncPost("/api/block/checkBlockExist", {id: stack.id});
         if (!response.data) {
-            // 块被删除
             if (getSelection().rangeCount > 0) {
                 focusByRange(getSelection().getRangeAt(0));
             }
             return false;
         }
-        // 动态加载导致内容移除 
         if (!blockElement && !stack.zoomId && !stack.protyle.scroll.element.classList.contains("fn__none")) {
             const getDocParam: IObject = {
                 id: stack.id,
@@ -208,7 +198,6 @@ const focusStack = async (app: App, stack: IBackStack) => {
             return true;
         }
 
-        // 缩放
         zoomOut({
             protyle: stack.protyle,
             id: stack.zoomId || stack.protyle.block.rootID,
@@ -245,7 +234,6 @@ export const goBack = async (app: App) => {
     }
     document.querySelector("#barForward")?.classList.remove("toolbar__item--disabled");
     if (!previousIsBack &&
-        // 页签被关闭时应优先打开该页签，页签存在时即可返回上一步，不用再重置光标到该页签上
         document.contains(window.scribli.backStack[window.scribli.backStack.length - 1].protyle.element)) {
         forwardStack.push(window.scribli.backStack.pop());
     }

@@ -10,7 +10,6 @@ export class Link extends ToolbarItem {
 
     constructor(protyle: IProtyle, menuItem: IMenuItem) {
         super(protyle, menuItem);
-        // 不能用 getEventName，否则会导致光标位置变动到点击的文档中
         this.element.addEventListener("click", async (event: MouseEvent & { changedTouches: MouseEvent[] }) => {
             protyle.toolbar.element.classList.add("fn__none");
             event.stopPropagation();
@@ -30,7 +29,6 @@ export class Link extends ToolbarItem {
             let dataText = range.toString().trim().replace(Constants.ZWSP, "");
             let showMenu = false;
             try {
-                // 选中链接时需忽略剪切板内容 
                 dataHref = protyle.lute.GetLinkDest(dataText);
                 if (!dataHref) {
                     const clipObject = await readClipboard();
@@ -57,7 +55,6 @@ export class Link extends ToolbarItem {
                             }
                         }
                     }
-                    //  第一点 & 
                     if (dataHref && !dataText) {
                         dataText = genLinkText(dataHref, true, true);
                         showMenu = true;

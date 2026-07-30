@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -18,9 +17,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/render"
 )
 
-// SpinVditorSVDOM 自旋 Vditor Split-View DOM，用于分屏预览模式下的编辑。
 func (lute *Lute) SpinVditorSVDOM(markdown string) (ovHTML string) {
-	// 为空的特殊情况处理
 	if editor.Caret == strings.TrimSpace(markdown) {
 		return "<span data-type=\"text\"><wbr></span>" + string(render.NewlineSV)
 	}
@@ -29,12 +26,10 @@ func (lute *Lute) SpinVditorSVDOM(markdown string) (ovHTML string) {
 
 	renderer := render.NewVditorSVRenderer(tree, lute.RenderOptions, lute.ParseOptions)
 	output := renderer.Render()
-	// 替换插入符
 	ovHTML = strings.ReplaceAll(string(output), editor.Caret, "<wbr>")
 	return
 }
 
-// HTML2VditorSVDOM 将 HTML 转换为 Vditor Split-View DOM，用于分屏预览模式下粘贴。
 func (lute *Lute) HTML2VditorSVDOM(sHTML string) (vHTML string) {
 	markdown, err := lute.HTML2Markdown(sHTML)
 	if nil != err {
@@ -52,7 +47,6 @@ func (lute *Lute) HTML2VditorSVDOM(sHTML string) (vHTML string) {
 	return
 }
 
-// Md2VditorSVDOM 将 markdown 转换为 Vditor Split-View DOM，用于从源码模式切换至分屏预览模式。
 func (lute *Lute) Md2VditorSVDOM(markdown string) (vHTML string) {
 	tree := parse.Parse("", []byte(markdown), lute.ParseOptions)
 	renderer := render.NewVditorSVRenderer(tree, lute.RenderOptions, lute.ParseOptions)
@@ -60,7 +54,6 @@ func (lute *Lute) Md2VditorSVDOM(markdown string) (vHTML string) {
 		renderer.ExtRendererFuncs[nodeType] = rendererFunc
 	}
 	output := renderer.Render()
-	// 替换插入符
 	vHTML = strings.ReplaceAll(string(output), editor.Caret, "<wbr>")
 	return
 }

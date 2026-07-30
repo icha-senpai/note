@@ -456,7 +456,6 @@ export const exportMd = (id: string) => {
                         overwrite: false
                     }, response => {
                         if (response.code === 1) {
-                            // 重名
                             confirmDialog(window.scribli.languages.export, window.scribli.languages.exportTplTip, () => {
                                 fetchPost("/api/template/docSaveAsTemplate", {
                                     id,
@@ -771,7 +770,6 @@ export const openMenu = (app: App, src: string, onlyMenu: boolean, showAccelerat
         }
     } else if (src) {
         if (0 > src.indexOf(":")) {
-            // 使用 : 判断，不使用 :// 判断 Open external application protocol invalid 
             // Support click to open hyperlinks like `www.foo.com` 
             src = `https://${src}`;
         }

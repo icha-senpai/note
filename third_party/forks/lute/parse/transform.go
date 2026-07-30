@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -18,8 +17,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/html"
 )
 
-// NestedInlines2FlattedSpansHybrid 将嵌套的行级节点转换为平铺的文本标记节点。
-// 该函数不会移除转义节点。
 func NestedInlines2FlattedSpansHybrid(tree *Tree, isExportMd bool) {
 	var unlinks []*ast.Node
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
@@ -49,7 +46,6 @@ func NestedInlines2FlattedSpansHybrid(tree *Tree, isExportMd bool) {
 				backslash.Unlink()
 			}
 
-			// 超链接嵌套图片情况下，图片子节点移到超链接节点前面
 			img := n.ChildByType(ast.NodeImage)
 			if nil == img {
 				return ast.WalkContinue
@@ -75,7 +71,6 @@ func NestedInlines2FlattedSpansHybrid(tree *Tree, isExportMd bool) {
 	var span *ast.Node
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
 		switch n.Type {
-		// case ast.NodeBackslash: Spin 过程中存在转义节点，转义节点本身就是嵌套的，所以需要在这里排除处理
 		case ast.NodeCodeSpan:
 			processNestedNode(n, "code", &tags, &unlinks, entering)
 		case ast.NodeTag:
@@ -109,13 +104,13 @@ func NestedInlines2FlattedSpansHybrid(tree *Tree, isExportMd bool) {
 
 			if entering {
 				content := string(html.EscapeHTML(n.Tokens))
-				content = strings.ReplaceAll(content, "&quot;", "\"") // 粘贴 Markdown 时行级元素中的双引号不再转换为实体 https://github.com/siyuan-note/siyuan/issues/14503
+				content = strings.ReplaceAll(content, "&quot;", "\"")
 				span = &ast.Node{Type: ast.NodeTextMark, TextMarkType: strings.Join(tags, " "), TextMarkTextContent: content}
 				if ast.NodeInlineMathContent == n.Type {
 					span.TextMarkTextContent = ""
 					span.TextMarkInlineMathContent = string(html.EscapeHTML(n.Tokens))
 					if n.ParentIs(ast.NodeTableCell) && !isExportMd {
-						// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+						// Improve the handling of inline-math containing `|` in the table
 						span.TextMarkInlineMathContent = strings.ReplaceAll(span.TextMarkInlineMathContent, "\\|", "|")
 					}
 				} else if ast.NodeBackslash == n.Type {
@@ -138,7 +133,6 @@ func NestedInlines2FlattedSpansHybrid(tree *Tree, isExportMd bool) {
 					span.TextMarkBlockRefID = n.Parent.ChildByType(ast.NodeBlockRefID).TokensStr()
 				} else if n.ParentIs(ast.NodeLink) && !n.ParentIs(ast.NodeImage) {
 					if next := n.Next; nil != next && ast.NodeLinkText == next.Type {
-						// 合并相邻的链接文本节点
 						n.Next.PrependTokens(n.Tokens)
 						return ast.WalkContinue
 					}
@@ -169,7 +163,7 @@ func NestedInlines2FlattedSpansHybrid(tree *Tree, isExportMd bool) {
 				span.KramdownIAL = n.Parent.KramdownIAL
 				if n.IsMarker() {
 					n.Parent.InsertBefore(span)
-				} else if nil != n.Parent && ast.NodeHTMLTag == n.Parent.Type && nil != n.Parent.Parent && ast.NodeLink == n.Parent.Parent.Type { // https://github.com/siyuan-note/siyuan/issues/14788#issuecomment-2882248074
+				} else if nil != n.Parent && ast.NodeHTMLTag == n.Parent.Type && nil != n.Parent.Parent && ast.NodeLink == n.Parent.Parent.Type { //
 					n.Parent.Parent.InsertBefore(span)
 				} else {
 					n.InsertBefore(span)
@@ -215,8 +209,6 @@ func NestedInlines2FlattedSpansHybrid(tree *Tree, isExportMd bool) {
 	}
 }
 
-// NestedInlines2FlattedSpans 将嵌套的行级节点转换为平铺的文本标记节点。
-// 该函数会移除转义节点。
 func NestedInlines2FlattedSpans(tree *Tree, isExportMd bool) {
 	var unlinks []*ast.Node
 	ast.Walk(tree.Root, func(n *ast.Node, entering bool) ast.WalkStatus {
@@ -225,7 +217,6 @@ func NestedInlines2FlattedSpans(tree *Tree, isExportMd bool) {
 		}
 
 		if ast.NodeLink == n.Type {
-			// 超链接嵌套图片情况下，图片子节点移到超链接节点前面
 			img := n.ChildByType(ast.NodeImage)
 			if nil == img {
 				return ast.WalkContinue
@@ -244,7 +235,6 @@ func NestedInlines2FlattedSpans(tree *Tree, isExportMd bool) {
 				return ast.WalkContinue
 			}
 
-			// 不再需要反斜杠转义节点
 			if c := n.FirstChild; nil != c {
 				tokens := html.UnescapeHTML(c.Tokens)
 				processed := false
@@ -314,7 +304,7 @@ func NestedInlines2FlattedSpans(tree *Tree, isExportMd bool) {
 					span.TextMarkTextContent = ""
 					span.TextMarkInlineMathContent = string(html.EscapeHTML(n.Tokens))
 					if n.ParentIs(ast.NodeTableCell) && !isExportMd {
-						// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+						// Improve the handling of inline-math containing `|` in the table
 						span.TextMarkInlineMathContent = strings.ReplaceAll(span.TextMarkInlineMathContent, "\\|", "|")
 					}
 				} else if ast.NodeBackslash == n.Type {
@@ -337,7 +327,6 @@ func NestedInlines2FlattedSpans(tree *Tree, isExportMd bool) {
 					span.TextMarkBlockRefID = n.Parent.ChildByType(ast.NodeBlockRefID).TokensStr()
 				} else if n.ParentIs(ast.NodeLink) && !n.ParentIs(ast.NodeImage) {
 					if next := n.Next; nil != next && ast.NodeLinkText == next.Type {
-						// 合并相邻的链接文本节点
 						n.Next.PrependTokens(n.Tokens)
 						return ast.WalkContinue
 					}

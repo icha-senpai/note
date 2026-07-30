@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -23,14 +22,12 @@ func (t *Tree) parseText(ctx *InlineContext) *ast.Node {
 	start := ctx.pos
 	for ; ctx.pos < ctx.tokensLen; ctx.pos++ {
 		if t.isMarker(ctx.tokens[ctx.pos]) {
-			// 遇到潜在的标记符时需要跳出该文本节点，回到行级解析主循环
 			break
 		}
 	}
 	return &ast.Node{Type: ast.NodeText, Tokens: ctx.tokens[start:ctx.pos]}
 }
 
-// isMarker 判断 token 是否是潜在的 Markdown 标记符。
 func (t *Tree) isMarker(token byte) bool {
 	if lex.IsMarker(token) {
 		return true
@@ -58,7 +55,6 @@ func (t *Tree) parseBackslash(block *ast.Node, ctx *InlineContext) *ast.Node {
 	}
 	if lex.IsASCIIPunct(token) {
 		if '<' == token && nil != t.Context.oldtip && ast.NodeTable == t.Context.oldtip.Type {
-			// 表格单元格内存在多行时末尾输入转义符 `\` 导致 `<br />` 暴露 https://github.com/siyuan-note/siyuan/issues/7725
 			isBr := ctx.tokens[ctx.pos:]
 			if bytes.HasPrefix(isBr, []byte("<br />")) || bytes.HasPrefix(isBr, []byte("<br/>")) || bytes.HasPrefix(isBr, []byte("<br>")) {
 				return &ast.Node{Type: ast.NodeText, Tokens: backslash}
@@ -72,14 +68,12 @@ func (t *Tree) parseBackslash(block *ast.Node, ctx *InlineContext) *ast.Node {
 		return nil
 	}
 	if t.Context.ParseOption.VditorWYSIWYG || t.Context.ParseOption.VditorIR || t.Context.ParseOption.ProtyleWYSIWYG {
-		// 处理 \‸x 情况，插入符后的字符才是待转义的
 		tokens := ctx.tokens[ctx.pos:]
 		caret := editor.CaretTokens
 		if len(caret) < len(tokens) && bytes.HasPrefix(tokens, caret) {
 			token = ctx.tokens[ctx.pos+len(caret)]
 			if lex.IsASCIIPunct(token) {
 				if '<' == token && nil != t.Context.oldtip && ast.NodeTable == t.Context.oldtip.Type {
-					// 表格单元格内存在多行时末尾输入转义符 `\` 导致 `<br />` 暴露 https://github.com/siyuan-note/siyuan/issues/7725
 					isBr := ctx.tokens[ctx.pos+len(caret):]
 					if bytes.HasPrefix(isBr, []byte("<br />")) || bytes.HasPrefix(isBr, []byte("<br/>")) || bytes.HasPrefix(isBr, []byte("<br>")) {
 						return &ast.Node{Type: ast.NodeText, Tokens: backslash}
@@ -92,7 +86,6 @@ func (t *Tree) parseBackslash(block *ast.Node, ctx *InlineContext) *ast.Node {
 				block.AppendChild(n)
 				n.AppendChild(&ast.Node{Type: ast.NodeBackslashContent, Tokens: []byte{token}})
 				if t.Context.ParseOption.ProtyleWYSIWYG {
-					// Protyle WYSIWYG 模式下插入符移到转义符节点前面
 					n.InsertBefore(&ast.Node{Type: ast.NodeText, Tokens: caret})
 				} else {
 					block.AppendChild(&ast.Node{Type: ast.NodeText, Tokens: caret})
@@ -109,7 +102,6 @@ func (t *Tree) parseNewline(block *ast.Node, ctx *InlineContext) (ret *ast.Node)
 	ctx.pos++
 
 	isHardBreak := false
-	// 检查前一个节点的结尾空格，如果大于等于两个则说明是硬换行
 	if lastc := block.LastChild; nil != lastc && ast.NodeText == lastc.Type {
 		tokens := lastc.Tokens
 		if valueLen := len(tokens); lex.ItemSpace == tokens[valueLen-1] {
@@ -122,7 +114,6 @@ func (t *Tree) parseNewline(block *ast.Node, ctx *InlineContext) (ret *ast.Node)
 
 	ret = &ast.Node{Type: ast.NodeSoftBreak, Tokens: []byte{ctx.tokens[pos]}}
 	if t.Context.ParseOption.ProtyleWYSIWYG {
-		// Protyle 中的换行符都是软换行 Improve soft line break paste parsing https://github.com/siyuan-note/siyuan/issues/14481
 		return
 	}
 
@@ -136,13 +127,10 @@ func (t *Tree) MergeText() {
 	t.mergeText(t.Root)
 }
 
-// mergeText 合并 node 中所有（包括子节点）连续的文本节点。
-// 合并后顺便进行中文排版优化以及 GFM 自动邮件链接识别。
 func (t *Tree) mergeText(node *ast.Node) {
 	for child := node.FirstChild; nil != child; {
 		next := child.Next
 		if ast.NodeText == child.Type {
-			// 逐个合并后续兄弟节点
 			for nil != next && ast.NodeText == next.Type {
 				child.AppendTokens(next.Tokens)
 				next.Unlink()
@@ -155,7 +143,7 @@ func (t *Tree) mergeText(node *ast.Node) {
 				next = child.Next
 			}
 		} else {
-			t.mergeText(child) // 递归处理子节点
+			t.mergeText(child)
 		}
 		child = next
 	}

@@ -18,7 +18,6 @@ import {applySettingTabSearchVisibility, mountSettingTab} from "./mount";
 
 type SaveFn = (value: unknown) => void | Promise<void>;
 
-/** 侧栏 / 菜单等壳层字段（`SettingBuilder.tab` / `panel` 入参均平铺） */
 export interface SettingTabShell<TId extends string = string> {
     id: TId;
     icon: string;
@@ -27,9 +26,7 @@ export interface SettingTabShell<TId extends string = string> {
 }
 
 interface ItemsSettingTabOptions<TId extends string = string> extends SettingTabShell<TId> {
-    /** 控件未指定 save 时，按控件 id 提交配置变更 */
     defaultSave?: (controlId: string, value: unknown) => void;
-    /** 条目 mount 完成后的 SettingTab 级初始化（如记录根节点、拉取动态数据） */
     afterMount?: (root: HTMLElement, app?: App) => void | Promise<void>;
 }
 
@@ -43,7 +40,6 @@ type ControlSpecBase = {
     desc?: string;
     save?: SaveFn;
     afterMount?: (root: HTMLElement) => void | Promise<void>;
-    /** 省略时按控件 id 从 config 读取；嵌套 / 派生项需显式传入 */
     readConfig?: () => unknown;
 };
 type SwitchSpec = ControlSpecBase;
@@ -63,7 +59,6 @@ type SelectSpec = ControlSpecBase & {
         value: number | string;
         label?: string;
     }[];
-    /** 省略时按控件 id 从 config 读取；虚拟 / 派生项需显式传入 */
     readConfig?: () => number | string;
 };
 type TextSpec = ControlSpecBase & {
@@ -152,7 +147,6 @@ const stackLinesToControls = (lines: StackLine[]): CompositeControlSpec[] => {
     return controls;
 };
 
-/** stack 组合行内逐行注册；由 `SettingGroupBuilder.stack` 回调使用 */
 class StackLineBuilder {
     private readonly lines: StackLine[] = [];
 
@@ -165,7 +159,6 @@ class StackLineBuilder {
         return this;
     }
 
-    /** 为上一行（通常为 title / desc）追加右侧按钮 */
     button(spec: StackButtonSpec) {
         const last = this.lines[this.lines.length - 1];
         if (last) {
@@ -220,7 +213,6 @@ class SettingGroupBuilder<TId extends string> {
     ) {}
 
     /**
-     * 注册标准单行控件（`kind: full`）。
      */
     private registerFullItem(
         id: string,
@@ -364,7 +356,6 @@ class SettingGroupBuilder<TId extends string> {
     }
 
     /**
-     * 纯展示 / 自行绑定事件的块。
      */
     slot(spec: SlotSpec) {
         const id = `${this.tab.id}.__slot.${spec.key}`;
@@ -381,7 +372,6 @@ class SettingGroupBuilder<TId extends string> {
     }
 
     /**
-     * 自定义 HTML 块 + 内嵌控件 save：分别声明 render 项与 binding 项。
      */
     composite(spec: CompositeSpec) {
         this.slot({
@@ -414,14 +404,12 @@ export class SettingTabBuilder<TId extends string = string> {
     }
 }
 
-/** `scanSearch` 返回值：侧栏过滤用 `matches`，条目型 SettingTab 另含可见条目 ID / 分组 ID */
 export interface SettingTabSearchResult {
     matches: boolean;
     visibleItemIds?: Set<string>;
     visibleGroupIds?: Set<string>;
 }
 
-/** mount 时的搜索上下文（`keywords` 由壳层持有，与扫描结果在调用处拼装） */
 export interface SettingTabMountContext {
     keywords: string;
     visibleItemIds?: Set<string>;
@@ -451,7 +439,6 @@ export class SettingBuilder {
                 return;
             }
             registered = true;
-            // 延迟注册至首次 mount / scanSearch：import 时 languages 未就绪，且搜索可能先于 mount
             register(new SettingTabBuilder(options));
         };
         return {
@@ -490,7 +477,6 @@ export class SettingBuilder {
         let tabSearchIndex: readonly string[] | undefined;
         return {
             ...shell,
-            // panel 型 Tab 不支持 rebuild（无注册项可清），忽略该参数以对齐 SettingTab.mount 签名
             mount: async (root, {keywords} = {}, app, _rebuild) => {
                 void _rebuild;
                 mount(root, keywords, app);
@@ -504,10 +490,8 @@ export class SettingBuilder {
                 }
                 let matches = false;
                 if (tabSearchTitle.length > 0 && tabSearchTitle.includes(keywords)) {
-                    // 匹配标签页标题
                     matches = true;
                 } else if (tabSearchIndex.some((s) => s.includes(keywords))) {
-                    // 匹配标签页内部文案
                     matches = true;
                 }
                 return {matches};

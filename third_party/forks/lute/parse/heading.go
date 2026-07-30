@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -19,7 +18,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 )
 
-// ATXHeadingStart 判断 ATX 标题（#）是否开始。
 func ATXHeadingStart(t *Tree, container *ast.Node) int {
 	if t.Context.indented {
 		return 0
@@ -40,7 +38,6 @@ func ATXHeadingStart(t *Tree, container *ast.Node) int {
 	return 0
 }
 
-// SetextHeadingStart 判断 Setext 标题（- =）是否开始。
 func SetextHeadingStart(t *Tree, container *ast.Node) int {
 	if t.Context.indented || ast.NodeParagraph != container.Type || !t.Context.ParseOption.Setext {
 		return 0
@@ -52,17 +49,14 @@ func SetextHeadingStart(t *Tree, container *ast.Node) int {
 	}
 
 	if t.Context.ParseOption.GFMTable {
-		// 尝试解析表，因为可能出现如下情况：
 		//
 		//   0
 		//   -:
 		//   -
 		//
-		// 前两行可以解析出一个只有一个单元格的表。
-		// Empty list following GFM Table makes table broken https://github.com/b3log/lute/issues/9
+		// Empty list following GFM Table makes table broken
 		table := t.Context.parseTable0(container.Tokens)
 		if nil != table {
-			// 将该段落节点转成表节点
 			container.Type = ast.NodeTable
 			container.TableAligns = table.TableAligns
 			for tr := table.FirstChild; nil != tr; {
@@ -76,7 +70,6 @@ func SetextHeadingStart(t *Tree, container *ast.Node) int {
 	}
 
 	t.Context.closeUnmatchedBlocks()
-	// 解析链接引用定义
 	for tokens := container.Tokens; 0 < len(tokens) && lex.ItemOpenBracket == tokens[0]; tokens = container.Tokens {
 		if remains := t.Context.parseLinkRefDef(tokens); nil != remains {
 			container.Tokens = remains

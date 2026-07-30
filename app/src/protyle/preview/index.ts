@@ -77,7 +77,6 @@ export class Preview {
                 if (target.tagName === "A") {
                     const linkAddress = target.getAttribute("href");
                     if (linkAddress.startsWith("#")) {
-                        // 导出预览模式点击块引转换后的脚注跳转不正确 
                         const hash = linkAddress.substring(1);
                         previewElement.querySelector('[data-node-id="' + hash + '"], [id="' + hash + '"]').scrollIntoView();
                         event.stopPropagation();
@@ -149,7 +148,6 @@ export class Preview {
             }
             const nodeElement = hasTopClosestByAttribute(event.target as HTMLElement, "id", undefined);
             if (nodeElement) {
-                // 用于点击后大纲定位
                 this.element.querySelectorAll(".protyle-wysiwyg--select").forEach(item => {
                     item.classList.remove("selected");
                 });
@@ -220,7 +218,6 @@ export class Preview {
             copyElement.querySelectorAll("mjx-container > svg").forEach((item) => {
                 item.setAttribute("width", (parseInt(item.getAttribute("width")) * 8) + "px");
             });
-            // 列表嵌套 
             copyElement.querySelectorAll("ul, ol").forEach((listItem: HTMLOListElement) => {
                 if (typeof listItem.start === "number") {
                     listItem.classList.add("list-paddingleft-" + Math.min(listItem.start.toString().length, 3));
@@ -233,7 +230,6 @@ export class Preview {
                     }
                 });
             });
-            // 处理任务列表（微信公众号不能显示input[type="checkbox"]）
             copyElement.querySelectorAll("li.protyle-task").forEach((taskItem: HTMLElement) => {
                 const checkbox = taskItem.querySelector('input[type="checkbox"]') as HTMLInputElement;
                 if (checkbox) {
@@ -287,15 +283,12 @@ export class Preview {
             return;
         }
 
-        // 防止背景色被粘贴到公众号中
         copyElement.style.backgroundColor = "#fff";
-        // 代码背景
         copyElement.querySelectorAll("code").forEach((item) => {
             item.style.backgroundImage = "none";
         });
         const copyEditElement = copyElement.querySelector(".b3-typography") as HTMLElement;
         if (copyEditElement.firstElementChild.tagName === "DIV") {
-            // 最后/第一个块是公式块时无法复制下来
             copyElement.insertAdjacentHTML("afterbegin", "<p>&zwj;</p>");
         }
         if (copyEditElement.lastElementChild.tagName === "DIV") {

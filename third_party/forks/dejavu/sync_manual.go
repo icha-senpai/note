@@ -32,7 +32,6 @@ func (repo *Repo) SyncDownload(context map[string]interface{}) (mergeResult *Mer
 	lock.Lock()
 	defer lock.Unlock()
 
-	// 锁定云端，防止其他设备并发上传数据
 	err = repo.tryLockCloud(repo.DeviceID, context)
 	if nil != err {
 		return
@@ -42,14 +41,12 @@ func (repo *Repo) SyncDownload(context map[string]interface{}) (mergeResult *Mer
 	mergeResult = &MergeResult{Time: time.Now()}
 	trafficStat = &TrafficStat{m: &sync.Mutex{}}
 
-	// 获取本地最新索引
 	latest, err := repo.Latest()
 	if nil != err {
 		logging.LogErrorf("get latest failed: %s", err)
 		return
 	}
 
-	// 从云端获取最新索引
 	length, cloudLatest, err := repo.downloadCloudLatest(context)
 	if nil != err {
 		if !errors.Is(err, cloud.ErrCloudObjectNotFound) {
@@ -62,18 +59,15 @@ func (repo *Repo) SyncDownload(context map[string]interface{}) (mergeResult *Mer
 	trafficStat.APIGet++
 
 	if cloudLatest.ID == latest.ID || "" == cloudLatest.ID {
-		// 数据一致或者云端为空，直接返回
 		return
 	}
 
-	// 计算本地缺失的文件
 	fetchFileIDs, err := repo.localNotFoundFiles(cloudLatest.Files)
 	if nil != err {
 		logging.LogErrorf("get local not found files failed: %s", err)
 		return
 	}
 
-	// 从云端下载缺失文件并入库
 	length, fetchedFiles, err := repo.downloadCloudFilesPut(fetchFileIDs, context)
 	if nil != err {
 		logging.LogErrorf("download cloud files put failed: %s", err)
@@ -83,30 +77,25 @@ func (repo *Repo) SyncDownload(context map[string]interface{}) (mergeResult *Mer
 	trafficStat.DownloadBytes += length
 	trafficStat.APIGet += trafficStat.DownloadFileCount
 
-	// 组装还原云端最新文件列表
 	cloudLatestFiles, err := repo.getFiles(cloudLatest.Files)
 	if nil != err {
 		logging.LogErrorf("get cloud latest files failed: %s", err)
 		return
 	}
 
-	// 从文件列表中得到去重后的分块列表
 	cloudChunkIDs := repo.getChunks(cloudLatestFiles)
 
-	// 计算本地缺失的分块
 	fetchChunkIDs, err := repo.localNotFoundChunks(cloudChunkIDs)
 	if nil != err {
 		logging.LogErrorf("get local not found chunks failed: %s", err)
 		return
 	}
 
-	// 从云端下载缺失分块并入库
 	length, err = repo.downloadCloudChunksPut(fetchChunkIDs, context)
 	trafficStat.DownloadBytes += length
 	trafficStat.DownloadChunkCount += len(fetchChunkIDs)
 	trafficStat.APIGet += trafficStat.DownloadChunkCount
 
-	// 计算本地相比上一个同步点的 upsert 和 remove 差异
 	latestFiles, err := repo.getFiles(latest.Files)
 	if nil != err {
 		logging.LogErrorf("get latest files failed: %s", err)
@@ -121,8 +110,6 @@ func (repo *Repo) SyncDownload(context map[string]interface{}) (mergeResult *Mer
 	localUpserts, localRemoves := repo.diffUpsertRemove(latestFiles, latestSyncFiles, false)
 	localChanged := 0 < len(localUpserts) || 0 < len(localRemoves)
 
-	// 计算云端最新相比本地最新的 upsert 和 remove 差异
-	// 在单向同步的情况下该结果可直接作为合并结果
 	mergeResult.Upserts, mergeResult.Removes = repo.diffUpsertRemove(cloudLatestFiles, latestFiles, false)
 
 	var fetchedFileIDs []string
@@ -130,8 +117,6 @@ func (repo *Repo) SyncDownload(context map[string]interface{}) (mergeResult *Mer
 		fetchedFileIDs = append(fetchedFileIDs, fetchedFile.ID)
 	}
 
-	// 计算冲突的 upsert
-	// 冲突的文件以云端 upsert 和 remove 为准
 	for _, localUpsert := range localUpserts {
 		if nil != repo.getFile(mergeResult.Upserts, localUpsert) || nil != repo.getFile(mergeResult.Removes, localUpsert) {
 			mergeResult.Conflicts = append(mergeResult.Conflicts, localUpsert)
@@ -139,7 +124,6 @@ func (repo *Repo) SyncDownload(context map[string]interface{}) (mergeResult *Mer
 		}
 	}
 
-	// 冲突文件复制到数据历史文件夹
 	if 0 < len(mergeResult.Conflicts) {
 		now := mergeResult.Time.Format("2006-01-02-150405")
 		temp := filepath.Join(repo.TempPath, "repo", "sync", "conflicts", now)
@@ -167,27 +151,23 @@ func (repo *Repo) SyncDownload(context map[string]interface{}) (mergeResult *Mer
 		}
 	}
 
-	// 数据变更后还原文件
 	err = repo.restoreFiles(mergeResult, context)
 	if nil != err {
 		logging.LogErrorf("restore files failed: %s", err)
 		return
 	}
 
-	// 处理合并
 	err = repo.mergeSync(mergeResult, localChanged, false, latest, cloudLatest, cloudChunkIDs, trafficStat, context)
 	if nil != err {
 		logging.LogErrorf("merge sync failed: %s", err)
 		return
 	}
 
-	// 统计流量
 	go repo.cloud.AddTraffic(&cloud.Traffic{
 		DownloadBytes: trafficStat.DownloadBytes,
 		APIGet:        trafficStat.APIGet,
 	})
 
-	// 移除空目录
 	gulu.File.RemoveEmptyDirs(repo.DataPath, removeEmptyDirExcludes...)
 	return
 }
@@ -196,7 +176,6 @@ func (repo *Repo) SyncUpload(context map[string]interface{}) (trafficStat *Traff
 	lock.Lock()
 	defer lock.Unlock()
 
-	// 锁定云端，防止其他设备并发上传数据
 	err = repo.tryLockCloud(repo.DeviceID, context)
 	if nil != err {
 		return
@@ -211,7 +190,6 @@ func (repo *Repo) SyncUpload(context map[string]interface{}) (trafficStat *Traff
 		return
 	}
 
-	// 从云端获取最新索引
 	length, cloudLatest, err := repo.downloadCloudLatest(context)
 	if nil != err {
 		if !errors.Is(err, cloud.ErrCloudObjectNotFound) {
@@ -224,7 +202,6 @@ func (repo *Repo) SyncUpload(context map[string]interface{}) (trafficStat *Traff
 	trafficStat.APIPut++
 
 	if cloudLatest.ID == latest.ID {
-		// 数据一致，直接返回
 		return
 	}
 
@@ -234,7 +211,6 @@ func (repo *Repo) SyncUpload(context map[string]interface{}) (trafficStat *Traff
 		return
 	}
 
-	// 计算云端缺失的文件
 	var uploadFiles []*entity.File
 	for _, localFileID := range latest.Files {
 		if !gulu.Str.Contains(localFileID, cloudLatest.Files) {
@@ -248,17 +224,14 @@ func (repo *Repo) SyncUpload(context map[string]interface{}) (trafficStat *Traff
 		}
 	}
 
-	// 从文件列表中得到去重后的分块列表
 	uploadChunkIDs := repo.getChunks(uploadFiles)
 
-	// 这里暂时不计算云端缺失的分块了，因为目前计数云端缺失分块的代价太大
 	//uploadChunkIDs, err = repo.cloud.GetChunks(uploadChunkIDs)
 	//if nil != err {
 	//	logging.LogErrorf("get cloud repo upload chunks failed: %s", err)
 	//	return
 	//}
 
-	// 上传分块
 	length, err = repo.uploadChunks(uploadChunkIDs, context)
 	if nil != err {
 		logging.LogErrorf("upload chunks failed: %s", err)
@@ -268,7 +241,6 @@ func (repo *Repo) SyncUpload(context map[string]interface{}) (trafficStat *Traff
 	trafficStat.UploadBytes += length
 	trafficStat.APIPut += trafficStat.UploadChunkCount
 
-	// 上传文件
 	length, err = repo.uploadFiles(uploadFiles, context)
 	if nil != err {
 		logging.LogErrorf("upload files failed: %s", err)
@@ -278,21 +250,18 @@ func (repo *Repo) SyncUpload(context map[string]interface{}) (trafficStat *Traff
 	trafficStat.UploadBytes += length
 	trafficStat.APIPut += trafficStat.UploadChunkCount
 
-	// 更新云端索引信息
 	err = repo.updateCloudIndexes(latest, trafficStat, context)
 	if nil != err {
 		logging.LogErrorf("update cloud indexes failed: %s", err)
 		return
 	}
 
-	// 更新本地同步点
 	err = repo.UpdateLatestSync(latest)
 	if nil != err {
 		logging.LogErrorf("update latest sync failed: %s", err)
 		return
 	}
 
-	// 统计流量
 	go repo.cloud.AddTraffic(&cloud.Traffic{
 		UploadBytes: trafficStat.UploadBytes,
 		APIPut:      trafficStat.APIPut,

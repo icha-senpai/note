@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -18,7 +17,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// HtmlBlockStart 判断 HTML 块（<）是否开始。
 func HtmlBlockStart(t *Tree, container *ast.Node) int {
 	if t.Context.indented {
 		return 0
@@ -79,8 +77,7 @@ func HtmlBlockStart(t *Tree, container *ast.Node) int {
 		}
 
 		if t.Context.ParseOption.ProtyleWYSIWYG {
-			// Protyle WYSIWYG 模式下，只有 <div 开头的块级元素才能被解析为 HTML 块
-			// Only HTML code wrapped in `<div>` is supported to be parsed into HTML blocks https://github.com/siyuan-note/siyuan/issues/9758
+			// Only HTML code wrapped in `<div>` is supported to be parsed into HTML blocks
 			_, start := lex.TrimLeft(t.Context.currentLine[t.Context.nextNonspace:])
 			if !bytes.HasPrefix(start, []byte("<div")) {
 				return 0
@@ -97,7 +94,6 @@ func HtmlBlockStart(t *Tree, container *ast.Node) int {
 func HtmlBlockContinue(html *ast.Node, context *Context) int {
 	tokens := context.currentLine[context.offset:]
 	if context.ParseOption.KramdownBlockIAL && simpleCheckIsBlockIAL(tokens) {
-		// 判断 IAL 打断
 		if context.Tip.ParentIs(ast.NodeListItem) {
 			_, tokens = lex.TrimLeft(tokens)
 		}
@@ -132,7 +128,6 @@ var (
 
 func (t *Tree) isHTMLBlockClose(tokens []byte, htmlType int) bool {
 	if t.Context.ParseOption.KramdownBlockIAL && simpleCheckIsBlockIAL(tokens) {
-		// 判断 IAL 打断
 		if ial := t.Context.parseKramdownBlockIAL(tokens); 0 < len(ial) {
 			t.Context.Tip.ID = IAL2Map(ial)["id"]
 			t.Context.Tip.KramdownIAL = ial
@@ -261,7 +256,7 @@ func (t *Tree) isOpenTag(tokens []byte) (isOpenTag bool) {
 		return
 	}
 
-	if lex.IsWhitespace(tokens[0]) { // < 后面不能跟空白
+	if lex.IsWhitespace(tokens[0]) {
 		return
 	}
 
@@ -287,7 +282,7 @@ func (t *Tree) isOpenTag(tokens []byte) (isOpenTag bool) {
 
 		nameAndValue := bytes.SplitN(attr, []byte("="), 2)
 		name := nameAndValue[0]
-		if 1 > len(name) { // 等号前面空格的情况
+		if 1 > len(name) {
 			continue
 		}
 		if !lex.IsASCIILetter(name[0]) && lex.ItemUnderscore != name[0] && lex.ItemColon != name[0] {

@@ -138,14 +138,6 @@ type TRecentDocsSort = "viewedAt" | "closedAt" | "openAt" | "updated"
 type TPublishAccessLevel = "public" | "protected" | "hidden" | "private" | "forbidden";
 
 /**
- * 内核插件状态
- * - `-1`: inactive 内核插件未安装或不可用
- * - `0`: ready 内核插件已安装但未启动
- * - `1`: loading 内核插件正在启动
- * - `2`: running 内核插件正在运行, 可正常使用
- * - `3`: stopping 内核插件正在停止
- * - `4`: stopped 内核插件已停止
- * - `5`: error 内核插件出现不可恢复的错误
  */
 type TKernelPluginState = -1 | 0 | 1 | 2 | 3 | 4 | 5
 
@@ -328,10 +320,10 @@ interface ICard {
     cardID: string;
     blockID: string;
     nextDues: Record<string, string>;
-    lapses: number;  // 遗忘次数
-    lastReview: number;  // 最后复习时间
-    reps: number;  // 复习次数
-    state: number;   // 卡片状态 0：新卡
+    lapses: number;
+    lastReview: number;
+    reps: number;
+    state: number;
 }
 
 interface ICardData {
@@ -409,7 +401,6 @@ interface IPdfAnno {
 
 interface IBackStack {
     id: string,
-    // 仅移动端
     data?: {
         startId: string,
         endId: string
@@ -422,7 +413,6 @@ interface IBackStack {
         start: number,
         end: number
     }
-    // 仅桌面端
     protyle?: IProtyle,
     zoomId?: string
 }
@@ -430,16 +420,12 @@ interface IBackStack {
 interface IEmojiItem {
     unicode: string,
     description: string,
-    description_zh_cn: string,
-    description_ja_jp: string,
     keywords: string
 }
 
 interface IEmoji {
     id: string,
     title: string,
-    title_zh_cn: string,
-    title_ja_jp: string,
     items: IEmojiItem[]
 }
 
@@ -505,40 +491,39 @@ interface IScribli {
     dialogs: import("../dialog").Dialog[],
     viewer?: Viewer,
     /**
-     * 是否在发布服务下访问
      */
     isPublish?: boolean;
 }
 
 interface IOperation {
-    action: TOperation, // move， delete 不需要传 data
+    action: TOperation,
     id?: string,
     context?: Record<string, string>,  // focusId, message, ignoreProcess, setRange
     blockID?: string,
-    isTwoWay?: boolean, // 是否双向关联
-    backRelationKeyID?: string, // 双向关联的目标关联列 ID
+    isTwoWay?: boolean,
+    backRelationKeyID?: string,
     avID?: string,  // av
-    format?: string // updateAttrViewColNumberFormat 专享
-    keyID?: string // updateAttrViewCell 专享
-    rowID?: string // updateAttrViewCell 专享
-    data?: any, // updateAttr 时为  { old: IObject, new: IObject }, updateAttrViewCell 时为 {TAVCol: {content: string}}
+    format?: string
+    keyID?: string
+    rowID?: string
+    data?: any,
     parentID?: string
     previousID?: string
     retData?: any
-    nextID?: string // insert 专享
-    isDetached?: boolean // insertAttrViewBlock 专享
-    srcIDs?: string[] // removeAttrViewBlock 专享
-    srcs?: IOperationSrcs[] // insertAttrViewBlock 专享
-    ignoreDefaultFill?: boolean // insertAttrViewBlock 专享
-    viewID?: string // 多个属性视图操作使用，用于推送时不影响其他视图
-    name?: string // addAttrViewCol 专享
-    type?: TAVCol // addAttrViewCol 专享
-    deckID?: string // add/removeFlashcards 专享
-    blockIDs?: string[] // add/removeFlashcards 专享
-    removeDest?: boolean // removeAttrViewCol 专享
-    layout?: string // addAttrViewView 专享
-    groupID?: string // insertAttrViewBlock, sortAttrViewRow 专享
-    targetGroupID?: string // sortAttrViewRow 专享
+    nextID?: string
+    isDetached?: boolean
+    srcIDs?: string[]
+    srcs?: IOperationSrcs[]
+    ignoreDefaultFill?: boolean
+    viewID?: string
+    name?: string
+    type?: TAVCol
+    deckID?: string
+    blockIDs?: string[]
+    removeDest?: boolean
+    layout?: string
+    groupID?: string
+    targetGroupID?: string
 }
 
 interface IOperationSrcs {
@@ -584,15 +569,15 @@ interface ILayoutJSON extends ILayoutOptions {
 }
 
 interface ICommand {
-    langKey: string, // 用于区分不同快捷键的 key, 同时作为 i18n 的字段名
-    langText?: string, // 显示的文本, 指定后不再使用 langKey 对应的 i18n 文本
-    hotkey?: string, // 快捷键，默认为空字符串
+    langKey: string,
+    langText?: string,
+    hotkey?: string,
     customHotkey?: string,
-    callback?: () => void   // 其余回调存在时将不会触发
-    globalCallback?: () => void // 焦点不在应用内时执行的回调
-    fileTreeCallback?: (file: import("../layout/dock/Files").Files) => void // 焦点在文档树上时执行的回调
-    editorCallback?: (protyle: IProtyle) => void     // 焦点在编辑器上时执行的回调
-    dockCallback?: (element: HTMLElement) => void    // 焦点在 dock 上时执行的回调
+    callback?: () => void
+    globalCallback?: () => void
+    fileTreeCallback?: (file: import("../layout/dock/Files").Files) => void
+    editorCallback?: (protyle: IProtyle) => void
+    dockCallback?: (element: HTMLElement) => void
 }
 
 interface IPluginData {
@@ -620,8 +605,7 @@ interface IExportOptions {
 
 interface IOpenFileOptions {
     app: import("../index").App,
-    searchData?: Config.IUILayoutTabSearchConfig, // 搜索必填
-    // card 和自定义页签 必填
+    searchData?: Config.IUILayoutTabSearchConfig,
     custom?: {
         title: string,
         icon: string,
@@ -630,24 +614,24 @@ interface IOpenFileOptions {
         fn?: (options: {
             tab: import("../layout/Tab").Tab,
             data: any,
-        }) => import("../layout/Model").Model,   // plugin 0.8.3 历史兼容
+        }) => import("../layout/Model").Model,
     }
     scrollPosition?: ScrollLogicalPosition,
-    assetPath?: string, // asset 必填
-    fileName?: string, // file 必填
+    assetPath?: string,
+    fileName?: string,
     rootTitleEmpty?: boolean,
-    rootIcon?: string, // 文档图标
-    id?: string,  // file 必填
-    rootID?: string, // file 必填
-    position?: string, // file 或者 asset，打开位置
+    rootIcon?: string,
+    id?: string,
+    rootID?: string,
+    position?: string,
     page?: number | string, // asset
     mode?: TEditorMode // file
     action?: TProtyleAction[]
-    keepCursor?: boolean // file，是否跳转到新 tab 上
-    zoomIn?: boolean // 是否缩放
-    removeCurrentTab?: boolean // 在当前页签打开时需移除原有页签
-    openNewTab?: boolean // 使用新页签打开
-    afterOpen?: (model?: import("../layout/Model").Model) => void // 打开后回调
+    keepCursor?: boolean
+    zoomIn?: boolean
+    removeCurrentTab?: boolean
+    openNewTab?: boolean
+    afterOpen?: (model?: import("../layout/Model").Model) => void
 }
 
 interface ILayoutOptions {
@@ -770,7 +754,7 @@ interface IBlock {
 
 interface IRiffCard {
     due?: string;
-    reps?: number; // 闪卡复习次数
+    reps?: number;
 }
 
 interface IModels {
@@ -864,7 +848,7 @@ interface IAVView {
     pageSize: number;
     showIcon: boolean;
     wrapField: boolean;
-    groupHidden?: number,  // 0：显示，1：空白隐藏，2：手动隐藏
+    groupHidden?: number,
     groupFolded?: boolean,
     filters: IAVFilter[],
     sorts: IAVSort[],
@@ -889,9 +873,9 @@ interface IAVVirtualData {
 }
 
 interface IAVGallery extends IAVView {
-    coverFrom: number;    // 0：无，1：内容图，2：资源字段，3：内容块
+    coverFrom: number;
     coverFromAssetKeyID?: string;
-    cardSize: number;   // 0：小卡片，1：中卡片，2：大卡片
+    cardSize: number;
     cardAspectRatio: number;
     displayFieldName: boolean;
     fitImage: boolean;
@@ -902,9 +886,9 @@ interface IAVGallery extends IAVView {
 }
 
 interface IAVKanban extends IAVView {
-    coverFrom: number;    // 0：无，1：内容图，2：资源字段，3：内容块
+    coverFrom: number;
     coverFromAssetKeyID?: string;
-    cardSize: number;   // 0：小卡片，1：中卡片，2：大卡片
+    cardSize: number;
     cardAspectRatio: number;
     displayFieldName: boolean;
     fitImage: boolean;
@@ -916,32 +900,32 @@ interface IAVKanban extends IAVView {
 }
 
 interface IAVFilter {
-    column?: string,                                  // 叶子节点：字段（列）ID
-    operator?: TAVFilterOperator,                     // 叶子节点：操作符
-    quantifier?: string,                              // 叶子节点：量词
-    value?: IAVCellValue,                             // 叶子节点：过滤值
-    relativeDate?: IAVRelativeDate,                   // 叶子节点：相对时间
-    relativeDate2?: IAVRelativeDate,                  // 叶子节点：第二个相对时间
-    combination?: "and" | "or",                       // 分组节点：子条件组合方式
-    filters?: IAVFilter[],                            // 分组节点：子节点（递归）
+    column?: string,
+    operator?: TAVFilterOperator,
+    quantifier?: string,
+    value?: IAVCellValue,
+    relativeDate?: IAVRelativeDate,
+    relativeDate2?: IAVRelativeDate,
+    combination?: "and" | "or",
+    filters?: IAVFilter[],
 }
 
 interface IAVRelativeDate {
-    count: number;   // 数量
-    unit: number;    // 单位：0: 天、1: 周、2: 月、3: 年
-    direction: number;   // 方向：-1: 前、0: 现在、1: 后
+    count: number;
+    unit: number;
+    direction: number;
 }
 
 interface IAVGroup {
     field: string,
-    method?: number //  0: 按值分组、1: 按数字范围分组、2: 按相对日期分组、3: 按天日期分组、4: 按周日期分组、5: 按月日期分组、6: 按年日期分组
+    method?: number
     range?: {
-        numStart: number // 数字范围起始值 0
-        numEnd: number   // 数字范围结束值 1000
-        numStep: number  // 数字范围步长 100
+        numStart: number
+        numEnd: number
+        numStep: number
     }
     hideEmpty?: boolean
-    order?: number  // 升序: 0(默认), 降序: 1, 手动排序: 2, 按选项排序: 3
+    order?: number
 }
 
 interface IAVSort {
@@ -973,7 +957,6 @@ interface IAVColumn {
         autoFillNow: boolean,
         fillSpecificTime: boolean,
     }
-    // 选项列表
     options?: {
         name: string,
         color: string,
@@ -1006,7 +989,7 @@ interface IAVCell {
 interface IAVCellValue {
     keyID?: string,
     id?: string,
-    blockID?: string // 为 row id
+    blockID?: string
     type: TAVCol,
     isDetached?: boolean,
     text?: {
@@ -1039,7 +1022,7 @@ interface IAVCellValue {
     },
     checkbox?: {
         checked: boolean,
-        content?: string, // gallery 中显示 
+        content?: string,
     }
     relation?: IAVCellRelationValue
     rollup?: {
@@ -1062,7 +1045,7 @@ interface IAVCellDateValue {
     isNotEmpty2?: boolean
     hasEndDate?: boolean
     formattedContent?: string,
-    isNotTime?: boolean // 默认 true
+    isNotTime?: boolean
 }
 
 interface IAVCellSelectValue {
@@ -1083,7 +1066,7 @@ interface IAVColumnRelation {
 }
 
 interface IAVCellRollupValue {
-    relationKeyID?: string;  // 关联列 ID
+    relationKeyID?: string;
     keyID?: string;
     calc?: IAVCalc;
 }
@@ -1104,48 +1087,39 @@ interface IPublishAccessItem {
 
 interface IKernelPlugin {
     /**
-     * 内核插件的状态管理接口
      */
     state: IKernelPluginState;
 
     /**
-     * 内核插件的 JSON-RPC 调用接口
      */
     rpc: IKernelPluginRpc;
 }
 
 interface IKernelPluginState {
     /**
-     * 内核插件的当前状态
      */
     code: TKernelPluginState;
 
     /**
-     * 内核插件状态的描述信息
      */
     description: string;
 }
 
 interface IKernelPluginRpcCall {
     /**
-     * JSON-RPC 2.0 中 method 必须是 string，且插件开发者需要保证传入的方法名与内核插件绑定的方法名一致，否则可能会导致调用失败
      */
     method: TJsonRpcMethod;
 
     /**
-     * JSON-RPC 2.0 中 id 可以是 string、number 或 null，但为了兼容性和实用性，插件系统中不允许使用 null 作为 id
      *
-     * 不设置时且 notification 不为 true 时会自动生成一个唯一的 id，设置时必须保证 id 的唯一性，否则可能会导致响应错误或混乱
      */
     id?: TJsonRpcId;
 
     /**
-     * JSON-RPC 2.0 中 params 可以是 array 或 object，插件开发者需要自行保证传入参数与内核插件绑定的方法参数一致
      */
     params?: any[] | Record<string, any>;
 
     /**
-     * 是否为通知，通知不会有响应，且不应传入 id
      * @defaultValue false
      */
     notification?: boolean;
@@ -1177,49 +1151,40 @@ interface IKernelPluginRpcError {
 
 interface IKernelPluginRpc {
     /**
-     * 通过 {@link Proxy} 实现的动态方法调用，插件开发者可以直接调用 `call.方法名(params)` 来调用内核插件暴露的方法，无需关心 JSON-RPC 的细节
      */
     call: Record<TJsonRpcMethod, (...args: TJsonRpcMethodParams) => Promise<any>>;
 
     /**
-     * 通过 {@link Proxy} 实现的动态方法调用，插件开发者可以直接调用 `notify.方法名(...args)` 来发送通知给内核插件，无需关心 JSON-RPC 的细节
      */
     notify: Record<TJsonRpcMethod, (...args: TJsonRpcMethodParams) => void>;
 
     /**
-     * 批量调用方法，接受一个方法调用数组，返回一个结果数组，结果数组中的每一项对应方法调用数组中非通知的每一项，包含成功的结果或错误信息
      */
     batch: (...calls: IKernelPluginRpcCall[]) => Promise<IKernelPluginRpcError | (IKernelPluginRpcResultResponse | IKernelPluginRpcErrorResponse)[]>;
 
     /**
-     * 绑定内核插件调用时的事件处理函数，插件开发者可以通过 `bind("方法名", handler)` 来监听内核插件通过 JSON-RPC 推送到客户端插件的通知
      */
     bind: (method: TJsonRpcMethod, handler: TJsonRpcHandler<void>) => void;
 
     /**
-     * 解绑事件处理函数，插件开发者可以通过 `unbind("方法名", handler)` 来停止监听内核插件通过 JSON-RPC 推送到客户端插件的通知
      */
     unbind: (method: TJsonRpcMethod, handler: TJsonRpcHandler<void>) => void;
 }
 
 /**
- * Scribli URI 块信息接口，用于描述通过 Scribli URI 协议传递的块信息
  */
 interface IScribliUriBlockInfo {
     /**
-     * 块 ID
      */
     id: string;
 
     /**
-     * 是否聚焦该块
      * 
      * @defaultValue false
      */
     focus: boolean;
 
     /**
-     * 是否全屏显示该块
      * 
      * @defaultValue false
      */

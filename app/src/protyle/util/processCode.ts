@@ -23,17 +23,8 @@ export const processPasteCode = (html: string, text: string, originalTextHTML: s
         isCode = true;
     } else if (tempElement.childElementCount === 1 && tempElement.firstElementChild.tagName === "TABLE" &&
         tempElement.querySelector(".line-number") && tempElement.querySelector(".line-content")) {
-        // 网页源码
         isCode = true;
     }
-    /* Mac 上不好识别，先统一移除代码标识 
-    else if (originalTextHTML.indexOf('<meta name="Generator" content="Cocoa HTML Writer">') > -1 &&
-        html.indexOf('\n<p class="p1">') === 0 &&
-        //  ChatGPT app 目前没有此标识
-        originalTextHTML.indexOf('<style type="text/css">\np.p1') > -1) {
-        // Xcode
-        isCode = true;
-    }*/
 
     if (isCode) {
         const code = text || html;

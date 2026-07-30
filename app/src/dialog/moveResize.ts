@@ -125,7 +125,6 @@ export const moveResize = (element: HTMLElement, afterCB?: (type: string) => voi
                 return;
             }
             if (window.scribli.dragElement) {
-                // 反向链接拖拽 
                 window.scribli.dragElement.style.opacity = "";
                 window.scribli.dragElement = undefined;
             }

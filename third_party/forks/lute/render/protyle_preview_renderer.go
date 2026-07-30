@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -729,7 +728,6 @@ func (r *ProtylePreviewRenderer) renderFootnotesDefBlock(node *ast.Node, enterin
 func (r *ProtylePreviewRenderer) renderFootnotesDef(node *ast.Node, entering bool) ast.WalkStatus {
 	if entering {
 		// r.WriteString("<li id=\"footnotes-def-" + node.FootnotesRefId + "\">")
-		// 在 li 上带 id 后，Pandoc HTML 转换 Docx 会有问题
 		r.WriteString("<li>")
 		if 0 < len(node.FootnotesRefs) && nil != node.FirstChild {
 			refId := node.FootnotesRefs[0].FootnotesRefId
@@ -1096,7 +1094,7 @@ func (r *ProtylePreviewRenderer) renderImage(node *ast.Node, entering bool) ast.
 	if entering {
 		attrs := [][]string{{"contenteditable", "false"}, {"data-type", "img"}, {"class", "img"}}
 		parentStyle := node.IALAttr("parent-style")
-		if "" != parentStyle { // 手动设置了位置
+		if "" != parentStyle {
 			parentStyle = strings.ReplaceAll(parentStyle, "display: block;", "")
 			parentStyle = strings.TrimSpace(parentStyle)
 			if "" != parentStyle {
@@ -1583,7 +1581,7 @@ func (r *ProtylePreviewRenderer) renderTextMarkAttrs(node *ast.Node) (attrs [][]
 			attrs = append(attrs, []string{"data-subtype", "math"})
 			content := node.TextMarkInlineMathContent
 			if node.ParentIs(ast.NodeTableCell) {
-				// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+				// Improve the handling of inline-math containing `|` in the table
 				content = strings.ReplaceAll(content, "|", "&#124;")
 				content = strings.ReplaceAll(content, "\n", "<br/>")
 			}

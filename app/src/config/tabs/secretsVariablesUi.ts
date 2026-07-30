@@ -11,7 +11,6 @@ interface NamedItem {
     value: string;
 }
 
-// region 密钥区块（Secrets）
 
 export const getSecretsBlockKeywords = (): string[] => [
     window.scribli.languages.secrets,
@@ -105,7 +104,6 @@ const getSecretName = (el: HTMLElement): string | undefined =>
 
 // endregion
 
-// region 变量区块（Variables）
 
 export const getVariablesBlockKeywords = (): string[] => [
     window.scribli.languages.variables,
@@ -199,7 +197,6 @@ const getVariableName = (el: HTMLElement): string | undefined =>
 
 // endregion
 
-// region 共享渲染与弹窗
 
 interface RenderNamedItemListOptions {
     listEl: Element;

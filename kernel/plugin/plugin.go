@@ -25,6 +25,9 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/icha-senpai/note/kernel/mcp/tools"
+	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/github/asaskevich/EventBus"
 	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
 	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja_nodejs/eventloop"
@@ -32,13 +35,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sse"
 	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/third_party/forks/github/google/uuid"
-	"github.com/icha-senpai/note/kernel/mcp/tools"
-	"github.com/icha-senpai/note/kernel/model"
-	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/github/lxzan/gws"
 	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
 	"github.com/icha-senpai/note/third_party/forks/github/smallnest/chanx"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 type PluginState int64
@@ -387,7 +387,7 @@ func (p *KernelPlugin) unregisterMcpTool(name string) error {
 	return nil
 }
 
-// invokeMcpTool calls a JS handler registered via siyuan.mcp.registerTool and returns the CallToolResult.
+// invokeMcpTool calls a JS handler registered via scribli.mcp.registerTool and returns the CallToolResult.
 func (p *KernelPlugin) invokeMcpTool(handler goja.Callable, args map[string]any) (tools.CallToolResult, error) {
 	if p.State() != PluginStateRunning {
 		return tools.CallToolResult{

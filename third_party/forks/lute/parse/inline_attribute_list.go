@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -20,20 +19,19 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-// IALStart 判断 kramdown 块级内联属性列表（{: attrs}）是否开始。
 func IALStart(t *Tree, container *ast.Node) int {
 	if !t.Context.ParseOption.KramdownBlockIAL || t.Context.indented {
 		return 0
 	}
 
-	if ast.NodeListItem == t.Context.Tip.Type && nil == t.Context.Tip.FirstChild { // 在列表最终化过程中处理
+	if ast.NodeListItem == t.Context.Tip.Type && nil == t.Context.Tip.FirstChild {
 		return 0
 	}
 
 	if ial := t.parseKramdownBlockIAL(); nil != ial {
 		t.Context.closeUnmatchedBlocks()
-		t.Context.offset = t.Context.currentLineLen // 整行过
-		if util.IsDocIAL2(ial) {                    // 文档块 IAL
+		t.Context.offset = t.Context.currentLineLen
+		if util.IsDocIAL2(ial) {
 			t.Context.rootIAL = &ast.Node{Type: ast.NodeKramdownBlockIAL, Tokens: t.Context.currentLine[t.Context.nextNonspace:]}
 			t.Root.KramdownIAL = ial
 			t.Root.ID = ial[0][1]
@@ -44,28 +42,26 @@ func IALStart(t *Tree, container *ast.Node) int {
 		lastMatchedContainer := t.Context.lastMatchedContainer
 		if t.Context.allClosed {
 			if ast.NodeDocument == lastMatchedContainer.Type || ast.NodeListItem == lastMatchedContainer.Type || ast.NodeBlockquote == lastMatchedContainer.Type || ast.NodeCallout == lastMatchedContainer.Type || ast.NodeSuperBlock == lastMatchedContainer.Type {
-				lastMatchedContainer = t.Context.Tip.LastChild // 挂到最后一个子块上
+				lastMatchedContainer = t.Context.Tip.LastChild
 				if nil == lastMatchedContainer {
 					lastMatchedContainer = t.Context.lastMatchedContainer
 				}
-				if (ast.NodeSuperBlockLayoutMarker == lastMatchedContainer.Type || // 三个空块合并的超级块导出模版后使用会变成两个块  https://github.com/siyuan-note/siyuan/issues/4692
+				if (ast.NodeSuperBlockLayoutMarker == lastMatchedContainer.Type ||
 					ast.NodeKramdownBlockIAL == lastMatchedContainer.Type) &&
-					nil != lastMatchedContainer.Parent { // 两个连续的 IAL
+					nil != lastMatchedContainer.Parent {
 					tokens := IAL2Tokens(ial)
-					if !bytes.HasPrefix(lastMatchedContainer.Tokens, tokens) { // 有的块解析已经做过打断处理
-						// 在两个连续的 IAL 之间插入空段落，这样能够保持空段落
+					if !bytes.HasPrefix(lastMatchedContainer.Tokens, tokens) {
 						p := &ast.Node{Type: ast.NodeParagraph, Tokens: []byte(" ")}
 						lastMatchedContainer.InsertAfter(p)
 						t.Context.Tip = p
 						lastMatchedContainer = p
 					}
-				} else if ast.NodeBlockquoteMarker == lastMatchedContainer.Type { // 引述块下没有段落子块，需要构建一个空的段落块挂上去
+				} else if ast.NodeBlockquoteMarker == lastMatchedContainer.Type {
 					p := &ast.Node{Type: ast.NodeParagraph, Tokens: []byte(" ")}
 					lastMatchedContainer.InsertAfter(p)
 					t.Context.Tip = p
 					lastMatchedContainer = p
 				} else if ast.NodeDocument == lastMatchedContainer.Type {
-					// 第一个节点是 IAL 的话需要保留空段落
 					p := &ast.Node{Type: ast.NodeParagraph, Tokens: []byte(" ")}
 					lastMatchedContainer.AppendChild(p)
 					t.Context.Tip = p
@@ -131,8 +127,6 @@ func IAL2MapUnEsc(ial [][]string) (ret map[string]string) {
 	return
 }
 
-// mergeIALPreservingOrder 保持属性顺序合并 IAL，语义上等同于 IAL2Map+Map2IAL，
-// 但不会因为 map 无序导致输出属性顺序漂移。重复 key 会被折叠，最后一个值生效。
 func mergeIALPreservingOrder(dst, src [][]string) (ret [][]string) {
 	ret = make([][]string, 0, len(dst)+len(src))
 	indexByName := make(map[string]int, len(dst)+len(src))
@@ -178,7 +172,6 @@ func simpleCheckIsBlockIAL(tokens []byte) bool {
 }
 
 func Tokens2IAL(tokens []byte) (ret [][]string) {
-	// tokens 开头必须是空格
 	tokens = bytes.TrimRight(tokens, " \n")
 	tokens = bytes.TrimPrefix(tokens, []byte("{:"))
 	tokens = bytes.TrimSuffix(tokens, []byte("}"))
@@ -244,7 +237,7 @@ func (t *Tree) parseKramdownSpanIAL() {
 			n.KramdownIAL = ial
 			n.Next.Tokens = tokens[pos+1:]
 			if 1 > len(n.Next.Tokens) {
-				n.Next.Unlink() // 移掉空的文本节点 {: ial}
+				n.Next.Unlink()
 			}
 			spanIAL := &ast.Node{Type: ast.NodeKramdownSpanIAL, Tokens: tokens[:pos+1]}
 			n.InsertAfter(spanIAL)
@@ -262,7 +255,7 @@ func (context *Context) parseKramdownBlockIAL(tokens []byte) (ret [][]string) {
 			return
 		}
 
-		if !bytes.Equal(tokens[curlyBracesEnd:], []byte("}\n")) { // IAL 后不能存在其他内容，必须独占一行
+		if !bytes.Equal(tokens[curlyBracesEnd:], []byte("}\n")) {
 			return
 		}
 		ret = Tokens2IAL(tokens)

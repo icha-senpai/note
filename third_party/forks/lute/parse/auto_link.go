@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -26,10 +25,10 @@ func (t *Tree) parseGFMAutoEmailLink(node *ast.Node) {
 	for child := node.FirstChild; nil != child; {
 		next := child.Next
 		if ast.NodeText == child.Type && nil != child.Parent &&
-			ast.NodeLink != child.Parent.Type /* 不处理链接 label */ {
+			ast.NodeLink != child.Parent.Type  {
 			t.parseGFMAutoEmailLink0(child)
 		} else {
-			t.parseGFMAutoEmailLink(child) // 递归处理子节点
+			t.parseGFMAutoEmailLink(child)
 		}
 		child = next
 	}
@@ -41,7 +40,7 @@ func (t *Tree) parseGFMAutoLink(node *ast.Node) {
 		if ast.NodeText == child.Type {
 			t.parseGFMAutoLink0(child)
 		} else {
-			t.parseGFMAutoLink(child) // 递归处理子节点
+			t.parseGFMAutoLink(child)
 		}
 		child = next
 	}
@@ -66,20 +65,17 @@ func (t *Tree) parseGFMAutoEmailLink0(node *ast.Node) {
 	var token byte
 	length := len(tokens)
 
-	// 按空白分隔成多组并进行处理
 loopPart:
 	for i < length {
 		var group []byte
 		atIndex = 0
 		j = i
 
-		// 积攒组直到遇到空白符
 		for ; j < length; j++ {
 			token = tokens[j]
 			if !lex.IsWhitespace(token) {
 				group = append(group, tokens[j])
 				if '@' == token {
-					// 记录 @ 符号在组中的绝对位置，后面会用到
 					atIndex = j - i
 				}
 				continue
@@ -87,13 +83,11 @@ loopPart:
 			break
 		}
 		if i == j {
-			// 说明积攒组时第一个字符就是空白符，那就把这个空白符作为一个文本节点插到前面
 			t.addPreviousText(node, []byte{tokens[j]})
 			i++
 			continue
 		}
 
-		// 移动主循环下标
 		i = j
 
 		if 0 >= atIndex {
@@ -101,7 +95,6 @@ loopPart:
 			continue
 		}
 
-		// 至此说明这一组中包含了 @，可尝试进行邮件地址解析
 
 		k = 0
 		for ; k < atIndex; k++ {
@@ -112,7 +105,7 @@ loopPart:
 			}
 		}
 
-		k++ // 跳过 @ 检查后面的部分
+		k++
 		var item byte
 		for ; k < len(group); k++ {
 			item = group[k]
@@ -124,19 +117,15 @@ loopPart:
 		}
 
 		if lex.ItemDot == token {
-			// 如果以 . 结尾则剔除该 .
 			lastIndex := len(group) - 1
 			group = group[:lastIndex]
 			link := t.newLink(ast.NodeLink, group, append(mailto, group...), nil, 2)
 			node.InsertBefore(link)
-			// . 作为文本节点插入
 			t.addPreviousText(node, []byte{item})
 		} else if lex.ItemHyphen == token || lex.ItemUnderscore == token {
-			// 如果以 - 或者 _ 结尾则整个串都不能算作邮件链接
 			t.addPreviousText(node, group)
 			continue loopPart
 		} else {
-			// 以字母或者数字结尾
 			link := &ast.Node{Type: ast.NodeLink, LinkType: 2}
 			link.AppendChild(&ast.Node{Type: ast.NodeLinkText, Tokens: group})
 			link.AppendChild(&ast.Node{Type: ast.NodeLinkDest, Tokens: append(mailto, group...)})
@@ -144,7 +133,6 @@ loopPart:
 		}
 	}
 
-	// 处理完后传入的文本节点 node 已经被拆分为多个节点，所以可以移除自身
 	node.Unlink()
 	return
 }
@@ -157,7 +145,6 @@ func (t *Tree) isValidEmailSegment2(token byte) bool {
 	return lex.IsASCIILetterNumHyphen(token) || lex.ItemDot == token || lex.ItemUnderscore == token
 }
 
-// AddAutoLinkDomainSuffix 添加自动链接解析域名后缀 suffix。
 func AddAutoLinkDomainSuffix(suffix string) {
 	validAutoLinkDomainSuffix[suffix] = true
 }
@@ -165,7 +152,7 @@ func AddAutoLinkDomainSuffix(suffix string) {
 func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 	tokens := node.Tokens
 	length := len(tokens)
-	minLinkLen := 5 // 太短的情况肯定不可能有链接，最短的情况是 a://b 或者 www.xxx.xx
+	minLinkLen := 5
 	if minLinkLen > length {
 		return
 	}
@@ -178,7 +165,6 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 	for i < length {
 		token = tokens[i]
 		var protocol []byte
-		// 检查前缀
 		tmpLen := length - i
 		if 10 <= tmpLen /* www.xxx.xx */ && 'w' == tokens[i] && 'w' == tokens[i+1] && 'w' == tokens[i+2] && '.' == tokens[i+3] {
 			protocol = httpProto
@@ -199,12 +185,11 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 				continue
 			}
 
-			// 自定义协议均认为是有效的 https://github.com/siyuan-note/siyuan/issues/5865
 			protocol = append(parts[0], []byte("://")...)
 			i += len(parts[0]) + 3
 		} else {
 			textEnd++
-			if length-i < minLinkLen { // 剩余字符不足，已经不可能形成链接了
+			if length-i < minLinkLen {
 				if needUnlink {
 					if textStart < textEnd {
 						t.addPreviousText(node, tokens[textStart:])
@@ -233,10 +218,8 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 				break
 			}
 
-			// 判断端口后部分是否为数字：仅当尚未进入路径/查询/片段部分（即 url 中还未出现 / ? #）时才校验端口
 			if tmp := bytes.ReplaceAll(url, []byte("://"), nil); bytes.Contains(tmp, []byte(":")) && !bytes.ContainsAny(tmp, "/?#") {
 				tmp = tmp[bytes.Index(tmp, []byte(":"))+1:]
-				// 端口部分仅允许由数字组成，遇到 / ? # 这类路径/查询/片段起始符则结束端口解析
 				if !lex.IsDigit(token) && lex.ItemSlash != token && lex.ItemQuestion != token && lex.ItemCrosshatch != token {
 					break
 				}
@@ -244,7 +227,7 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 
 			url = append(url, token)
 		}
-		if i == j { // 第一个字符就断开了
+		if i == j {
 			if utf8.RuneSelf <= token {
 				if !www {
 					url = append(url, protocol...)
@@ -270,7 +253,6 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 			continue
 		}
 
-		// 移动主循环下标
 		i = j
 
 		k = 0
@@ -296,12 +278,10 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 		}
 
 		var openParens, closeParens int
-		// 最后一个字符如果是标点符号则剔掉
 		path := url[k:]
 		length := len(path)
 		if 0 < length {
 			var l int
-			// 统计圆括号个数
 			for l = 0; l < length; l++ {
 				token = path[l]
 				if lex.ItemOpenParen == token {
@@ -314,10 +294,8 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 			trimmed := false
 			lastToken := path[length-1]
 			if lex.ItemCloseParen == lastToken {
-				// 以 ) 结尾的话需要计算圆括号匹配
 				unmatches := closeParens - openParens
 				if 0 < unmatches {
-					// 向前移动
 					for l = length - 1; 0 < unmatches; l-- {
 						token = path[l]
 						if lex.ItemCloseParen != token {
@@ -328,14 +306,11 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 					}
 					path = path[:l+1]
 					trimmed = true
-				} else { // 右圆括号 ) 数目小于等于左圆括号 ( 数目
-					// 算作全匹配上了，不需要再处理结尾标点符号
+				} else {
 					trimmed = true
 				}
 			} else if lex.ItemSemicolon == lastToken {
-				// 检查 HTML 实体
 				foundAmp := false
-				// 向前检查 & 是否存在
 				for l = length - 1; 0 <= l; l-- {
 					token = path[l]
 					if lex.ItemAmpersand == token {
@@ -343,10 +318,9 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 						break
 					}
 				}
-				if foundAmp { // 如果 & 存在
+				if foundAmp {
 					entity := path[l:length]
 					if 3 <= len(entity) {
-						// 检查截取的子串是否满足实体特征（&;中间需要是字母或数字）
 						isEntity := true
 						for j = 1; j < len(entity)-1; j++ {
 							if !lex.IsASCIILetterNum(entity[j]) {
@@ -363,7 +337,6 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 				}
 			}
 
-			// 如果之前的 ) 或者 ; 没有命中处理，则进行结尾的标点符号规则处理，即标点不计入链接，需要剔掉
 			// Trailing punctuation (specifically, ?, !, ., ,, :, *, _, and ~) will not be considered part of the autolink, though they may be included in the interior of the link:
 			// https://github.github.com/gfm/#example-624
 			if !trimmed && ('?' == lastToken || '!' == lastToken || '.' == lastToken || ',' == lastToken || ':' == lastToken || '*' == lastToken || '_' == lastToken || '~' == lastToken) {
@@ -392,7 +365,6 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 		linkText := addr
 		if bytes.HasPrefix(linkText, []byte("https://github.com/")) {
 			if bytes.Contains(linkText, []byte("/issues/")) {
-				// 优化 GitHub Issues 自动链接文本 https://github.com/icha-senpai/note/third_party/forks/lute/issues/161
 				repo := linkText[len("https://github.com/"):]
 				repo = repo[:bytes.Index(repo, []byte("/issues/"))]
 				num := bytes.Split(linkText, []byte("/issues/"))[1]
@@ -410,7 +382,6 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 					}
 				}
 			} else if bytes.Contains(linkText, []byte("/pull/")) {
-				// 优化 GitHub Pull Requests 自动链接文本 https://github.com/icha-senpai/note/third_party/forks/lute/issues/208
 				repo := linkText[len("https://github.com/"):]
 				repo = repo[:bytes.Index(repo, []byte("/pull/"))]
 				num := bytes.Split(linkText, []byte("/pull/"))[1]
@@ -448,17 +419,15 @@ func (t *Tree) parseGFMAutoLink0(node *ast.Node) {
 	return
 }
 
-// isValidDomain 校验 GFM 规范自动链接规则中定义的合法域名。
 // https://github.github.com/gfm/#valid-domain
 func (t *Tree) isValidDomain(protocol, domain []byte) bool {
 	if 0 < len(protocol) && !bytes.Contains(protocol, httpProto) && !bytes.Contains(protocol, httpsProto) && !bytes.Contains(protocol, ftpProto) {
-		// 自定义协议均认为是有效的 https://github.com/siyuan-note/siyuan/issues/5865
 		return true
 	}
 
 	segments := lex.Split(domain, '.')
 	length := len(segments)
-	if 2 > length { // 域名至少被 . 分隔为两部分，小于两部分的话不合法
+	if 2 > length {
 		return false
 	}
 
@@ -476,7 +445,6 @@ func (t *Tree) isValidDomain(protocol, domain []byte) bool {
 				return false
 			}
 			if 2 < i && (i == length-2 || i == length-1) {
-				// 最后两个部分不能包含 _
 				if lex.ItemUnderscore == token {
 					return false
 				}
@@ -485,16 +453,16 @@ func (t *Tree) isValidDomain(protocol, domain []byte) bool {
 
 		if i == length-1 {
 			validSuffix := false
-			suffixIsDigit := true // 校验后缀是否全为数字
+			suffixIsDigit := true
 			for _, b := range segment {
 				if !lex.IsDigit(b) {
 					suffixIsDigit = false
 					break
 				}
 			}
-			if !suffixIsDigit { // 如果后缀不是数字的话检查是否在后缀可用名单中
+			if !suffixIsDigit {
 				validSuffix = validAutoLinkDomainSuffix[util.BytesToStr(segment)]
-			} else { // 后缀全为数字的话可能是 IPv4 地址
+			} else {
 				validSuffix = true
 			}
 			if !validSuffix {
@@ -644,11 +612,9 @@ var (
 	httpsProto = util.StrToBytes("https://")
 	ftpProto   = util.StrToBytes("ftp://")
 
-	// validAutoLinkDomainSuffix 作为 GFM 自动连接解析时校验域名后缀用。
 	validAutoLinkDomainSuffix = getValidDomainSuffixFromStr()
 )
 
-// getValidDomainSuffixFromStr 将字符串形式顶级域名转换为 map。
 func getValidDomainSuffixFromStr() (ret map[string]bool) {
 	ret = map[string]bool{}
 	split := strings.Split(allTLDs, "\n")
@@ -664,10 +630,6 @@ func getValidDomainSuffixFromStr() (ret map[string]bool) {
 	return
 }
 
-// 所有顶级域名(Top-Level Domain),
-// 一行对应一个,#号开头为注释;
-// xn--开头的是 Punycode,对应非英语域名; 比如中文网址"中国移动.中国" 转换后为 xn--fiq02ib9d179b.xn--fiqs8s
-// 来自: List of Top-Level Domains - ICANN
 // https://www.icann.org/resources/pages/tlds-2012-02-25-en
 var allTLDs = `
 # Version 2023021700, Last Updated Fri Feb 17 07:07:01 2023 UTC

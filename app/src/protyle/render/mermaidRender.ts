@@ -24,7 +24,7 @@ export const mermaidRender = (element: Element, cdn = Constants.PROTYLE_CDN) => 
                 },
             ]);
             const config: any = {
-                securityLevel: "loose", // 升级后无 ，可使用该选项
+                securityLevel: "loose",
                 altFontFamily: "sans-serif",
                 fontFamily: "sans-serif",
                 startOnLoad: false,
@@ -37,7 +37,7 @@ export const mermaidRender = (element: Element, cdn = Constants.PROTYLE_CDN) => 
                     diagramMarginX: 8,
                     diagramMarginY: 8,
                     boxMargin: 8,
-                    showSequenceNumbers: true // Mermaid 时序图增加序号  https://mermaid.js.org/syntax/sequenceDiagram.html#sequencenumbers
+                    showSequenceNumbers: true
                 },
                 gantt: {
                     leftPadding: 75,
@@ -102,8 +102,8 @@ const initMermaid = (mermaidElements: Element[]) => {
             svg = window.DOMPurify.sanitize(svg, {
                 USE_PROFILES: {svg: true, svgFilters: true, mathMl: true},
                 ADD_TAGS: ["foreignObject", "use", "style"],
-                ADD_ATTR: ["dominant-baseline", "xlink:href", "href"], // 保留对齐和链接属性
-                HTML_INTEGRATION_POINTS: {foreignobject: true} // 必须添加此项，否则 foreignObject 里的 HTML 内容会被清空
+                ADD_ATTR: ["dominant-baseline", "xlink:href", "href"],
+                HTML_INTEGRATION_POINTS: {foreignobject: true}
             });
             renderElement.lastElementChild.innerHTML = svg;
         } catch (e) {

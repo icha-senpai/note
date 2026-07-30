@@ -30,22 +30,22 @@ func TestHanInsensitiveRegexp(t *testing.T) {
 	}
 	for _, s := range []string{"诗经", "詩經", "诗經", "詩经"} {
 		if !re.MatchString(s) {
-			t.Errorf("hanInsensitiveRegexp(诗经) 应匹配 %q", s)
+			t.Errorf("hanInsensitiveRegexp(诗经) should match %q", s)
 		}
 	}
 	if re.MatchString("诗书") {
-		t.Errorf("hanInsensitiveRegexp(诗经) 不应匹配 诗书")
+		t.Errorf("hanInsensitiveRegexp(诗经) should not match 诗书")
 	}
 
 	re2 := regexp.MustCompile("^" + hanInsensitiveRegexp("髮") + "$")
 	for _, s := range []string{"髮", "发", "發"} {
 		if !re2.MatchString(s) {
-			t.Errorf("hanInsensitiveRegexp(髮) 应匹配 %q（发 的等价类）", s)
+			t.Errorf("hanInsensitiveRegexp(髮) should match %q as an equivalent form of 发", s)
 		}
 	}
 
 	if got := hanInsensitiveRegexp("中a1"); "中a1" != got {
-		t.Errorf("hanInsensitiveRegexp(中a1) = %q，应为原样", got)
+		t.Errorf("hanInsensitiveRegexp(中a1) = %q, should be unchanged", got)
 	}
 }
 
@@ -56,17 +56,17 @@ func TestEncloseHighlightingHanInsensitive(t *testing.T) {
 	util.SearchHanSensitive = false
 	got := EncloseHighlighting("詩經研究", []string{"诗经"}, "<mark>", "</mark>", false, false)
 	if want := "<mark>詩經</mark>研究"; want != got {
-		t.Errorf("繁简不敏感高亮 = %q, want %q", got, want)
+		t.Errorf("Han-insensitive highlighting = %q, want %q", got, want)
 	}
 
 	got = EncloseHighlighting("ABC 詩經", []string{"abc"}, "<mark>", "</mark>", false, false)
 	if want := "<mark>ABC</mark> 詩經"; want != got {
-		t.Errorf("大小写+繁简 = %q, want %q", got, want)
+		t.Errorf("case-insensitive and Han-insensitive highlighting = %q, want %q", got, want)
 	}
 
 	util.SearchHanSensitive = true
 	got = EncloseHighlighting("詩經研究", []string{"诗经"}, "<mark>", "</mark>", false, false)
 	if want := "詩經研究"; want != got {
-		t.Errorf("默认（区分繁简）不应高亮，got %q", got)
+		t.Errorf("default Han-sensitive highlighting should not mark the text, got %q", got)
 	}
 }

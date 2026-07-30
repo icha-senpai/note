@@ -103,7 +103,7 @@ func (gs *GuluStr) RemoveElem(slice []string, elem string) (ret []string) {
 
 // RemoveInvisible removes invisible characters from string str.
 func (gs *GuluStr) RemoveInvisible(str string) string {
-	str = strings.ReplaceAll(str, "\u00A0", " ") // NBSP 转换为普通空格
+	str = strings.ReplaceAll(str, "\u00A0", " ")
 	str = gs.RemoveZeroWidthCharacters(str)
 	str = gs.RemoveCtl(str)
 	return str
@@ -112,7 +112,7 @@ func (gs *GuluStr) RemoveInvisible(str string) string {
 // RemoveCtl removes all control characters from string str.
 func (*GuluStr) RemoveCtl(str string) string {
 	return strings.Map(func(r rune) rune {
-		if unicode.IsPrint(r) || '　' == r /* 全角空格 */ {
+		if unicode.IsPrint(r) || '　' == r  {
 			return r
 		}
 		return -1
@@ -340,10 +340,9 @@ func (*GuluStr) SubStr(str string, length int) (ret string) {
 
 	var count int
 	var builder strings.Builder
-	// 预估容量，减少内存重新分配
-	capacity := length * 4 // 每个 rune 最多 4 字节
+	capacity := length * 4
 	if capacity > len(str) {
-		capacity = len(str) // 但不大于原字符串长度
+		capacity = len(str)
 	}
 	builder.Grow(capacity)
 	for _, r := range str {

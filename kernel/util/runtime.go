@@ -377,9 +377,7 @@ func IsCloudDrivePath(workspaceAbsPath string) bool {
 func isKnownCloudDrivePath(workspaceAbsPath string) bool {
 	workspaceAbsPathLower := strings.ToLower(workspaceAbsPath)
 	return strings.Contains(workspaceAbsPathLower, "onedrive") || strings.Contains(workspaceAbsPathLower, "dropbox") ||
-		strings.Contains(workspaceAbsPathLower, "google drive") || strings.Contains(workspaceAbsPathLower, "pcloud") ||
-		strings.Contains(workspaceAbsPathLower, "坚果云") ||
-		strings.Contains(workspaceAbsPathLower, "天翼云")
+		strings.Contains(workspaceAbsPathLower, "google drive") || strings.Contains(workspaceAbsPathLower, "pcloud")
 }
 
 func isICloudPath(workspaceAbsPath string) (ret bool) {
@@ -473,13 +471,13 @@ func existAvailabilityStatus(workspaceAbsPath string) bool {
 		return false
 	}
 	status := strings.ToLower(value.ToString())
-	if "" == status || "availability status" == status || "可用性状态" == status {
+	if "" == status || "availability status" == status {
 		return false
 	}
 
-	if strings.Contains(status, "sync") || strings.Contains(status, "同步") ||
-		strings.Contains(status, "available on this device") || strings.Contains(status, "在此设备上可用") ||
-		strings.Contains(status, "available when online") || strings.Contains(status, "联机时可用") {
+	if strings.Contains(status, "sync") ||
+		strings.Contains(status, "available on this device") ||
+		strings.Contains(status, "available when online") {
 		logging.LogErrorf("[%s] third party sync status [%s]", checkAbsPath, status)
 		return true
 	}

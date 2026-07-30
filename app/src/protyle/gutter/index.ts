@@ -72,7 +72,6 @@ import {checkFold} from "../../util/noRelyPCFunction";
 import {clearSelect} from "../util/clear";
 import {chartRender} from "../render/chartRender";
 
-// 块类型 data-type 到本地化名称键的映射，用于块标提示中的 ${x}
 const BLOCK_TYPE_LANG_KEYS: { [key: string]: string } = {
     NodeParagraph: "paragraph",
     NodeHeading: "headings",
@@ -92,19 +91,16 @@ const BLOCK_TYPE_LANG_KEYS: { [key: string]: string } = {
     NodeAttributeView: "database",
 };
 
-// 根据块 data-type 返回本地化的类型名，用于块标拖拽提示「拖拽 ${x} 移动位置」
 const getBlockTypeName = (type: string) => {
     const langKey = BLOCK_TYPE_LANG_KEYS[type];
     if (langKey && (window.scribli.languages as { [key: string]: string })[langKey]) {
         return (window.scribli.languages as { [key: string]: string })[langKey];
     }
-    // 未知类型兜底，与拖拽 ghost 文案保持一致
     return getLangByType(type);
 };
 
 export class Gutter {
     public element: HTMLElement;
-    // 普通块标提示模板（含 ${x} 块类型占位符），反链面板使用 gutterTipBacklink
     private gutterTip: string;
     private gutterTipBacklink: string;
 
@@ -211,7 +207,6 @@ export class Gutter {
             });
             ghostElement.setAttribute("style", `position:fixed;opacity:.1;width:${selectElements[0].clientWidth}px;padding:0;`);
             document.body.append(ghostElement);
-            // 普通块（段落/标题/列表块/引用块等）拖拽时隐藏原生 ghost 并改用自定义双区跟随框；AV 行保留原生 ghost
             const isBlockDrag = !buttonElement.dataset.rowId;
             if (isBlockDrag && !window.scribli.touchDragActive) {
                 const transparentImg = new Image();
@@ -232,7 +227,6 @@ export class Gutter {
             }
             if (isBlockDrag) {
                 const text = getContenteditableElement(selectElements[0] as HTMLElement)?.textContent?.trim() || "";
-                // 数据库块若无标题，优先用当前视图名，最后兜底为"数据库"
                 let title = text;
                 if (!title && buttonElement.getAttribute("data-type") === "NodeAttributeView") {
                     title = (selectElements[0] as HTMLElement)?.querySelector(".av__views .item--focus")?.textContent?.trim() ||
@@ -261,7 +255,6 @@ export class Gutter {
             event.stopPropagation();
             hideTooltip();
             clearSelect(["cell", "img"], protyle.wysiwyg.element);
-            // 框线点击：若鼠标在块标范围内（框线::before 截获了块标点击），转发为块标菜单；否则无操作
             if (buttonElement.classList.contains("protyle-gutters__line")) {
                 if (activeBlockButton && !protyle.disabled) {
                     const br = activeBlockButton.getBoundingClientRect();
@@ -290,7 +283,6 @@ export class Gutter {
                     return;
                 }
                 if (event.altKey) {
-                    // 折叠所有子集
                     let hasFold = true;
                     Array.from(foldElement.children).find((ulElement) => {
                         if (ulElement.classList.contains("list")) {
@@ -349,7 +341,6 @@ export class Gutter {
             }
             const gutterRect = buttonElement.getBoundingClientRect();
             if (buttonElement.dataset.type === "gutterPlusBefore" || buttonElement.dataset.type === "gutterPlusAfter") {
-                // 块标边缘+号：在对应块上方/下方插入新块，复用 insertEmptyBlock（列表项自动生成新列表项）
                 if (protyle.disabled || !id) {
                     return;
                 }
@@ -448,7 +439,6 @@ export class Gutter {
                     return;
                 }
                 if (buttonElement.getAttribute("data-type") === "NodeListItem" && foldElement.parentElement.getAttribute("data-node-id")) {
-                    // 折叠同级
                     let hasFold = true;
                     Array.from(foldElement.parentElement.children).find((listItemElement) => {
                         if (listItemElement.classList.contains("li")) {
@@ -494,7 +484,6 @@ export class Gutter {
                 }
                 foldElement.classList.remove("protyle-wysiwyg--hl");
             } else if (event.shiftKey && !protyle.disabled && !isEncryptedBox(protyle.notebookId)) {
-                // 不使用 window.scribli.shiftIsPressed ，否则窗口未激活时按 Shift 点击块标无法打开属性面板 
                 openAttr(this.getNodeElement(protyle, buttonElement), "bookmark", protyle);
             } else if (!window.scribli.ctrlIsPressed && !window.scribli.altIsPressed && !window.scribli.shiftIsPressed) {
                 this.renderMenu(protyle, buttonElement);
@@ -549,9 +538,7 @@ export class Gutter {
             event.preventDefault();
             event.stopPropagation();
         });
-        // 延迟隐藏计时器，鼠标在块标/框线/+号之间移动时提供缓冲，避免中途 mouseleave 误隐藏
         let hidePlusTimeout: number;
-        // 当前悬浮的块标 button，供情况A 坐标判断（鼠标在块标内不误触发+号）
         let activeBlockButton: Element;
         const hideInsert = () => {
             activeBlockButton = undefined;
@@ -560,12 +547,10 @@ export class Gutter {
             });
         };
         this.element.addEventListener("mouseleave", (event: MouseEvent) => {
-            // 鼠标移向框线或+号时不隐藏（它们定位在容器外侧，移出容器几何范围会触发 mouseleave）
             const related = event.relatedTarget as HTMLElement;
             if (related && (related.classList.contains("protyle-gutters__line") || related.classList.contains("protyle-gutters__plus"))) {
                 return;
             }
-            // 块高亮立即移除，保持原有反馈；框线/+号延迟隐藏，避免移向它们途中误隐藏
             Array.from(protyle.wysiwyg.element.querySelectorAll(".protyle-wysiwyg--hl, .av__row--hl")).forEach(item => {
                 item.classList.remove("protyle-wysiwyg--hl", "av__row--hl");
             });
@@ -574,7 +559,6 @@ export class Gutter {
             event.preventDefault();
             event.stopPropagation();
         });
-        // 双元素交互：悬浮块标显示框线（贴边不动），悬浮框线显示+号（独立元素外偏定位）
         this.element.addEventListener("mousemove", (event: MouseEvent) => {
             const lineBefore = this.element.querySelector('.protyle-gutters__line[data-type="gutterLineBefore"]') as HTMLElement;
             const lineAfter = this.element.querySelector('.protyle-gutters__line[data-type="gutterLineAfter"]') as HTMLElement;
@@ -583,14 +567,11 @@ export class Gutter {
             if (protyle.disabled || !lineBefore || !lineAfter || !plusBefore || !plusAfter) {
                 return;
             }
-            // 情况A：鼠标在框线或+号上 → 显示对应+号，框线设透明（视觉隐藏但保留命中区，避免 display:none 导致脱离触发重置闪烁）
             const lineEl = hasClosestByClassName(event.target as Node, "protyle-gutters__line");
             const plusEl = hasClosestByClassName(event.target as Node, "protyle-gutters__plus");
             const hoverEl = lineEl || plusEl;
             if (hoverEl) {
                 window.clearTimeout(hidePlusTimeout);
-                // 鼠标若仍在块标 button 几何范围内，视为块标 hover，不触发+号
-                // 避免框线::before 扩展区侵入块标导致误把点击块标弹菜单变成插入块
                 if (activeBlockButton) {
                     const br = activeBlockButton.getBoundingClientRect();
                     if (event.clientX >= br.left && event.clientX <= br.right &&
@@ -601,7 +582,6 @@ export class Gutter {
                 const isBefore = hoverEl.getAttribute("data-type").includes("Before");
                 plusBefore.style.display = isBefore ? "" : "none";
                 plusAfter.style.display = isBefore ? "none" : "";
-                // 框线视觉隐藏（opacity:0），但 display 保持以维持命中区
                 lineBefore.style.opacity = "0";
                 lineAfter.style.opacity = "0";
                 return;
@@ -612,48 +592,37 @@ export class Gutter {
             }
             const type = buttonElement.getAttribute("data-type");
             const id = buttonElement.getAttribute("data-node-id");
-            // 情况C：非有效块标（折叠箭头、数据库行等）→ 隐藏框线与+号
             if (type === "fold" || type === "NodeAttributeViewRow" || type === "NodeAttributeViewRowMenu" || !id) {
                 hideInsert();
                 return;
             }
-            // 情况B：悬浮有效块标 → 显示框线（贴边），并预设+号位置（隐藏）
             plusBefore.dataset.nodeId = id;
             plusAfter.dataset.nodeId = id;
             activeBlockButton = buttonElement;
             const rect = buttonElement.getBoundingClientRect();
             const compressed = this.element.style.width === "24px";
-            // 竖排时不显示+号提示（清空 aria-label 避免触发 tooltip），横排时恢复
             plusBefore.setAttribute("aria-label", compressed ? "" : window.scribli.languages.insertBefore);
             plusAfter.setAttribute("aria-label", compressed ? "" : window.scribli.languages.insertAfter);
             plusBefore.style.display = "none";
             plusAfter.style.display = "none";
             if (compressed) {
-                // 竖排：压缩模式块标贴编辑区左缘，左侧紧邻 .layout__resize--lr 分栏拖拽条（z-index 4）
-                // 若 lineBefore/plusBefore 按横排逻辑外延到块标左侧，鼠标移入该区会被分栏拖拽条抢占悬浮，
-                // 导致加号无法触发。故竖排时上方/下方插入指示均置于块标右侧，上下以纵向位置区分：
-                // 上方插入指示贴图标右缘上半段，下方插入指示贴图标右缘下半段，完全避开左侧拖拽条命中区。
                 const iconRect = buttonElement.querySelector("svg").getBoundingClientRect();
                 const centerY = iconRect.top + iconRect.height / 2;
                 const lineH = Math.max(8, iconRect.height / 2 - 1);
                 const plusSize = 16;
-                // 线条/加号需落在 button rect（rect.right）外，否则 case A 会判定鼠标仍在块标内而不触发加号
                 const rightX = rect.right + 1;
-                // 上方插入：块标右侧上半段
                 lineBefore.style.display = "";
                 lineBefore.style.opacity = "1";
                 lineBefore.style.width = "2px";
                 lineBefore.style.height = `${lineH}px`;
                 lineBefore.style.left = `${rightX}px`;
                 lineBefore.style.top = `${iconRect.top - 1}px`;
-                // 下方插入：块标右侧下半段
                 lineAfter.style.display = "";
                 lineAfter.style.opacity = "1";
                 lineAfter.style.width = "2px";
                 lineAfter.style.height = `${lineH}px`;
                 lineAfter.style.left = `${rightX}px`;
                 lineAfter.style.top = `${centerY + 1}px`;
-                // +号位于右侧线条外偏，上下分开避免重叠
                 plusBefore.style.width = `${plusSize}px`;
                 plusBefore.style.height = `${plusSize}px`;
                 plusBefore.style.left = `${rightX + 4}px`;
@@ -662,10 +631,8 @@ export class Gutter {
                 plusAfter.style.height = `${plusSize}px`;
                 plusAfter.style.left = `${rightX + 4}px`;
                 plusAfter.style.top = `${centerY + 1 + lineH / 2 - plusSize / 2}px`;
-                // 竖排时隐藏块标提示，避免其遮挡右侧框线与+号
                 hideTooltip();
             } else {
-                // 横排：框线贴块标上下边缘，+号定位在外偏位置
                 const lineW = 10;
                 const left = rect.left + (rect.width - lineW) / 2;
                 const plusSize = 16;
@@ -702,7 +669,6 @@ export class Gutter {
 
     public isMatchNode(item: Element) {
         const itemRect = item.getBoundingClientRect();
-        // 原本为4，由于  改为 6
         let gutterTop = this.element.getBoundingClientRect().top + 6;
         if (itemRect.height < Math.floor(window.scribli.config.editor.fontSize * 1.625) + 8) {
             gutterTop = gutterTop - (itemRect.height - this.element.clientHeight) / 2;
@@ -1060,7 +1026,6 @@ export class Gutter {
                     addEditorToDatabase(protyle, getEditorRange(selectsElement[0]));
                 }
             }).element);
-            // 加密笔记本中的块不暴露该菜单：避免把受保护内容引入智能体会话。
             if (!isEncryptedBox(protyle.notebookId)) {
                 window.scribli.menus.menu.append(new MenuItem({
                     id: "addToAgent",
@@ -1215,7 +1180,6 @@ export class Gutter {
         }
 
         const isEmbedMenu = !!embedContext;
-        // 查询目标容器自身只允许非结构操作，子块可以在目标边界内转换、插入、复制和删除。
         const allowStructuralMutation = !protyle.disabled &&
             (!embedContext || embedContext.targetElement !== nodeElement);
         const isOnlyTargetListItem = embedContext?.targetElement?.getAttribute("data-type") === "NodeList" &&
@@ -1617,7 +1581,6 @@ export class Gutter {
         }
         this.appendAddToDatabaseMenu(protyle, nodeElement);
         if (!protyle.disabled) {
-            // 加密笔记本中的块不暴露该菜单：避免把受保护内容引入智能体会话。
             if (!isEncryptedBox(protyle.notebookId)) {
                 window.scribli.menus.menu.append(new MenuItem({
                     id: "addToAgent",
@@ -1846,7 +1809,6 @@ export class Gutter {
                 click() {
                     const avId = nodeElement.getAttribute("data-av-id");
                     const notebookId = protyle.notebookId;
-                    // 加密笔记本的 AV 定义存笔记本级路径
                     const avDir = isEncryptedBox(notebookId)
                         ? path.join(window.scribli.config.system.dataDir, notebookId, "storage", "av")
                         : path.join(window.scribli.config.system.dataDir, "storage", "av");
@@ -2318,7 +2280,6 @@ export class Gutter {
                         protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`[data-node-id="${operation.id}"]`).forEach((itemElement) => {
                             itemElement.outerHTML = operation.data;
                         });
-                        // 使用 outer 后元素需要重新查询
                         protyle.wysiwyg.element.querySelectorAll<HTMLElement>(`[data-node-id="${operation.id}"]`).forEach((itemElement) => {
                             mathRender(itemElement);
                         });
@@ -2813,7 +2774,6 @@ export class Gutter {
             accelerator: window.scribli.config.keymap.editor.general.copyText.custom,
             label: window.scribli.languages.copyText,
             click() {
-                // 用于标识复制文本 *
                 selectsElement[0].setAttribute("data-reftext", "true");
                 focusByRange(getEditorRange(selectsElement[0]));
                 document.execCommand("copy");
@@ -2826,7 +2786,6 @@ export class Gutter {
         if (protyle.title && protyle.title.element.getAttribute("data-render") !== "true") {
             return;
         }
-        // 防止划选时触碰图标导致 hl 无法移除
         const selectElement = protyle.element.querySelector(".protyle-select");
         if (selectElement && !selectElement.classList.contains("fn__none")) {
             return;
@@ -2870,10 +2829,8 @@ export class Gutter {
                     }
                 }
                 if (index === 0) {
-                    // 不单独显示，要不然在块的间隔中，gutter 会跳来跳去的
                     if (["NodeBlockquote", "NodeList", "NodeCallout", "NodeSuperBlock"].includes(type)) {
                         if (target && type === "NodeCallout") {
-                            // Callout 标题需显示
                             const calloutInfoElement = hasTopClosestByClassName(target, "callout-info");
                             if (calloutInfoElement) {
                                 element = calloutInfoElement;
@@ -2887,30 +2844,24 @@ export class Gutter {
 
                     let topElement = getTopAloneElement(nodeElement);
                     if (embedContext && !embedContext.boundaryElement.contains(topElement)) {
-                        // 单独查询列表项时，渲染器生成的无 ID 列表包装节点不属于可操作边界。
                         topElement = embedContext.targetElement || nodeElement;
                     }
-                    //  第二点
                     if (topElement === nodeElement.parentElement && nodeElement.childElementCount > 3 &&
                         nodeElement.classList.contains("li")) {
                         topElement = nodeElement;
                     }
-                    // 提示下方仅有单个列表
                     if (topElement.classList.contains("callout") && !nodeElement.classList.contains("callout") &&
                         getParentBlock(nodeElement) !== topElement) {
                         topElement = topElement.querySelector("[data-node-id]");
                     }
                     listItem = topElement.querySelector(".li") || topElement.querySelector(".list");
-                    // 嵌入块中有列表时块标显示位置错误 
                     if ((!embedContext && isInEmbedBlock(listItem)) || isInAVBlock(listItem) ||
                         hasClosestByClassName(nodeElement, "callout")) {
                         listItem = undefined;
                     }
-                    // 标题（除列表下的）、提示下的块必须显示
                     if (topElement !== nodeElement && type !== "NodeHeading" && !hasClosestByClassName(nodeElement, "callout")) {
                         while (nodeElement !== topElement) {
                             nodeElement = nodeElement.parentElement;
-                            // > > > > 1 left 位置
                             if (nodeElement.parentElement.classList.contains("bq")) {
                                 space += 10;
                             }
@@ -2922,12 +2873,9 @@ export class Gutter {
                 }
                 // - > # 1 \n  > 2
                 if (type === "NodeListItem" && index > 0) {
-                    // 列表项内的块不显示块标
                     html = "";
                 }
                 index += 1;
-                // 按块类型与是否反链面板生成提示，${x} 替换为该块的本地化类型名（如「段落/表格/超级块」）
-                // 使用回调返回值，避免类型名中可能的 $ 字符被当作替换模式
                 let gutterTip = (protyle.options.backlinkData ? this.gutterTipBacklink : this.gutterTip)
                     .replace("${x}", () => getBlockTypeName(type));
                 if (embedContext) {
@@ -2967,20 +2915,16 @@ data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold 
                 if (["NodeBlockquote", "NodeCallout"].includes(type)) {
                     space += 10;
                 }
-                // 前一个块兄弟（跳过 sb__resize 拖拽手柄，手柄无 data-node-id）
                 let previousBlock = nodeElement.previousElementSibling;
                 while (previousBlock && !previousBlock.getAttribute("data-node-id")) {
                     previousBlock = previousBlock.previousElementSibling;
                 }
                 if ((previousBlock && previousBlock.getAttribute("data-node-id")) ||
                     nodeElement.parentElement.classList.contains("callout-content")) {
-                    // 前一个块存在时，只显示到当前层级
                     hideParent = true;
-                    // 由于折叠块的第二个子块在界面上不显示，因此移除块标 
                     if (parentElement && parentElement.getAttribute("fold") === "1") {
                         return;
                     }
-                    // 列表项中的引述块中的第二个段落块块标和引述块左侧样式重叠
                     if (parentElement && ["NodeBlockquote", "NodeCallout"].includes(parentElement.getAttribute("data-type"))) {
                         space += 10;
                     }
@@ -2997,7 +2941,6 @@ data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold 
             }
         }
         let match = true;
-        // 统计时排除块标边缘框线与+号元素，它们由 render 末尾单独追加，不参与防抖比较
         const buttonsElement = this.element.querySelectorAll("button:not(.protyle-gutters__line):not(.protyle-gutters__plus)");
         if (buttonsElement.length !== html.split("</button>").length - 1) {
             match = false;
@@ -3019,7 +2962,6 @@ data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold 
                 }
             });
         }
-        // 防止抖动 
         if (match && this.element.childElementCount > 0) {
             this.element.classList.remove("fn__none");
             return;
@@ -3055,20 +2997,16 @@ data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold 
         this.element.style.top = `${Math.max(rect.top + marginHeight, contentTop, foldElement ? foldElement.getBoundingClientRect().top : 0)}px`;
         let left = rect.left - this.element.clientWidth - space;
         if ((nodeElement.getAttribute("data-type") === "NodeBlockQueryEmbed" && this.element.childElementCount === 1)) {
-            // 嵌入块为列表时
             left = nodeElement.getBoundingClientRect().left - this.element.clientWidth - space;
         } else if (element.classList.contains("av__row")) {
-            // 为数据库行
             left = nodeElement.getBoundingClientRect().left - this.element.clientWidth - space + parseInt(getComputedStyle(nodeElement).paddingLeft);
         }
         this.element.style.left = `${left}px`;
         if (left < this.element.parentElement.getBoundingClientRect().left) {
             this.element.style.width = "24px";
-            // 需加 2，否则和折叠标题无法对齐
             this.element.style.left = `${rect.left - this.element.clientWidth - space / 2 + 3}px`;
             html = "";
             Array.from(this.element.children).reverse().forEach((item, index) => {
-                // 跳过块标边缘框线与+号元素，避免被压缩重排
                 if (item.classList.contains("protyle-gutters__line") || item.classList.contains("protyle-gutters__plus")) {
                     return;
                 }
@@ -3083,23 +3021,16 @@ data-type="fold" style="cursor:inherit;"><svg style="width: 10px;${fold && fold 
                 item.style.height = "";
             });
         }
-        // 追加块标边缘悬浮触发的插入元素（默认隐藏，悬浮块标显示线条，悬浮线条变+号），由 mousemove 定位
-        // 追加块标边缘的框线（悬浮块标显示）与+号（悬浮框线显示），默认隐藏，由 mousemove 定位
-        // 双元素：框线贴块标边缘不移动（避免闪烁），+号独立定位在外偏位置，tooltip 基于+号元素对齐
         if (!embedContext) {
             this.element.insertAdjacentHTML("beforeend", `<button class="protyle-gutters__line" data-type="gutterLineBefore" style="display:none"></button><button class="protyle-gutters__line" data-type="gutterLineAfter" style="display:none"></button><button class="protyle-gutters__plus ariaLabel" data-type="gutterPlusBefore" data-position="4west" aria-label="${window.scribli.languages.insertBefore}" style="display:none"><svg><use xlink:href="#iconAdd"></use></svg></button><button class="protyle-gutters__plus ariaLabel" data-type="gutterPlusAfter" data-position="4west" aria-label="${window.scribli.languages.insertAfter}" style="display:none"><svg><use xlink:href="#iconAdd"></use></svg></button>`);
         }
     }
 }
 
-// 仅声明调用所需的最小接口，避免在 gutter 中 import AgentChat 类而引入
-// gutter → AgentChat → platformUtils → compatibility → gutter 的循环依赖（TDZ）。
 interface AgentChatLike {
     insertBlockMentions: (mentions: Array<{ id: string; label: string }>) => void;
 }
 
-// 将选中的块以 @ 引用形式追加到智能体会话发送框末尾，等价于拖拽块到发送框或在框内 @ 搜索选块。
-// 仅桌面端可用：智能体面板（dock）在移动端不存在。
 export const addBlockToAgent = async (blockIds: string[]) => {
     const ids = blockIds.filter(Boolean);
     if (ids.length === 0) {
@@ -3109,12 +3040,9 @@ export const addBlockToAgent = async (blockIds: string[]) => {
     if (!dock) {
         return;
     }
-    // 智能体面板首次打开前 dock.data.agentChat 是占位值（非 AgentChat 实例）。
     const isReady = (m: unknown): m is AgentChatLike =>
         !!m && typeof (m as AgentChatLike).insertBlockMentions === "function";
     let agentChat = dock.data.agentChat;
-    // 实例未就绪（面板从未打开）或面板被折叠时，先 toggleModel 打开/展开：
-    // show=true 既会同步 new AgentChat() 构造常驻实例，也会把折叠的面板重新展开。
     const dockItem = document.querySelector(".dock__item[data-type=\"agentChat\"]");
     const isCollapsed = !dockItem || !dockItem.classList.contains("dock__item--active");
     if (!isReady(agentChat) || isCollapsed) {
@@ -3122,10 +3050,8 @@ export const addBlockToAgent = async (blockIds: string[]) => {
         agentChat = dock.data.agentChat;
     }
     if (!isReady(agentChat)) {
-        // 极端情况下实例仍未就绪，放弃插入避免报错。
         return;
     }
-    // 用 getRefText API 并行获取每个块的引用文本作为 label（与 @ 搜索、拖拽一致），失败时回退到 blockId。
     const mentions: Array<{ id: string; label: string }> = [];
     await Promise.all(ids.map(async (id) => {
         let label = id;

@@ -23,7 +23,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
-// diffUpsertRemove 比较 left 多于/变动 right 的文件以及 left 少于 right 的文件。
 func (repo *Repo) diffUpsertRemove(left, right []*entity.File, log bool) (upserts, removes []*entity.File) {
 	l := map[string]*entity.File{}
 	r := map[string]*entity.File{}
@@ -77,7 +76,6 @@ type LeftRightDiff struct {
 	RemovesRight []*entity.File
 }
 
-// DiffIndex 返回索引 left 比索引 right 新增、更新和删除的文件列表。
 func (repo *Repo) DiffIndex(leftIndexID, rightIndexID string) (ret *LeftRightDiff, err error) {
 	leftIndex, err := repo.GetIndex(leftIndexID)
 	if nil != err {

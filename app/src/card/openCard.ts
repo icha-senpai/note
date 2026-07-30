@@ -54,8 +54,7 @@ export const genCardHTML = (options: {
     cardsData: ICardData,
     isTab: boolean
 }) => {
-    let iconsHTML: string;
-    iconsHTML = `<div class="block__icons">
+    const iconsHTML = `<div class="block__icons">
         ${options.isTab ? '<div class="fn__flex-1"></div>' : `<div class="block__logo block__logo--icon">
             <svg class="block__logoicon"><use xlink:href="#iconRiffCard"></use></svg>${window.scribli.languages.riffCard}
         </div>`}
@@ -548,7 +547,6 @@ export const bindCardEvent = async (options: {
                             }
                         }];
                         ipcRenderer.send(Constants.SCRIBLI_OPEN_WINDOW, {
-                            // 需要 encode， 否则 
                             url: `${window.location.protocol}//${window.location.host}/stage/build/app/window.html?v=${Constants.SCRIBLI_VERSION}&json=${encodeURIComponent(JSON.stringify(json))}`
                         });
                         options.dialog.destroy();
@@ -659,7 +657,7 @@ export const bindCardEvent = async (options: {
         event.preventDefault();
         event.stopPropagation();
         hideElements(["toolbar", "hint", "util", "gutter"], editor.protyle);
-        if (type === "-1") {    // 显示答案
+        if (type === "-1") {
             if (actionElements[0].classList.contains("fn__none")) {
                 type = "3";
             } else {
@@ -675,7 +673,7 @@ export const bindCardEvent = async (options: {
                 emitEvent(options.app, currentCard, type);
                 return;
             }
-        } else if (type === "-2") {    // 上一步
+        } else if (type === "-2") {
             if (index > 0) {
                 index--;
                 nextCard({

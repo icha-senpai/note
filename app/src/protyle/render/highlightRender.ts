@@ -8,7 +8,6 @@ export const highlightRender = (element: Element, cdn = Constants.PROTYLE_CDN, z
     let codeElements: NodeListOf<Element>;
     let isPreview = false;
     if (element.classList.contains("code-block")) {
-        // 编辑器内代码块编辑渲染
         codeElements = element.querySelectorAll(".hljs");
     } else {
         if (element.classList.contains("item__readme")) {
@@ -50,7 +49,6 @@ export const highlightRender = (element: Element, cdn = Constants.PROTYLE_CDN, z
                     while (previousSibling) {
                         startIndex += previousSibling.textContent.length;
                         while (!previousSibling.previousSibling && previousSibling.parentElement.tagName !== "DIV") {
-                            // 高亮 span 中输入
                             previousSibling = previousSibling.parentElement;
                         }
                         previousSibling = previousSibling.previousSibling;
@@ -79,7 +77,6 @@ export const highlightRender = (element: Element, cdn = Constants.PROTYLE_CDN, z
                     hljsElement.style.setProperty("white-space", "pre-wrap");
                     hljsElement.style.setProperty("word-break", "break-word");
                 } else {
-                    //  该属性会导致有 tab 后光标跳至末尾，目前无解
                     hljsElement.style.setProperty("white-space", "pre");
                     hljsElement.style.setProperty("word-break", "initial");
                 }
@@ -91,7 +88,6 @@ export const highlightRender = (element: Element, cdn = Constants.PROTYLE_CDN, z
                 const codeText = hljsElement.textContent;
                 if (block.firstElementChild) {
                     if (!isPreview && (lineNumber === "true" || (lineNumber !== "false" && window.scribli.config.editor.codeSyntaxHighlightLineNum))) {
-                        // 需要先添加 class 以防止抖动 
                         block.firstElementChild.className = "protyle-linenumber__rows";
                         block.firstElementChild.setAttribute("contenteditable", "false");
                         lineNumberRender(block, zoom);
@@ -129,7 +125,6 @@ export const lineNumberRender = (hljsElement: HTMLElement, zoom = 1) => {
     if (hljsElement.firstElementChild.clientHeight === codeElement.clientHeight && codeElement.style.wordBreak !== "break-word") {
         return;
     }
-    // clientHeight 总是取的整数
     hljsElement.parentElement.style.lineHeight = `${((parseInt(hljsElement.parentElement.style.fontSize) || window.scribli.config.editor.fontSize) * 1.625 * 0.85).toFixed(0)}px`;
     const lineList = codeElement.textContent.split(/\r\n|\r|\n|\u2028|\u2029/g);
     if (lineList[lineList.length - 1] === "" && lineList.length > 1) {
@@ -139,12 +134,9 @@ export const lineNumberRender = (hljsElement: HTMLElement, zoom = 1) => {
     codeElement.style.paddingLeft = `${hljsElement.firstElementChild.clientWidth + 16}px`;
     let lineNumberHTML = "";
     if (codeElement.style.wordBreak === "break-word") {
-        // 代码块开启了换行
         const codeElementStyle = window.getComputedStyle(codeElement);
         const lineNumberTemp = document.createElement("div");
         lineNumberTemp.className = "hljs";
-        // 不能使用 codeElement.clientWidth，被忽略小数点导致宽度不一致
-        // 需要手动复制字体样式 
         lineNumberTemp.innerHTML = `<div contenteditable="true" style="padding-left:${codeElement.style.paddingLeft};
 width: ${codeElement.getBoundingClientRect().width / zoom}px;
 white-space:${codeElementStyle.whiteSpace};

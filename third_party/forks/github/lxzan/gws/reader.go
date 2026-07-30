@@ -8,10 +8,8 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/github/lxzan/gws/internal"
 )
 
-// 检查掩码设置是否符合 RFC6455 协议。
 // Checks if the mask setting complies with the RFC6455 protocol.
 func (c *Conn) checkMask(enabled bool) error {
-	// RFC6455: 所有从客户端发送到服务器的帧都必须设置掩码位为 1。
 	// RFC6455: All frames sent from client to server must have the mask bit set to 1.
 	if (c.isServer && !enabled) || (!c.isServer && enabled) {
 		return internal.CloseProtocolError
@@ -19,23 +17,19 @@ func (c *Conn) checkMask(enabled bool) error {
 	return nil
 }
 
-// 读取控制帧
 // Reads a control frame
 func (c *Conn) readControl() error {
-	// RFC6455: 控制帧本身不能被分片。
 	// RFC6455: Control frames themselves MUST NOT be fragmented.
 	if !c.fh.GetFIN() {
 		return internal.CloseProtocolError
 	}
 
-	// RFC6455: 所有控制帧的有效载荷长度必须为 125 字节或更少，并且不能被分片。
 	// RFC6455: All control frames MUST have a payload length of 125 bytes or fewer and MUST NOT be fragmented.
 	var n = c.fh.GetLengthCode()
 	if n > internal.ThresholdV1 {
 		return internal.CloseProtocolError
 	}
 
-	// 不回收小块 buffer，控制帧一般 payload 长度为 0
 	// Do not recycle small buffers, control frames generally have a payload length of 0
 	var payload []byte
 	if n > 0 {
@@ -62,10 +56,8 @@ func (c *Conn) readControl() error {
 	}
 }
 
-// 读取消息
 // Reads a message
 func (c *Conn) readMessage() error {
-	// 解析帧头并获取内容长度
 	// Parse the frame header and get the content length
 	contentLength, err := c.fh.Parse(c.br)
 	if err != nil {
@@ -75,9 +67,6 @@ func (c *Conn) readMessage() error {
 		return internal.CloseMessageTooLarge
 	}
 
-	// RSV1, RSV2, RSV3: 每个占 1 位
-	// 必须为 0，除非协商的扩展定义了非零值的含义。
-	// 如果接收到非零值且没有协商的扩展定义该非零值的含义，接收端点必须关闭 WebSocket 连接。
 	// RSV1, RSV2, RSV3: 1 bit each
 	// MUST be 0 unless an extension is negotiated that defines meanings for non-zero values.
 	// If a nonzero value is received and none of the negotiated extensions defines the meaning of such a nonzero value,
@@ -122,7 +111,6 @@ func (c *Conn) readMessage() error {
 		return c.emitMessage(&Message{Opcode: opcode, Data: buf, compressed: compressed})
 	}
 
-	// 处理分片消息
 	// processing segmented messages
 	if !fin && opcode != OpcodeContinuation {
 		c.continuationFrame.initialized = true
@@ -147,7 +135,6 @@ func (c *Conn) readMessage() error {
 	return c.emitMessage(msg)
 }
 
-// 分发消息和异常恢复
 // Dispatch message & Recovery
 func (c *Conn) dispatchMessage(msg *Message) error {
 	defer c.config.Recovery(c.config.Logger)
@@ -155,11 +142,8 @@ func (c *Conn) dispatchMessage(msg *Message) error {
 	return nil
 }
 
-// 分发控制帧事件并进行异常恢复
 // Dispatch control-frame events with recovery
 //
-// 控制帧(Ping/Pong/Close)的回调如果发生 panic，不应直接导致 ReadLoop 崩溃；
-// 因此这里统一通过 Config.Recovery 进行兜底。
 func (c *Conn) dispatchControl(opcode Opcode, payload []byte, err error) error {
 	defer c.config.Recovery(c.config.Logger)
 	switch opcode {
@@ -173,7 +157,6 @@ func (c *Conn) dispatchControl(opcode Opcode, payload []byte, err error) error {
 	return nil
 }
 
-// 发射消息事件
 // Emit onmessage event
 func (c *Conn) emitMessage(msg *Message) (err error) {
 	if msg.compressed {

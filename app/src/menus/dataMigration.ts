@@ -84,8 +84,7 @@ const exportData = async () => {
 export const openDataMigration = (options: IDataMigrationOptions = {}) => {
     const mode = options.mode || "manage";
     const hasRepoKey = Boolean(window.scribli.config.repo.key);
-    const helpNotebookIDs = Object.values(Constants.HELP_PATH);
-    const notebooks = window.scribli.notebooks.filter((item) => !item.closed && !helpNotebookIDs.includes(item.id));
+    const notebooks = window.scribli.notebooks.filter((item) => !item.closed);
     const selectedNotebookID = notebooks.some((item) => item.id === options.notebookID) ? options.notebookID : notebooks[0]?.id;
     const notebookOptions = notebooks.map((item) =>
         `<option value="${item.id}"${item.id === selectedNotebookID ? " selected" : ""}>${escapeHtml(item.name)}</option>`).join("");

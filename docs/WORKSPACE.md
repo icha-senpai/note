@@ -234,7 +234,7 @@ Most entries are optional and are created only when the corresponding feature is
 Two coexisting locations:
 
 1. **Global `data/assets/`** — the main one. Naming convention looks like `<original-base>-<NodeID>.<ext>` (e.g. `640-20240927104411-0jh7x96.webp`). Referenced inside documents as the relative path `assets/xxx`.
-2. **Per-notebook `<notebook>/assets/`** — used by the built-in guide and required for encrypted notebooks; ordinary unencrypted user notebooks generally don't have one.
+2. **Per-notebook `<notebook>/assets/`** — required for encrypted notebooks; ordinary unencrypted user notebooks generally don't have one.
 
 Asset-link prefix recognition: only `assets/`, `emojis/`, `plugins/`, `public/`, and `widgets/` are accepted as legal asset-link prefixes.
 

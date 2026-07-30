@@ -41,7 +41,6 @@ export const exportAsset = (src: string) => {
     };
 };
 
-// 复制资源文件到系统剪贴板，在文件资源管理器中可粘贴为文件（仅 Windows、macOS 桌面端支持）
 export const writeAssetToClipboard = (src: string) => {
     /// #if !BROWSER
     if (["windows", "darwin"].includes(window.scribli.config.system.os)) {
@@ -204,8 +203,6 @@ export const openEditorTab = (app: App, ids: string[], notebookId?: string, path
 };
 
 export const copyPNGByLink = (link: string) => {
-    // 通过 fetch 拿到 blob 后再写入剪贴板，避免跨域图片直接 drawImage 污染 canvas 导致 toBlob 失败
-    // （浏览器访问 Docker 部署时常见，报错：Tainted canvases may not be exported）
     const writePNGBlob = (blob: Blob) => {
         try {
             navigator.clipboard.write([
@@ -217,11 +214,9 @@ export const copyPNGByLink = (link: string) => {
                 showMessage(window.scribli.languages.clipboardPermissionDenied);
             });
         } catch (e) {
-            // http 等非安全上下文下 navigator.clipboard 可能为 undefined，这里会同步抛错
             showMessage(window.scribli.languages.clipboardPermissionDenied);
         }
     };
-    // 把任意图片 blob 画进 canvas 再导出为 PNG；blob URL 为同源，不会污染 canvas
     const blobToPNGClipboard = (blob: Blob) => {
         if (blob.type === "image/png") {
             writePNGBlob(blob);
@@ -252,7 +247,6 @@ export const copyPNGByLink = (link: string) => {
         }
         blobToPNGClipboard(await response.blob());
     }).catch(() => {
-        // fetch 失败时回退：以 CORS 模式加载后再导出（需目标服务器返回 ACAO）
         const canvas = document.createElement("canvas");
         const tempElement = document.createElement("img");
         tempElement.crossOrigin = "anonymous";

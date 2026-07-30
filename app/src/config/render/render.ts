@@ -109,7 +109,6 @@ export const genButtonHtml = (id: string, label: string, icon: string): string =
 const genSwitchInputHtml = (id: string, checked: boolean): string =>
     `<input class="b3-switch" id="${id}" type="checkbox"${checked ? " checked" : ""}/>`;
 
-/** 按钮行 */
 export const genButtonRowHtml = (
     id: string,
     title: string,
@@ -123,7 +122,6 @@ export const genButtonRowHtml = (
     ${genButtonHtml(id, label, icon)}
 </div>`;
 
-/** 双文本框行 */
 export const genTextPairHtml = (
     title: string,
     desc: string,
@@ -161,7 +159,6 @@ const genStackLeft = (left: StackLeft, hasRight: boolean): string => {
     return `<div class="fn__flex-center fn__flex-1${left.kind === "desc" ? " ft__on-surface" : " config-name"}">${left.text}</div>`;
 };
 
-/** 纵向堆叠行 */
 export const genStackHtml = (lines: StackLine[]): string => {
     const parts: string[] = [];
     lines.forEach((line, index) => {
@@ -183,7 +180,6 @@ export const genStackHtml = (lines: StackLine[]): string => {
     return `<div class="b3-label config-item">${parts.join("")}</div>`;
 };
 
-/** `config-query` 成组开关 / 数字框 */
 export const genSwitchQueryHtml = (title: string, items: SwitchQueryItem[], footer?: string): string =>
     `<div class="b3-label config-item">
     ${genConfigItemName(title)}
@@ -276,11 +272,9 @@ export const genConfigGroup = (itemsHtml: string, title?: string, attrs?: Record
 
 type GroupedItemsView = {
     html: string;
-    /** 与 html 中 DOM 顺序一致 */
     items: MountableSettingItem[];
 };
 
-/** 按分组构建 HTML 与条目列表（mount 单次遍历共用） */
 export const buildGroupedItemsView = (tabId: string): GroupedItemsView => {
     const parts: string[] = [];
     const items: MountableSettingItem[] = [];

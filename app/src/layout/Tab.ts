@@ -67,13 +67,12 @@ export class Tab {
                     tabElement.style.opacity = "1";
                 }
                 /// #if !BROWSER
-                // 拖拽到屏幕外
                 setTimeout(() => {
                     if (document.body.contains(this.panelElement) &&
                         (event.clientX < 0 || event.clientY < 0 || event.clientX > window.innerWidth || event.clientY > window.innerHeight)) {
                         openNewWindow(this);
                     }
-                }, Constants.TIMEOUT_LOAD); // 等待主进程发送关闭消息
+                }, Constants.TIMEOUT_LOAD);
                 ipcRenderer.send(Constants.SCRIBLI_SEND_WINDOWS, {cmd: "resetTabsStyle", data: "rmDragStyle"});
                 /// #else
                 document.querySelectorAll(".layout-tab-bars--drag").forEach(item => {
@@ -85,7 +84,6 @@ export class Tab {
                 /// #endif
                 window.scribli.dragElement = undefined;
                 if (event.dataTransfer.dropEffect === "none") {
-                    // 按 esc 取消的时候应该还原在 dragover 时交换的 tab
                     this.parent.children.forEach((item, index) => {
                         const currentElement = this.headElement.parentElement.children[index];
                         if (item.headElement !== currentElement) {
@@ -129,7 +127,7 @@ export class Tab {
 
     public pin() {
         if (!this.headElement.previousElementSibling || (this.headElement.previousElementSibling && this.headElement.previousElementSibling.classList.contains("item--pin"))) {
-            // 如果是第一个，或者前一个是 pinned，则不处理
+            // Intentionally empty.
         } else {
             let tempTab: Tab;
             let pinIndex = 0;
@@ -171,7 +169,6 @@ export class Tab {
                 this.headElement.querySelector(".item__text").classList.add("fn__none");
             }
         } else {
-            // 添加图标后刷新界面，没有 icon
             this.headElement.querySelector(".item__icon")?.remove();
             this.headElement.querySelector(".item__text").classList.remove("fn__none");
         }
@@ -179,7 +176,7 @@ export class Tab {
 
     public unpin() {
         if (!this.headElement.nextElementSibling || (this.headElement.nextElementSibling && !this.headElement.nextElementSibling.classList.contains("item--pin"))) {
-            // 如果是最后一个，或者后一个是 unpinned，则不处理
+            // Intentionally empty.
         } else {
             let tempTab: Tab;
             let pinIndex = 0;

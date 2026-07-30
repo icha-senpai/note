@@ -1,4 +1,3 @@
-// Encryption - AES-GCM 端到端加密
 // Copyright (c) 2021-present, b3log.org
 //
 // Encryption is licensed under Mulan PSL v2.

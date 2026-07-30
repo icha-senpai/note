@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -380,7 +379,7 @@ func (r *ProtyleExportDocxRenderer) getTextMarkTextContent(node *ast.Node) (ret 
 	}
 
 	if node.ParentIs(ast.NodeTableCell) {
-		// Improve the handling of inline-math containing `|` in the table https://github.com/siyuan-note/siyuan/issues/9227
+		// Improve the handling of inline-math containing `|` in the table
 		ret = strings.ReplaceAll(ret, "|", "&#124;")
 		ret = strings.ReplaceAll(ret, "\n", "<br />")
 	}
@@ -808,7 +807,6 @@ func (r *ProtyleExportDocxRenderer) renderFootnotesDefBlock(node *ast.Node, ente
 func (r *ProtyleExportDocxRenderer) renderFootnotesDef(node *ast.Node, entering bool) ast.WalkStatus {
 	if entering {
 		// r.WriteString("<li id=\"footnotes-def-" + node.FootnotesRefId + "\">")
-		// 在 li 上带 id 后，Pandoc HTML 转换 Docx 会有问题
 		r.WriteString("<li>")
 		if 0 < len(node.FootnotesRefs) && nil != node.FirstChild {
 			refId := node.FootnotesRefs[0].FootnotesRefId

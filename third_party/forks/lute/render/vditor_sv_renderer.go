@@ -1,4 +1,3 @@
-// Lute - 一款结构化的 Markdown 引擎，支持 Go 和 JavaScript
 // Copyright (c) 2019-present, b3log.org
 //
 // Lute is licensed under Mulan PSL v2.
@@ -23,11 +22,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 )
 
-// VditorSVRenderer 描述了 Vditor Split-View DOM 渲染器。
 type VditorSVRenderer struct {
 	*BaseRenderer
-	nodeWriterStack []*bytes.Buffer // 节点输出缓冲栈
-	LastOut         []byte          // 最新输出的 newline 长度个字节
+	nodeWriterStack []*bytes.Buffer
+	LastOut         []byte
 }
 
 var NewlineSV = []byte("<span data-type=\"newline\"><br /><span style=\"display: none\">\n</span></span>")
@@ -67,7 +65,6 @@ func (r *VditorSVRenderer) Newline() {
 	}
 }
 
-// NewVditorSVRenderer 创建一个 Vditor Split-View DOM 渲染器
 func NewVditorSVRenderer(tree *parse.Tree, options *Options, parseOptions *parse.Options) *VditorSVRenderer {
 	ret := &VditorSVRenderer{BaseRenderer: NewBaseRenderer(tree, options, parseOptions)}
 	ret.RendererFuncs[ast.NodeDocument] = ret.renderDocument
@@ -625,7 +622,7 @@ func (r *VditorSVRenderer) renderTable(node *ast.Node, entering bool) ast.WalkSt
 		r.Write(NewlineSV)
 		r.Tag("/span", nil, false)
 	}
-	return ast.WalkSkipChildren // 不支持表格内的行级渲染
+	return ast.WalkSkipChildren
 }
 
 func (r *VditorSVRenderer) renderStrikethrough(node *ast.Node, entering bool) ast.WalkStatus {
@@ -887,7 +884,6 @@ func (r *VditorSVRenderer) renderParagraph(node *ast.Node, entering bool) ast.Wa
 		r.Newline()
 		grandparent := node.Parent.Parent
 		if inTightList := nil != grandparent && ast.NodeList == grandparent.Type && grandparent.ListData.Tight; !inTightList {
-			// 不在紧凑列表内则需要输出换行分段
 			r.Write(NewlineSV)
 		}
 

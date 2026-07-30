@@ -26,9 +26,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 )
 
 type ColorScheme struct {
@@ -190,67 +190,24 @@ func getDateInfo(dateStr string, lang string, weekdayType string) map[string]any
 	month := date.Format("Jan")
 	day := date.Day()
 	var weekdayStr string
-	var weekdays []string
 
-	switch lang {
-	case "zh-CN":
-		month = date.Format("1月")
-		switch weekdayType {
-		case "1":
-			weekdays = []string{"周日", "周一", "周二", "周三", "周四", "周五", "周六"}
-		case "2":
-			weekdays = []string{"周天", "周一", "周二", "周三", "周四", "周五", "周六"}
-		case "3":
-			weekdays = []string{"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"}
-		case "4":
-			weekdays = []string{"星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"}
-		default:
-			weekdays = []string{"周日", "周一", "周二", "周三", "周四", "周五", "周六"}
-		}
-		weekdayStr = weekdays[date.Weekday()]
-	case "zh-TW":
-		month = date.Format("1月")
-		switch weekdayType {
-		case "1":
-			weekdays = []string{"週日", "週一", "週二", "週三", "週四", "週五", "週六"}
-		case "2":
-			weekdays = []string{"週天", "週一", "週二", "週三", "週四", "週五", "週六"}
-		case "3":
-			weekdays = []string{"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"}
-		case "4":
-			weekdays = []string{"星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"}
-		default:
-			weekdays = []string{"週日", "週一", "週二", "週三", "週四", "週五", "週六"}
-		}
-		weekdayStr = weekdays[date.Weekday()]
-
+	switch weekdayType {
+	case "1":
+		weekdayStr = date.Format("Mon")
+	case "2":
+		weekdayStr = date.Format("Mon")
+		weekdayStr = strings.ToUpper(weekdayStr)
+	case "3":
+		weekdayStr = date.Format("Monday")
+	case "4":
+		weekdayStr = date.Format("Monday")
+		weekdayStr = strings.ToUpper(weekdayStr)
 	default:
-
-		switch weekdayType {
-		case "1":
-			weekdayStr = date.Format("Mon")
-		case "2":
-			weekdayStr = date.Format("Mon")
-			weekdayStr = strings.ToUpper(weekdayStr)
-		case "3":
-			weekdayStr = date.Format("Monday")
-		case "4":
-			weekdayStr = date.Format("Monday")
-			weekdayStr = strings.ToUpper(weekdayStr)
-		default:
-			weekdayStr = date.Format("Mon")
-		}
+		weekdayStr = date.Format("Mon")
 	}
 	// Calculate week number and ISO year
 	isoYear, weekNum := date.ISOWeek()
 	weekNumStr := fmt.Sprintf("%dW", weekNum)
-
-	switch lang {
-	case "zh-CN":
-		weekNumStr = fmt.Sprintf("%d周", weekNum)
-	case "zh-TW":
-		weekNumStr = fmt.Sprintf("%d週", weekNum)
-	}
 
 	isWeekend := date.Weekday() == time.Saturday || date.Weekday() == time.Sunday
 	// Calculate days until today
@@ -413,22 +370,17 @@ func generateTypeSixSVG(color string, lang string, weekdayType string, dateInfo 
 	}
 
 	var fontSize float64
-	switch lang {
-	case "zh-CN", "zh-TW":
-		fontSize = 460 / float64(len([]rune(weekday)))
+	switch weekdayType {
+	case "1":
+		fontSize = 690 / float64(len([]rune(weekday)))
+	case "2":
+		fontSize = 600 / float64(len([]rune(weekday)))
+	case "3":
+		fontSize = 720 / float64(len([]rune(weekday)))
+	case "4":
+		fontSize = 630 / float64(len([]rune(weekday)))
 	default:
-		switch weekdayType {
-		case "1":
-			fontSize = 690 / float64(len([]rune(weekday)))
-		case "2":
-			fontSize = 600 / float64(len([]rune(weekday)))
-		case "3":
-			fontSize = 720 / float64(len([]rune(weekday)))
-		case "4":
-			fontSize = 630 / float64(len([]rune(weekday)))
-		default:
-			fontSize = 750 / float64(len([]rune(weekday)))
-		}
+		fontSize = 750 / float64(len([]rune(weekday)))
 	}
 
 	return fmt.Sprintf(`
@@ -456,43 +408,18 @@ func generateTypeSevenSVG(color string, lang string, dateInfo map[string]any) st
 
 	switch {
 	case diffDays == 0:
-		switch lang {
-		case "zh-CN", "zh-TW":
-			tipText = "今天"
-		default:
-			tipText = "Today"
-		}
+		tipText = "Today"
 		diffDaysText = "--"
 	case diffDays > 0:
-		switch lang {
-		case "zh-CN":
-			tipText = "还有"
-		case "zh-TW":
-			tipText = "還有"
-		default:
-			tipText = "Left"
-		}
+		tipText = "Left"
 		diffDaysText = fmt.Sprintf("%d", diffDays)
 	default:
-		switch lang {
-		case "zh-CN":
-			tipText = "已过"
-		case "zh-TW":
-			tipText = "已過"
-		default:
-			tipText = "Past"
-		}
+		tipText = "Past"
 		absDiffDays := -diffDays
 		diffDaysText = fmt.Sprintf("%d", absDiffDays)
 	}
 
-	var dayStr string
-	switch lang {
-	case "zh-CN", "zh-TW":
-		dayStr = "天"
-	default:
-		dayStr = "days"
-	}
+	dayStr := "days"
 
 	var fontSize float64
 	switch {
