@@ -43,7 +43,7 @@ export const showTooltip = (
     let left;
     let top;
     if (position === "parentE") {
-        // parentE: file tree and outline、backlink & viewcard
+        // parentE: file tree and outline, backlink & viewcard
         top = Math.max(0, parentRect.top - (messageElement.clientHeight - parentRect.height) / 2);
         if (top > window.innerHeight - messageElement.clientHeight) {
             top = window.innerHeight - messageElement.clientHeight;

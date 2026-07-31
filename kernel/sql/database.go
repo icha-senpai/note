@@ -443,7 +443,6 @@ func initAssetContentDBTables() {
 
 var (
 	caseSensitive  bool
-	hanSensitive   bool
 	indexAssetPath bool
 )
 
@@ -463,18 +462,10 @@ func SetCaseSensitive(b bool) {
 	util.SearchCaseSensitive = b
 }
 
-func SetHanSensitive(b bool) {
-	hanSensitive = b
-	util.SearchHanSensitive = b
-}
-
 func ftsTokenize() string {
 	ret := "scribli"
 	if !caseSensitive {
 		ret += " case_insensitive"
-	}
-	if !hanSensitive {
-		ret += " han_insensitive"
 	}
 	return ret
 }

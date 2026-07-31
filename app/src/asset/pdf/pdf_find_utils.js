@@ -19,7 +19,6 @@ const CharacterType = {
   SPACE: 0,
   ALPHA_LETTER: 1,
   PUNCT: 2,
-  HAN_LETTER: 3,
   KATAKANA_LETTER: 4,
   HIRAGANA_LETTER: 5,
   HALFWIDTH_KATAKANA_LETTER: 6,
@@ -51,13 +50,6 @@ function isAsciiSpace(charCode) {
       charCode === /* TAB = */ 0x09 ||
       charCode === /* CR = */ 0x0d ||
       charCode === /* LF = */ 0x0a
-  );
-}
-
-function isHan(charCode) {
-  return (
-      (charCode >= 0x3400 && charCode <= 0x9fff) ||
-      (charCode >= 0xf900 && charCode <= 0xfaff)
   );
 }
 
@@ -102,9 +94,7 @@ function getCharacterType(charCode) {
     return CharacterType.ALPHA_LETTER;
   }
 
-  if (isHan(charCode)) {
-    return CharacterType.HAN_LETTER;
-  } else if (isKatakana(charCode)) {
+  if (isKatakana(charCode)) {
     return CharacterType.KATAKANA_LETTER;
   } else if (isHiragana(charCode)) {
     return CharacterType.HIRAGANA_LETTER;

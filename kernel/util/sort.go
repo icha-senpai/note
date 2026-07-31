@@ -17,13 +17,9 @@
 package util
 
 import (
-	"bytes"
-	"io"
 	"strings"
 
 	"github.com/facette/natsort"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
 )
 
 func NaturalCompare(str1, str2 string) bool {
@@ -32,17 +28,17 @@ func NaturalCompare(str1, str2 string) bool {
 	return natsort.Compare(str1, str2)
 }
 
-func EmojiPinYinCompare(str1, str2 string) bool {
+func EmojiLexicalCompare(str1, str2 string) bool {
 	str1_ := strings.TrimSpace(RemoveEmojiInvisible(str1))
 	str2_ := strings.TrimSpace(RemoveEmojiInvisible(str2))
 	if str1_ == str2_ && 0 == len(str1_) {
 
 		return strings.Compare(str1, str2) < 0
 	}
-	return PinYinCompare(str1, str2)
+	return LexicalCompare(str1, str2)
 }
 
-func PinYinCompare(str1, str2 string) bool {
+func LexicalCompare(str1, str2 string) bool {
 	str1 = RemoveEmojiInvisible(str1)
 	str2 = RemoveEmojiInvisible(str2)
 
@@ -50,21 +46,10 @@ func PinYinCompare(str1, str2 string) bool {
 	str1 = strings.ToLower(str1)
 	str2 = strings.ToLower(str2)
 
-	a, _ := UTF82GBK(str1)
-	b, _ := UTF82GBK(str2)
-	bLen := len(b)
-	for idx, chr := range a {
-		if idx > bLen-1 {
-			return false
-		}
-		if chr != b[idx] {
-			return chr < b[idx]
-		}
-	}
-	return true
+	return strings.Compare(str1, str2) < 0
 }
 
-func PinYinCompare4FileTree(str1, str2 string) bool {
+func LexicalCompare4FileTree(str1, str2 string) bool {
 
 	// Improve doc tree Name Alphabet sorting
 
@@ -77,36 +62,7 @@ func PinYinCompare4FileTree(str1, str2 string) bool {
 	str1 = strings.ToLower(str1)
 	str2 = strings.ToLower(str2)
 
-	a, _ := UTF82GBK(str1)
-	b, _ := UTF82GBK(str2)
-
-	if len(a) == len(b) {
-		return bytes.Compare(a, b) < 0
-	}
-
-	if len(a) < len(b) {
-		if 0 == bytes.Compare(a, b[:len(a)]) {
-			return true
-		}
-		return bytes.Compare(a, b[:len(a)]) < 0
-	}
-	if 0 == bytes.Compare(a[:len(b)], b) {
-		return false
-	}
-	return bytes.Compare(a[:len(b)], b) < 0
-}
-
-// UTF82GBK transform UTF8 rune into GBK byte array.
-func UTF82GBK(src string) ([]byte, error) {
-	GB18030 := simplifiedchinese.All[0]
-	return io.ReadAll(transform.NewReader(bytes.NewReader([]byte(src)), GB18030.NewEncoder()))
-}
-
-// GBK2UTF8 transform GBK byte array into UTF8 string.
-func GBK2UTF8(src []byte) (string, error) {
-	GB18030 := simplifiedchinese.All[0]
-	bytes, err := io.ReadAll(transform.NewReader(bytes.NewReader(src), GB18030.NewDecoder()))
-	return string(bytes), err
+	return strings.Compare(str1, str2) < 0
 }
 
 const (

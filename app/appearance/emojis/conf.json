@@ -1781,7 +1781,7 @@
       {
         "unicode": "1f472",
         "description": "Person with Skullcap",
-        "keywords": "cap,gua pi mao,guapimao,hat,person,person with chinese cap,skullcap"
+        "keywords": "cap,hat,person,skullcap"
       },
       {
         "unicode": "1f9d5",
@@ -8676,11 +8676,6 @@
         "keywords": "cm"
       },
       {
-        "unicode": "1f1e8-1f1f3",
-        "description": "Flag: China",
-        "keywords": "cn"
-      },
-      {
         "unicode": "1f1e8-1f1f4",
         "description": "Flag: Colombia",
         "keywords": "co"
@@ -8937,7 +8932,7 @@
       },
       {
         "unicode": "1f1ed-1f1f0",
-        "description": "Flag: Hong Kong SAR China",
+        "description": "Flag: Hong Kong",
         "keywords": "hk"
       },
       {
@@ -9207,7 +9202,7 @@
       },
       {
         "unicode": "1f1f2-1f1f4",
-        "description": "Flag: Macao SAR China",
+        "description": "Flag: Macao",
         "keywords": "mo"
       },
       {

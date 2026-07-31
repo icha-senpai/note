@@ -9,85 +9,10 @@
 
 package render
 
-import (
-	"unicode"
-	"unicode/utf8"
-
-	"github.com/icha-senpai/note/third_party/forks/lute/editor"
-	"golang.org/x/text/width"
-)
-
 func (r *BaseRenderer) Space(tokens []byte) []byte {
-	text := string(tokens)
-	text = Space0(text)
-	return []byte(text)
+	return tokens
 }
 
 func Space0(text string) (ret string) {
-	runes := []rune(text)
-	length := len(runes)
-	var r rune
-	for i := 0; i < length; {
-		r = runes[i]
-		if i < length-3 && 'i' == runes[i+1] && 'n' == runes[i+2] && 'g' == runes[i+3] && unicode.Is(unicode.Han, runes[i]) {
-			ret += string(r) + "ing"
-			i += 4
-			continue
-		}
-		ret = addSpaceAtBoundary(ret, r)
-		i++
-	}
-	return
-}
-
-func addSpaceAtBoundary(prefix string, nextChar rune) string {
-	if 0 == len(prefix) {
-		return string(nextChar)
-	}
-
-	if "1" <= prefix && "9" >= prefix && 65039 == nextChar { // Emoji 1-9
-		return prefix + string(nextChar)
-	}
-
-	currentChar, _ := utf8.DecodeLastRuneInString(prefix)
-	if allowSpace(currentChar, nextChar) {
-		return prefix + " " + string(nextChar)
-	}
-	return prefix + string(nextChar)
-}
-
-func allowSpace(currentChar, nextChar rune) bool {
-	if unicode.IsSpace(currentChar) || unicode.IsSpace(nextChar) ||
-		(editor.CaretRune == currentChar) || (editor.CaretRune == nextChar) ||
-		!unicode.IsPrint(currentChar) || !unicode.IsPrint(nextChar) {
-		return false
-	}
-
-	currentIsCJK := isCJK(currentChar)
-	nextIsPunct := ('%' != nextChar && '@' != nextChar && (unicode.IsPunct(nextChar) || '~' == nextChar || '=' == nextChar || '#' == nextChar)) || isFullWidth(nextChar)
-	if currentIsCJK && nextIsPunct {
-		return false
-	}
-
-	currentIsPunct := ('%' != currentChar && '@' != currentChar && (unicode.IsPunct(currentChar) || '~' == currentChar || '=' == currentChar || '#' == currentChar)) || isFullWidth(currentChar)
-	nextIsCJK := isCJK(nextChar)
-	if nextIsCJK && currentIsPunct {
-		return false
-	}
-
-	if (!currentIsCJK && !nextIsCJK) || (currentIsCJK && nextIsCJK) {
-		return false
-	}
-	return true
-}
-
-func isCJK(r rune) bool {
-	return unicode.Is(unicode.Han, r) || unicode.Is(unicode.Lm, r) ||
-		unicode.Is(unicode.Hiragana, r) || unicode.Is(unicode.Katakana, r) ||
-		unicode.Is(unicode.Hangul, r)
-}
-
-func isFullWidth(r rune) bool {
-	kind := width.LookupRune(r).Kind()
-	return kind == width.EastAsianWide || kind == width.EastAsianFullwidth
+	return text
 }

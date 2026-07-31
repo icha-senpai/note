@@ -8,7 +8,7 @@ Only regenerate assets that Scribli actually loads. The current runtime consumer
 
 | Asset path | Runtime consumer | Source package or build source | Current pin | Regeneration path |
 | --- | --- | --- | --- | --- |
-| `app/stage/protyle/js/lute/lute.min.js` | `app/src/index.ts`, `app/src/window/index.ts`, HTML export, emoji preview, service worker | Local Go source in `third_party/forks/lute` | Scribli source tree | Build with GopherJS using `GOOS=js`, `GOARCH=ecmascript`, JavaScript tags, then copy the generated `lute.min.js`. Recreate this as a repo script before updating the checked-in file. |
+| `app/stage/protyle/js/lute/lute.min.js` | `app/src/index.ts`, `app/src/window/index.ts`, HTML export, emoji preview, service worker | Local Go source in `third_party/forks/lute` | Scribli source tree | Run `powershell -ExecutionPolicy Bypass -File scripts/regenerate-lute-js.ps1`. The script builds the local Lute JavaScript entrypoint with GopherJS `v1.21.0` and an isolated Go `1.21.13` toolchain because GopherJS does not support Scribli's main Go toolchain yet. |
 | `app/stage/protyle/js/protyle-html.js` | HTML export, service worker | Scribli frontend source | `Constants.SCRIBLI_VERSION` | Produced by the frontend build pipeline. Regenerate with the app build, not by editing `app/stage` manually. |
 | `app/stage/protyle/js/abcjs/abcjs-basic-min.js` | `app/src/protyle/render/abcRender.ts` | `abcjs` package, `dist/abcjs-basic-min.js` | `6.5.0` | Copy from the pinned package tarball. `abcjs-basic-min.min.js` is not referenced by the app and should not be regenerated unless a consumer is added. |
 | `app/stage/protyle/js/echarts/echarts.min.js` | `chartRender.ts`, `mindmapRender.ts` | `echarts` package, `dist/echarts.min.js` | `5.3.2` | Copy from the pinned package tarball. Keep the query string in renderer code aligned with the file. |
@@ -24,7 +24,7 @@ Only regenerate assets that Scribli actually loads. The current runtime consumer
 | `app/stage/protyle/js/katex/mhchem.min.js` | `mathRender.ts` | `katex`, `dist/contrib/mhchem.min.js` | `0.16.9` | Copy from the pinned KaTeX package. |
 | `app/stage/protyle/js/mathjax/tex-svg-full.js` | `app/src/protyle/preview/index.ts` | MathJax browser component | `3.1.2` in current bundle | Copy from the pinned MathJax package/component. This is only needed for the standalone math preview path. |
 | `app/stage/protyle/js/mermaid/mermaid.min.js` | `mermaidRender.ts` | `mermaid`, `dist/mermaid.min.js` | `11.13.0` | Copy from the pinned package tarball. |
-| `app/stage/protyle/js/mermaid/mermaid-zenuml.min.js` | `mermaidRender.ts` | Mermaid ZenUML external diagram package | `0.2.2` | Build/copy from the pinned package, then apply the existing compatibility patch: remove strict-mode wrapping and expose `window.zenuml`. Replace the Chinese note in the generated output during regeneration. |
+| `app/stage/protyle/js/mermaid/mermaid-zenuml.min.js` | `mermaidRender.ts` | Mermaid ZenUML external diagram package | `0.2.2` | Build/copy from the pinned package, then apply the existing compatibility patch: remove strict-mode wrapping and expose `window.zenuml`. Replace non-English notes in the generated output during regeneration. |
 | `app/stage/protyle/js/mermaid/icons.json` | `mermaidRender.ts` | Iconify icon data used by Mermaid | `11.11.0` query string in current renderer | Generate or copy only the icon packs registered by Scribli's Mermaid configuration. Do not keep the full icon universe if the registered packs are narrower. |
 | `app/stage/protyle/js/pdf/pdf.min.mjs` | PDF viewer templates | `pdfjs-dist`, `legacy/build/pdf.min.mjs` | `4.7.76` | Copy from the pinned package tarball. |
 | `app/stage/protyle/js/pdf/pdf.worker.min.mjs` | `app/src/asset/pdf/viewer.js` | `pdfjs-dist`, `legacy/build/pdf.worker.min.mjs` | `4.7.76` | Copy from the pinned package tarball. |
@@ -36,12 +36,13 @@ Only regenerate assets that Scribli actually loads. The current runtime consumer
 
 ## Preferred Workflow
 
-1. Run `powershell -ExecutionPolicy Bypass -File scripts/regenerate-protyle-vendor-assets.ps1` for the direct-copy package assets.
-2. Pin every package version in that script; do not use floating `latest`.
-3. Copy only the files listed above into `app/stage/protyle/js`.
-4. Apply the Mermaid ZenUML compatibility patch in script form, not by manually editing the generated bundle.
-5. Rebuild the frontend with `cd app; pnpm build`.
-6. Smoke-test editor features that load these assets: Markdown rendering, code highlighting, math, Mermaid, flowchart, Graphviz, ECharts, PlantUML, PDF preview, image preview, graph dock, and HTML export.
+1. Run `powershell -ExecutionPolicy Bypass -File scripts/regenerate-lute-js.ps1` when changing the local Lute fork or its JavaScript entrypoint. This script may download Go `1.21.13` from `go.dev` into `.tools`; the rest of Scribli still uses the Go version from `kernel/go.mod`.
+2. Run `powershell -ExecutionPolicy Bypass -File scripts/regenerate-protyle-vendor-assets.ps1` for the direct-copy package assets.
+3. Pin every package version in that script; do not use floating `latest`.
+4. Copy only the files listed above into `app/stage/protyle/js`.
+5. Apply the Mermaid ZenUML compatibility patch in script form, not by manually editing the generated bundle.
+6. Rebuild the frontend with `cd app; pnpm build`.
+7. Smoke-test editor features that load these assets: Markdown rendering, code highlighting, math, Mermaid, flowchart, Graphviz, ECharts, PlantUML, PDF preview, image preview, graph dock, and HTML export.
 
 ## Cleanup Candidates
 

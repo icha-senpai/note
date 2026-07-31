@@ -4,7 +4,7 @@
 
 > Spec baseline: `2` (current across all files).
 > Verified against samples: `20200825162036-4dx365o.sy` (formatting elements), `20200905090211-2vixtlf.sy` (block types).
-> All conclusions are based on real samples and the Lute / Scribli kernel source. Fields marked `【inferred】` were not directly observed in the samples — re-verify against a real sample before generating them.
+> All conclusions are based on real samples and the Lute / Scribli kernel source. Fields marked `[inferred]` were not directly observed in the samples — re-verify against a real sample before generating them.
 > Companion document: [`WORKSPACE.md`](./WORKSPACE.md) covers the overall on-disk layout of the workspace (how notebooks, parent/child documents, and assets are organized); this document focuses on the **internal** JSON structure of a `.sy` file.
 
 ## 0. In one sentence
@@ -594,4 +594,4 @@ When generating a `.sy` that Scribli can load cleanly, verify item by item:
 - Node-type constants and serialization logic: `lute/ast/node.go`, `lute/render/json_renderer.go`, `dataparser/sy.go`
 - List containment check: `lute/ast/node.go:988` (`CanContain`)
 - Disabled-syntax config: `kernel/util/lute.go:51` (`NewLute`)
-- Fields marked `【inferred】` (e.g. the sub-fields of `file-annotation-ref`) should be re-verified against a real sample before generation.
+- Fields marked `[inferred]` (e.g. the sub-fields of `file-annotation-ref`) should be re-verified against a real sample before generation.

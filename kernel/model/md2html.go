@@ -32,7 +32,6 @@ func getMd2HTMLLuteFromPool() *lute.Lute {
 		e := util.NewLute()
 
 		e.SetCodeSyntaxHighlightLineNum(false)
-		e.SetChineseParagraphBeginningSpace(false)
 		e.SetProtyleMarkNetImg(false)
 		e.SetSpellcheck(false)
 		e.SetFootnotes(true)

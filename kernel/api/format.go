@@ -71,25 +71,3 @@ func netImg2LocalAssets(c *gin.Context) {
 		return
 	}
 }
-
-func autoSpace(c *gin.Context) {
-	ret := gulu.Ret.NewResult()
-	defer c.JSON(http.StatusOK, ret)
-
-	arg, ok := util.JsonArg(c, ret)
-	if !ok {
-		return
-	}
-
-	var id string
-	if !util.ParseJsonArgs(arg, ret, util.BindJsonArg("id", &id, true, true)) {
-		return
-	}
-	err := model.AutoSpace(id)
-	if err != nil {
-		ret.Code = -1
-		ret.Msg = err.Error()
-		ret.Data = map[string]any{"closeTimeout": 5000}
-		return
-	}
-}

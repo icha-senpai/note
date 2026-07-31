@@ -471,11 +471,6 @@ func SetSyncProviderWebDAV(webdav *conf.WebDAV) (err error) {
 	webdav.Endpoint = strings.TrimSpace(webdav.Endpoint)
 	webdav.Endpoint = util.NormalizeEndpoint(webdav.Endpoint)
 
-	if strings.Contains(strings.ToLower(webdav.Endpoint), "dav.jianguoyun.com") {
-		err = errors.New(Conf.Language(194))
-		return
-	}
-
 	webdav.Username = strings.TrimSpace(webdav.Username)
 	webdav.Password = strings.TrimSpace(webdav.Password)
 	webdav.Timeout = util.NormalizeTimeout(webdav.Timeout)

@@ -373,14 +373,6 @@ func (lute *Lute) SetHeadingID(b bool) {
 	lute.RenderOptions.HeadingID = b
 }
 
-func (lute *Lute) SetAutoSpace(b bool) {
-	lute.RenderOptions.AutoSpace = b
-}
-
-func (lute *Lute) SetFixTermTypo(b bool) {
-	lute.RenderOptions.FixTermTypo = b
-}
-
 func (lute *Lute) SetEmoji(b bool) {
 	lute.ParseOptions.Emoji = b
 }
@@ -463,10 +455,6 @@ func (lute *Lute) SetSanitize(b bool) {
 
 func (lute *Lute) SetImageLazyLoading(dataSrc string) {
 	lute.RenderOptions.ImageLazyLoading = dataSrc
-}
-
-func (lute *Lute) SetChineseParagraphBeginningSpace(b bool) {
-	lute.RenderOptions.ChineseParagraphBeginningSpace = b
 }
 
 func (lute *Lute) SetYamlFrontMatter(b bool) {

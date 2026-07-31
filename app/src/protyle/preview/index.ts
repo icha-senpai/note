@@ -1,5 +1,4 @@
-import {isOnlyMeta, writeText} from "../util/compatibility";
-import {focusByRange} from "../util/selection";
+import {isOnlyMeta} from "../util/compatibility";
 import {openByMobile} from "../../editor/openLink";
 import {showMessage} from "../../dialog/message";
 import {isLocalPath, pathPosix} from "../../util/pathName";
@@ -20,7 +19,6 @@ import {speechRender} from "../render/speechRender";
 import {avRender} from "../render/av/render";
 import {getPadding} from "../ui/initUI";
 import {hasTopClosestByAttribute} from "../util/hasClosest";
-import {addScriptSync} from "../util/addScript";
 
 export class Preview {
     public element: HTMLElement;
@@ -55,15 +53,6 @@ export class Preview {
                     break;
                 case "mobile":
                     actionHtml.push(`<button type="button" data-type="mobile">${window.scribli.languages.mobile}</button>`);
-                    break;
-                case "mp-wechat":
-                    actionHtml.push(`<button type="button" data-type="mp-wechat" class="b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.copyToWechatMP}"><svg><use xlink:href="#iconMp"></use></svg></button>`);
-                    break;
-                case "zhihu":
-                    actionHtml.push(`<button type="button" data-type="zhihu" class="b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.copyToZhihu}"><svg><use xlink:href="#iconZhihu"></use></svg></button>`);
-                    break;
-                case "yuque":
-                    actionHtml.push(`<button type="button" data-type="yuque" class="b3-tooltips b3-tooltips__w" aria-label="${window.scribli.languages.copyToYuque}"><svg><use xlink:href="#iconYuque"></use></svg></button>`);
                     break;
             }
         }
@@ -123,10 +112,6 @@ export class Preview {
                     const actionCustom = actions.find((w: IPreviewActionCustom) => w?.key === type) as IPreviewActionCustom;
                     if (actionCustom) {
                         actionCustom.click(type);
-                    } else if ((type === "mp-wechat" || type === "zhihu" || type === "yuque")) {
-                        const tempElement = document.createElement("div");
-                        tempElement.appendChild(this.element.lastElementChild.cloneNode(true));
-                        this.copyToX(tempElement, protyle, type);
                     } else if (type === "desktop") {
                         previewElement.style.width = "";
                         previewElement.style.padding = protyle.wysiwyg.element.style.padding;
@@ -137,12 +122,10 @@ export class Preview {
                         previewElement.style.width = "360px";
                         previewElement.style.padding = "8px";
                     }
-                    if (type !== "mp-wechat" && type !== "zhihu" && type !== "yuque") {
-                        actionElement.querySelectorAll("button").forEach((item) => {
-                            item.classList.remove("protyle-preview__action--current");
-                        });
-                        target.classList.add("protyle-preview__action--current");
-                    }
+                    actionElement.querySelectorAll("button").forEach((item) => {
+                        item.classList.remove("protyle-preview__action--current");
+                    });
+                    target.classList.add("protyle-preview__action--current");
                 }
                 target = target.parentElement;
             }
@@ -204,151 +187,4 @@ export class Preview {
         }, protyle.options.preview.delay);
     }
 
-    private link2online(copyElement: HTMLElement) {
-        return copyElement;
-    }
-
-    private async copyToX(copyElement: HTMLElement, protyle: IProtyle, type?: string) {
-        // fix math render
-        if (type === "mp-wechat") {
-            this.link2online(copyElement);
-            copyElement.querySelectorAll(".katex-html .base").forEach((item: HTMLElement) => {
-                item.style.display = "initial";
-            });
-            copyElement.querySelectorAll("mjx-container > svg").forEach((item) => {
-                item.setAttribute("width", (parseInt(item.getAttribute("width")) * 8) + "px");
-            });
-            copyElement.querySelectorAll("ul, ol").forEach((listItem: HTMLOListElement) => {
-                if (typeof listItem.start === "number") {
-                    listItem.classList.add("list-paddingleft-" + Math.min(listItem.start.toString().length, 3));
-                    listItem.style.listStyleType = "decimal";
-                }
-                Array.from(listItem.children).forEach(liItem => {
-                    const nestedList = liItem.querySelector("ul, ol");
-                    if (nestedList) {
-                        liItem.parentNode.insertBefore(nestedList, liItem.nextSibling);
-                    }
-                });
-            });
-            copyElement.querySelectorAll("li.protyle-task").forEach((taskItem: HTMLElement) => {
-                const checkbox = taskItem.querySelector('input[type="checkbox"]') as HTMLInputElement;
-                if (checkbox) {
-                    checkbox.style.opacity = "0";
-                    if (checkbox.checked) {
-                        taskItem.style.setProperty("list-style-type", "'✅'", "important");
-                    } else {
-                        taskItem.style.setProperty("list-style-type", "'▢'", "important");
-                    }
-                }
-            });
-            if (typeof window.MathJax === "undefined") {
-                window.MathJax = {
-                    svg: {
-                        fontCache: "none"
-                    },
-                };
-            }
-            await addScriptSync(`${Constants.PROTYLE_CDN}/js/mathjax/tex-svg-full.js`, "protyleMathJaxScript");
-            await window.MathJax.startup.promise;
-            copyElement.querySelectorAll('[data-subtype="math"]').forEach(mathElement => {
-                const node = window.MathJax.tex2svg(Lute.UnEscapeHTMLStr(mathElement.getAttribute("data-content")).trim(), {display: mathElement.tagName === "DIV"});
-                node.querySelector("mjx-assistive-mml").remove();
-                mathElement.innerHTML = node.outerHTML;
-            });
-        } else if (type === "zhihu") {
-            this.link2online(copyElement);
-            copyElement.querySelectorAll('[data-subtype="math"]').forEach((item: HTMLElement) => {
-                // 
-                item.outerHTML = `<img class="Formula-image" data-eeimg="true" src="//www.zhihu.com/equation?tex=" alt="${item.getAttribute("data-content")}" style="${item.tagName === "DIV" ? "display: block; max-width: 100%;" : ""}margin: 0 auto;">`;
-            });
-            copyElement.querySelectorAll("blockquote").forEach((item) => {
-                const elements: HTMLElement[] = [];
-                this.processZHBlockquote(item, elements);
-                elements.reverse().forEach(newItem => {
-                    item.insertAdjacentElement("afterend", newItem);
-                });
-                item.remove();
-            });
-            this.processZHTable(copyElement);
-        } else if (type === "yuque") {
-            fetchPost("/api/lute/copyStdMarkdown", {
-                id: protyle.block.id || protyle.options.blockId || protyle.block.parentID,
-                assetsDestSpace2Underscore: true,
-                fillCSSVar: true,
-                adjustHeadingLevel: true,
-            }, (response) => {
-                writeText(response.data);
-                showMessage(`${window.scribli.languages.pasteToYuque}`);
-            });
-            return;
-        }
-
-        copyElement.style.backgroundColor = "#fff";
-        copyElement.querySelectorAll("code").forEach((item) => {
-            item.style.backgroundImage = "none";
-        });
-        const copyEditElement = copyElement.querySelector(".b3-typography") as HTMLElement;
-        if (copyEditElement.firstElementChild.tagName === "DIV") {
-            copyElement.insertAdjacentHTML("afterbegin", "<p>&zwj;</p>");
-        }
-        if (copyEditElement.lastElementChild.tagName === "DIV") {
-            copyElement.insertAdjacentHTML("beforeend", "<p>&zwj;</p>");
-
-        }
-        this.element.append(copyElement);
-        let cloneRange;
-        if (getSelection().rangeCount > 0) {
-            cloneRange = getSelection().getRangeAt(0).cloneRange();
-        }
-        const range = copyElement.ownerDocument.createRange();
-        if (copyEditElement.firstElementChild.tagName === "DIV") {
-            range.setStart(copyElement.firstElementChild, 0);
-        } else {
-            range.setStartBefore(copyElement.firstElementChild);
-        }
-        if (copyEditElement.lastElementChild.tagName === "DIV") {
-            range.setEndBefore(copyElement.lastElementChild);
-        } else {
-            range.setEndAfter(copyElement.lastElementChild);
-        }
-        focusByRange(range);
-        document.execCommand("copy");
-        this.element.lastElementChild.remove();
-        focusByRange(cloneRange);
-        if (type) {
-            showMessage(`${type === "zhihu" ? window.scribli.languages.pasteToZhihu : window.scribli.languages.pasteToWechatMP}`);
-        }
-    }
-
-    private processZHBlockquote(element: HTMLElement, elements: HTMLElement[]) {
-        Array.from(element.children).forEach((item: HTMLElement) => {
-            if (item.tagName === "BLOCKQUOTE") {
-                this.processZHBlockquote(item, elements);
-            } else if (item.tagName !== "P" || item.querySelector("img")) {
-                elements.push(item);
-            } else {
-                const lastElement = elements[elements.length - 1];
-                if (!lastElement || (lastElement && lastElement.tagName !== "BLOCKQUOTE")) {
-                    elements.push(document.createElement("blockquote"));
-                }
-                elements[elements.length - 1].append(item);
-            }
-        });
-    }
-
-    private processZHTable(element: HTMLElement) {
-        element.querySelectorAll("table").forEach(item => {
-            const headElement = item.querySelector("thead");
-            if (!headElement) {
-                return;
-            }
-            const tbodyElement = item.querySelector("tbody");
-            if (tbodyElement) {
-                tbodyElement.insertAdjacentElement("afterbegin", headElement.firstElementChild);
-            } else {
-                item.innerHTML = `<tbody>${headElement.innerHTML}</tbody>`;
-            }
-            headElement.remove();
-        });
-    }
 }

@@ -553,7 +553,7 @@ func formatNumber(content float64, format NumberFormat) string {
 		p := message.NewPrinter(language.English)
 		return p.Sprintf("$%.2f", content)
 	case NumberFormatCNY, "yuan":
-		p := message.NewPrinter(language.Chinese)
+		p := message.NewPrinter(language.English)
 		return p.Sprintf("CN¥%.2f", content)
 	case NumberFormatEUR, "euro":
 		p := message.NewPrinter(language.German)
@@ -592,10 +592,10 @@ func formatNumber(content float64, format NumberFormat) string {
 		p := message.NewPrinter(language.English)
 		return p.Sprintf("HK$%.2f", content)
 	case NumberFormatTWD:
-		p := message.NewPrinter(language.Chinese)
+		p := message.NewPrinter(language.English)
 		return p.Sprintf("NT$%.2f", content)
 	case NumberFormatMOP:
-		p := message.NewPrinter(language.Chinese)
+		p := message.NewPrinter(language.English)
 		return p.Sprintf("MOP$%.2f", content)
 	case NumberFormatSGD:
 		p := message.NewPrinter(language.English)

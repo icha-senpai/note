@@ -97,12 +97,7 @@ func EncloseHighlighting(text string, keywords []string, openMark, closeMark str
 		if splitWords {
 			wordBoundary = lex.IsASCIILetterNums(gulu.Str.ToBytes(k)) // Improve virtual reference split words
 		}
-		if !util.SearchHanSensitive {
-
-			k = hanInsensitiveRegexp(util.EscapeHTML(k))
-		} else {
-			k = regexp.QuoteMeta(util.EscapeHTML(k))
-		}
+		k = regexp.QuoteMeta(util.EscapeHTML(k))
 		re.WriteString("(")
 		if wordBoundary {
 			re.WriteString("\\b")

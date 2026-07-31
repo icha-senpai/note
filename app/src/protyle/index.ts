@@ -448,7 +448,6 @@ export class Protyle {
             emojis: this.protyle.options.hint.emoji,
             headingAnchor: false,
             listStyle: this.protyle.options.preview.markdown.listStyle,
-            paragraphBeginningSpace: this.protyle.options.preview.markdown.paragraphBeginningSpace,
             sanitize: this.protyle.options.preview.markdown.sanitize,
         });
 

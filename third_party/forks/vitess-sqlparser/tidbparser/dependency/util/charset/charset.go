@@ -194,7 +194,6 @@ const (
 )
 
 var collations = []*Collation{
-	{1, "big5", "big5_chinese_ci", true},
 	{2, "latin2", "latin2_czech_cs", false},
 	{3, "dec8", "dec8_swedish_ci", true},
 	{4, "cp850", "cp850_general_ci", true},
@@ -216,11 +215,9 @@ var collations = []*Collation{
 	{21, "latin2", "latin2_hungarian_ci", false},
 	{22, "koi8u", "koi8u_general_ci", true},
 	{23, "cp1251", "cp1251_ukrainian_ci", false},
-	{24, "gb2312", "gb2312_chinese_ci", true},
 	{25, "greek", "greek_general_ci", true},
 	{26, "cp1250", "cp1250_general_ci", true},
 	{27, "latin2", "latin2_croatian_ci", false},
-	{28, "gbk", "gbk_chinese_ci", true},
 	{29, "cp1257", "cp1257_lithuanian_ci", false},
 	{30, "latin5", "latin5_turkish_ci", true},
 	{31, "latin1", "latin1_german2_ci", false},
@@ -275,10 +272,7 @@ var collations = []*Collation{
 	{81, "cp852", "cp852_bin", false},
 	{82, "swe7", "swe7_bin", false},
 	{83, "utf8", "utf8_bin", false},
-	{84, "big5", "big5_bin", false},
 	{85, "euckr", "euckr_bin", false},
-	{86, "gb2312", "gb2312_bin", false},
-	{87, "gbk", "gbk_bin", false},
 	{88, "sjis", "sjis_bin", false},
 	{89, "tis620", "tis620_bin", false},
 	{90, "ucs2", "ucs2_bin", false},

@@ -33,14 +33,6 @@ export const commonHotkey = (protyle: IProtyle, event: KeyboardEvent, nodeElemen
         return true;
     }
 
-    if (matchHotKey(window.scribli.config.keymap.editor.general.optimizeTypography.custom, event)) {
-        fetchPost("/api/format/autoSpace", {
-            id: protyle.block.rootID
-        });
-        event.preventDefault();
-        event.stopPropagation();
-        return true;
-    }
     if (matchHotKey(window.scribli.config.keymap.editor.general.copyHPath.custom, event)) {
         fetchPost("/api/filetree/getHPathByID", {
             id: protyle.block.rootID

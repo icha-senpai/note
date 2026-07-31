@@ -63,9 +63,9 @@ func TestFindSkillDirsRootSkill(t *testing.T) {
 
 func TestFindSkillDirsWrappedSingle(t *testing.T) {
 	root := t.TempDir()
-	touchSkillMd(t, root, "WeChatReading")
+	touchSkillMd(t, root, "ReadingList")
 	got := toSlashSet(findSkillDirs(root))
-	want := []string{"WeChatReading"}
+	want := []string{"ReadingList"}
 	if len(got) != 1 || got[0] != want[0] {
 		t.Fatalf("findSkillDirs(wrapped single) = %v, want %v", got, want)
 	}
@@ -153,13 +153,13 @@ type urlCase struct {
 func TestNormalizeSkillURL(t *testing.T) {
 	cases := []urlCase{
 
-		{name: "shorthand", in: "Tencent/WeChatReading", wantURL: "https://codeload.github.com/Tencent/WeChatReading/zip/refs/heads/main", wantIsZip: true, wantBranch: "main"},
+		{name: "shorthand", in: "example/ReadingList", wantURL: "https://codeload.github.com/example/ReadingList/zip/refs/heads/main", wantIsZip: true, wantBranch: "main"},
 
-		{name: "npx command", in: "npx skills add Tencent/WeChatReading -g", wantURL: "https://codeload.github.com/Tencent/WeChatReading/zip/refs/heads/main", wantIsZip: true, wantBranch: "main"},
+		{name: "npx command", in: "npx skills add example/ReadingList -g", wantURL: "https://codeload.github.com/example/ReadingList/zip/refs/heads/main", wantIsZip: true, wantBranch: "main"},
 
 		{name: "npx scoped", in: "npx skills@latest add foo/bar", wantURL: "https://codeload.github.com/foo/bar/zip/refs/heads/main", wantIsZip: true, wantBranch: "main"},
 
-		{name: "full repo", in: "https://github.com/Tencent/WeChatReading", wantURL: "https://codeload.github.com/Tencent/WeChatReading/zip/refs/heads/main", wantIsZip: true, wantBranch: "main"},
+		{name: "full repo", in: "https://github.com/example/ReadingList", wantURL: "https://codeload.github.com/example/ReadingList/zip/refs/heads/main", wantIsZip: true, wantBranch: "main"},
 
 		{name: "tree branch", in: "https://github.com/foo/bar/tree/dev", wantURL: "https://codeload.github.com/foo/bar/zip/refs/heads/dev", wantIsZip: true, wantBranch: "dev"},
 
@@ -217,7 +217,7 @@ func TestNormalizeSkillURLOwnerRepoBoundary(t *testing.T) {
 }
 
 func TestNormalizeSkillURLOwnerRepoValid(t *testing.T) {
-	good := []string{"a/b", "Tencent/WeChatReading", "user-1/my.repo.v2"}
+	good := []string{"a/b", "example/ReadingList", "user-1/my.repo.v2"}
 	for _, in := range good {
 		got, err := normalizeSkillURL(in)
 		if err != nil {

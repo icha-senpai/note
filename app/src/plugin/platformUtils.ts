@@ -9,7 +9,6 @@ export const copyPlainText = compatibility.copyPlainText;
 export const getEventName = compatibility.getEventName;
 export const isOnlyMeta = compatibility.isOnlyMeta;
 export const isNotCtrl = compatibility.isNotCtrl;
-export const isHuawei = compatibility.isHuawei;
 export const isIPhone = compatibility.isIPhone;
 export const isIPad = compatibility.isIPad;
 export const isMac = compatibility.isMac;

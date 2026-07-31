@@ -81,10 +81,6 @@ const registerSearchLimitsGroup = (tab: SettingTabBuilder) => {
         title: window.scribli.languages.searchCaseSensitive,
         desc: window.scribli.languages.searchCaseSensitive1,
     });
-    group.switch("search.hanSensitive", {
-        title: window.scribli.languages.searchHanSensitive,
-        desc: window.scribli.languages.searchHanSensitive1,
-    });
 };
 
 export const registerSearchTab = (tab: SettingTabBuilder) => {

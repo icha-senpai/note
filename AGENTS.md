@@ -203,7 +203,7 @@ The following Go packages remain copied into this repository as local Scribli fo
 
 Do not point Scribli-modified local forks such as `go-sqlite3`, `dejavu`, `httpclient`, and `lute` back to upstream module paths unless their Scribli-specific behavior has been reimplemented elsewhere and tested. If a fork needs upstream fixes, pull or cherry-pick intentionally into the matching `third_party/forks/<name>` directory and preserve upstream copyright notices. The sqlite fork owns the `scribli` FTS tokenizer used by kernel search indexes.
 
-Rebuilding `lute.min.js` requires the upstream Lute build process; do not edit the generated file in this repo.
+Rebuilding `lute.min.js` requires the upstream Lute build process; do not edit the generated file in this repo. Use `scripts/regenerate-lute-js.ps1` for that bundle. It intentionally uses GopherJS `v1.21.0` with repo-local Go `1.21.13` under `.tools` because GopherJS does not support the main Scribli Go toolchain yet. This older Go version is only for the generated browser Lute asset; kernel builds still use the Go version from `kernel/go.mod`.
 
 Normal public Go dependencies should come from their upstream module paths through the Go module proxy/checksum flow. Do not reintroduce copied `third_party/forks/github/**` or `third_party/forks/external/**` source trees just because a dependency has a GitHub, Golang, Google, or vanity import path. Fork only for a concrete behavior, security, or service-coupling reason.
 

@@ -20,8 +20,6 @@ import (
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/encoding/japanese"
 	"golang.org/x/text/encoding/korean"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/encoding/traditionalchinese"
 	"golang.org/x/text/encoding/unicode"
 )
 
@@ -210,22 +208,6 @@ var encodings = map[string]struct {
 	"x-cp1258":            {charmap.Windows1258, "windows-1258"},
 	"x-mac-cyrillic":      {charmap.MacintoshCyrillic, "x-mac-cyrillic"},
 	"x-mac-ukrainian":     {charmap.MacintoshCyrillic, "x-mac-cyrillic"},
-	"chinese":             {simplifiedchinese.GBK, "gbk"},
-	"csgb2312":            {simplifiedchinese.GBK, "gbk"},
-	"csiso58gb231280":     {simplifiedchinese.GBK, "gbk"},
-	"gb2312":              {simplifiedchinese.GBK, "gbk"},
-	"gb_2312":             {simplifiedchinese.GBK, "gbk"},
-	"gb_2312-80":          {simplifiedchinese.GBK, "gbk"},
-	"gbk":                 {simplifiedchinese.GBK, "gbk"},
-	"iso-ir-58":           {simplifiedchinese.GBK, "gbk"},
-	"x-gbk":               {simplifiedchinese.GBK, "gbk"},
-	"gb18030":             {simplifiedchinese.GB18030, "gb18030"},
-	"hz-gb-2312":          {simplifiedchinese.HZGB2312, "hz-gb-2312"},
-	"big5":                {traditionalchinese.Big5, "big5"},
-	"big5-hkscs":          {traditionalchinese.Big5, "big5"},
-	"cn-big5":             {traditionalchinese.Big5, "big5"},
-	"csbig5":              {traditionalchinese.Big5, "big5"},
-	"x-x-big5":            {traditionalchinese.Big5, "big5"},
 	"cseucpkdfmtjapanese": {japanese.EUCJP, "euc-jp"},
 	"euc-jp":              {japanese.EUCJP, "euc-jp"},
 	"x-euc-jp":            {japanese.EUCJP, "euc-jp"},

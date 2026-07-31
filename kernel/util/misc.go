@@ -188,27 +188,19 @@ func Reverse(s string) string {
 
 func RemoveRedundantSpace(str string) string {
 	buf := bytes.Buffer{}
-	lastIsChinese := false
 	lastIsSpace := false
 	for _, r := range str {
 		if unicode.IsSpace(r) {
-			if lastIsChinese || lastIsSpace {
+			if lastIsSpace {
 				continue
 			}
 			buf.WriteRune(' ')
-			lastIsChinese = false
 			lastIsSpace = true
 			continue
 		}
 
 		lastIsSpace = false
 		buf.WriteRune(r)
-		if unicode.Is(unicode.Han, r) {
-			lastIsChinese = true
-			continue
-		} else {
-			lastIsChinese = false
-		}
 	}
 	return buf.String()
 }

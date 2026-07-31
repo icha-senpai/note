@@ -1415,61 +1415,6 @@ func processPDFWatermark(pdfCtx *model.Context, watermark bool) {
 	}
 
 	desc := Conf.Export.PDFWatermarkDesc
-	if "text" == mode && util.ContainsCJK(str) {
-
-		descParts := strings.Split(desc, ",")
-		m := map[string]string{}
-		for _, descPart := range descParts {
-			kv := strings.Split(descPart, ":")
-			if 2 != len(kv) {
-				continue
-			}
-			m[kv[0]] = kv[1]
-		}
-
-		useDefaultFont := true
-		if "" != m["fontname"] {
-			listFonts, e := api.ListFonts()
-			var builtInFontNames []string
-			if nil != e {
-				logging.LogInfof("listFont failed: %s", e)
-			} else {
-				for _, f := range listFonts {
-					if strings.Contains(f, "(") {
-						f = f[:strings.Index(f, "(")]
-					}
-					f = strings.TrimSpace(f)
-					if strings.Contains(f, ":") || "" == f || strings.Contains(f, "Corefonts") || strings.Contains(f, "Userfonts") {
-						continue
-					}
-
-					builtInFontNames = append(builtInFontNames, f)
-				}
-
-				if slices.Contains(builtInFontNames, m["fontname"]) {
-					useDefaultFont = false
-				}
-			}
-		}
-		if useDefaultFont {
-			m["fontname"] = "LXGWWenKaiLite-Regular"
-			fontPath := filepath.Join(util.AppearancePath, "fonts", "LxgwWenKai-Lite-1.501", "LXGWWenKaiLite-Regular.ttf")
-			err := api.InstallFonts([]string{fontPath})
-			if err != nil {
-				logging.LogErrorf("install font [%s] failed: %s", fontPath, err)
-			}
-		}
-
-		descBuilder := bytes.Buffer{}
-		for k, v := range m {
-			descBuilder.WriteString(k)
-			descBuilder.WriteString(":")
-			descBuilder.WriteString(v)
-			descBuilder.WriteString(",")
-		}
-		desc = descBuilder.String()
-		desc = desc[:len(desc)-1]
-	}
 
 	logging.LogInfof("add PDF watermark [mode=%s, str=%s, desc=%s]", mode, str, desc)
 

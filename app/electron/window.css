@@ -6,7 +6,7 @@ body {
     text-align: center;
     color: #222;
     font-size: 16px;
-    font-family: BlinkMacSystemFont, Helvetica, "PingFang SC", "Luxi Sans", "DejaVu Sans", arial, "Microsoft Yahei", "Hiragino Sans GB", "Source Han Sans SC", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Twemoji Mozilla", "Android Emoji", "EmojiSymbols";
+    font-family: BlinkMacSystemFont, Helvetica, "Luxi Sans", "DejaVu Sans", arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Twemoji Mozilla", "Android Emoji", "EmojiSymbols";
 }
 
 .fn__flex-column {

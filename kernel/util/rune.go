@@ -21,7 +21,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"unicode"
 
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
@@ -31,18 +30,6 @@ var newlinesRegex = regexp.MustCompile(`[\r\n]+`)
 
 func ReplaceNewline(text, replaceWith string) string {
 	return newlinesRegex.ReplaceAllString(text, replaceWith)
-}
-
-func ContainsCJK(text string) bool {
-	for _, r := range text {
-		ret := unicode.Is(unicode.Han, r) || unicode.Is(unicode.Lm, r) ||
-			unicode.Is(unicode.Hiragana, r) || unicode.Is(unicode.Katakana, r) ||
-			unicode.Is(unicode.Hangul, r)
-		if ret {
-			return true
-		}
-	}
-	return false
 }
 
 var emojiRegex = regexp.MustCompile(`/([0-9#][\x{20E3}])|` +

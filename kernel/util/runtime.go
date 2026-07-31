@@ -492,5 +492,3 @@ const (
 )
 
 var SearchCaseSensitive bool
-
-var SearchHanSensitive = true

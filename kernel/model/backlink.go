@@ -483,9 +483,9 @@ func GetBacklink2InBox(id, keyword, mentionKeyword string, sortMode, mentionSort
 		case util.SortModeCreatedASC:
 			return backlinks[i].Created < backlinks[j].Created
 		case util.SortModeNameDESC:
-			return util.PinYinCompare(backlinks[j].Name, backlinks[i].Name)
+			return util.LexicalCompare(backlinks[j].Name, backlinks[i].Name)
 		case util.SortModeNameASC:
-			return util.PinYinCompare(backlinks[i].Name, backlinks[j].Name)
+			return util.LexicalCompare(backlinks[i].Name, backlinks[j].Name)
 		case util.SortModeAlphanumDESC:
 			return util.NaturalCompare(backlinks[j].Name, backlinks[i].Name)
 		case util.SortModeAlphanumASC:
@@ -512,9 +512,9 @@ func GetBacklink2InBox(id, keyword, mentionKeyword string, sortMode, mentionSort
 		case util.SortModeCreatedASC:
 			return backmentions[i].Created < backmentions[j].Created
 		case util.SortModeNameDESC:
-			return util.PinYinCompare(backmentions[j].Name, backmentions[i].Name)
+			return util.LexicalCompare(backmentions[j].Name, backmentions[i].Name)
 		case util.SortModeNameASC:
-			return util.PinYinCompare(backmentions[i].Name, backmentions[j].Name)
+			return util.LexicalCompare(backmentions[i].Name, backmentions[j].Name)
 		case util.SortModeAlphanumDESC:
 			return util.NaturalCompare(backmentions[j].Name, backmentions[i].Name)
 		case util.SortModeAlphanumASC:

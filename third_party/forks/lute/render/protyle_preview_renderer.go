@@ -261,20 +261,11 @@ func (r *ProtylePreviewRenderer) renderTextMark(node *ast.Node, entering bool) a
 			}
 
 			if "" != node.TextMarkInlineMemoContent {
-				lastRune, _ := utf8.DecodeLastRuneInString(node.TextMarkTextContent)
-				if isCJK(lastRune) {
-					r.WriteString("<sup>（")
-					memo := node.TextMarkInlineMemoContent
-					memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
-					r.WriteString(memo)
-					r.WriteString("）</sup>")
-				} else {
-					r.WriteString("<sup>(")
-					memo := node.TextMarkInlineMemoContent
-					memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
-					r.WriteString(memo)
-					r.WriteString(")</sup>")
-				}
+				r.WriteString("<sup>(")
+				memo := node.TextMarkInlineMemoContent
+				memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
+				r.WriteString(memo)
+				r.WriteString(")</sup>")
 			}
 		} else {
 			attrs := r.renderTextMarkAttrs(node)
@@ -1262,11 +1253,6 @@ func (r *ProtylePreviewRenderer) renderParagraph(node *ast.Node, entering bool) 
 		var attrs [][]string
 		attrs = append(attrs, node.KramdownIAL...)
 		r.Tag("p", attrs, false)
-		if r.Options.ChineseParagraphBeginningSpace && ast.NodeDocument == node.Parent.Type {
-			if !r.ParagraphContainImgOnly(node) {
-				r.WriteString("　　")
-			}
-		}
 	} else {
 		r.Tag("/p", nil, false)
 		r.Newline()

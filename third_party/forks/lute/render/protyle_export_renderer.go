@@ -283,20 +283,11 @@ func (r *ProtyleExportRenderer) renderTextMark(node *ast.Node, entering bool) as
 			}
 
 			if "" != node.TextMarkInlineMemoContent {
-				lastRune, _ := utf8.DecodeLastRuneInString(textContent)
-				if isCJK(lastRune) {
-					r.WriteString("<sup>（")
-					memo := node.TextMarkInlineMemoContent
-					memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
-					r.WriteString(memo)
-					r.WriteString("）</sup>")
-				} else {
-					r.WriteString("<sup>(")
-					memo := node.TextMarkInlineMemoContent
-					memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
-					r.WriteString(memo)
-					r.WriteString(")</sup>")
-				}
+				r.WriteString("<sup>(")
+				memo := node.TextMarkInlineMemoContent
+				memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
+				r.WriteString(memo)
+				r.WriteString(")</sup>")
 			}
 		} else {
 			attrs := r.renderTextMarkAttrs(node)
@@ -310,20 +301,11 @@ func (r *ProtyleExportRenderer) renderTextMark(node *ast.Node, entering bool) as
 				r.WriteString("</span>")
 			}
 			if "" != node.TextMarkInlineMemoContent {
-				lastRune, _ := utf8.DecodeLastRuneInString(textContent)
-				if isCJK(lastRune) {
-					r.WriteString("<sup>（")
-					memo := node.TextMarkInlineMemoContent
-					memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
-					r.WriteString(memo)
-					r.WriteString("）</sup>")
-				} else {
-					r.WriteString("<sup>(")
-					memo := node.TextMarkInlineMemoContent
-					memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
-					r.WriteString(memo)
-					r.WriteString(")</sup>")
-				}
+				r.WriteString("<sup>(")
+				memo := node.TextMarkInlineMemoContent
+				memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
+				r.WriteString(memo)
+				r.WriteString(")</sup>")
 			}
 		}
 	}
@@ -1510,11 +1492,6 @@ func (r *ProtyleExportRenderer) renderParagraph(node *ast.Node, entering bool) a
 		r.contenteditable(node, &attrs)
 		r.spellcheck(&attrs)
 		r.Tag("div", attrs, false)
-		if r.Options.ChineseParagraphBeginningSpace && ast.NodeDocument == node.Parent.Type {
-			if !r.ParagraphContainImgOnly(node) {
-				r.WriteString("　　")
-			}
-		}
 	} else {
 		r.Tag("/div", nil, false)
 		r.renderIAL(node)

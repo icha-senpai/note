@@ -18,7 +18,6 @@ import {saveLayout} from "../../layout/util";
 import {ipcRenderer} from "electron";
 /// #endif
 import {onGet} from "../util/onGet";
-import {hideElements} from "../ui/hideElements";
 import {reloadProtyle} from "../util/reload";
 import {Menu} from "../../plugin/Menu";
 import {getNoContainerElement} from "../wysiwyg/getBlock";
@@ -388,20 +387,6 @@ ${padHTML}
                     reloadProtyle(protyle, !isMobile());
                 }
             }).element);
-            if (!protyle.disabled) {
-                window.scribli.menus.menu.append(new MenuItem({
-                    id: "optimizeTypography",
-                    label: window.scribli.languages.optimizeTypography,
-                    accelerator: window.scribli.config.keymap.editor.general.optimizeTypography.custom,
-                    icon: "iconFormat",
-                    click: () => {
-                        hideElements(["toolbar"], protyle);
-                        fetchPost("/api/format/autoSpace", {
-                            id: protyle.block.rootID
-                        });
-                    }
-                }).element);
-            }
             window.scribli.menus.menu.append(new MenuItem({
                 id: "fullscreen",
                 icon: protyle.element.className.includes("fullscreen") ? "iconFullscreenExit" : "iconFullscreen",

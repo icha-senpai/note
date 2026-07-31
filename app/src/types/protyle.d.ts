@@ -216,8 +216,6 @@ declare class Lute {
 
     public SetYamlFrontMatter(enable: boolean): void;
 
-    public SetChineseParagraphBeginningSpace(enable: boolean): void;
-
     public SetRenderListStyle(enable: boolean): void;
 
     public SetImgPathAllowSpace(enable: boolean): void;
@@ -369,7 +367,6 @@ interface IMenuItem {
 
 /** @link  */
 interface IMarkdownConfig {
-    paragraphBeginningSpace?: boolean;
     sanitize?: boolean;
     listStyle?: boolean;
 }
@@ -387,7 +384,7 @@ interface IPreview {
     transform?(html: string): string;
 }
 
-type IPreviewAction = "desktop" | "tablet" | "mobile" | "mp-wechat" | "zhihu" | "yuque";
+type IPreviewAction = "desktop" | "tablet" | "mobile";
 
 interface IPreviewActionCustom {
     key: string;

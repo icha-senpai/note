@@ -288,11 +288,11 @@ func sortTags(tags Tags, sortVal int) {
 	switch sortVal {
 	case util.SortModeNameASC:
 		sort.Slice(tags, func(i, j int) bool {
-			return util.PinYinCompare(tags[i].Name, tags[j].Name)
+			return util.LexicalCompare(tags[i].Name, tags[j].Name)
 		})
 	case util.SortModeNameDESC:
 		sort.Slice(tags, func(j, i int) bool {
-			return util.PinYinCompare(tags[i].Name, tags[j].Name)
+			return util.LexicalCompare(tags[i].Name, tags[j].Name)
 		})
 	case util.SortModeAlphanumASC:
 		sort.Slice(tags, func(i, j int) bool {

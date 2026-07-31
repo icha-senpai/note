@@ -267,19 +267,10 @@ func (r *ProtyleExportDocxRenderer) renderHTMLTag0(node *ast.Node, currentTextMa
 		}
 
 		if "" != node.TextMarkInlineMemoContent {
-			lastRune, _ := utf8.DecodeLastRuneInString(node.TextMarkTextContent)
-			if isCJK(lastRune) {
-				if entering {
-					r.WriteString("<sup>（")
-				} else {
-					r.WriteString("）</sup>")
-				}
+			if entering {
+				r.WriteString("<sup>(")
 			} else {
-				if entering {
-					r.WriteString("<sup>(")
-				} else {
-					r.WriteString(")</sup>")
-				}
+				r.WriteString(")</sup>")
 			}
 		}
 	case "inline-math":
@@ -1248,11 +1239,6 @@ func (r *ProtyleExportDocxRenderer) renderParagraph(node *ast.Node, entering boo
 		var attrs [][]string
 		attrs = append(attrs, node.KramdownIAL...)
 		r.Tag("p", attrs, false)
-		if r.Options.ChineseParagraphBeginningSpace && ast.NodeDocument == node.Parent.Type {
-			if !r.ParagraphContainImgOnly(node) {
-				r.WriteString("　　")
-			}
-		}
 	} else {
 		r.Tag("/p", nil, false)
 		r.Newline()

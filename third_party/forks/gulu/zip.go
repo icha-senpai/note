@@ -12,16 +12,12 @@ package gulu
 
 import (
 	"archive/zip"
-	"bytes"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"unicode/utf8"
-
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
 )
 
 // ZipFile represents a zip file.
@@ -149,12 +145,7 @@ func cloneZipItem(f *zip.File, dest string, callback func(filename string)) erro
 	fileName := f.Name
 
 	if !utf8.ValidString(fileName) {
-		data, err := io.ReadAll(transform.NewReader(bytes.NewReader([]byte(fileName)), simplifiedchinese.GB18030.NewDecoder()))
-		if nil == err {
-			fileName = string(data)
-		} else {
-			logger.Error(err)
-		}
+		fileName = strings.ToValidUTF8(fileName, "_")
 	}
 
 	destPath := filepath.Join(dest, fileName)

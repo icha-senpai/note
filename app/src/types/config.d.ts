@@ -28,11 +28,6 @@ declare namespace Config {
         ai: IAI;
         api: IAPI;
         appearance: IAppearance;
-        /**
-         * Cloud Service Provider Region
-         * - `0`: Chinese mainland
-         * - `1`: North America
-         */
         editor: IEditor;
         export: IExport;
         fileTree: IFileTree;
@@ -663,11 +658,6 @@ declare namespace Config {
          */
         ebookConvertParams: string;
         /**
-         * Whether the beginning of the paragraph is empty two spaces.
-         * Insert two full-width spaces `U+3000` at the beginning of the paragraph.
-         */
-        paragraphBeginningSpace: boolean;
-        /**
          * Custom footer content when exporting to PDF
          */
         pdfFooter: string;
@@ -1037,7 +1027,6 @@ declare namespace Config {
         newNameFile: IKey;
         newNameSettingFile: IKey;
         openBy: IKey;
-        optimizeTypography: IKey;
         outline: IKey;
         preview: IKey;
         quickMakeCard: IKey;
@@ -1367,10 +1356,6 @@ declare namespace Config {
          * Whether to search embedded blocks
          */
         embedBlock: boolean;
-        /**
-         * Whether to distinguish between Simplified and Traditional Chinese characters when searching
-         */
-        hanSensitive: boolean;
         /**
          * Whether to search heading blocks
          */

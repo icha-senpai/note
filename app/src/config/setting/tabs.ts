@@ -10,7 +10,6 @@ import {mountSyncTabExtras, patchSyncConfig} from "../tabs/syncRuntime";
 import {mountAccessTab} from "../tabs/accessRuntime";
 import {collectAssetsTabSearchStrings, mountAssetsTab} from "../assets";
 import {collectKeymapTabSearchStrings, mountKeymapTab} from "../tabs/keymapUi";
-import {isHuawei} from "../../protyle/util/compatibility";
 import {SettingBuilder, type SettingTab} from "./builder";
 import {registerEditorTab} from "../tabs/editorTab";
 import {registerFileTab} from "../tabs/fileTab";

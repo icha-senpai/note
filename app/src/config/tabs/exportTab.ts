@@ -47,10 +47,6 @@ const registerExportFormatGroup = (tab: SettingTabBuilder) => {
         title: window.scribli.languages.export17,
         desc: window.scribli.languages.export18,
     });
-    group.switch("export.paragraphBeginningSpace", {
-        title: window.scribli.languages.paragraphBeginningSpace,
-        desc: window.scribli.languages.md4,
-    });
     group.switch("export.removeAssetsID", {
         title: window.scribli.languages.removeAssetsID,
         desc: window.scribli.languages.removeAssetsIDTip,

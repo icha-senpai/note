@@ -34,7 +34,6 @@ type Renderer interface {
 
 type Options struct {
 	SoftBreak2HardBreak bool
-	// https://github.com/sparanoid/chinese-copywriting-guidelines
 	AutoSpace           bool
 	RenderListStyle     bool
 	CodeSyntaxHighlight bool
@@ -51,31 +50,29 @@ type Options struct {
 	KramdownSpanIAL                bool
 	SuperBlock                     bool
 	ImageLazyLoading               string
-	ChineseParagraphBeginningSpace bool
 	Sanitize                       bool
-	// https://github.com/sparanoid/chinese-copywriting-guidelines
-	FixTermTypo                   bool
-	Terms                         map[string]string
-	ToC                           bool
-	HeadingID                     bool
-	KramdownIALIDRenderName       string
-	HeadingAnchor                 bool
-	GFMTaskListItemClass          string
-	DataTask                      bool
-	VditorCodeBlockPreview        bool
-	VditorMathBlockPreview        bool
-	VditorHTMLBlockPreview        bool
-	LinkBase                      string
-	LinkPrefix                    string
-	NodeIndexStart                int
-	ProtyleContenteditable        bool
-	KeepParagraphBeginningSpace   bool
-	ProtyleMarkNetImg             bool
-	Spellcheck                    bool
-	UnorderedListMarker           string
-	ImgTag                        bool
-	PreventEncodeLinkSpace        bool
-	ExportNormalizeTaskListMarker bool
+	FixTermTypo                    bool
+	Terms                          map[string]string
+	ToC                            bool
+	HeadingID                      bool
+	KramdownIALIDRenderName        string
+	HeadingAnchor                  bool
+	GFMTaskListItemClass           string
+	DataTask                       bool
+	VditorCodeBlockPreview         bool
+	VditorMathBlockPreview         bool
+	VditorHTMLBlockPreview         bool
+	LinkBase                       string
+	LinkPrefix                     string
+	NodeIndexStart                 int
+	ProtyleContenteditable         bool
+	KeepParagraphBeginningSpace    bool
+	ProtyleMarkNetImg              bool
+	Spellcheck                     bool
+	UnorderedListMarker            string
+	ImgTag                         bool
+	PreventEncodeLinkSpace         bool
+	ExportNormalizeTaskListMarker  bool
 }
 
 func NewOptions() *Options {
@@ -92,7 +89,6 @@ func NewOptions() *Options {
 		VditorSV:                       false,
 		ProtyleWYSIWYG:                 false,
 		KramdownBlockIAL:               false,
-		ChineseParagraphBeginningSpace: false,
 		FixTermTypo:                    false,
 		ToC:                            false,
 		HeadingID:                      false,
@@ -346,98 +342,15 @@ func (r *BaseRenderer) Newline() {
 }
 
 func (r *BaseRenderer) TextAutoSpacePrevious(node *ast.Node) {
-	if !r.Options.AutoSpace {
-		return
-	}
-
-	text := node.ChildByType(ast.NodeText)
-	var tokens []byte
-	if nil != text {
-		tokens = text.Tokens
-	}
-	if ast.NodeTextMark == node.Type {
-		tokens = []byte(node.TextMarkTextContent)
-	}
-	if 1 > len(tokens) {
-		return
-	}
-
-	if previous := node.Previous; nil != previous && ast.NodeText == previous.Type {
-		prevLast, _ := utf8.DecodeLastRune(previous.Tokens)
-		first, _ := utf8.DecodeRune(tokens)
-		if allowSpace(prevLast, first) {
-			r.Writer.WriteByte(lex.ItemSpace)
-		}
-	}
 }
 
 func (r *BaseRenderer) TextAutoSpaceNext(node *ast.Node) {
-	if !r.Options.AutoSpace {
-		return
-	}
-
-	text := node.ChildByType(ast.NodeText)
-	var tokens []byte
-	if nil != text {
-		tokens = text.Tokens
-	}
-	if ast.NodeTextMark == node.Type {
-		tokens = []byte(node.TextMarkTextContent)
-	}
-	if 1 > len(tokens) {
-		return
-	}
-
-	if next := node.Next; nil != next {
-		if ast.NodeText == next.Type {
-			nextFirst, _ := utf8.DecodeRune(next.Tokens)
-			last, _ := utf8.DecodeLastRune(tokens)
-			if allowSpace(last, nextFirst) {
-				r.Writer.WriteByte(lex.ItemSpace)
-			}
-		} else if ast.NodeKramdownSpanIAL == next.Type {
-			next = next.Next
-			if nil != next && ast.NodeText == next.Type {
-				nextFirst, _ := utf8.DecodeRune(next.Tokens)
-				last, _ := utf8.DecodeLastRune(tokens)
-				if allowSpace(last, nextFirst) {
-					next.Tokens = append([]byte{lex.ItemSpace}, next.Tokens...)
-				}
-			}
-		}
-	}
 }
 
 func (r *BaseRenderer) LinkTextAutoSpacePrevious(node *ast.Node) {
-	if !r.Options.AutoSpace {
-		return
-	}
-
-	if text := node.ChildByType(ast.NodeLinkText); nil != text && nil != text.Tokens {
-		if previous := node.Previous; nil != previous && ast.NodeText == previous.Type {
-			prevLast, _ := utf8.DecodeLastRune(previous.Tokens)
-			first, _ := utf8.DecodeRune(text.Tokens)
-			if allowSpace(prevLast, first) {
-				r.Writer.WriteByte(lex.ItemSpace)
-			}
-		}
-	}
 }
 
 func (r *BaseRenderer) LinkTextAutoSpaceNext(node *ast.Node) {
-	if !r.Options.AutoSpace {
-		return
-	}
-
-	if text := node.ChildByType(ast.NodeLinkText); nil != text && nil != text.Tokens {
-		if next := node.Next; nil != next && ast.NodeText == next.Type {
-			nextFirst, _ := utf8.DecodeRune(next.Tokens)
-			last, _ := utf8.DecodeLastRune(text.Tokens)
-			if allowSpace(last, nextFirst) {
-				r.Writer.WriteByte(lex.ItemSpace)
-			}
-		}
-	}
 }
 
 func SubStr(str string, length int) (ret string) {

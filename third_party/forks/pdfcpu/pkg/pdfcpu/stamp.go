@@ -180,9 +180,6 @@ func parseFontName(s string, wm *model.Watermark) error {
 		return errors.Errorf("pdfcpu: %s is unsupported, please refer to \"pdfcpu fonts list\".\n", s)
 	}
 	wm.FontName = s
-	if strings.HasSuffix(strings.ToUpper(wm.FontName), "GB2312") {
-		wm.ScriptName = "HANS"
-	}
 
 	return nil
 }

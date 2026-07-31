@@ -687,20 +687,6 @@ const initMainWindow = (currentKernelPort = kernelPort) => {
     // Bypass security policy for internet service requests.
     // 
     currentWindow.webContents.session.webRequest.onBeforeSendHeaders((details, cb) => {
-        if (-1 < details.url.toLowerCase().indexOf("bili")) {
-            // Keep Referer for Bilibili.
-            // 
-            cb({requestHeaders: details.requestHeaders});
-            return;
-        }
-
-        if (-1 < details.url.toLowerCase().indexOf("douyin")) {
-            // Keep Referer for Douyin because iframe login depends on Referer validation.
-            // 
-            cb({requestHeaders: details.requestHeaders});
-            return;
-        }
-
         if (-1 < details.url.toLowerCase().indexOf("youtube")) {
             // Set Referer handling for YouTube.
             // 

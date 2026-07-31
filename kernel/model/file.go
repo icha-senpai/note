@@ -487,7 +487,7 @@ func ListDocTree(boxID, listPath string, sortMode int, flashcard, showHidden boo
 			if docs[j].TitleEmpty {
 				nj = emptyKey
 			}
-			return util.PinYinCompare4FileTree(ni, nj)
+			return util.LexicalCompare4FileTree(ni, nj)
 		})
 	case util.SortModeNameDESC:
 		emptyKey := Conf.Language(16)
@@ -499,7 +499,7 @@ func ListDocTree(boxID, listPath string, sortMode int, flashcard, showHidden boo
 			if docs[j].TitleEmpty {
 				nj = emptyKey
 			}
-			return util.PinYinCompare4FileTree(nj, ni)
+			return util.LexicalCompare4FileTree(nj, ni)
 		})
 	case util.SortModeUpdatedASC:
 		sort.Slice(docs, func(i, j int) bool { return docs[i].Mtime < docs[j].Mtime })

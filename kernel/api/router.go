@@ -158,7 +158,6 @@ func ServeAPI(ginServer *gin.Engine) {
 	ginServer.Handle("POST", "/api/filetree/getPublishAccess", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, getPublishAccess)
 	ginServer.Handle("POST", "/api/filetree/authFilePublishAccess", model.CheckAuth, authFilePublishAccess)
 
-	ginServer.Handle("POST", "/api/format/autoSpace", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, autoSpace)
 	ginServer.Handle("POST", "/api/format/netImg2LocalAssets", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, netImg2LocalAssets)
 	ginServer.Handle("POST", "/api/format/netAssets2LocalAssets", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, netAssets2LocalAssets)
 

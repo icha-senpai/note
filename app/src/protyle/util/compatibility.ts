@@ -266,10 +266,6 @@ export const isNotCtrl = (event: KeyboardEvent | MouseEvent) => {
     return false;
 };
 
-export const isHuawei = () => {
-    return window.scribli.config.system.osPlatform.toLowerCase().indexOf("huawei") > -1;
-};
-
 export const isDisabledFeature = (feature: string): boolean => {
     return window.scribli.config.system.disabledFeatures?.indexOf(feature) > -1;
 };

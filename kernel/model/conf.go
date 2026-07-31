@@ -529,11 +529,6 @@ func InitConf() {
 	if 1 > Conf.Search.BacklinkMentionKeywordsLimit {
 		Conf.Search.BacklinkMentionKeywordsLimit = 512
 	}
-	if nil == Conf.Search.HanSensitive {
-		Conf.Search.SetHanSensitive(true)
-	}
-	sql.SetHanSensitive(Conf.Search.HanSensitiveVal())
-
 	if nil == Conf.Stat {
 		Conf.Stat = conf.NewStat()
 	}
@@ -901,7 +896,6 @@ func ClearCustomEmojis() {
 func NewLute() (ret *lute.Lute) {
 	ret = util.NewLute()
 	ret.SetCodeSyntaxHighlightLineNum(Conf.Editor.CodeSyntaxHighlightLineNum)
-	ret.SetChineseParagraphBeginningSpace(Conf.Export.ParagraphBeginningSpace)
 	ret.SetProtyleMarkNetImg(Conf.Editor.DisplayNetImgMark)
 	ret.SetSpellcheck(Conf.Editor.Spellcheck)
 

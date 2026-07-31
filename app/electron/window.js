@@ -43,8 +43,8 @@ const I18N_BASE = {
         msgPartitionRoot: "⚠️ Do not create the workspace at the partition root. Create a new folder for the workspace.",
         msgNotEmpty: "⚠️ This folder contains other files. Create a new folder for the workspace.",
         msgICloud: "⚠️ This folder is under the iCloud sync path. Choose another path.",
-        msgCloudDrive: "⚠️ The folder path cannot contain onedrive, dropbox, google drive, pcloud, nutstore, baidunetdisk, weiyun, etc. Choose another path.",
-        msgConfirm: "⚠️ Please confirm that the workspace is not set under a third-party sync disk path, otherwise it can cause data damage (iCloud/OneDrive/Dropbox/Google Drive/Nutstore/Baidu Netdisk/Tencent Weiyun, etc.). Continue?",
+        msgCloudDrive: "⚠️ The folder path cannot contain a third-party sync disk name such as onedrive, dropbox, google drive, or pcloud. Choose another path.",
+        msgConfirm: "⚠️ Please confirm that the workspace is not set under a third-party sync disk path, otherwise it can cause data damage. Continue?",
     },
 };;
 
@@ -105,9 +105,7 @@ const isWorkspaceDir = (absPath) => {
 const isCloudDrivePath = (absPath) => {
     const absPathLower = absPath.toLowerCase();
     return -1 < absPathLower.indexOf("onedrive") || -1 < absPathLower.indexOf("dropbox") ||
-        -1 < absPathLower.indexOf("google drive") || -1 < absPathLower.indexOf("pcloud") ||
-        -1 < absPathLower.indexOf("nutstore") || -1 < absPathLower.indexOf("baidunetdisk") ||
-        -1 < absPathLower.indexOf("weiyun");
+        -1 < absPathLower.indexOf("google drive") || -1 < absPathLower.indexOf("pcloud");
 };
 
 // Check whether a macOS workspace is placed under an iCloud path.

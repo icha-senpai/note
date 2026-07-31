@@ -113,7 +113,7 @@ func SearchTemplate(keyword string) (ret []*TemplateSearchResult) {
 	}
 
 	sort.Slice(ret, func(i, j int) bool {
-		return util.PinYinCompare(filepath.Base(groups[i].Name()), filepath.Base(groups[j].Name()))
+		return util.LexicalCompare(filepath.Base(groups[i].Name()), filepath.Base(groups[j].Name()))
 	})
 
 	keyword = strings.TrimSpace(keyword)

@@ -529,17 +529,11 @@ func setSearch(c *gin.Context) {
 		return
 	}
 
-	if s.HanSensitive == nil {
-
-		s.HanSensitive = model.Conf.Search.HanSensitive
-	}
-
 	if 32 > s.Limit {
 		s.Limit = 32
 	}
 
 	oldCaseSensitive := model.Conf.Search.CaseSensitive
-	oldHanSensitive := model.Conf.Search.HanSensitiveVal()
 	oldIndexAssetPath := model.Conf.Search.IndexAssetPath
 
 	oldVirtualRefName := model.Conf.Search.VirtualRefName
@@ -551,10 +545,9 @@ func setSearch(c *gin.Context) {
 	model.Conf.Save()
 
 	sql.SetCaseSensitive(s.CaseSensitive)
-	sql.SetHanSensitive(s.HanSensitiveVal())
 	sql.SetIndexAssetPath(s.IndexAssetPath)
 
-	ftsChanged := s.CaseSensitive != oldCaseSensitive || s.HanSensitiveVal() != oldHanSensitive
+	ftsChanged := s.CaseSensitive != oldCaseSensitive
 	if ftsChanged && s.IndexAssetPath == oldIndexAssetPath {
 		task.AppendTask(task.DatabaseIndexFTS, model.ReindexFTS)
 	} else if ftsChanged || s.IndexAssetPath != oldIndexAssetPath {

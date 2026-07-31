@@ -276,19 +276,10 @@ func (r *HtmlRenderer) renderTextMark(node *ast.Node, entering bool) ast.WalkSta
 			r.WriteString("</a>")
 		} else if node.IsTextMarkType("inline-memo") {
 			r.WriteString(textContent)
-			lastRune, _ := utf8.DecodeLastRuneInString(node.TextMarkTextContent)
 			if "" != node.TextMarkInlineMemoContent {
-				if isCJK(lastRune) {
-					r.WriteString("<sup>（")
-					memo := node.TextMarkInlineMemoContent
-					memo = strings.ReplaceAll(memo, editor.IALValEscNewLine, " ")
-					r.WriteString(memo)
-					r.WriteString("）</sup>")
-				} else {
-					r.WriteString("<sup>(")
-					r.WriteString(node.TextMarkInlineMemoContent)
-					r.WriteString(")</sup>")
-				}
+				r.WriteString("<sup>(")
+				r.WriteString(node.TextMarkInlineMemoContent)
+				r.WriteString(")</sup>")
 			}
 		} else {
 			attrs := r.renderTextMarkAttrs(node)
@@ -1148,11 +1139,6 @@ func (r *HtmlRenderer) renderParagraph(node *ast.Node, entering bool) ast.WalkSt
 		r.handleKramdownBlockIAL(node)
 		var attrs [][]string
 		attrs = append(attrs, node.KramdownIAL...)
-		if r.Options.ChineseParagraphBeginningSpace && ast.NodeDocument == node.Parent.Type {
-			if !r.ParagraphContainImgOnly(node) {
-				attrs = append(attrs, []string{"class", "indent--2"})
-			}
-		}
 		r.Tag("p", attrs, false)
 	} else {
 		r.Tag("/p", nil, false)

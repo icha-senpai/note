@@ -39,7 +39,6 @@ export const getAgentLute = (options: ILuteOptions): Lute => {
     lute.SetFootnotes(false);
     lute.SetLinkRef(false);
     lute.SetSanitize(options.sanitize);
-    lute.SetChineseParagraphBeginningSpace(options.paragraphBeginningSpace);
     lute.SetRenderListStyle(options.listStyle);
     lute.SetImgPathAllowSpace(true);
     lute.SetKramdownIAL(true);
@@ -90,7 +89,6 @@ const setLute = (options: ILuteOptions) => {
     lute.SetFootnotes(false);
     lute.SetLinkRef(false);
     lute.SetSanitize(options.sanitize);
-    lute.SetChineseParagraphBeginningSpace(options.paragraphBeginningSpace);
     lute.SetRenderListStyle(options.listStyle);
     lute.SetImgPathAllowSpace(true);
     lute.SetKramdownIAL(true);

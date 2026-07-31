@@ -35,7 +35,7 @@ import {openFileById, updateBacklinkGraph} from "../editor/util";
 import {openGlobalSearch} from "../search/util";
 import {openNewWindowById} from "../window/openNewWindow";
 import {openBacklink, openGraph} from "../layout/dock/util";
-import {getSearch, isMobile} from "../util/functions";
+import {isMobile} from "../util/functions";
 import * as dayjs from "dayjs";
 import {blockRender} from "../protyle/render/blockRender";
 import {renameAsset} from "../editor/rename";
@@ -1977,47 +1977,7 @@ export const iframeMenu = (protyle: IProtyle, nodeElement: Element) => {
             element.style.maxWidth = "none";
             element.querySelector("textarea").addEventListener("change", (event) => {
                 const value = (event.target as HTMLTextAreaElement).value.replace(/\n|\r\n|\r|\u2028|\u2029/g, "").trim();
-                const biliMatch = value.match(/(?:www\.|\/\/)bilibili\.com\/video\/(\w+)/);
-                if (value.indexOf("bilibili.com") > -1 && (value.indexOf("bvid=") > -1 || (biliMatch && biliMatch[1]))) {
-                    const params: IObject = {
-                        bvid: getSearch("bvid", value) || (biliMatch && biliMatch[1]),
-                        page: "1",
-                        high_quality: "1",
-                        as_wide: "1",
-                        allowfullscreen: "true",
-                        autoplay: "0"
-                    };
-                    // `//player.bilibili.com/player.html?aid=895154192&bvid=BV1NP4y1M72N&cid=562898119&page=1`
-                    // `https://www.bilibili.com/video/BV1ys411472E?t=3.4&p=4`
-                    new URL(value.startsWith("http") ? value : "https:" + value).search.split("&").forEach((item, index) => {
-                        if (!item) {
-                            return;
-                        }
-                        if (index === 0) {
-                            item = item.substr(1);
-                        }
-                        const keyValue = item.split("=");
-                        params[keyValue[0]] = keyValue[1];
-                    });
-                    let src = "https://player.bilibili.com/player.html?";
-                    const keys = Object.keys(params);
-                    keys.forEach((key, index) => {
-                        src += `${key}=${params[key]}`;
-                        if (index < keys.length - 1) {
-                            src += "&";
-                        }
-                    });
-                    iframeElement.setAttribute("src", src);
-                    iframeElement.setAttribute("sandbox", "allow-top-navigation-by-user-activation allow-same-origin allow-forms allow-scripts allow-popups allow-storage-access-by-user-activation");
-                    if (!iframeElement.style.height) {
-                        iframeElement.style.height = "360px";
-                    }
-                    if (!iframeElement.style.width) {
-                        iframeElement.style.width = "640px";
-                    }
-                } else {
-                    iframeElement.setAttribute("src", value);
-                }
+                iframeElement.setAttribute("src", value);
 
                 updateTransaction(protyle, nodeElement, html);
                 html = nodeElement.outerHTML;

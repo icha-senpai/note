@@ -519,7 +519,6 @@ export abstract class Constants {
                 copyProtocolInMd: {default: "", custom: ""},
                 netImg2LocalAsset: {default: "", custom: ""},
                 netAssets2LocalAssets: {default: "", custom: ""},
-                optimizeTypography: {default: "", custom: ""},
                 hLayout: {default: "", custom: ""},
                 vLayout: {default: "", custom: ""},
                 refPopover: {default: "", custom: ""},

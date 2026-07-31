@@ -658,19 +658,6 @@ func netAssets2LocalAssets0(tree *parse.Tree, onlyImg bool, originalURL string, 
 				}
 
 				u := dest
-				if strings.Contains(u, "qpic.cn") {
-
-					if strings.Contains(u, "http://") {
-						u = strings.Replace(u, "http://", "https://", 1)
-					}
-
-					//if strings.HasSuffix(u, "/0") {
-					//	u = strings.Replace(u, "/0", "/640", 1)
-					//} else if strings.Contains(u, "/0?") {
-					//	u = strings.Replace(u, "/0?", "/640?", 1)
-					//}
-				}
-
 				name := assetsMap[u]
 				if "" != name {
 					setAssetsLinkDest(destNode, dest, "assets/"+name)

@@ -17,7 +17,6 @@ import "unicode"
 
 // CharsetIDs maps charset name to its default collation ID.
 var CharsetIDs = map[string]uint8{
-	"big5":     1,
 	"dec8":     3,
 	"cp850":    4,
 	"hp8":      6,
@@ -32,10 +31,8 @@ var CharsetIDs = map[string]uint8{
 	"tis620":   18,
 	"euckr":    19,
 	"koi8u":    22,
-	"gb2312":   24,
 	"greek":    25,
 	"cp1250":   26,
-	"gbk":      28,
 	"latin5":   30,
 	"armscii8": 32,
 	"utf8":     33,
@@ -61,7 +58,6 @@ var CharsetIDs = map[string]uint8{
 
 // Charsets maps charset name to its default collation name.
 var Charsets = map[string]string{
-	"big5":     "big5_chinese_ci",
 	"dec8":     "dec8_swedish_ci",
 	"cp850":    "cp850_general_ci",
 	"hp8":      "hp8_english_ci",
@@ -76,10 +72,8 @@ var Charsets = map[string]string{
 	"tis620":   "tis620_thai_ci",
 	"euckr":    "euckr_korean_ci",
 	"koi8u":    "koi8u_general_ci",
-	"gb2312":   "gb2312_chinese_ci",
 	"greek":    "greek_general_ci",
 	"cp1250":   "cp1250_general_ci",
-	"gbk":      "gbk_chinese_ci",
 	"latin5":   "latin5_turkish_ci",
 	"armscii8": "armscii8_general_ci",
 	"utf8":     "utf8_general_ci",
@@ -105,7 +99,6 @@ var Charsets = map[string]string{
 
 // Collations maps MySQL default collation ID to its name.
 var Collations = map[uint8]string{
-	1:   "big5_chinese_ci",
 	2:   "latin2_czech_cs",
 	3:   "dec8_swedish_ci",
 	4:   "cp850_general_ci",
@@ -127,11 +120,9 @@ var Collations = map[uint8]string{
 	21:  "latin2_hungarian_ci",
 	22:  "koi8u_general_ci",
 	23:  "cp1251_ukrainian_ci",
-	24:  "gb2312_chinese_ci",
 	25:  "greek_general_ci",
 	26:  "cp1250_general_ci",
 	27:  "latin2_croatian_ci",
-	28:  "gbk_chinese_ci",
 	29:  "cp1257_lithuanian_ci",
 	30:  "latin5_turkish_ci",
 	31:  "latin1_german2_ci",
@@ -186,10 +177,7 @@ var Collations = map[uint8]string{
 	81:  "cp852_bin",
 	82:  "swe7_bin",
 	83:  "utf8_bin",
-	84:  "big5_bin",
 	85:  "euckr_bin",
-	86:  "gb2312_bin",
-	87:  "gbk_bin",
 	88:  "sjis_bin",
 	89:  "tis620_bin",
 	90:  "ucs2_bin",
@@ -328,7 +316,6 @@ var Collations = map[uint8]string{
 
 // CollationNames maps MySQL default collation name to its ID
 var CollationNames = map[string]uint8{
-	"big5_chinese_ci":          1,
 	"latin2_czech_cs":          2,
 	"dec8_swedish_ci":          3,
 	"cp850_general_ci":         4,
@@ -350,11 +337,9 @@ var CollationNames = map[string]uint8{
 	"latin2_hungarian_ci":      21,
 	"koi8u_general_ci":         22,
 	"cp1251_ukrainian_ci":      23,
-	"gb2312_chinese_ci":        24,
 	"greek_general_ci":         25,
 	"cp1250_general_ci":        26,
 	"latin2_croatian_ci":       27,
-	"gbk_chinese_ci":           28,
 	"cp1257_lithuanian_ci":     29,
 	"latin5_turkish_ci":        30,
 	"latin1_german2_ci":        31,
@@ -409,10 +394,7 @@ var CollationNames = map[string]uint8{
 	"cp852_bin":                81,
 	"swe7_bin":                 82,
 	"utf8_bin":                 83,
-	"big5_bin":                 84,
 	"euckr_bin":                85,
-	"gb2312_bin":               86,
-	"gbk_bin":                  87,
 	"sjis_bin":                 88,
 	"tis620_bin":               89,
 	"ucs2_bin":                 90,

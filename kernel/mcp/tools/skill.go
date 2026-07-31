@@ -33,7 +33,7 @@ var SkillTool = &Tool{
 			"action":   {Type: "string", Description: "Operation", Enum: []string{"load", "save", "install", "remove", "rename", "list"}},
 			"name":     {Type: "string", Description: "Skill name (directory name)"},
 			"content":  {Type: "string", Description: "SKILL.md full content with YAML frontmatter (for save)"},
-			"url":      {Type: "string", Description: "Skill source for install: 'owner/repo' shorthand (e.g. Tencent/WeChatReading), a full GitHub URL, a raw SKILL.md URL, or a release zip URL"},
+			"url":      {Type: "string", Description: "Skill source for install: 'owner/repo' shorthand (e.g. example/ReadingList), a full GitHub URL, a raw SKILL.md URL, or a release zip URL"},
 			"new_name": {Type: "string", Description: "New skill name (for rename)"},
 		},
 		Required: []string{"action"},

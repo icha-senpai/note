@@ -44,9 +44,8 @@ type Search struct {
 	WidgetBlock   bool `json:"widgetBlock"`
 	Callout       bool `json:"callout"`
 
-	Limit         int   `json:"limit"`
-	CaseSensitive bool  `json:"caseSensitive"`
-	HanSensitive  *bool `json:"hanSensitive"`
+	Limit         int  `json:"limit"`
+	CaseSensitive bool `json:"caseSensitive"`
 
 	Name  bool `json:"name"`
 	Alias bool `json:"alias"`
@@ -90,7 +89,6 @@ func NewSearch() *Search {
 
 		Limit:         64,
 		CaseSensitive: false,
-		HanSensitive:  new(true),
 
 		Name:  true,
 		Alias: true,
@@ -110,20 +108,6 @@ func NewSearch() *Search {
 		VirtualRefAnchor: true,
 		VirtualRefDoc:    true,
 	}
-}
-
-//go:fix inline
-func boolPtr(v bool) *bool { return new(v) }
-
-func (s *Search) HanSensitiveVal() bool {
-	if s.HanSensitive == nil {
-		return true
-	}
-	return *s.HanSensitive
-}
-
-func (s *Search) SetHanSensitive(v bool) {
-	s.HanSensitive = new(v)
 }
 
 func (s *Search) NAMFilter(keyword string) string {

@@ -84,13 +84,12 @@ const NOT_DIACRITIC_FROM_END_REG_EXP = /([^\p{M}])\p{M}*$/u;
 const NOT_DIACRITIC_FROM_START_REG_EXP = /^\p{M}*([^\p{M}])/u;
 
 // The range [AC00-D7AF] corresponds to the Hangul syllables.
-// The few other chars are some CJK Compatibility Ideographs.
-const SYLLABLES_REG_EXP = /[\uAC00-\uD7AF\uFA6C\uFACF-\uFAD1\uFAD5-\uFAD7]+/g;
+const SYLLABLES_REG_EXP = /[\uAC00-\uD7AF]+/g;
 const SYLLABLES_LENGTHS = new Map();
 // When decomposed (in using NFD) the above syllables will start
 // with one of the chars in this regexp.
 const FIRST_CHAR_SYLLABLES_REG_EXP =
-  "[\\u1100-\\u1112\\ud7a4-\\ud7af\\ud84a\\ud84c\\ud850\\ud854\\ud857\\ud85f]";
+  "[\\u1100-\\u1112\\ud7a4-\\ud7af]";
 
 const NFKC_CHARS_TO_NORMALIZE = new Map();
 
@@ -127,12 +126,9 @@ function normalize(text) {
     const replace = Object.keys(CHARACTERS_TO_NORMALIZE).join("");
     const toNormalizeWithNFKC = getNormalizeWithNFKC();
 
-    // 3040-309F: Hiragana
-    // 30A0-30FF: Katakana
-    const CJK = "(?:\\p{Ideographic}|[\u3040-\u30FF])";
     const HKDiacritics = "(?:\u3099|\u309A)";
     const CompoundWord = "\\p{Ll}-\\n\\p{Lu}";
-    const regexp = `([${replace}])|([${toNormalizeWithNFKC}])|(${HKDiacritics}\\n)|(\\p{M}+(?:-\\n)?)|(${CompoundWord})|(\\S-\\n)|(${CJK}\\n)|(\\n)`;
+    const regexp = `([${replace}])|([${toNormalizeWithNFKC}])|(${HKDiacritics}\\n)|(\\p{M}+(?:-\\n)?)|(${CompoundWord})|(\\S-\\n)|(\\n)`;
 
     if (syllablePositions.length === 0) {
       // Most of the syllables belong to Hangul so there are no need
@@ -194,7 +190,7 @@ function normalize(text) {
 
   normalized = normalized.replace(
     normalizationRegex,
-    (match, p1, p2, p3, p4, p5, p6, p7, p8, p9, i) => {
+    (match, p1, p2, p3, p4, p5, p6, p7, p8, i) => {
       i -= shiftOrigin;
       if (p1) {
         // Maybe fractions or quotations mark...
@@ -305,17 +301,6 @@ function normalize(text) {
       }
 
       if (p7) {
-        // An ideographic at the end of a line doesn't imply adding an extra
-        // white space.
-        // A CJK can be encoded in UTF-32, hence their length isn't always 1.
-        const len = p7.length - 1;
-        positions.push([i - shift + len, shift]);
-        shiftOrigin += 1;
-        eol += 1;
-        return p7.slice(0, -1);
-      }
-
-      if (p8) {
         // eol is replaced by space: "foo\nbar" is likely equivalent to
         // "foo bar".
         positions.push([i - shift + 1, shift - 1]);

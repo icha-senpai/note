@@ -33,6 +33,6 @@ func TestTokenCounterUsesLocalEstimator(t *testing.T) {
 		t.Fatalf("empty text should stay zero tokens, got %d", got)
 	}
 	if got := counter.count("hello"); got < 1 {
-		t.Fatalf("CJK text should estimate to at least one token, got %d", got)
+		t.Fatalf("plain text should estimate to at least one token, got %d", got)
 	}
 }

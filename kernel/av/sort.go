@@ -182,7 +182,7 @@ func (value *Value) Compare(other *Value, optionSort map[string]int) int {
 				return 0
 			}
 
-			if util.PinYinCompare(value.Block.Content, other.Block.Content) {
+			if util.LexicalCompare(value.Block.Content, other.Block.Content) {
 				return -1
 			}
 			return 1
@@ -202,7 +202,7 @@ func (value *Value) Compare(other *Value, optionSort map[string]int) int {
 				return 0
 			}
 
-			if util.EmojiPinYinCompare(value.Text.Content, other.Text.Content) {
+			if util.EmojiLexicalCompare(value.Text.Content, other.Text.Content) {
 				return -1
 			}
 			return 1
@@ -372,7 +372,7 @@ func (value *Value) Compare(other *Value, optionSort map[string]int) int {
 				return 0
 			}
 
-			if util.EmojiPinYinCompare(v1.String(), v2) {
+			if util.EmojiLexicalCompare(v1.String(), v2) {
 				return -1
 			}
 			return 1
@@ -395,7 +395,7 @@ func (value *Value) Compare(other *Value, optionSort map[string]int) int {
 				return 0
 			}
 
-			if util.EmojiPinYinCompare(value.Template.Content, other.Template.Content) {
+			if util.EmojiLexicalCompare(value.Template.Content, other.Template.Content) {
 				return -1
 			}
 			return 1
@@ -443,7 +443,7 @@ func (value *Value) Compare(other *Value, optionSort map[string]int) int {
 				return 0
 			}
 
-			if util.EmojiPinYinCompare(vContent, oContent) {
+			if util.EmojiLexicalCompare(vContent, oContent) {
 				return -1
 			}
 			return 1
@@ -481,7 +481,7 @@ func (value *Value) Compare(other *Value, optionSort map[string]int) int {
 				return 0
 			}
 
-			if util.EmojiPinYinCompare(vContent, oContent) {
+			if util.EmojiLexicalCompare(vContent, oContent) {
 				return -1
 			}
 			return 1

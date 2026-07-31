@@ -1556,7 +1556,7 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			}
 		}
 
-		// The browser extension supports Zhihu formula
+		// Browser extensions sometimes preserve TeX in data attributes.
 		if tex := strings.TrimSpace(util.DomAttrValue(n, "data-tex")); "" != tex {
 			if (strings.Contains(util.DomAttrValue(n, "class"), "math-inline") && ((nil != n.PrevSibling || nil != n.NextSibling) || lute.parentIs(n, atom.Table))) ||
 				(nil != n.Parent && strings.Contains(util.DomAttrValue(n.Parent, "class"), "math-inline")) {

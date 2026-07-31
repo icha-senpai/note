@@ -665,7 +665,7 @@ func parseTitleInSnapshot(fileID string, repo *dejavu.Repo, luteEngine *lute.Lut
 	return
 }
 
-// .sy → DecryptFile，assets/* → DecryptAsset，storage/av/*.json → av.DecryptAVData。
+// .sy -> DecryptFile, assets/* -> DecryptAsset, storage/av/*.json -> av.DecryptAVData.
 
 func decryptRepoDataIfNeeded(data []byte, filePath string) []byte {
 	relPath := strings.TrimPrefix(filePath, "/")

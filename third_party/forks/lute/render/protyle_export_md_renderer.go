@@ -384,12 +384,7 @@ func (r *ProtyleExportMdRenderer) renderMdMarker(node *ast.Node, entering bool) 
 				content := node.TextMarkInlineMemoContent
 				content = strings.ReplaceAll(content, editor.IALValEscNewLine, " ")
 				if "" != content {
-					lastRune, _ := utf8.DecodeLastRuneInString(node.TextMarkTextContent)
-					if isCJK(lastRune) {
-						ret += "<sup>（" + content + "）</sup>"
-					} else {
-						ret += "<sup>(" + content + ")</sup>"
-					}
+					ret += "<sup>(" + content + ")</sup>"
 				}
 			case "inline-math":
 				content := node.TextMarkInlineMathContent
@@ -507,12 +502,7 @@ func (r *ProtyleExportMdRenderer) renderMdMarker0(node *ast.Node, currentTextmar
 			content := node.TextMarkInlineMemoContent
 			content = strings.ReplaceAll(content, editor.IALValEscNewLine, " ")
 			if "" != content {
-				lastRune, _ := utf8.DecodeLastRuneInString(node.TextMarkTextContent)
-				if isCJK(lastRune) {
-					ret += "<sup>（" + content + "）</sup>"
-				} else {
-					ret += "<sup>(" + content + ")</sup>"
-				}
+				ret += "<sup>(" + content + ")</sup>"
 			}
 		}
 	case "inline-math":
@@ -1505,11 +1495,6 @@ func (r *ProtyleExportMdRenderer) renderDocument(node *ast.Node, entering bool) 
 
 func (r *ProtyleExportMdRenderer) renderParagraph(node *ast.Node, entering bool) ast.WalkStatus {
 	if entering {
-		if r.Options.ChineseParagraphBeginningSpace && ast.NodeDocument == node.Parent.Type {
-			if !r.ParagraphContainImgOnly(node) {
-				r.WriteString("　　")
-			}
-		}
 	} else {
 		if !r.Options.KeepParagraphBeginningSpace && nil != node.FirstChild {
 			node.FirstChild.Tokens = bytes.TrimSpace(node.FirstChild.Tokens)

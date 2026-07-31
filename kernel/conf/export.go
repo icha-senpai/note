@@ -17,8 +17,7 @@
 package conf
 
 type Export struct {
-	ParagraphBeginningSpace bool `json:"paragraphBeginningSpace"`
-	AddTitle                bool `json:"addTitle"`
+	AddTitle bool `json:"addTitle"`
 
 	BlockRefMode          int    `json:"blockRefMode"`
 	BlockEmbedMode        int    `json:"blockEmbedMode"`
@@ -46,21 +45,20 @@ type Export struct {
 
 func NewExport() *Export {
 	return &Export{
-		ParagraphBeginningSpace: false,
-		AddTitle:                true,
-		BlockRefMode:            4,
-		BlockEmbedMode:          1,
-		BlockRefTextLeft:        "",
-		BlockRefTextRight:       "",
-		TagOpenMarker:           "#",
-		TagCloseMarker:          "#",
-		FileAnnotationRefMode:   0,
-		PandocBin:               "",
-		RemoveAssetsID:          false,
-		MarkdownYFM:             false,
-		InlineMemo:              false,
-		IncludeSubDocs:          true,
-		IncludeRelatedDocs:      false,
-		PDFFooter:               "%page / %pages",
+		AddTitle:              true,
+		BlockRefMode:          4,
+		BlockEmbedMode:        1,
+		BlockRefTextLeft:      "",
+		BlockRefTextRight:     "",
+		TagOpenMarker:         "#",
+		TagCloseMarker:        "#",
+		FileAnnotationRefMode: 0,
+		PandocBin:             "",
+		RemoveAssetsID:        false,
+		MarkdownYFM:           false,
+		InlineMemo:            false,
+		IncludeSubDocs:        true,
+		IncludeRelatedDocs:    false,
+		PDFFooter:             "%page / %pages",
 	}
 }

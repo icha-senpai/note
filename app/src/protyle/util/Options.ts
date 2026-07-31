@@ -81,10 +81,9 @@ export class Options {
             }],
         },
         preview: {
-            actions: ["desktop", "tablet", "mobile", "mp-wechat", "zhihu", "yuque"],
+            actions: ["desktop", "tablet", "mobile"],
             delay: 0,
             markdown: {
-                paragraphBeginningSpace: window.scribli.config.export.paragraphBeginningSpace,
                 listStyle: false,
                 sanitize: true,
             },
