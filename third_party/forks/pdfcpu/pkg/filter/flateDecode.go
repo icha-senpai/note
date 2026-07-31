@@ -22,7 +22,7 @@ import (
 	"io"
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Portions of this code are based on ideas of image/png: reader.go:readImagePass

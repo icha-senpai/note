@@ -19,8 +19,8 @@ package plugin
 import (
 	"testing"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja_nodejs/eventloop"
+	"github.com/dop251/goja"
+	"github.com/dop251/goja_nodejs/eventloop"
 	"github.com/icha-senpai/note/kernel/mcp/tools"
 	"github.com/icha-senpai/note/kernel/model"
 )

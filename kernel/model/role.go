@@ -18,7 +18,7 @@ package model
 
 import "slices"
 
-import "github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+import "github.com/gin-gonic/gin"
 
 type Role uint
 

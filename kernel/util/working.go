@@ -31,13 +31,13 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/mod/semver"
+	"github.com/gofrs/flock"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/github/gofrs/flock"
 	"github.com/icha-senpai/note/third_party/forks/go-humanize"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/httpclient"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"golang.org/x/mod/semver"
 )
 
 // var Mode = "dev"

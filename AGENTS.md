@@ -31,13 +31,14 @@ The main README is now the public Scribli surface. Keep it focused on Scribli's 
 1. Scribli is local-first. A fresh workspace must not contact official upstream hosted services.
 2. Official upstream cloud, account login, account checks, subscriptions, payments, points, quotas, marketplace/bazaar, upstream update checks, and upstream release install flows are removed or disabled.
 3. Keep user-controlled features working: S3 sync, WebDAV sync, local-folder sync, local snapshots, repository history, manual backups, import/export, API, MCP, AI provider configuration, plugins, and local server features.
-4. Sync provider `0` means disabled/no sync provider and must not perform network sync activity. Do not shift provider IDs unless a migration is implemented and tested.
-5. `scribli://` is the only active application protocol. Do not reintroduce the old upstream protocol.
-6. Build-time mirrors and upstream publishing are disabled. Do not add `npmmirror`, Aliyun mirrors, upstream Docker publishing, upstream AUR publishing, upstream GitHub release publishing, or auto-update publishing until Scribli owns that pipeline.
-7. Electron builder config must keep `publish: null`, and package scripts must keep `--publish=never` unless a Scribli-owned signed release process exists.
-8. Do not claim Scribli LLC unless that legal entity exists. Use `Scribli contributors` or another accurate author value.
-9. Phase out inherited upstream identifiers in favor of Scribli. Do not use blind global replacement; follow `docs/INTERNAL-NAMING.md`, classify each name, and migrate risky compatibility or stored-data surfaces with tests.
-10. Do not reintroduce native mobile, macOS, or Linux build/package targets unless Boss explicitly restarts those platforms as a separate project.
+4. Ebook support is a bridge workflow: Scribli may import ebooks into editable documents and export documents to ebook formats, but raw EPUB/AZW package editing belongs in dedicated tools such as Calibre. MOBI/AZW/AZW3 conversion must use a user-configured local executable such as `ebook-convert`; do not add hosted conversion services.
+5. Sync provider `0` means disabled/no sync provider and must not perform network sync activity. Do not shift provider IDs unless a migration is implemented and tested.
+6. `scribli://` is the only active application protocol. Do not reintroduce the old upstream protocol.
+7. Build-time mirrors and upstream publishing are disabled. Do not add `npmmirror`, Aliyun mirrors, upstream Docker publishing, upstream AUR publishing, upstream GitHub release publishing, or auto-update publishing until Scribli owns that pipeline.
+8. Electron builder config must keep `publish: null`, and package scripts must keep `--publish=never` unless a Scribli-owned signed release process exists.
+9. Do not claim Scribli LLC unless that legal entity exists. Use `Scribli contributors` or another accurate author value.
+10. Phase out inherited upstream identifiers in favor of Scribli. Do not use blind global replacement; follow `docs/INTERNAL-NAMING.md`, classify each name, and migrate risky compatibility or stored-data surfaces with tests.
+11. Do not reintroduce native mobile, macOS, or Linux build/package targets unless Boss explicitly restarts those platforms as a separate project.
 
 ---
 
@@ -181,23 +182,30 @@ Generated build outputs may change when running build/package commands, but do n
 
 Scribli still inherits core architecture and dependencies from SiYuan. The kernel module has been detached to `github.com/icha-senpai/note/kernel`.
 
-The following upstream-owned Go modules are copied into this repository as local Scribli fork modules under `third_party/forks/` and resolved by committed local `replace` rules:
+The following Go packages remain copied into this repository as local Scribli fork modules under `third_party/forks/` and are resolved by the committed local `replace` rule:
 
+- `clipboard`
 - `dataparser`
 - `dejavu`
 - `encryption`
+- `epub`
 - `eventbus`
 - `filelock`
+- `go-humanize`
 - `go-sqlite3`
+- `gulu`
 - `httpclient`
 - `logging`
+- `lute`
+- `pdfcpu`
 - `riff`
+- `vitess-sqlparser`
 
-Do not point these modules back to upstream module paths. If a fork needs upstream fixes, pull or cherry-pick intentionally into the matching `third_party/forks/<name>` directory and preserve upstream copyright notices. The sqlite fork owns the `scribli` FTS tokenizer used by kernel search indexes.
+Do not point Scribli-modified local forks such as `go-sqlite3`, `dejavu`, `httpclient`, and `lute` back to upstream module paths unless their Scribli-specific behavior has been reimplemented elsewhere and tested. If a fork needs upstream fixes, pull or cherry-pick intentionally into the matching `third_party/forks/<name>` directory and preserve upstream copyright notices. The sqlite fork owns the `scribli` FTS tokenizer used by kernel search indexes.
 
 Rebuilding `lute.min.js` requires the upstream Lute build process; do not edit the generated file in this repo.
 
-Do not fork every remaining upstream dependency just because of its namespace. First determine whether it performs network requests, whether it is a general local library, whether it is maintained and secure, and whether Scribli needs independent behavior. Fork only for a concrete behavior, security, or service-coupling reason.
+Normal public Go dependencies should come from their upstream module paths through the Go module proxy/checksum flow. Do not reintroduce copied `third_party/forks/github/**` or `third_party/forks/external/**` source trees just because a dependency has a GitHub, Golang, Google, or vanity import path. Fork only for a concrete behavior, security, or service-coupling reason.
 
 ---
 
@@ -210,7 +218,7 @@ Use `docs/INTERNAL-NAMING.md` as the policy for phasing out legacy names. In sho
 - Migrate Electron IPC channels, internal constants, and private helpers to Scribli names when both sides live in this repository.
 - Stored workspace names such as the inherited workspace metadata directory, database filenames, and encrypted database names must be migrated with backup-safe, tested data migrations.
 - Public compatibility identifiers such as inherited MIME types, plugin APIs, and public API fields are temporary legacy surfaces. Replace them with Scribli names only with aliases, deprecation notes, and tests first, then remove the old names in a later breaking pass when Boss approves.
-- Keep new Go imports under `github.com/icha-senpai/note/kernel` or `github.com/icha-senpai/note/third_party/forks/<name>`.
+- Keep Scribli-owned code imports under `github.com/icha-senpai/note/kernel` or `github.com/icha-senpai/note/third_party/forks/<name>`. General public libraries should use their normal upstream module paths.
 
 ---
 

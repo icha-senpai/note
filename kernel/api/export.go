@@ -27,16 +27,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/mssola/useragent"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/mssola/useragent"
 )
 
 func exportCodeBlock(c *gin.Context) {
@@ -108,6 +108,39 @@ func exportEPUB(c *gin.Context) {
 		return
 	}
 	name, zipPath := model.ExportPandocConvertZip([]string{id}, "epub", ".epub")
+	ret.Data = map[string]any{
+		"name": name,
+		"zip":  zipPath,
+	}
+}
+
+func exportMOBI(c *gin.Context) {
+	exportConvertedEbook(c, ".mobi")
+}
+
+func exportAZW3(c *gin.Context) {
+	exportConvertedEbook(c, ".azw3")
+}
+
+func exportConvertedEbook(c *gin.Context, ext string) {
+	ret := gulu.Ret.NewResult()
+	defer c.JSON(http.StatusOK, ret)
+
+	arg, ok := util.JsonArg(c, ret)
+	if !ok {
+		return
+	}
+
+	var id string
+	if !util.ParseJsonArgs(arg, ret, util.BindJsonArg("id", &id, true, true)) {
+		return
+	}
+	name, zipPath, err := model.ExportEbookConvertZip([]string{id}, ext)
+	if err != nil {
+		ret.Code = -1
+		ret.Msg = err.Error()
+		return
+	}
 	ret.Data = map[string]any{
 		"name": name,
 		"zip":  zipPath,

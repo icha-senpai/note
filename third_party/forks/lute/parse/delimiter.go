@@ -35,7 +35,6 @@ type delimiter struct {
 	previousDelimiter *delimiter
 }
 
-
 func (t *Tree) handleDelim(block *ast.Node, ctx *InlineContext) {
 	startPos := ctx.pos
 	delim := t.scanDelims(ctx)
@@ -397,21 +396,21 @@ func (t *Tree) scanDelims(ctx *InlineContext) *delimiter {
 		canClose = isRightFlanking && (!isLeftFlanking || afterIsPunct)
 	} else {
 		if lex.ItemEqual == token {
-			if !t.Context.ParseOption.Mark || 2 != delimitersCount  {
+			if !t.Context.ParseOption.Mark || 2 != delimitersCount {
 				canOpen, canClose = false, false
 			} else {
 				canOpen = isLeftFlanking
 				canClose = isRightFlanking
 			}
 		} else if lex.ItemCrosshatch == token {
-			if !t.Context.ParseOption.Tag || 1 != delimitersCount  {
+			if !t.Context.ParseOption.Tag || 1 != delimitersCount {
 				canOpen, canClose = false, false
 			} else {
 				canOpen = isLeftFlanking
 				canClose = isRightFlanking
 			}
 		} else if lex.ItemCaret == token {
-			if !t.Context.ParseOption.Sup || 1 != delimitersCount  {
+			if !t.Context.ParseOption.Sup || 1 != delimitersCount {
 				canOpen, canClose = false, false
 			} else {
 				canOpen = isLeftFlanking

@@ -26,13 +26,13 @@ import (
 	"sync"
 	"time"
 
+	ginSessions "github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/icha-senpai/note/kernel/util"
-	ginSessions "github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sessions"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
-	"github.com/icha-senpai/note/third_party/forks/github/gorilla/websocket"
-	"github.com/icha-senpai/note/third_party/forks/github/steambap/captcha"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/steambap/captcha"
 )
 
 var (

@@ -30,6 +30,7 @@ import (
 	"maps"
 	"net/url"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -37,14 +38,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/lute/html/atom"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	"github.com/icha-senpai/note/third_party/forks/lute/render"
-	util2 "github.com/icha-senpai/note/third_party/forks/lute/util"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/conf"
@@ -55,8 +48,17 @@ import (
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/dataparser"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/lute/html/atom"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/lute/render"
+	util2 "github.com/icha-senpai/note/third_party/forks/lute/util"
 	"github.com/icha-senpai/note/third_party/forks/riff"
+	shellquote "github.com/kballard/go-shellquote"
 )
 
 func HTML2Tree(htmlStr string, luteEngine *lute.Lute, boxID string) (tree *parse.Tree, withMath bool) {
@@ -1560,6 +1562,114 @@ func ImportFromLocalPath(boxID, localPath string, toPath string) (err error) {
 	IncSync()
 	debug.FreeOSMemory()
 	return
+}
+
+func ImportEbookFromLocalPath(boxID, localPath, toPath string) error {
+	ext := strings.ToLower(filepath.Ext(localPath))
+	if !isSupportedEbookImportExt(ext) {
+		return fmt.Errorf("unsupported ebook format [%s]", ext)
+	}
+	if !gulu.File.IsExist(localPath) {
+		return fmt.Errorf("ebook file [%s] not found", localPath)
+	}
+
+	sourcePath := localPath
+	cleanup := func() {}
+	defer cleanup()
+
+	if ".epub" != ext {
+		if !util.IsValidEbookConvertBin(Conf.Export.EbookConvertBin) {
+			return errors.New("Please configure [Settings - Export - ebook-convert executable path] first")
+		}
+
+		convertDir := filepath.Join(util.TempDir, "import", "ebook-convert", gulu.Rand.String(7))
+		if err := os.MkdirAll(convertDir, 0755); err != nil {
+			return err
+		}
+		cleanup = func() { _ = os.RemoveAll(convertDir) }
+
+		sourcePath = filepath.Join(convertDir, strings.TrimSuffix(filepath.Base(localPath), filepath.Ext(localPath))+".epub")
+		args, err := parseEbookConvertParams()
+		if err != nil {
+			return err
+		}
+		if err = util.EbookConvert(Conf.Export.EbookConvertBin, localPath, sourcePath, args...); err != nil {
+			return fmt.Errorf("convert ebook to EPUB failed: %w", err)
+		}
+	}
+
+	importDir, err := convertEPUBToMarkdownImportDir(sourcePath)
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(importDir)
+
+	return ImportFromLocalPath(boxID, importDir, toPath)
+}
+
+func isSupportedEbookImportExt(ext string) bool {
+	switch ext {
+	case ".epub", ".mobi", ".azw", ".azw3":
+		return true
+	default:
+		return false
+	}
+}
+
+func parseEbookConvertParams() ([]string, error) {
+	params := util.ReplaceNewline(Conf.Export.EbookConvertParams, " ")
+	if "" == strings.TrimSpace(params) {
+		return nil, nil
+	}
+	args, err := shellquote.Split(params)
+	if err != nil {
+		logging.LogErrorf("parse ebook-convert custom params [%s] failed: %s", params, err)
+		return nil, fmt.Errorf("parse ebook-convert custom params failed: %w", err)
+	}
+	return args, nil
+}
+
+func convertEPUBToMarkdownImportDir(epubPath string) (string, error) {
+	if !util.IsValidPandocBin(Conf.Export.PandocBin) {
+		Conf.Export.PandocBin = util.PandocBinPath
+		if !util.IsValidPandocBin(Conf.Export.PandocBin) {
+			return "", errors.New(Conf.Language(115))
+		}
+	}
+
+	importDir := filepath.Join(util.TempDir, "import", "ebook", gulu.Rand.String(7))
+	if err := os.MkdirAll(importDir, 0755); err != nil {
+		return "", err
+	}
+
+	bookName := util.FilterFileName(strings.TrimSuffix(filepath.Base(epubPath), filepath.Ext(epubPath)))
+	if "" == bookName {
+		bookName = "ebook"
+	}
+	outputPath := filepath.Join(importDir, bookName+".md")
+	args := []string{
+		epubPath,
+		"--from", "epub",
+		"--to", "gfm+footnotes+hard_line_breaks",
+		"--extract-media", "assets",
+		"-s",
+		"-o", outputPath,
+	}
+
+	cmd := exec.Command(Conf.Export.PandocBin, args...)
+	gulu.CmdAttr(cmd)
+	cmd.Dir = importDir
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		msg := gulu.DecodeCmdOutput(output)
+		if msg == "" {
+			msg = err.Error()
+		}
+		_ = os.RemoveAll(importDir)
+		logging.LogErrorf("convert EPUB import [%s] failed: %s", epubPath, msg)
+		return "", fmt.Errorf("convert EPUB import failed: %s", msg)
+	}
+	return importDir, nil
 }
 
 func parseStdMd(markdown []byte) (ret *parse.Tree, yfmRootID, yfmTitle, yfmUpdated string) {

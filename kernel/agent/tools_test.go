@@ -22,7 +22,7 @@ import (
 	"testing"
 
 	"github.com/icha-senpai/note/kernel/mcp/tools"
-	"github.com/icha-senpai/note/third_party/forks/github/sashabaranov/go-openai"
+	"github.com/sashabaranov/go-openai"
 )
 
 func TestConvertSchemaZodOptionalFields(t *testing.T) {

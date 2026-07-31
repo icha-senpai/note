@@ -20,7 +20,7 @@ import (
 	"strconv"
 
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/mysql"
-	"github.com/icha-senpai/note/third_party/forks/github/juju/errors"
+	"github.com/juju/errors"
 )
 
 // Global error instances.

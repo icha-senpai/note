@@ -3,7 +3,7 @@ package epub
 import (
 	"archive/zip"
 	"bytes"
-	"github.com/icha-senpai/note/third_party/forks/github/wmentor/html"
+	"github.com/wmentor/html"
 	"io"
 )
 

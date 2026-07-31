@@ -26,7 +26,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/draw"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // CachedAnnotationObjNrs returns a list of object numbers representing known annotation dict indirect references.

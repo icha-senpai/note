@@ -20,7 +20,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
-
 var setOfElementsToSkipContent = map[string]interface{}{
 	"frame":    nil,
 	"frameset": nil,

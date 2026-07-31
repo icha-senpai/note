@@ -24,7 +24,7 @@ import (
 )
 
 type File struct {
-	ID      string   `json:"id"`      // Hash
+	ID      string   `json:"id"` // Hash
 	Path    string   `json:"path"`
 	Size    int64    `json:"size"`
 	Updated int64    `json:"updated"`

@@ -21,12 +21,10 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 	"unicode/utf8"
 
 	"github.com/icha-senpai/note/kernel/search"
@@ -36,9 +34,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/epub"
 	"github.com/icha-senpai/note/third_party/forks/eventbus"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/github/klippa-app/go-pdfium"
-	"github.com/icha-senpai/note/third_party/forks/github/klippa-app/go-pdfium/requests"
-	"github.com/icha-senpai/note/third_party/forks/github/klippa-app/go-pdfium/webassembly"
 	"github.com/icha-senpai/note/third_party/forks/go-humanize"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
@@ -700,75 +695,13 @@ func (parser *XlsxAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 type PdfAssetParser struct {
 }
 
-// pdfPage struct defines a worker job for text extraction
-type pdfPage struct {
-	pageNo int     // page number for text extraction
-	data   *[]byte // pointer to PDF document data
-}
-
-// pdfTextResult struct defines the extracted PDF text result
-type pdfTextResult struct {
-	pageNo int    // page number of PDF document
-	text   string // text of converted page
-	err    error  // processing error
-}
-
-// getTextPageWorker will extract the text from a given PDF page and return its result
-func (parser *PdfAssetParser) getTextPageWorker(instance pdfium.Pdfium, page <-chan *pdfPage, result chan<- *pdfTextResult) {
-	defer instance.Close()
-	for pd := range page {
-		doc, err := instance.OpenDocument(&requests.OpenDocument{
-			File: pd.data,
-		})
-		if err != nil {
-			instance.FPDF_CloseDocument(&requests.FPDF_CloseDocument{
-				Document: doc.Document,
-			})
-			result <- &pdfTextResult{
-				pageNo: pd.pageNo,
-				err:    err,
-			}
-			continue
-		}
-
-		req := &requests.GetPageText{
-			Page: requests.Page{
-				ByIndex: &requests.PageByIndex{
-					Document: doc.Document,
-					Index:    pd.pageNo,
-				},
-			},
-		}
-		res, err := instance.GetPageText(req)
-		if err != nil {
-			instance.FPDF_CloseDocument(&requests.FPDF_CloseDocument{
-				Document: doc.Document,
-			})
-			result <- &pdfTextResult{
-				pageNo: pd.pageNo,
-				err:    err,
-			}
-			continue
-		}
-		instance.FPDF_CloseDocument(&requests.FPDF_CloseDocument{
-			Document: doc.Document,
-		})
-		result <- &pdfTextResult{
-			pageNo: pd.pageNo,
-			text:   res.Text,
-			err:    nil,
-		}
-	}
-}
-
-// Parse will parse a PDF document using PDFium webassembly module using a worker pool
+// Parse extracts searchable text from common text PDFs using Scribli's local parser.
 func (parser *PdfAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 	if util.IsMobileContainer() {
 		// PDF asset content searching is not supported on mobile platforms
 		return
 	}
 
-	now := time.Now()
 	if !strings.HasSuffix(strings.ToLower(absPath), ".pdf") {
 		return
 	}
@@ -790,50 +723,6 @@ func (parser *PdfAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 		return
 	}
 
-	cores := min(runtime.NumCPU(), 4) // Limit memory usage
-
-	pool, err := webassembly.Init(webassembly.Config{
-		MinIdle:  cores,
-		MaxIdle:  cores,
-		MaxTotal: cores,
-	})
-	if err != nil {
-		logging.LogErrorf("convert [%s] failed: [%s]", tmp, err)
-		return
-	}
-	defer pool.Close()
-
-	// first get the number of PDF pages to convert into text
-	instance, err := pool.GetInstance(time.Second * 30)
-	if err != nil {
-		logging.LogErrorf("convert [%s] failed: [%s]", tmp, err)
-		return
-	}
-	doc, err := instance.OpenDocument(&requests.OpenDocument{
-		File: &pdfData,
-	})
-	if err != nil {
-		instance.Close()
-		logging.LogErrorf("convert [%s] failed: [%s]", tmp, err)
-		return
-	}
-	pc, err := instance.FPDF_GetPageCount(&requests.FPDF_GetPageCount{Document: doc.Document})
-	if err != nil {
-		instance.FPDF_CloseDocument(&requests.FPDF_CloseDocument{
-			Document: doc.Document,
-		})
-		instance.Close()
-		logging.LogErrorf("convert [%s] failed: [%s]", tmp, err)
-		return
-	}
-	instance.Close()
-
-	if PDFAssetContentMaxPage < pc.PageCount {
-		// PDF files longer than 1024 pages are not included in asset file content searching
-		logging.LogWarnf("ignore large PDF asset [%s] with [%d] pages", absPath, pc.PageCount)
-		return
-	}
-
 	if maxSizeVal := os.Getenv("SCRIBLI_PDF_ASSET_CONTENT_INDEX_MAX_SIZE"); "" != maxSizeVal {
 		if maxSize, parseErr := strconv.ParseUint(maxSizeVal, 10, 64); nil == parseErr {
 			if maxSize != PDFAssetContentMaxSize {
@@ -851,53 +740,20 @@ func (parser *PdfAssetParser) Parse(absPath string) (ret *AssetParseResult) {
 		return
 	}
 
-	// next setup worker pool for processing PDF pages
-	pages := make(chan *pdfPage, pc.PageCount)
-	results := make(chan *pdfTextResult, pc.PageCount)
-	for range cores {
-		inst, err := pool.GetInstance(time.Second * 30)
-		if err != nil {
-			close(pages)
-			close(results)
-			logging.LogErrorf("convert [%s] failed: [%s]", tmp, err)
-			return
-		}
-		go parser.getTextPageWorker(inst, pages, results)
+	pageCount := countPDFPages(pdfData)
+	if PDFAssetContentMaxPage < pageCount {
+		// PDF files longer than 1024 pages are not included in asset file content searching
+		logging.LogWarnf("ignore large PDF asset [%s] with [%d] pages", absPath, pageCount)
+		return
 	}
 
-	// now split pages and let them process by worker pool
-	for p := 0; p < pc.PageCount; p++ {
-		pages <- &pdfPage{
-			pageNo: p,
-			data:   &pdfData,
-		}
-	}
-	close(pages)
-
-	// finally fetch the PDF page text results
-	// Note: some workers will process pages faster than other workers depending on the page contents
-	// the order of returned PDF text pages is random and must be sorted using the pageNo index
-	pageText := make([]string, pc.PageCount)
-	for p := 0; p < pc.PageCount; p++ {
-		res := <-results
-		pageText[res.pageNo] = res.text
-		if nil != res.err {
-			logging.LogErrorf("convert [%s] of page %d failed: [%s]", tmp, res.pageNo, res.err)
-		}
-	}
-	close(results)
-
-	if 128 < pc.PageCount {
-		logging.LogInfof("convert [%s] PDF with [%d] pages using [%d] workers took [%s]", absPath, pc.PageCount, cores, time.Since(now))
-	}
-
-	// loop through ordered PDF text pages and join content for asset parse DB result
-	contentBuilder := bytes.Buffer{}
-	for _, pt := range pageText {
-		contentBuilder.WriteString(" " + normalizeNonTxtAssetContent(pt))
+	content, err := extractPDFText(pdfData)
+	if err != nil {
+		logging.LogWarnf("convert [%s] failed: [%s]", tmp, err)
+		return
 	}
 	ret = &AssetParseResult{
-		Content: contentBuilder.String(),
+		Content: normalizeNonTxtAssetContent(content),
 	}
 	return
 }

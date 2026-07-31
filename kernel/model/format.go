@@ -19,12 +19,12 @@ package model
 import (
 	"bytes"
 
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/editor"
-	"github.com/icha-senpai/note/third_party/forks/lute/render"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/editor"
+	"github.com/icha-senpai/note/third_party/forks/lute/render"
 )
 
 func AutoSpace(rootID string) (err error) {

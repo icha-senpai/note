@@ -1,9 +1,0 @@
-//go:build js
-
-package boring
-
-import "crypto/internal/alias"
-
-func anyOverlap(x, y []byte) bool {
-	return alias.AnyOverlap(x, y)
-}

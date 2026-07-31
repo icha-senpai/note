@@ -38,12 +38,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/github/disintegration/imaging"
-	"github.com/icha-senpai/note/third_party/forks/github/gabriel-vasile/mimetype"
+	"github.com/disintegration/imaging"
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/icha-senpai/note/third_party/forks/httpclient"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/sashabaranov/go-openai"
-	_ "github.com/icha-senpai/note/third_party/forks/external/golang.org/x/image/webp"
+	"github.com/sashabaranov/go-openai"
+	_ "golang.org/x/image/webp"
 )
 
 const (

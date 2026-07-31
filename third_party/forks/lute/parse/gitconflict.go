@@ -14,9 +14,9 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
-//   <<<<<<< HEAD
-//   =======
-//   >>>>>>> feebfeb6bef44cf1384d51cdd7aef7e4197b8180
+// <<<<<<< HEAD
+// =======
+// >>>>>>> feebfeb6bef44cf1384d51cdd7aef7e4197b8180
 func GitConflictStart(t *Tree, container *ast.Node) int {
 	if !t.Context.ParseOption.GitConflict {
 		return 0

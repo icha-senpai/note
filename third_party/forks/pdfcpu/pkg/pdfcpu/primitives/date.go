@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // DateFormat represents a supported date format.

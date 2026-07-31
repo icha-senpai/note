@@ -16,8 +16,8 @@ import (
 	"syscall"
 	"unicode/utf8"
 
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/sys/windows"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/ianaindex"
+	"golang.org/x/sys/windows"
+	"golang.org/x/text/encoding/ianaindex"
 )
 
 func CmdAttr(cmd *exec.Cmd) {

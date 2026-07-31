@@ -20,8 +20,8 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 type Search struct {

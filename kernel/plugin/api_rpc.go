@@ -19,10 +19,10 @@ package plugin
 import (
 	"fmt"
 
+	"github.com/dop251/goja"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
-	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/samber/lo"
 )
 
 // injectRpc adds scribli.rpc method for RPC method registration.

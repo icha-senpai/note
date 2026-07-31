@@ -1,4 +1,4 @@
-// EventBus - Event Bus for SiYuan.
+// EventBus - Event bus for Scribli.
 // Copyright (c) 2022-present, Scribli
 //
 // EventBus is licensed under Mulan PSL v2.
@@ -14,7 +14,7 @@
 
 package eventbus
 
-import "github.com/icha-senpai/note/third_party/forks/github/asaskevich/EventBus"
+import "github.com/asaskevich/EventBus"
 
 var bus = EventBus.New()
 

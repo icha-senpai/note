@@ -24,9 +24,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dop251/goja"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 

@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
 )

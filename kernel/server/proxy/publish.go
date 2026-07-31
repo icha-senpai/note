@@ -29,7 +29,7 @@ import (
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/soheilhy/cmux"
+	"github.com/soheilhy/cmux"
 )
 
 type PublishServiceTransport struct{}

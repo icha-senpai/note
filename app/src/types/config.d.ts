@@ -655,6 +655,14 @@ declare namespace Config {
          */
         pandocParams: string;
         /**
+         * ebook-convert executable file path
+         */
+        ebookConvertBin: string;
+        /**
+         * ebook-convert parameters
+         */
+        ebookConvertParams: string;
+        /**
          * Whether the beginning of the paragraph is empty two spaces.
          * Insert two full-width spaces `U+3000` at the beginning of the paragraph.
          */

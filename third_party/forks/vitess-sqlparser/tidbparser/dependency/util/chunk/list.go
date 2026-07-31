@@ -16,7 +16,7 @@ package chunk
 import (
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/types"
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/util/memory"
-	"github.com/icha-senpai/note/third_party/forks/github/juju/errors"
+	"github.com/juju/errors"
 )
 
 // List holds a slice of chunks, use to append rows with max chunk size properly handled.

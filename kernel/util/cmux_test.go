@@ -34,7 +34,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/github/soheilhy/cmux"
+	"github.com/soheilhy/cmux"
 )
 
 func writeSelfSignedCert(t *testing.T) (certPath, keyPath string) {

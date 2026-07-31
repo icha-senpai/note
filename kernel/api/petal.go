@@ -19,11 +19,11 @@ package api
 import (
 	"net/http"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/emirpasic/gods/sets/hashset"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/emirpasic/gods/sets/hashset"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 func loadPetals(c *gin.Context) {

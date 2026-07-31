@@ -22,10 +22,10 @@ import (
 	"sort"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/go-humanize"
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/dejavu/entity"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 type Log struct {

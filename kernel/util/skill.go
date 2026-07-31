@@ -26,8 +26,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/httpclient"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )

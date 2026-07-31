@@ -21,7 +21,7 @@ import (
 	"encoding/ascii85"
 	"io"
 
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 type ascii85Decode struct {

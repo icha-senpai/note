@@ -20,9 +20,9 @@ import (
 	"html"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/lute"
-	"github.com/icha-senpai/note/third_party/forks/github/PuerkitoBio/goquery"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute"
 )
 
 var MarkdownSettings = &Markdown{

@@ -37,14 +37,14 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/dejavu/util"
 	"github.com/icha-senpai/note/third_party/forks/eventbus"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
-	jsoniter "github.com/icha-senpai/note/third_party/forks/github/json-iterator/go"
-	"github.com/icha-senpai/note/third_party/forks/github/panjf2000/ants/v2"
-	"github.com/icha-senpai/note/third_party/forks/github/restic/chunker"
-	ignore "github.com/icha-senpai/note/third_party/forks/github/sabhiram/go-gitignore"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/panjf2000/ants/v2"
+	"github.com/restic/chunker"
+	ignore "github.com/sabhiram/go-gitignore"
 )
 
 type Repo struct {

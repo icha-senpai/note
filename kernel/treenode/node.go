@@ -21,7 +21,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/icha-senpai/note/kernel/cache"
+	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/lute"
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/third_party/forks/lute/editor"
@@ -29,9 +32,6 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 	"github.com/icha-senpai/note/third_party/forks/lute/render"
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/sqlparser"
-	"github.com/icha-senpai/note/kernel/cache"
-	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 func ResetNodeID(node *ast.Node) {

@@ -26,12 +26,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/github/hhrutter/tiff"
+	"github.com/hhrutter/tiff"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/filter"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Errors to be identified.

@@ -26,12 +26,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-vcard"
-	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-webdav/carddav"
+	"github.com/emersion/go-vcard"
+	"github.com/emersion/go-webdav/carddav"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 const (

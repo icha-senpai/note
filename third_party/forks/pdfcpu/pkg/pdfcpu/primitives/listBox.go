@@ -27,7 +27,7 @@ import (
 	pdffont "github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/font"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // ListBox represents a specific choice form field including a positioned label.

@@ -35,5 +35,4 @@ func blockStarts() []blockStartFunc {
 	}
 }
 
-//
 type blockStartFunc func(t *Tree, container *ast.Node) int

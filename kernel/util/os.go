@@ -20,7 +20,7 @@ package util
 
 import (
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/shirou/gopsutil/v4/host"
+	"github.com/shirou/gopsutil/v4/host"
 )
 
 func GetOSPlatform() (plat string) {

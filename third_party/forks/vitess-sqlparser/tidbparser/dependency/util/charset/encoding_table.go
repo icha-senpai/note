@@ -16,13 +16,13 @@ package charset
 import (
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/charmap"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/japanese"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/korean"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/simplifiedchinese"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/traditionalchinese"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/encoding/japanese"
+	"golang.org/x/text/encoding/korean"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/encoding/traditionalchinese"
+	"golang.org/x/text/encoding/unicode"
 )
 
 // Lookup returns the encoding with the specified label, and its canonical

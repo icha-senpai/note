@@ -20,7 +20,8 @@ Scribli is a fork in active cleanup. The Windows desktop path builds and package
 - Block references, backlinks, outlines, and document navigation.
 - Attribute views and queryable local data.
 - Local assets, file attachments, and export support.
-- PDF, HTML, Word, Markdown, and asset-oriented export workflows inherited from the upstream project.
+- PDF, HTML, Word, Markdown, EPUB, and asset-oriented export workflows inherited from the upstream project.
+- Ebook bridge workflows: import EPUB into editable Scribli documents, optionally import/export MOBI and AZW/AZW3 through a user-configured local `ebook-convert` executable.
 - Local snapshots, repository history, manual backups, and restore workflows.
 - User-controlled sync through S3, WebDAV, or local-folder providers.
 - Optional local HTTP API, WebSocket UI channel, plugin system, AI provider configuration, and MCP support when enabled or configured by the user.
@@ -52,6 +53,7 @@ Scribli can still make network connections when the user configures or triggers 
 - Remote asset import, web clipping, URL fetching, and similar tools connect to URLs supplied by the user or present in user content.
 - AI features connect to providers configured by the user.
 - MCP, plugin, API, WebDAV, CalDAV, and CardDAV server features can expose local services depending on configuration.
+- Ebook import/export conversion runs local executables configured by the user, such as Pandoc or Calibre's `ebook-convert`; Scribli does not use a hosted ebook conversion service.
 
 Runtime auto-update is disabled until Scribli has its own signed release process.
 

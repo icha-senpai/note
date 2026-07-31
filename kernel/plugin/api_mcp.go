@@ -20,11 +20,11 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/dop251/goja"
 	"github.com/icha-senpai/note/kernel/mcp/tools"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
-	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/samber/lo"
 )
 
 // pluginToolName builds the fully-qualified MCP tool name for a plugin-local tool name.

@@ -28,7 +28,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 func prepareForCut(rs io.ReadSeeker, selectedPages []string, conf *model.Configuration) (*model.Context, types.IntSet, error) {

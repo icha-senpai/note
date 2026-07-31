@@ -25,7 +25,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/icha-senpai/note/third_party/forks/github/Masterminds/sprig/v3"
+	"github.com/Masterminds/sprig/v3"
 	"github.com/icha-senpai/note/kernel/util"
 )
 

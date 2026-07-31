@@ -29,10 +29,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/sys/windows"
+	"golang.org/x/sys/windows"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 

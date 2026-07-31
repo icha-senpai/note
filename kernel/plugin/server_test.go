@@ -78,7 +78,7 @@ func TestNewProxyHTTPClientStreamsRedirectsWithProxyHeaders(t *testing.T) {
 		if got := r.Header.Get("Range"); got != "bytes=0-" {
 			t.Fatalf("expected Range to reach redirected request, got %q", got)
 		}
-		if got := r.Header.Get("User-Agent"); got != "pan.baidu.com" {
+		if got := r.Header.Get("User-Agent"); got != "Scribli-Test-Agent" {
 			t.Fatalf("expected User-Agent to reach redirected request, got %q", got)
 		}
 		if got := r.Header.Get("Referer"); got != "" {
@@ -100,7 +100,7 @@ func TestNewProxyHTTPClientStreamsRedirectsWithProxyHeaders(t *testing.T) {
 		t.Fatal(err)
 	}
 	req.Header.Set("Range", "bytes=0-")
-	req.Header.Set("User-Agent", "pan.baidu.com")
+	req.Header.Set("User-Agent", "Scribli-Test-Agent")
 	req.Header.Set("Referer", "https://drop.example.test/")
 	resp, err := client.Do(req)
 	if err != nil {

@@ -29,11 +29,11 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/github/gabriel-vasile/mimetype"
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 func IsOfficeTempFile(assetAbsPath string) bool {

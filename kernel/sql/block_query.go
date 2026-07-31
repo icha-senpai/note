@@ -26,12 +26,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/sqlparser"
-	"github.com/icha-senpai/note/third_party/forks/github/emirpasic/gods/sets/hashset"
+	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	sqlparser2 "github.com/icha-senpai/note/third_party/forks/github/rqlite/sql"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/sqlparser"
+	sqlparser2 "github.com/rqlite/sql"
 )
 
 func QueryEmptyContentEmbedBlocks() (ret []*Block) {

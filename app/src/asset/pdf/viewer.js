@@ -235,7 +235,7 @@ function getViewerConfiguration(element) {
 // NOTE
 function webViewerLoad(file, element, pdfPage, annoId) {
   AppOptions.set("disablePreferences", true);
-  AppOptions.set("workerSrc", `${Constants.PROTYLE_CDN}/js/pdf/pdf.worker.min.mjs?v=4.7.85`);
+  AppOptions.set("workerSrc", `${Constants.PROTYLE_CDN}/js/pdf/pdf.worker.min.mjs?v=4.7.76`);
   AppOptions.set("defaultUrl", file);
   AppOptions.set("cMapUrl", 'cmaps/');
   AppOptions.set("standardFontDataUrl", 'standard_fonts/');

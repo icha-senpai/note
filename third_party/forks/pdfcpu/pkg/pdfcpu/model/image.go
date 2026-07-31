@@ -31,8 +31,8 @@ import (
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/filter"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
-	_ "github.com/icha-senpai/note/third_party/forks/external/golang.org/x/image/webp"
+	"github.com/pkg/errors"
+	_ "golang.org/x/image/webp"
 )
 
 // Image is a Reader representing an image resource.

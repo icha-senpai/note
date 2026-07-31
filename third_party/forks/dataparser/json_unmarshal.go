@@ -1,4 +1,4 @@
-// SiYuan - Refactor your thinking
+// Scribli - Refactor your thinking
 // MIT License
 //
 //
@@ -23,7 +23,7 @@
 package dataparser
 
 import (
-	"github.com/icha-senpai/note/third_party/forks/github/goccy/go-json"
+	"github.com/goccy/go-json"
 )
 
 func unmarshalJSON(data []byte, v interface{}) error {

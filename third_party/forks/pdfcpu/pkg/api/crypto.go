@@ -21,7 +21,7 @@ import (
 	"os"
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Encrypt reads a PDF stream from rs and writes the encrypted PDF stream to w.

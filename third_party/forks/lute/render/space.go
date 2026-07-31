@@ -14,7 +14,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/icha-senpai/note/third_party/forks/lute/editor"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/width"
+	"golang.org/x/text/width"
 )
 
 func (r *BaseRenderer) Space(tokens []byte) []byte {

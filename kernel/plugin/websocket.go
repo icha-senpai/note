@@ -19,9 +19,9 @@ package plugin
 import (
 	"sync/atomic"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
+	"github.com/dop251/goja"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/lxzan/gws"
+	"github.com/lxzan/gws"
 )
 
 type WsManager struct {

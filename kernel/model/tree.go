@@ -26,9 +26,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/lute"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/filesys"
 	"github.com/icha-senpai/note/kernel/search"
@@ -39,7 +36,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/dataparser"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/time/rate"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"golang.org/x/time/rate"
 )
 
 func resetTree(tree *parse.Tree, titleSuffix string, removeAvBinding bool) {

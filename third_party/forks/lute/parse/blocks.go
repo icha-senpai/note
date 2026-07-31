@@ -174,7 +174,6 @@ func (t *Tree) incorporateLine(line []byte) {
 		}
 	}
 
-
 	if !t.Context.allClosed && !t.Context.blank && t.Context.Tip.Type == ast.NodeParagraph {
 		t.addLine()
 	} else {

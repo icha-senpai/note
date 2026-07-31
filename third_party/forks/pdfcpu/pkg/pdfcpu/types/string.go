@@ -23,8 +23,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/unicode/norm"
+	"github.com/pkg/errors"
+	"golang.org/x/text/unicode/norm"
 )
 
 // NewStringSet returns a new StringSet for slice.

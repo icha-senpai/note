@@ -19,6 +19,7 @@ package server
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -33,6 +34,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/emersion/go-webdav/caldav"
+	"github.com/emersion/go-webdav/carddav"
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/api"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/cmd"
@@ -41,18 +48,12 @@ import (
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/server/proxy"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-webdav/caldav"
-	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-webdav/carddav"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/gzip"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sessions"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sessions/cookie"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
-	"github.com/icha-senpai/note/third_party/forks/github/olahol/melody"
-	"github.com/icha-senpai/note/third_party/forks/github/soheilhy/cmux"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/olahol/melody"
+	"github.com/soheilhy/cmux"
 
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/net/webdav"
+	"golang.org/x/net/webdav"
 )
 
 const (
@@ -607,6 +608,13 @@ func serveAuthPage(c *gin.Context) {
 			keymapHideWindow = "⌥M"
 		}
 	}
+	trayMenuLangsJSON, err := json.Marshal(util.TrayMenuLangs[util.Lang])
+	if err != nil {
+		logging.LogErrorf("marshal auth page tray menu languages failed: %s", err)
+		c.Status(500)
+		return
+	}
+
 	model := map[string]any{
 		"l0":                     model.Conf.Language(173),
 		"l1":                     model.Conf.Language(174),
@@ -624,7 +632,7 @@ func serveAuthPage(c *gin.Context) {
 		"appearanceModeOS":       model.Conf.Appearance.ModeOS,
 		"workspace":              util.WorkspaceName,
 		"keymapGeneralToggleWin": keymapHideWindow,
-		"trayMenuLangs":          util.TrayMenuLangs[util.Lang],
+		"trayMenuLangs":          string(trayMenuLangsJSON),
 
 		// REF:
 		"workspaceDir": util.WorkspaceDir,

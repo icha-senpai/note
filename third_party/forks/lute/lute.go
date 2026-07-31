@@ -15,12 +15,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/gopherjs/gopherjs/js"
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/third_party/forks/lute/lex"
 	"github.com/icha-senpai/note/third_party/forks/lute/parse"
 	"github.com/icha-senpai/note/third_party/forks/lute/render"
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
-	"github.com/icha-senpai/note/third_party/forks/github/gopherjs/gopherjs/js"
 )
 
 const Version = "1.7.6"
@@ -41,9 +41,7 @@ type Lute struct {
 	Md2VditorSVDOMRendererFuncs   map[ast.NodeType]render.ExtRendererFunc
 }
 
-//
-//   - YAML Front Matter
-//
+// - YAML Front Matter
 func New(opts ...ParseOption) (ret *Lute) {
 	ret = &Lute{ParseOptions: parse.NewOptions(), RenderOptions: render.NewOptions()}
 	for _, opt := range opts {
@@ -300,7 +298,6 @@ func (lute *Lute) Tree2HTML(tree *parse.Tree, options *render.Options, parseOpti
 }
 
 type ParseOption func(lute *Lute)
-
 
 func (lute *Lute) SetGFMTable(b bool) {
 	lute.ParseOptions.GFMTable = b

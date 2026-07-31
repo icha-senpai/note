@@ -25,7 +25,7 @@ func (t *Tree) parseGFMAutoEmailLink(node *ast.Node) {
 	for child := node.FirstChild; nil != child; {
 		next := child.Next
 		if ast.NodeText == child.Type && nil != child.Parent &&
-			ast.NodeLink != child.Parent.Type  {
+			ast.NodeLink != child.Parent.Type {
 			t.parseGFMAutoEmailLink0(child)
 		} else {
 			t.parseGFMAutoEmailLink(child)
@@ -94,7 +94,6 @@ loopPart:
 			t.addPreviousText(node, group)
 			continue
 		}
-
 
 		k = 0
 		for ; k < atIndex; k++ {

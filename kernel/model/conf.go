@@ -35,12 +35,12 @@ import (
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/eventbus"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/mod/semver"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/lute"
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"golang.org/x/mod/semver"
 )
 
 var Conf *AppConf
@@ -368,6 +368,8 @@ func InitConf() {
 	if "" == Conf.Export.PandocBin {
 		Conf.Export.PandocBin = util.PandocBinPath
 	}
+	Conf.Export.EbookConvertBin = util.RemoveInvalid(Conf.Export.EbookConvertBin)
+	Conf.Export.EbookConvertParams = strings.TrimSpace(util.RemoveInvalid(Conf.Export.EbookConvertParams))
 
 	if nil == Conf.Graph || nil == Conf.Graph.Local || nil == Conf.Graph.Global {
 		Conf.Graph = conf.NewGraph()

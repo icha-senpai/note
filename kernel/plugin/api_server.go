@@ -19,8 +19,8 @@ package plugin
 import (
 	"fmt"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
-	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
+	"github.com/dop251/goja"
+	"github.com/samber/lo"
 )
 
 // injectServer adds scribli.server to the goja context.

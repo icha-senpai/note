@@ -44,7 +44,6 @@ var commonFileTypes = []string{
 	"ico",
 	"dwg",
 
-
 	"mp4",
 	"m4v",
 	"mkv",
@@ -56,7 +55,6 @@ var commonFileTypes = []string{
 	"flv",
 	"3gp",
 
-
 	"mid",
 	"mp3",
 	"m4a",
@@ -65,7 +63,6 @@ var commonFileTypes = []string{
 	"wav",
 	"amr",
 	"aac",
-
 
 	"epub",
 	"zip",
@@ -94,7 +91,6 @@ var commonFileTypes = []string{
 	"elf",
 	"dcm",
 
-
 	"doc",
 	"docx",
 	"xls",
@@ -104,23 +100,19 @@ var commonFileTypes = []string{
 	"md",
 	"txt",
 
-
 	"woff",
 	"woff2",
 	"ttf",
 	"otf",
 
-
 	"wasm",
 	"exe",
-
 
 	"html",
 	"js",
 	"css",
 	"go",
 	"java",
-
 
 	"textbundle",
 }

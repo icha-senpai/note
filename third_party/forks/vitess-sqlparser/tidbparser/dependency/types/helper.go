@@ -18,7 +18,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/icha-senpai/note/third_party/forks/github/juju/errors"
+	"github.com/juju/errors"
 )
 
 // RoundFloat rounds float val to the nearest integer value with float64 format, like MySQL Round function.

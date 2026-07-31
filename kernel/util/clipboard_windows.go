@@ -33,7 +33,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/icha-senpai/note/third_party/forks/github/gonutz/w32/v2"
+	"github.com/gonutz/w32/v2"
 )
 
 const (

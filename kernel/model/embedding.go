@@ -30,13 +30,13 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/kernel/sql"
 	"github.com/icha-senpai/note/kernel/task"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/eventbus"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	ignore "github.com/icha-senpai/note/third_party/forks/github/sabhiram/go-gitignore"
+	ignore "github.com/sabhiram/go-gitignore"
 )
 
 const (

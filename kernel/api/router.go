@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
@@ -363,11 +363,14 @@ func ServeAPI(ginServer *gin.Engine) {
 	ginServer.Handle("POST", "/api/export/exportODT", model.CheckAuth, model.CheckAdminRole, exportODT)
 	ginServer.Handle("POST", "/api/export/exportRTF", model.CheckAuth, model.CheckAdminRole, exportRTF)
 	ginServer.Handle("POST", "/api/export/exportEPUB", model.CheckAuth, model.CheckAdminRole, exportEPUB)
+	ginServer.Handle("POST", "/api/export/exportMOBI", model.CheckAuth, model.CheckAdminRole, exportMOBI)
+	ginServer.Handle("POST", "/api/export/exportAZW3", model.CheckAuth, model.CheckAdminRole, exportAZW3)
 	ginServer.Handle("POST", "/api/export/exportAttributeView", model.CheckAuth, model.CheckAdminRole, exportAttributeView)
 	ginServer.Handle("POST", "/api/export/exportCodeBlock", model.CheckAuth, model.CheckAdminRole, exportCodeBlock)
 	ginServer.Handle("POST", "/api/export/copyExportFile", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, copyExportFile)
 
 	ginServer.Handle("POST", "/api/import/importStdMd", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, importStdMd)
+	ginServer.Handle("POST", "/api/import/importEbook", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, importEbook)
 	ginServer.Handle("POST", "/api/import/importZipMd", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, importZipMd)
 	ginServer.Handle("POST", "/api/import/importData", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, importData)
 	ginServer.Handle("POST", "/api/import/importSY", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, importSY)

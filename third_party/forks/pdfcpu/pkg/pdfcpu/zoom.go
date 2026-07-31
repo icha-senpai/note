@@ -27,7 +27,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/matrix"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // ParseZoomConfig parses a Zoom command string into an internal structure.
@@ -162,7 +162,7 @@ func zoomPage(ctx *model.Context, pageNr int, zoom *model.Zoom) error {
 
 func Zoom(ctx *model.Context, selectedPages types.IntSet, zoom *model.Zoom) error {
 	if log.DebugEnabled() {
-		log.Debug.Printf("Zoom:\n%s\n", zoom)
+		log.Debug.Printf("Zoom:\n%v\n", zoom)
 	}
 
 	if len(selectedPages) == 0 {

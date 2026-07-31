@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/terror"
-	"github.com/icha-senpai/note/third_party/forks/github/juju/errors"
+	"github.com/juju/errors"
 )
 
 // ActionType is the type for DDL action.

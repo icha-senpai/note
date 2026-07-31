@@ -27,9 +27,9 @@ import (
 
 	"github.com/icha-senpai/note/kernel/util"
 
+	"github.com/emersion/go-ical"
+	"github.com/emersion/go-webdav/caldav"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-ical"
-	"github.com/icha-senpai/note/third_party/forks/github/emersion/go-webdav/caldav"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 

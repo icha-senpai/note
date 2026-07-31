@@ -25,7 +25,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // InsertPages inserts a blank page before or after every page selected of rs and writes the result to w.

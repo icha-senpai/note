@@ -23,9 +23,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/github/google/uuid"
+	"github.com/google/uuid"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 type AI struct {

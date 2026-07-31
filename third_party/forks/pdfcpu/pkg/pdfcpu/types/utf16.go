@@ -25,7 +25,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // ErrInvalidUTF16BE represents an error that gets raised for invalid UTF-16BE byte sequences.

@@ -644,6 +644,30 @@ export const exportMd = (id: string) => {
                             saveExportFile(response.data.zip, msgId);
                         });
                     }
+                }, {
+                    id: "exportMOBI",
+                    label: "MOBI",
+                    iconHTML: "",
+                    click: () => {
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
+                        fetchPost("/api/export/exportMOBI", {
+                            id,
+                        }, response => {
+                            saveExportFile(response.data.zip, msgId);
+                        });
+                    }
+                }, {
+                    id: "exportAZW3",
+                    label: "AZW3",
+                    iconHTML: "",
+                    click: () => {
+                        const msgId = showMessage(window.scribli.languages.exporting, -1);
+                        fetchPost("/api/export/exportAZW3", {
+                            id,
+                        }, response => {
+                            saveExportFile(response.data.zip, msgId);
+                        });
+                    }
                 }]
             },
             /// #else

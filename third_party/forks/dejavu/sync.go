@@ -35,13 +35,13 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/dejavu/util"
 	"github.com/icha-senpai/note/third_party/forks/eventbus"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/github/panjf2000/ants/v2"
-	ignore "github.com/icha-senpai/note/third_party/forks/github/sabhiram/go-gitignore"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/lute"
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/panjf2000/ants/v2"
+	ignore "github.com/sabhiram/go-gitignore"
 )
 
 var (
@@ -177,7 +177,6 @@ func (repo *Repo) sync(context map[string]interface{}) (mergeResult *MergeResult
 	return
 }
 
-//
 func (repo *Repo) sync0(context map[string]interface{},
 	fetchedFiles []*entity.File, cloudLatest *entity.Index, latest *entity.Index, mergeResult *MergeResult, trafficStat *TrafficStat) (err error) {
 	cloudLatestFiles, err := repo.getFiles(cloudLatest.Files)
@@ -424,7 +423,6 @@ func (repo *Repo) ignoreLocalUpsert(localUpsert *entity.File, latestSyncFiles []
 		return false
 	}
 
-
 	luteEngine := lute.New()
 	temp := filepath.Join(repo.TempPath, "repo", "sync", "resolves", now)
 	localTree, err := repo.checkoutTree(localUpsert, temp, luteEngine, context)
@@ -629,7 +627,6 @@ func (repo *Repo) updateCloudIndexes(latest *entity.Index, trafficStat *TrafficS
 		return
 	}
 
-
 	var errs []error
 	errLock := sync.Mutex{}
 	waitGroup := &sync.WaitGroup{}
@@ -637,7 +634,6 @@ func (repo *Repo) updateCloudIndexes(latest *entity.Index, trafficStat *TrafficS
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-
 
 		length, uploadErr := repo.uploadIndex(latest, context)
 		if nil != uploadErr {

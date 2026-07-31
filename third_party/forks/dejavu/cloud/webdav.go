@@ -28,9 +28,9 @@ import (
 	"sync"
 
 	"github.com/icha-senpai/note/third_party/forks/dejavu/entity"
-	"github.com/icha-senpai/note/third_party/forks/github/studio-b12/gowebdav"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/studio-b12/gowebdav"
 )
 
 type WebDAV struct {

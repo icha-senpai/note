@@ -37,9 +37,9 @@ import (
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/httpclient"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/modelcontextprotocol/go-sdk/auth"
-	"github.com/icha-senpai/note/third_party/forks/github/modelcontextprotocol/go-sdk/oauthex"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/oauth2"
+	"github.com/modelcontextprotocol/go-sdk/auth"
+	"github.com/modelcontextprotocol/go-sdk/oauthex"
+	"golang.org/x/oauth2"
 )
 
 const oauthAuthorizationTimeout = 5 * time.Minute

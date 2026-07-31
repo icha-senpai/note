@@ -29,6 +29,8 @@ type Export struct {
 	FileAnnotationRefMode int    `json:"fileAnnotationRefMode"`
 	PandocBin             string `json:"pandocBin"`
 	PandocParams          string `json:"pandocParams"`
+	EbookConvertBin       string `json:"ebookConvertBin"`
+	EbookConvertParams    string `json:"ebookConvertParams"`
 	DocxTemplate          string `json:"docxTemplate"`
 	RemoveAssetsID        bool   `json:"removeAssetsID"`
 	MarkdownYFM           bool   `json:"markdownYFM"`

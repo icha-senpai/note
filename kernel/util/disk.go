@@ -21,7 +21,7 @@ package util
 import (
 	"github.com/icha-senpai/note/third_party/forks/go-humanize"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/shirou/gopsutil/v4/disk"
+	"github.com/shirou/gopsutil/v4/disk"
 )
 
 func NeedWarnDiskUsage(dataSize int64) bool {

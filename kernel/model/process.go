@@ -26,7 +26,7 @@ import (
 
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	goPS "github.com/icha-senpai/note/third_party/forks/github/mitchellh/go-ps"
+	goPS "github.com/mitchellh/go-ps"
 )
 
 func HandleSignal() {

@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Dict represents a PDF dict object.

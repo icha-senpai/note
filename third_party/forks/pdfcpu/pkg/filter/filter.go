@@ -22,7 +22,7 @@ import (
 	"io"
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // PDF defines the following filters. See also 7.4 in the PDF spec.

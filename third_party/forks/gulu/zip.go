@@ -20,8 +20,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/encoding/simplifiedchinese"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/transform"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 )
 
 // ZipFile represents a zip file.

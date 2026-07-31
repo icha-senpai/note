@@ -17,7 +17,7 @@ import (
 
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/third_party/forks/lute/editor"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/cases"
+	"golang.org/x/text/cases"
 )
 
 func (t *Tree) FindLinkRefDefLink(label []byte) (link *ast.Node) {

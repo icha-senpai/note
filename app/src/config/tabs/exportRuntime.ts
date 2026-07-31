@@ -6,6 +6,10 @@ const applyExportConfig = (data: Config.IExport) => {
     if (pathDisplay) {
         pathDisplay.textContent = data.pandocBin;
     }
+    const ebookPathDisplay = document.getElementById("ebookConvertBinPathDisplay");
+    if (ebookPathDisplay) {
+        ebookPathDisplay.textContent = data.ebookConvertBin;
+    }
 };
 
 export const exportConfigApi = createConfigNamespaceApi<Config.IExport>({

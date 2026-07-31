@@ -24,12 +24,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/dgraph-io/ristretto"
+	"github.com/dgraph-io/ristretto"
 	"github.com/icha-senpai/note/third_party/forks/dejavu/entity"
 	"github.com/icha-senpai/note/third_party/forks/encryption"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/klauspost/compress/zstd"
+	"github.com/klauspost/compress/zstd"
 )
 
 var ErrNotFoundObject = errors.New("not found object")
@@ -512,5 +512,5 @@ var indexCache, _ = ristretto.NewCache(&ristretto.Config{
 })
 
 func (store *Store) cacheFile(file *entity.File) {
-	fileCache.Set(file.ID, file, 256 )
+	fileCache.Set(file.ID, file, 256)
 }

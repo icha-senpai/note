@@ -5,11 +5,11 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/vmihailenco/msgpack/v5"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 var (

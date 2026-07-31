@@ -22,14 +22,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/github/mattn/go-runewidth"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/draw"
 	pdffont "github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/font"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/primitives"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/mattn/go-runewidth"
+	"github.com/pkg/errors"
 )
 
 // FieldType represents a form field type.

@@ -24,8 +24,8 @@ import (
 	"io"
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
-	"github.com/icha-senpai/note/third_party/forks/external/gopkg.in/yaml.v2"
+	"github.com/pkg/errors"
+	"gopkg.in/yaml.v2"
 )
 
 type configuration struct {

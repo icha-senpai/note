@@ -26,7 +26,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/format"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Note: Mac Preview does not support validating date fields.

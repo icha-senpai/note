@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/icha-senpai/note/third_party/forks/httpclient"
-	"github.com/icha-senpai/note/third_party/forks/github/imroc/req/v3"
+	"github.com/imroc/req/v3"
 )
 
 func NewCustomReqClient() *req.Client {

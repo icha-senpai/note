@@ -23,7 +23,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Optimize reads a PDF stream from rs and writes the optimized PDF stream to w.

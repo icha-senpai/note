@@ -32,7 +32,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/scan"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 var ErrNoContent = errors.New("pdfcpu: page without content")

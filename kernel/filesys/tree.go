@@ -28,20 +28,20 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	"github.com/icha-senpai/note/third_party/forks/lute/render"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/dataparser"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	jsoniter "github.com/icha-senpai/note/third_party/forks/github/json-iterator/go"
-	"github.com/icha-senpai/note/third_party/forks/github/panjf2000/ants/v2"
+	"github.com/icha-senpai/note/third_party/forks/lute"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/lute/render"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/panjf2000/ants/v2"
 )
 
 func LoadTrees(ids []string) (ret map[string]*parse.Tree) {

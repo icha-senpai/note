@@ -24,11 +24,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/open-spaced-repetition/go-fsrs/v3"
-	"github.com/icha-senpai/note/third_party/forks/github/vmihailenco/msgpack/v5"
+	"github.com/open-spaced-repetition/go-fsrs/v3"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 type FSRSStore struct {

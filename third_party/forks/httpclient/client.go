@@ -22,8 +22,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/github/imroc/req/v3"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/net/http/httpproxy"
+	"github.com/imroc/req/v3"
+	"golang.org/x/net/http/httpproxy"
 )
 
 var (

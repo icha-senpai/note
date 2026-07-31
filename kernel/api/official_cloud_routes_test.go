@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 func TestOfficialCloudRoutesAreNotRegistered(t *testing.T) {

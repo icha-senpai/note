@@ -21,7 +21,7 @@ package util
 import (
 	"math"
 
-	"github.com/icha-senpai/note/third_party/forks/github/shirou/gopsutil/v4/disk"
+	"github.com/shirou/gopsutil/v4/disk"
 )
 
 func GetFreeDiskSpace(p string) (free int64) {

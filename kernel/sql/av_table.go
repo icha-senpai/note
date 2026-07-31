@@ -17,9 +17,9 @@ package sql
 import (
 	"fmt"
 
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 func RenderAttributeViewTable(attrView *av.AttributeView, view *av.View, query string, depth *int, cachedAttrViews map[string]*av.AttributeView, ignoreRows bool) (ret *av.Table) {

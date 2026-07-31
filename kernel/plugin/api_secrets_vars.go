@@ -19,9 +19,9 @@ package plugin
 import (
 	"fmt"
 
+	"github.com/dop251/goja"
 	"github.com/icha-senpai/note/kernel/model"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
-	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
+	"github.com/samber/lo"
 )
 
 // injectSecretsVars adds scribli.secrets and scribli.vars to the plugin JS sandbox.

@@ -20,9 +20,9 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dgraph-io/ristretto"
+	"github.com/dgraph-io/ristretto"
 	"github.com/icha-senpai/note/third_party/forks/dejavu/entity"
-	"github.com/icha-senpai/note/third_party/forks/github/klauspost/compress/zstd"
+	"github.com/klauspost/compress/zstd"
 )
 
 type Conf struct {
@@ -72,7 +72,6 @@ type ConfLocal struct {
 }
 
 type Cloud interface {
-
 	CreateRepo(name string) (err error)
 
 	RemoveRepo(name string) (err error)

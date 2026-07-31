@@ -1320,8 +1320,8 @@ func (lute *Lute) genASTContenteditable(n *html.Node, tree *parse.Tree) {
 
 		if lute.parentIs(n, atom.Table) {
 			content = strings.TrimSuffix(content, "\n")
-			if (nil == n.NextSibling && !strings.Contains(content, "\n"))  ||
-				(nil != n.NextSibling && atom.Br == n.NextSibling.DataAtom && strings.HasPrefix(content, "\n"))  {
+			if (nil == n.NextSibling && !strings.Contains(content, "\n")) ||
+				(nil != n.NextSibling && atom.Br == n.NextSibling.DataAtom && strings.HasPrefix(content, "\n")) {
 				content = strings.ReplaceAll(content, "\n", "")
 			}
 

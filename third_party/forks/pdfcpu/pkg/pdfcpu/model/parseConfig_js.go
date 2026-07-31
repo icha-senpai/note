@@ -23,10 +23,10 @@ import (
 	"strings"
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
-// This gets rid of the github.com/icha-senpai/note/third_party/forks/external/gopkg.in/yaml.v2 dependency for wasm builds.
+// This gets rid of the gopkg.in/yaml.v2 dependency for wasm builds.
 
 func handleCreationDate(v string, c *Configuration) error {
 	c.CreationDate = v

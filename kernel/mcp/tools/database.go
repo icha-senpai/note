@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/model"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
 var DatabaseTool = &Tool{

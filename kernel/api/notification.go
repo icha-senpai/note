@@ -19,9 +19,9 @@ package api
 import (
 	"net/http"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 func pushMsg(c *gin.Context) {

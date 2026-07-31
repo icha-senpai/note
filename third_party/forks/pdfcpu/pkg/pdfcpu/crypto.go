@@ -38,10 +38,10 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/secure/precis"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/unicode/norm"
+	"golang.org/x/text/secure/precis"
+	"golang.org/x/text/unicode/norm"
 )
 
 var (

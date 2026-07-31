@@ -19,7 +19,7 @@ package cache
 import (
 	"sync"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dgraph-io/ristretto"
+	"github.com/dgraph-io/ristretto"
 )
 
 var avCache, _ = ristretto.NewCache(&ristretto.Config{

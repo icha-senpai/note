@@ -17,16 +17,13 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/util"
 )
 
+// [foo](https://img.hacpai.com/dir1/bar.zip)
 //
+// ![foo](https://b3logfile.com/dir2/baz.png)
 //
-//	[foo](https://img.hacpai.com/dir1/bar.zip)
+// [foo](assets/dir1/bar.zip)
 //
-//	![foo](https://b3logfile.com/dir2/baz.png)
-//
-//
-//	[foo](assets/dir1/bar.zip)
-//
-//	![foo](assets/dir2/baz.png)
+// ![foo](assets/dir2/baz.png)
 type TextBundleRenderer struct {
 	*FormatRenderer
 

@@ -24,7 +24,7 @@ import (
 
 	"github.com/icha-senpai/note/third_party/forks/filelock"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/vmihailenco/msgpack/v5"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 type Deck struct {

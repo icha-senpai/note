@@ -24,11 +24,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/gabriel-vasile/mimetype"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/gabriel-vasile/mimetype"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 func setRepoIndexRetentionDays(c *gin.Context) {

@@ -27,7 +27,7 @@ import (
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/sql"
 
-	"github.com/icha-senpai/note/third_party/forks/github/spf13/cobra"
+	"github.com/spf13/cobra"
 )
 
 var attrCmd = &cobra.Command{

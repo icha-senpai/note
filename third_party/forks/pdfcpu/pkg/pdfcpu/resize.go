@@ -28,7 +28,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/matrix"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // ParseResizeConfig parses a Resize command string into an internal structure.
@@ -229,7 +229,7 @@ func resizePage(ctx *model.Context, pageNr int, res *model.Resize) error {
 
 func Resize(ctx *model.Context, selectedPages types.IntSet, res *model.Resize) error {
 	if log.DebugEnabled() {
-		log.Debug.Printf("Resize:\n%s\n", res)
+		log.Debug.Printf("Resize:\n%v\n", res)
 	}
 
 	if len(selectedPages) == 0 {

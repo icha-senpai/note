@@ -1,9 +1,3 @@
-/**
- * Skipped minification because the original files appears to be already minified.
- * Original file: /npm/@viz-js/viz@3.11.0/lib/viz-standalone.js
- *
- * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
- */
 /*!
 Viz.js 3.11.0
 Copyright (c) 2023 Michael Daines

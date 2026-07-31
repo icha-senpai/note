@@ -26,9 +26,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/kernel/conf"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 )
 
 func setDEKForTest(boxID string, dek []byte) {

@@ -37,7 +37,7 @@ import (
 	mcptools "github.com/icha-senpai/note/kernel/mcp/tools"
 	kernelModel "github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/github/sashabaranov/go-openai"
+	"github.com/sashabaranov/go-openai"
 )
 
 const systemPrompt = `You are a Scribli AI assistant. You help users manage their notes, documents, and knowledge base through the tools provided.

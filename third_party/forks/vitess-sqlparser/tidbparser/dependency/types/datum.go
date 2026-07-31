@@ -27,7 +27,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/types/json"
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/util/charset"
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/util/hack"
-	"github.com/icha-senpai/note/third_party/forks/github/juju/errors"
+	"github.com/juju/errors"
 )
 
 // Kind constants.

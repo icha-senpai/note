@@ -25,10 +25,10 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/lxzan/gws"
+	"github.com/lxzan/gws"
 )
 
 type JsonRpcErrorCode int

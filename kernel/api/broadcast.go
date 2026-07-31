@@ -22,13 +22,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/asaskevich/EventBus"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-contrib/sse"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/asaskevich/EventBus"
+	"github.com/gin-contrib/sse"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/olahol/melody"
+	"github.com/olahol/melody"
 )
 
 const (

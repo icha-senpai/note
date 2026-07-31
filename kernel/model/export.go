@@ -37,30 +37,30 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/icha-senpai/note/third_party/forks/go-humanize"
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/third_party/forks/lute/editor"
-	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/lute/lex"
-	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	"github.com/icha-senpai/note/third_party/forks/lute/render"
-	"github.com/icha-senpai/note/third_party/forks/github/emirpasic/gods/sets/hashset"
-	"github.com/icha-senpai/note/third_party/forks/github/emirpasic/gods/stacks/linkedliststack"
+	"github.com/emirpasic/gods/sets/hashset"
+	"github.com/emirpasic/gods/stacks/linkedliststack"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/filesys"
 	"github.com/icha-senpai/note/kernel/sql"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/riff"
-	shellquote "github.com/icha-senpai/note/third_party/forks/github/kballard/go-shellquote"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
+	"github.com/icha-senpai/note/third_party/forks/lute/editor"
+	"github.com/icha-senpai/note/third_party/forks/lute/html"
+	"github.com/icha-senpai/note/third_party/forks/lute/lex"
+	"github.com/icha-senpai/note/third_party/forks/lute/parse"
+	"github.com/icha-senpai/note/third_party/forks/lute/render"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/api"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/font"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
+	"github.com/icha-senpai/note/third_party/forks/riff"
+	shellquote "github.com/kballard/go-shellquote"
 )
 
 func ExportCodeBlock(blockID string) (filePath string, err error) {
@@ -2012,6 +2012,70 @@ func ExportPandocConvertZip(ids []string, pandocTo, ext string) (name, zipPath s
 	return
 }
 
+func ExportEbookConvertZip(ids []string, ext string) (name, zipPath string, err error) {
+	if ".mobi" != ext && ".azw3" != ext {
+		err = fmt.Errorf("unsupported ebook export format [%s]", ext)
+		return
+	}
+	if !util.IsValidEbookConvertBin(Conf.Export.EbookConvertBin) {
+		err = errors.New("Please configure [Settings - Export - ebook-convert executable path] first")
+		return
+	}
+
+	block := treenode.GetBlockTree(ids[0])
+	if nil == block {
+		err = ErrBlockNotFound
+		return
+	}
+	if IsEncryptedBox(block.BoxID) && !IsBoxUnlocked(block.BoxID) {
+		logging.LogErrorf("export ebook zip [%s] failed: encrypted notebook locked", ids[0])
+		err = errors.New("encrypted notebook locked")
+		return
+	}
+
+	args, err := parseEbookConvertParams()
+	if err != nil {
+		return
+	}
+
+	box := Conf.Box(block.BoxID)
+	baseFolderName := path.Base(block.HPath)
+	if "." == baseFolderName {
+		baseFolderName = path.Base(block.Path)
+	}
+
+	var docPaths []string
+	bts := treenode.GetBlockTrees(ids)
+	for _, bt := range bts {
+		docPaths = append(docPaths, bt.Path)
+
+		if Conf.Export.IncludeSubDocs {
+			listPath := strings.TrimSuffix(bt.Path, ".sy")
+			if IsBoxDoc(bt.BoxID, bt.RootID) {
+				listPath = "/"
+			}
+			docFiles := box.ListFiles(listPath)
+			for _, docFile := range docFiles {
+				if docFile.path == bt.Path {
+					continue
+				}
+				docPaths = append(docPaths, docFile.path)
+			}
+		}
+	}
+
+	defBlockIDs, docPaths := prepareExportTrees(docPaths)
+	zipPath = exportPandocConvertZipWithPostprocess(block.BoxID, baseFolderName, docPaths, defBlockIDs, "gfm+footnotes+hard_line_breaks", "epub", ext, func(sourcePath, finalPath string) error {
+		return util.EbookConvert(Conf.Export.EbookConvertBin, sourcePath, finalPath, args...)
+	})
+	if "" == zipPath {
+		err = fmt.Errorf("export %s failed", strings.TrimPrefix(ext, "."))
+		return
+	}
+	name = util.GetTreeID(block.Path)
+	return
+}
+
 func ExportNotebookMarkdown(boxID string) (zipPath string) {
 	if IsEncryptedBox(boxID) && !IsBoxUnlocked(boxID) {
 		logging.LogErrorf("export notebook markdown [%s] failed: encrypted notebook locked", boxID)
@@ -3745,7 +3809,13 @@ func processFileAnnotationRef(refID string, n *ast.Node, fileAnnotationRefMode i
 	return ast.WalkSkipChildren
 }
 
+type pandocConvertPostprocessor func(sourcePath, finalPath string) error
+
 func exportPandocConvertZip(boxID, baseFolderName string, docPaths, defBlockIDs []string, pandocFrom, pandocTo, ext string) (zipPath string) {
+	return exportPandocConvertZipWithPostprocess(boxID, baseFolderName, docPaths, defBlockIDs, pandocFrom, pandocTo, ext, nil)
+}
+
+func exportPandocConvertZipWithPostprocess(boxID, baseFolderName string, docPaths, defBlockIDs []string, pandocFrom, pandocTo, ext string, postprocess pandocConvertPostprocessor) (zipPath string) {
 	defer util.ClearPushProgress(100)
 
 	dir, name := path.Split(baseFolderName)
@@ -3755,6 +3825,11 @@ func exportPandocConvertZip(boxID, baseFolderName string, docPaths, defBlockIDs 
 		name += "_"
 	}
 	baseFolderName = path.Join(dir, name)
+	finalExt := ext
+	pandocExt := ext
+	if nil != postprocess {
+		pandocExt = ".epub"
+	}
 
 	encrypted := IsEncryptedBox(boxID)
 	var exportID string
@@ -3772,7 +3847,7 @@ func exportPandocConvertZip(boxID, baseFolderName string, docPaths, defBlockIDs 
 			return
 		}
 	}
-	exportFolder := filepath.Join(util.TempDir, "export", baseFolderName+ext)
+	exportFolder := filepath.Join(util.TempDir, "export", baseFolderName+finalExt)
 	if encrypted {
 		exportFolder = filepath.Join(util.TempDir, "export", boxID, "markdown", exportID)
 	}
@@ -3795,7 +3870,7 @@ func exportPandocConvertZip(boxID, baseFolderName string, docPaths, defBlockIDs 
 	luteEngine.SetExportNormalizeTaskListMarker(true)
 	for i, p := range docPaths {
 		rootID := util.GetTreeID(p)
-		tree, md, isEmpty := exportMarkdownContent(rootID, ext, exportRefMode, defBlockIDs, false)
+		tree, md, isEmpty := exportMarkdownContent(rootID, pandocExt, exportRefMode, defBlockIDs, false)
 		if nil == tree {
 			continue
 		}
@@ -3804,17 +3879,17 @@ func exportPandocConvertZip(boxID, baseFolderName string, docPaths, defBlockIDs 
 		dir = util.FilterFilePath(dir)
 		name = util.FilterFileName(name)
 		hPath = path.Join(dir, name)
-		p = hPath + ext
+		p = hPath + finalExt
 		if 1 == len(docPaths) {
 
-			p = name + ext
+			p = name + finalExt
 		}
 
 		writePath := filepath.Join(exportFolder, p)
 		hash := fmt.Sprintf("%x", sha1.Sum([]byte(md)))
 		if gulu.File.IsExist(writePath) && hash != wrotePathHash[writePath] {
 
-			p = hPath + "-" + rootID + ext
+			p = hPath + "-" + rootID + finalExt
 			writePath = filepath.Join(exportFolder, p)
 		}
 		writeFolder := filepath.Dir(writePath)
@@ -3882,17 +3957,30 @@ func exportPandocConvertZip(boxID, baseFolderName string, docPaths, defBlockIDs 
 			md = strings.ReplaceAll(md, assetsOld, assetsNew)
 		}
 
-		pandocErr := util.Pandoc(pandocFrom, pandocTo, writePath, md)
+		pandocWritePath := writePath
+		if nil != postprocess {
+			pandocWritePath = strings.TrimSuffix(writePath, finalExt) + pandocExt
+		}
+
+		pandocErr := util.Pandoc(pandocFrom, pandocTo, pandocWritePath, md)
 		if pandocErr != nil {
 			logging.LogErrorf("pandoc failed: %s", pandocErr)
 			continue
+		}
+		if nil != postprocess {
+			if convertErr := postprocess(pandocWritePath, writePath); convertErr != nil {
+				logging.LogErrorf("postprocess pandoc export [%s] failed: %s", writePath, convertErr)
+				_ = os.Remove(pandocWritePath)
+				continue
+			}
+			_ = os.Remove(pandocWritePath)
 		}
 
 		wrotePathHash[writePath] = hash
 		util.PushEndlessProgress(Conf.language(65) + " " + fmt.Sprintf(Conf.language(70), fmt.Sprintf("%d/%d %s", i+1, len(docPaths), name)))
 	}
 
-	zipBaseName := baseFolderName + ext + ".zip"
+	zipBaseName := baseFolderName + finalExt + ".zip"
 	zipPath = exportFolder + ".zip"
 	zipPartialPath := zipPath + ".partial"
 	if encrypted {

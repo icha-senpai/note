@@ -20,7 +20,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/github/sashabaranov/go-openai"
+	"github.com/sashabaranov/go-openai"
 )
 
 func isContextOverflow(err error) bool {

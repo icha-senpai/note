@@ -24,11 +24,11 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 
-	"github.com/icha-senpai/note/third_party/forks/github/spf13/cobra"
+	"github.com/spf13/cobra"
 )
 
 var documentCmd = &cobra.Command{

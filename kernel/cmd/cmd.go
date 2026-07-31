@@ -19,7 +19,7 @@ package cmd
 import (
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/olahol/melody"
+	"github.com/olahol/melody"
 )
 
 type Cmd interface {

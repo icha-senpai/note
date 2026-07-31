@@ -17,7 +17,7 @@ import (
 	"encoding/binary"
 	"math"
 
-	"github.com/icha-senpai/note/third_party/forks/github/juju/errors"
+	"github.com/juju/errors"
 )
 
 const signMask uint64 = 0x8000000000000000

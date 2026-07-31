@@ -17,13 +17,13 @@
 package model
 
 import (
+	"github.com/emirpasic/gods/stacks/linkedliststack"
+	"github.com/icha-senpai/note/kernel/treenode"
+	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/third_party/forks/lute/html"
 	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	"github.com/icha-senpai/note/third_party/forks/github/emirpasic/gods/stacks/linkedliststack"
-	"github.com/icha-senpai/note/kernel/treenode"
-	"github.com/icha-senpai/note/kernel/util"
 )
 
 func (tx *Transaction) doMoveOutlineHeading(operation *Operation) (ret *TxErr) {

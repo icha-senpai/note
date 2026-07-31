@@ -22,14 +22,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja_nodejs/buffer"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja_nodejs/console"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja_nodejs/require"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja_nodejs/url"
+	"github.com/dop251/goja"
+	"github.com/dop251/goja_nodejs/buffer"
+	"github.com/dop251/goja_nodejs/console"
+	"github.com/dop251/goja_nodejs/require"
+	"github.com/dop251/goja_nodejs/url"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/imroc/req/v3"
-	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
+	"github.com/imroc/req/v3"
+	"github.com/samber/lo"
 )
 
 type WebSocketState int64

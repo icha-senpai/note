@@ -19,9 +19,9 @@ package model
 import (
 	"sync"
 
+	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/lute"
 	"github.com/icha-senpai/note/third_party/forks/lute/parse"
-	"github.com/icha-senpai/note/kernel/util"
 )
 
 var md2HTMLLutePool sync.Pool

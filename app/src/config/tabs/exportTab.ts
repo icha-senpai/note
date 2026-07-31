@@ -187,6 +187,61 @@ const mountExportPandocStack = (root: HTMLElement) => {
         exportConfigApi.patch("export.pandocBin", localPath.filePaths[0]);
     });
 };
+
+const registerExportEbookGroup = (tab: SettingTabBuilder) => {
+    const group = tab.group("ebook", window.scribli.languages.configGroupEbook);
+
+    group.stack({
+        key: "ebookConvertBin",
+        keywords: [
+            window.scribli.languages.exportEbookConvertPath,
+            window.scribli.languages.exportEbookConvertTip,
+            window.scribli.languages.reset,
+            window.scribli.languages.config,
+        ],
+        afterMount: mountExportEbookStack,
+    }, (stack) => {
+        stack.title(`${window.scribli.languages.exportEbookConvertPath}<span class="fn__space"></span><a href="javascript:void(0)" id="ebookConvertBinPathDisplay" style="word-break: break-all">${Lute.EscapeHTMLStr(window.scribli.config.export.ebookConvertBin)}</a>`);
+        stack.button({
+            id: "ebookConvertBinReset",
+            label: window.scribli.languages.reset,
+            icon: "iconUndo",
+        });
+        stack.desc(window.scribli.languages.exportEbookConvertTip);
+        stack.button({
+            id: "ebookConvertBinChooser",
+            label: window.scribli.languages.config,
+            icon: "iconSettings",
+        });
+    });
+    group.textBlock("export.ebookConvertParams", {
+        title: window.scribli.languages.exportEbookConvertParams,
+        desc: window.scribli.languages.exportEbookConvertParamsTip,
+        mode: "textarea",
+    });
+};
+
+const mountExportEbookStack = (root: HTMLElement) => {
+    root.querySelector("#ebookConvertBinReset")?.addEventListener("click", () => {
+        exportConfigApi.patch("export.ebookConvertBin", "");
+    });
+    root.querySelector("#ebookConvertBinPathDisplay")?.addEventListener("click", () => {
+        if (window.scribli.config.export.ebookConvertBin) {
+            useShell("showItemInFolder", window.scribli.config.export.ebookConvertBin);
+        }
+    });
+    root.querySelector("#ebookConvertBinChooser")?.addEventListener("click", async () => {
+        const localPath = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
+            cmd: "showOpenDialog",
+            defaultPath: window.scribli.config.system.homeDir,
+            properties: ["openFile", "showHiddenFiles"],
+        });
+        if (!localPath.filePaths.length) {
+            return;
+        }
+        exportConfigApi.patch("export.ebookConvertBin", localPath.filePaths[0]);
+    });
+};
 /// #endif
 
 export const registerExportTab = (tab: SettingTabBuilder) => {
@@ -196,5 +251,6 @@ export const registerExportTab = (tab: SettingTabBuilder) => {
     registerExportImagesGroup(tab);
     /// #if !BROWSER
     registerExportPandocGroup(tab);
+    registerExportEbookGroup(tab);
     /// #endif
 };

@@ -31,7 +31,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/internal/corefont/metrics"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
 
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // TTFLight represents a TrueType font w/o font file.

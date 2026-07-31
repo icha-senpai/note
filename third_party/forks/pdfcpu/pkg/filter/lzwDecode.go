@@ -20,9 +20,9 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/icha-senpai/note/third_party/forks/github/hhrutter/lzw"
+	"github.com/hhrutter/lzw"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/log"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 type lzwDecode struct {

@@ -25,11 +25,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
-	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/language"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/text/message"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 type Value struct {

@@ -31,12 +31,12 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/icha-senpai/note/third_party/forks/filelock"
 	"github.com/icha-senpai/note/third_party/forks/go-humanize"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
+	"github.com/icha-senpai/note/third_party/forks/logging"
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 var (

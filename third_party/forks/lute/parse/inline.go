@@ -161,7 +161,6 @@ func (t *Tree) parseCloseBracket(ctx *InlineContext) *ast.Node {
 
 	isImage := opener.image
 
-
 	var openParen, dest, space, title, closeParen []byte
 	savepos := ctx.pos
 	matched := false

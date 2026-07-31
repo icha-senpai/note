@@ -23,7 +23,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/types"
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/types/json"
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/util/chunk"
-	"github.com/icha-senpai/note/third_party/forks/github/juju/errors"
+	"github.com/juju/errors"
 )
 
 // First byte in the encoded value which specifies the encoding type.

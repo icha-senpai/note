@@ -137,7 +137,7 @@ var terms = map[string]string{
 	"redis":         "Redis",
 	"elasticsearch": "Elasticsearch",
 	"solr":          "Solr",
-	"Scribli":         "Scribli",
+	"Scribli":       "Scribli",
 	"hacpai":        "HacPai",
 	"sphinx":        "Sphinx",
 	"linux":         "Linux",

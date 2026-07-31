@@ -22,8 +22,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/conf"
 	mcpclient "github.com/icha-senpai/note/kernel/mcp/client"
 	"github.com/icha-senpai/note/kernel/model"
@@ -31,6 +30,7 @@ import (
 	"github.com/icha-senpai/note/kernel/sql"
 	"github.com/icha-senpai/note/kernel/task"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
@@ -425,6 +425,10 @@ func setExport(c *gin.Context) {
 		} else {
 			util.PandocBinPath = export.PandocBin
 		}
+	}
+	if "" != export.EbookConvertBin && !util.IsValidEbookConvertBin(export.EbookConvertBin) {
+		util.PushErrMsg(fmt.Sprintf(model.Conf.Language(117), export.EbookConvertBin), 5000)
+		export.EbookConvertBin = ""
 	}
 
 	model.Conf.Export = export

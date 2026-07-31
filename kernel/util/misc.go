@@ -30,7 +30,7 @@ import (
 	"unicode"
 
 	"github.com/icha-senpai/note/third_party/forks/lute/html"
-	"github.com/icha-senpai/note/third_party/forks/github/microcosm-cc/bluemonday"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 // Optional is a generic type that represents an optional value, which can be in one of three states:

@@ -89,6 +89,7 @@
             color: var(--b3-theme-on-background);
             transition: box-shadow 120ms 0ms cubic-bezier(0, 0, 0.2, 1);
             background-color: var(--b3-theme-background);
+            appearance: none;
             -webkit-appearance: none;
         }
 
@@ -175,7 +176,14 @@
         }
     </style>
 </head>
-<body>
+<body data-exit-message="{{.l8}}"
+      data-empty-auth-message="{{.l9}}"
+      data-appearance-mode-os="{{.appearanceModeOS}}"
+      data-appearance-mode="{{.appearanceMode}}"
+      data-workspace-dir="{{.workspaceDir}}"
+      data-tray-menu-langs="{{.trayMenuLangs}}"
+      data-toggle-hotkey="{{.keymapGeneralToggleWin}}"
+      data-close-window-message="{{.l11}}">
 <div style="-webkit-app-region: drag;height: 32px;width: 100%;position: absolute;top: 0;"></div>
 <div style="position: relative;z-index: 2;text-align: center">
     <h1 style="margin-bottom: 48px;color:var(--b3-theme-on-background)">{{.workspace}}</h1>
@@ -415,6 +423,18 @@
     <div class="b3-snackbar__content"></div>
 </div>
 <script>
+    const pageConfigDataset = document.body.dataset
+    const pageConfig = {
+        exitMessage: pageConfigDataset.exitMessage || "",
+        emptyAuthMessage: pageConfigDataset.emptyAuthMessage || "",
+        appearanceModeOS: pageConfigDataset.appearanceModeOs === "true",
+        appearanceMode: Number(pageConfigDataset.appearanceMode || 0),
+        workspaceDir: pageConfigDataset.workspaceDir || "",
+        trayMenuLangs: JSON.parse(pageConfigDataset.trayMenuLangs || "{}"),
+        toggleHotkey: pageConfigDataset.toggleHotkey || "",
+        closeWindowMessage: pageConfigDataset.closeWindowMessage || ""
+    }
+
     window.showKeyboardToolbar = function () {}
     window.hideKeyboardToolbar = function () {}
 
@@ -453,7 +473,7 @@
         }
 
         document.querySelector('#message').classList.add('b3-snackbar--show')
-        document.querySelector('#message').firstElementChild.innerHTML = "{{.l8}}"
+        document.querySelector('#message').firstElementChild.innerHTML = pageConfig.exitMessage
         try {
             fetch('/api/system/exit', {
                 method: 'POST',
@@ -502,7 +522,7 @@
         const rememberMeElement = document.getElementById('rememberMe')
         let code = inputElement.value.trim();
         if ("" === code) {
-            showMessage({{.l9}})
+            showMessage(pageConfig.emptyAuthMessage)
             inputElement.value = ''
             captchaElement.value = ''
             inputElement.focus()
@@ -541,18 +561,18 @@
 
     const init = async () => {
         let isDark = false
-        if ({{.appearanceModeOS}} && window.matchMedia('(prefers-color-scheme: dark)').matches || {{.appearanceMode}} ===1) {
+        if ((pageConfig.appearanceModeOS && window.matchMedia('(prefers-color-scheme: dark)').matches) || pageConfig.appearanceMode === 1) {
             document.body.classList.add('dark')
             isDark = true
         }
-        // 同步外观到原生壳：让 iOS 顶/底条与认证页背景一致
+        // Keep the native shell appearance aligned with the auth page background.
         if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.changeStatusBar) {
             window.webkit.messageHandlers.changeStatusBar.postMessage((isDark ? "#1e1e1e" : "#fff") + " " + (isDark ? 1 : 0))
         }
         if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
             document.querySelector('.b3-button--white').remove()
         } else if (toPath.indexOf("/stage/build/app/window.html") > -1) {
-            document.querySelector('.b3-button--white').textContent = "{{.l11}}"
+            document.querySelector('.b3-button--white').textContent = pageConfig.closeWindowMessage
         }
 
         try {
@@ -562,13 +582,13 @@
                 exitScribli()
             })
             await ipcRenderer.invoke("scribli-init", {
-                languages: {{.trayMenuLangs}},
-                workspaceDir: '{{.workspaceDir}}',
+                languages: pageConfig.trayMenuLangs,
+                workspaceDir: pageConfig.workspaceDir,
                 port: location.port
             });
             ipcRenderer.send("scribli-hotkey", {
-                languages: {{.trayMenuLangs}},
-                hotkeys: ['{{.keymapGeneralToggleWin}}']
+                languages: pageConfig.trayMenuLangs,
+                hotkeys: [pageConfig.toggleHotkey]
             });
         } catch (e) {
             // console.log(e)
@@ -587,7 +607,7 @@
             this.src = `/api/system/getCaptcha?v=${new Date().getTime()}`
         })
 
-        // 用于授权页保持连接，避免非常驻内存内核自动退出 
+        // Keep the auth page connected so a non-resident kernel does not exit.
         const ws = new WebSocket((window.location.protocol === 'https:' ? 'wss' : 'ws') + '://' + window.location.host + '/ws?app=scribli' + Math.random().toString(36).substring(8) + '&id=auth&type=auth')
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);

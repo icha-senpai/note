@@ -22,11 +22,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/dop251/goja"
 	"github.com/icha-senpai/note/kernel/util"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
-	"github.com/icha-senpai/note/third_party/forks/github/dop251/goja"
-	"github.com/icha-senpai/note/third_party/forks/github/samber/lo"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"github.com/samber/lo"
 )
 
 // injectStorage adds scribli.storage.* methods for scoped file CRUD.

@@ -22,7 +22,7 @@ import (
 
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Collect creates a custom PDF page sequence for selected pages of rs and writes the result to w.

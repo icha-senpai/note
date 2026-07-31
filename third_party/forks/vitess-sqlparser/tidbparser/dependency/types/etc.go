@@ -25,7 +25,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/terror"
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/util/charset"
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/parser/opcode"
-	"github.com/icha-senpai/note/third_party/forks/github/juju/errors"
+	"github.com/juju/errors"
 )
 
 // IsTypeBlob returns a boolean indicating whether the tp is a blob type.
@@ -141,6 +141,7 @@ func TypeStr(tp byte) (r string) {
 // It is used for converting Text to Blob,
 // or converting Char to Binary.
 // Args:
+//
 //	tp: type enum
 //	cs: charset
 func TypeToStr(tp byte, cs string) (r string) {

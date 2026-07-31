@@ -12,7 +12,7 @@ package encryption
 import (
 	"crypto/rand"
 
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/crypto/scrypt"
+	"golang.org/x/crypto/scrypt"
 )
 
 func KDF(password, salt string) (key []byte, err error) {

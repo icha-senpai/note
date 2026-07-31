@@ -24,7 +24,6 @@ import (
 )
 
 type Store interface {
-
 	AddCard(id, blockID string) Card
 
 	GetCard(id string) Card

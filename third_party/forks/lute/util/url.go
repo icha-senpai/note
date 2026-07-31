@@ -11,7 +11,6 @@ package util
 
 import "strconv"
 
-
 type encoding int
 
 const (

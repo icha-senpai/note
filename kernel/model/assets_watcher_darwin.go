@@ -23,11 +23,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/radovskyb/watcher"
+	"github.com/radovskyb/watcher"
 )
 
 var assetsWatcher *watcher.Watcher

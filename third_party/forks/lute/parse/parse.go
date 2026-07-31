@@ -307,7 +307,7 @@ type Tree struct {
 	inlineContext *InlineContext
 
 	Name    string
-	ID      string   // ID
+	ID      string // ID
 	Box     string
 	Path    string
 	HPath   string
@@ -318,54 +318,54 @@ type Tree struct {
 }
 
 type Options struct {
-	GFMTable bool
-	GFMTaskListItem bool
-	GFMStrikethrough bool
-	GFMStrikethrough1 bool
-	GFMAutoLink bool
-	Footnotes bool
-	HeadingID bool
-	ToC bool
-	Emoji bool
-	AliasEmoji map[string]string
-	EmojiAlias map[string]string
-	EmojiSite string
-	VditorWYSIWYG bool
-	VditorIR bool
-	VditorSV bool
-	ProtyleWYSIWYG bool
-	ProtyleWYSIWYGAutoLink bool
-	InlineMath bool
+	GFMTable                            bool
+	GFMTaskListItem                     bool
+	GFMStrikethrough                    bool
+	GFMStrikethrough1                   bool
+	GFMAutoLink                         bool
+	Footnotes                           bool
+	HeadingID                           bool
+	ToC                                 bool
+	Emoji                               bool
+	AliasEmoji                          map[string]string
+	EmojiAlias                          map[string]string
+	EmojiSite                           string
+	VditorWYSIWYG                       bool
+	VditorIR                            bool
+	VditorSV                            bool
+	ProtyleWYSIWYG                      bool
+	ProtyleWYSIWYGAutoLink              bool
+	InlineMath                          bool
 	InlineMathAllowDigitAfterOpenMarker bool
-	Setext bool
-	YamlFrontMatter bool
-	BlockRef bool
-	FileAnnotationRef bool
-	Mark bool
-	KramdownBlockIAL bool
-	KramdownSpanIAL bool
-	Tag bool
-	ImgPathAllowSpace bool
-	SuperBlock bool
-	Sup bool
-	Sub bool
-	InlineAsterisk bool
-	InlineUnderscore bool
-	GitConflict bool
-	LinkRef bool
-	IndentCodeBlock bool
-	ParagraphBeginningSpace bool
-	DataImage bool
-	TextMark bool
+	Setext                              bool
+	YamlFrontMatter                     bool
+	BlockRef                            bool
+	FileAnnotationRef                   bool
+	Mark                                bool
+	KramdownBlockIAL                    bool
+	KramdownSpanIAL                     bool
+	Tag                                 bool
+	ImgPathAllowSpace                   bool
+	SuperBlock                          bool
+	Sup                                 bool
+	Sub                                 bool
+	InlineAsterisk                      bool
+	InlineUnderscore                    bool
+	GitConflict                         bool
+	LinkRef                             bool
+	IndentCodeBlock                     bool
+	ParagraphBeginningSpace             bool
+	DataImage                           bool
+	TextMark                            bool
 	//
 	HTMLTag2TextMark bool
 	//
-	Spin bool
-	HTML2MarkdownAttrs []string
-	Callout bool
-	KeepEscaped bool
+	Spin                        bool
+	HTML2MarkdownAttrs          []string
+	Callout                     bool
+	KeepEscaped                 bool
 	ArbitraryTaskListItemMarker bool
-	EnsureListItemParagraph bool
+	EnsureListItemParagraph     bool
 }
 
 func (options *Options) IsValidTaskListItemMarker(marker byte) bool {

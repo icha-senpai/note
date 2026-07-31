@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/icha-senpai/note/third_party/forks/logging"
-	"github.com/icha-senpai/note/third_party/forks/github/soheilhy/cmux"
+	"github.com/soheilhy/cmux"
 )
 
 //

@@ -21,13 +21,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/go-humanize"
 	"github.com/icha-senpai/note/third_party/forks/encryption"
+	"github.com/icha-senpai/note/third_party/forks/go-humanize"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
 type Index struct {
-	ID              string   `json:"id"`              // Hash
+	ID              string   `json:"id"` // Hash
 	Memo            string   `json:"memo"`
 	Created         int64    `json:"created"`
 	Files           []string `json:"files"`
@@ -36,7 +36,7 @@ type Index struct {
 	SystemID        string   `json:"systemID"`
 	SystemName      string   `json:"systemName"`
 	SystemOS        string   `json:"systemOS"`
-	CheckIndexID    string   `json:"checkIndexID"`    // Check Index ID
+	CheckIndexID    string   `json:"checkIndexID"` // Check Index ID
 	AesKeyVerifyVal string   `json:"aesKeyVerifyVal"`
 }
 
@@ -74,9 +74,6 @@ func (index *Index) VerifyAESKey(aesKey []byte) bool {
 	return "scribli" == string(plainData)
 }
 
-//
-//
-//
 type CheckIndex struct {
 	ID      string            `json:"id"`      // Hash
 	IndexID string            `json:"indexID"` // Index ID

@@ -35,46 +35,46 @@ type Renderer interface {
 type Options struct {
 	SoftBreak2HardBreak bool
 	// https://github.com/sparanoid/chinese-copywriting-guidelines
-	AutoSpace bool
-	RenderListStyle bool
+	AutoSpace           bool
+	RenderListStyle     bool
 	CodeSyntaxHighlight bool
 	// CodeSyntaxHighlightDetectLang bool
-	CodeSyntaxHighlightDetectLang bool
+	CodeSyntaxHighlightDetectLang  bool
 	CodeSyntaxHighlightInlineStyle bool
-	CodeSyntaxHighlightLineNum bool
-	CodeSyntaxHighlightStyleName string
-	VditorWYSIWYG bool
-	VditorIR bool
-	VditorSV bool
-	ProtyleWYSIWYG bool
-	KramdownBlockIAL bool
-	KramdownSpanIAL bool
-	SuperBlock bool
-	ImageLazyLoading string
+	CodeSyntaxHighlightLineNum     bool
+	CodeSyntaxHighlightStyleName   string
+	VditorWYSIWYG                  bool
+	VditorIR                       bool
+	VditorSV                       bool
+	ProtyleWYSIWYG                 bool
+	KramdownBlockIAL               bool
+	KramdownSpanIAL                bool
+	SuperBlock                     bool
+	ImageLazyLoading               string
 	ChineseParagraphBeginningSpace bool
-	Sanitize bool
+	Sanitize                       bool
 	// https://github.com/sparanoid/chinese-copywriting-guidelines
-	FixTermTypo bool
-	Terms map[string]string
-	ToC bool
-	HeadingID bool
-	KramdownIALIDRenderName string
-	HeadingAnchor bool
-	GFMTaskListItemClass string
-	DataTask bool
-	VditorCodeBlockPreview bool
-	VditorMathBlockPreview bool
-	VditorHTMLBlockPreview bool
-	LinkBase string
-	LinkPrefix string
-	NodeIndexStart int
-	ProtyleContenteditable bool
-	KeepParagraphBeginningSpace bool
-	ProtyleMarkNetImg bool
-	Spellcheck bool
-	UnorderedListMarker string
-	ImgTag bool
-	PreventEncodeLinkSpace bool
+	FixTermTypo                   bool
+	Terms                         map[string]string
+	ToC                           bool
+	HeadingID                     bool
+	KramdownIALIDRenderName       string
+	HeadingAnchor                 bool
+	GFMTaskListItemClass          string
+	DataTask                      bool
+	VditorCodeBlockPreview        bool
+	VditorMathBlockPreview        bool
+	VditorHTMLBlockPreview        bool
+	LinkBase                      string
+	LinkPrefix                    string
+	NodeIndexStart                int
+	ProtyleContenteditable        bool
+	KeepParagraphBeginningSpace   bool
+	ProtyleMarkNetImg             bool
+	Spellcheck                    bool
+	UnorderedListMarker           string
+	ImgTag                        bool
+	PreventEncodeLinkSpace        bool
 	ExportNormalizeTaskListMarker bool
 }
 

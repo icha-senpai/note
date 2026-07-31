@@ -16,7 +16,7 @@
 
 package primitives
 
-import "github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+import "github.com/pkg/errors"
 
 type Padding struct {
 	Name                     string

@@ -28,10 +28,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/icha-senpai/note/third_party/forks/gulu"
-	"github.com/icha-senpai/note/third_party/forks/github/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
+	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
 )
 
@@ -458,6 +458,43 @@ func importStdMd(c *gin.Context) {
 	}
 
 	err := model.ImportFromLocalPath(notebook, localPath, toPath)
+	if err != nil {
+		ret.Code = -1
+		ret.Msg = err.Error()
+		return
+	}
+}
+
+func importEbook(c *gin.Context) {
+	ret := gulu.Ret.NewResult()
+	defer c.JSON(http.StatusOK, ret)
+
+	arg, ok := util.JsonArg(c, ret)
+	if !ok {
+		return
+	}
+
+	notebook := arg["notebook"].(string)
+	localPath := arg["localPath"].(string)
+	toPath := arg["toPath"].(string)
+
+	if gulu.File.IsSubPath(util.WorkingDir, localPath) {
+		msg := fmt.Sprintf("import from local path [%s] failed: local path is sub path of working dir", localPath)
+		logging.LogError(msg)
+		ret.Code = -1
+		ret.Msg = msg
+		return
+	}
+
+	if util.IsSensitivePath(localPath) {
+		msg := fmt.Sprintf("import from local path [%s] failed: local path is sensitive path", localPath)
+		logging.LogError(msg)
+		ret.Code = -1
+		ret.Msg = msg
+		return
+	}
+
+	err := model.ImportEbookFromLocalPath(notebook, localPath, toPath)
 	if err != nil {
 		ret.Code = -1
 		ret.Msg = err.Error()

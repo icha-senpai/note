@@ -1,0 +1,6 @@
+kernel/.cache/**
+.tools/**
+app/node_modules/**
+app/stage/build/**
+app/build/**
+app/src/types/dist/**

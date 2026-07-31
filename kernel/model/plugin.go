@@ -26,10 +26,10 @@ import (
 
 	"github.com/icha-senpai/note/kernel/extensions"
 	"github.com/icha-senpai/note/kernel/util"
-	"github.com/icha-senpai/note/third_party/forks/external/golang.org/x/sync/singleflight"
 	"github.com/icha-senpai/note/third_party/forks/filelock"
 	"github.com/icha-senpai/note/third_party/forks/gulu"
 	"github.com/icha-senpai/note/third_party/forks/logging"
+	"golang.org/x/sync/singleflight"
 )
 
 // Petal represents a plugin's management status.

@@ -17,7 +17,7 @@ import (
 	"fmt"
 
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/tidbparser/dependency/types"
-	"github.com/icha-senpai/note/third_party/forks/github/juju/errors"
+	"github.com/juju/errors"
 )
 
 // EncodeDecimal encodes a decimal into a byte slice which can be sorted lexicographically later.

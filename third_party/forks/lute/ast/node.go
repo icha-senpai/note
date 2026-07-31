@@ -25,8 +25,6 @@ import (
 )
 
 type Node struct {
-
-
 	ID   string `json:",omitempty"`
 	Box  string `json:"-"`
 	Path string `json:"-"`
@@ -43,14 +41,11 @@ type Node struct {
 	TypeStr    string   `json:"Type"`
 	Data       string   `json:"Data,omitempty"`
 
-
 	Close           bool `json:"-"`
 	LastLineBlank   bool `json:"-"`
 	LastLineChecked bool `json:"-"`
 
-
 	CodeMarkerLen int `json:",omitempty"`
-
 
 	IsFencedCodeBlock  bool `json:",omitempty"`
 	CodeBlockFenceChar byte `json:",omitempty"`
@@ -61,46 +56,35 @@ type Node struct {
 	CodeBlockInfo        []byte `json:",omitempty"`
 	CodeBlockCloseFence  []byte `json:",omitempty"`
 
-
 	HtmlBlockType int `json:",omitempty"`
-
 
 	ListData *ListData `json:",omitempty"`
 
-
 	TaskListItemChecked bool `json:",omitempty"`
 	TaskListItemMarker  byte `json:",omitempty"`
-
 
 	TableAligns              []int `json:",omitempty"`
 	TableCellAlign           int   `json:",omitempty"`
 	TableCellContentWidth    int   `json:",omitempty"`
 	TableCellContentMaxWidth int   `json:",omitempty"`
 
-
 	LinkType     int    `json:",omitempty"`
 	LinkRefLabel []byte `json:",omitempty"`
-
 
 	HeadingLevel        int    `json:",omitempty"` // 1~6
 	HeadingSetext       bool   `json:",omitempty"`
 	HeadingNormalizedID string `json:",omitempty"`
 
-
 	MathBlockDollarOffset int `json:",omitempty"`
-
 
 	FootnotesRefLabel []byte  `json:",omitempty"`
 	FootnotesRefId    string  `json:",omitempty"`
 	FootnotesRefs     []*Node `json:",omitempty"`
 
-
 	HtmlEntityTokens []byte `json:",omitempty"`
-
 
 	KramdownIAL [][]string        `json:"-"`
 	Properties  map[string]string `json:",omitempty"`
-
 
 	TextMarkType                string `json:",omitempty"`
 	TextMarkAHref               string `json:",omitempty"`
@@ -112,10 +96,8 @@ type Node struct {
 	TextMarkFileAnnotationRefID string `json:",omitempty"`
 	TextMarkTextContent         string `json:",omitempty"`
 
-
 	AttributeViewID   string `json:",omitempty"`
 	AttributeViewType string `json:",omitempty"`
-
 
 	CustomBlockFenceOffset int    `json:",omitempty"`
 	CustomBlockInfo        string `json:",omitempty"`
@@ -1031,7 +1013,6 @@ const (
 	NodeEmojiImg     NodeType = 202
 	NodeEmojiAlias   NodeType = 203 // Emoji ASCII
 
-
 	NodeMathBlock             NodeType = 300
 	NodeMathBlockOpenMarker   NodeType = 301
 	NodeMathBlockContent      NodeType = 302
@@ -1041,21 +1022,16 @@ const (
 	NodeInlineMathContent     NodeType = 306
 	NodeInlineMathCloseMarker NodeType = 307
 
-
 	NodeBackslash        NodeType = 400
 	NodeBackslashContent NodeType = 401
 
-
 	NodeVditorCaret NodeType = 405
-
 
 	NodeFootnotesDefBlock NodeType = 410
 	NodeFootnotesDef      NodeType = 411
 	NodeFootnotesRef      NodeType = 412
 
-
 	NodeToC NodeType = 415
-
 
 	NodeHeadingID NodeType = 420
 
@@ -1066,13 +1042,11 @@ const (
 	NodeYamlFrontMatterContent     NodeType = 427
 	NodeYamlFrontMatterCloseMarker NodeType = 428
 
-
 	NodeBlockRef            NodeType = 430
 	NodeBlockRefID          NodeType = 431
 	NodeBlockRefSpace       NodeType = 432
 	NodeBlockRefText        NodeType = 433
 	NodeBlockRefDynamicText NodeType = 434
-
 
 	NodeMark             NodeType = 450
 	NodeMark1OpenMarker  NodeType = 451
@@ -1080,27 +1054,22 @@ const (
 	NodeMark2OpenMarker  NodeType = 453
 	NodeMark2CloseMarker NodeType = 454
 
-
 	NodeKramdownBlockIAL NodeType = 455
 	NodeKramdownSpanIAL  NodeType = 456
-
 
 	NodeTag            NodeType = 460
 	NodeTagOpenMarker  NodeType = 461
 	NodeTagCloseMarker NodeType = 462
-
 
 	NodeBlockQueryEmbed       NodeType = 465
 	NodeOpenBrace             NodeType = 466 // {
 	NodeCloseBrace            NodeType = 467 // }
 	NodeBlockQueryEmbedScript NodeType = 468
 
-
 	NodeSuperBlock             NodeType = 475
 	NodeSuperBlockOpenMarker   NodeType = 476
 	NodeSuperBlockLayoutMarker NodeType = 477
 	NodeSuperBlockCloseMarker  NodeType = 478
-
 
 	NodeSup            NodeType = 485
 	NodeSupOpenMarker  NodeType = 486
@@ -1109,57 +1078,43 @@ const (
 	NodeSubOpenMarker  NodeType = 491
 	NodeSubCloseMarker NodeType = 492
 
-
 	NodeGitConflict            NodeType = 495
 	NodeGitConflictOpenMarker  NodeType = 496
 	NodeGitConflictContent     NodeType = 497
 	NodeGitConflictCloseMarker NodeType = 498
 
-
 	NodeIFrame NodeType = 500
-
 
 	NodeAudio NodeType = 505
 
-
 	NodeVideo NodeType = 510
-
 
 	NodeKbd            NodeType = 515
 	NodeKbdOpenMarker  NodeType = 516
 	NodeKbdCloseMarker NodeType = 517
 
-
 	NodeUnderline            NodeType = 520
 	NodeUnderlineOpenMarker  NodeType = 521
 	NodeUnderlineCloseMarker NodeType = 522
 
-
 	NodeBr NodeType = 525
-
 
 	NodeTextMark NodeType = 530
 
-
 	NodeWidget NodeType = 535 // <iframe data-type="NodeWidget" data-subtype="widget"></iframe>
-
 
 	NodeFileAnnotationRef      NodeType = 540
 	NodeFileAnnotationRefID    NodeType = 541
 	NodeFileAnnotationRefSpace NodeType = 542
 	NodeFileAnnotationRefText  NodeType = 543
 
-
 	NodeAttributeView NodeType = 550
 
-
 	NodeCustomBlock NodeType = 560
-
 
 	NodeHTMLTag      NodeType = 570
 	NodeHTMLTagOpen  NodeType = 571
 	NodeHTMLTagClose NodeType = 572
-
 
 	NodeCallout NodeType = 580
 

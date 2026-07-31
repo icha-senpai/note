@@ -23,7 +23,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/model"
 	"github.com/icha-senpai/note/third_party/forks/pdfcpu/pkg/pdfcpu/types"
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 var errInvalidPageAnnotArray = errors.New("pdfcpu: validatePageAnnotations: page annotation array without indirect references.")
@@ -1510,7 +1510,7 @@ func validateDashPatternArray(xRefTable *model.XRefTable, arr types.Array) bool 
 			return false
 		}
 		if log.ValidateEnabled() {
-			log.Validate.Println("digesting invalid dash pattern array: %s", arr)
+			log.Validate.Printf("digesting invalid dash pattern array: %s\n", arr)
 		}
 	}
 

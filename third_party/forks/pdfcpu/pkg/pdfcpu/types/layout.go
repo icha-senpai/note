@@ -19,7 +19,7 @@ package types
 import (
 	"strings"
 
-	"github.com/icha-senpai/note/third_party/forks/github/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Corner represents one of four rectangle corners.
