@@ -1,11 +1,4 @@
 // Copyright (c) 2019-present, Scribli
-//
-// Lute is licensed under Mulan PSL v2.
-// You can use this software according to the terms and conditions of the Mulan PSL v2.
-// You may obtain a copy of Mulan PSL v2 at:
-//         http://license.coscl.org.cn/MulanPSL2
-// THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-// See the Mulan PSL v2 for more details.
 
 package lute
 
@@ -1113,9 +1106,6 @@ func (lute *Lute) genASTByDOM(n *html.Node, tree *parse.Tree) {
 			node.AppendChild(&ast.Node{Type: ast.NodeCloseBracket})
 			node.AppendChild(&ast.Node{Type: ast.NodeOpenParen})
 			src := util.DomAttrValue(n, "src")
-			if strings.Contains(class, "ztext-gif") && strings.Contains(src, "zhimg.com") {
-				src = strings.Replace(src, ".jpg", ".webp", 1)
-			}
 
 			if strings.HasPrefix(src, "data:image") || strings.HasSuffix(src, "img-loading.svg") {
 				if dataSrc := util.DomAttrValue(n, "data-src"); "" != dataSrc {
