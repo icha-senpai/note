@@ -16,6 +16,8 @@ app/src/types/dist
 app/kernel*
 app/Scribli-Kernel
 kernel/.cache/
+kernel/.codex-*/
+kernel/.codex-smoke*/
 ios
 pprof
 
