@@ -1,5 +1,4 @@
 // Copyright (c) 2019-present, Scribli
-/
 
 package parse
 
