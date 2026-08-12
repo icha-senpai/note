@@ -30,7 +30,9 @@ var WebSearchTool = &Tool{
 		},
 		Required: []string{"query"},
 	},
-	Handler: webSearchHandler,
+	EffectScope:   EffectScopeExternal,
+	ActionEffects: effectMap(ToolEffects{DataEgress: true, ExternalCost: true}, ""),
+	Handler:       webSearchHandler,
 }
 
 func init() {

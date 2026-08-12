@@ -42,6 +42,11 @@ var DocumentTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: mergeEffectMaps(
+		effectMap(ToolEffects{LocalRead: true}, "get", "list", "search_docs", "info"),
+		effectMap(ToolEffects{LocalWrite: true}, "create", "delete", "rename", "move", "duplicate"),
+	),
 	Handler: documentHandler,
 }
 

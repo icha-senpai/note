@@ -32,6 +32,13 @@ var SyncTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeMixed,
+	ActionEffects: map[string]ToolEffects{
+		"perform":  {LocalRead: true, LocalWrite: true, DataEgress: true},
+		"upload":   {LocalRead: true, DataEgress: true},
+		"download": {LocalWrite: true, DataEgress: true},
+		"status":   {LocalRead: true},
+	},
 	Handler: syncHandler,
 }
 

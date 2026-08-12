@@ -36,6 +36,11 @@ var RefTool = &Tool{
 		},
 		Required: []string{"action", "id"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: mergeEffectMaps(
+		effectMap(ToolEffects{LocalRead: true}, "backlinks", "mentions"),
+		effectMap(ToolEffects{LocalWrite: true}, "refresh"),
+	),
 	Handler: refHandler,
 }
 

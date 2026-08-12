@@ -33,6 +33,11 @@ var FrontendTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: effectMap(
+		ToolEffects{},
+		"open_setting", "focus_block", "open_document", "open_search",
+	),
 	Handler: frontendHandler,
 }
 

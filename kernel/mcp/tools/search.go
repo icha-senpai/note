@@ -44,7 +44,7 @@ var SearchTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	EffectScope: EffectScopeMixed,
 	ActionEffects: map[string]ToolEffects{
 		"fulltext": {LocalRead: true},
 		"semantic": {LocalRead: true, DataEgress: true, ExternalCost: true},

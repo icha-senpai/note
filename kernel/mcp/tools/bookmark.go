@@ -36,6 +36,11 @@ var BookmarkTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: mergeEffectMaps(
+		effectMap(ToolEffects{LocalRead: true}, "list", "labels"),
+		effectMap(ToolEffects{LocalWrite: true}, "remove", "rename"),
+	),
 	Handler: bookmarkHandler,
 }
 

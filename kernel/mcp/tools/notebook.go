@@ -39,6 +39,12 @@ var NotebookTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: mergeEffectMaps(
+		effectMap(ToolEffects{LocalRead: true}, "list"),
+		effectMap(ToolEffects{LocalStateWrite: true}, "open", "close"),
+		effectMap(ToolEffects{LocalWrite: true}, "create", "rename", "remove", "set_icon", "random_icon"),
+	),
 	Handler: notebookHandler,
 }
 

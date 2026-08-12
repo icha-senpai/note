@@ -41,6 +41,7 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/api"
+	"github.com/icha-senpai/note/kernel/apiroutes"
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/cmd"
 	"github.com/icha-senpai/note/kernel/mcp"
@@ -177,6 +178,7 @@ func Serve(fastMode bool, cookieKey string) {
 	serveCheckAuth(ginServer)
 	serveFixedStaticFiles(ginServer)
 	api.ServeAPI(ginServer)
+	apiroutes.SetFromGinRoutes(ginServer.Routes())
 
 	var host string
 	if model.Conf.System.NetworkServe || util.ContainerDocker == util.Container {

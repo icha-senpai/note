@@ -57,6 +57,11 @@ var DatabaseTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: mergeEffectMaps(
+		effectMap(ToolEffects{LocalRead: true}, "search", "get", "render", "keys", "unused"),
+		effectMap(ToolEffects{LocalWrite: true}, "key_add", "key_remove", "item_add", "item_remove", "item_update", "clean"),
+	),
 	Handler: databaseHandler,
 }
 

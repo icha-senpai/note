@@ -38,17 +38,37 @@ type Tool struct {
 
 	EffectScope string `json:"effectScope,omitempty"`
 
-	ActionEffects map[string]ToolEffects `json:"-"`
+	ActionEffects map[string]ToolEffects                                       `json:"-"`
+	EffectHandler func(args map[string]any, action string) (ToolEffects, bool) `json:"-"`
 
 	Handler        func(args map[string]any) (CallToolResult, error)                      `json:"-"`
 	ContextHandler func(ctx context.Context, args map[string]any) (CallToolResult, error) `json:"-"`
 }
 
 type ToolEffects struct {
-	LocalRead    bool `json:"localRead,omitempty"`
-	LocalWrite   bool `json:"localWrite,omitempty"`
-	DataEgress   bool `json:"dataEgress,omitempty"`
-	ExternalCost bool `json:"externalCost,omitempty"`
+	LocalRead       bool `json:"localRead,omitempty"`
+	LocalWrite      bool `json:"localWrite,omitempty"`
+	LocalStateWrite bool `json:"localStateWrite,omitempty"`
+	DataEgress      bool `json:"dataEgress,omitempty"`
+	ExternalCost    bool `json:"externalCost,omitempty"`
+}
+
+func effectMap(effect ToolEffects, actions ...string) map[string]ToolEffects {
+	result := map[string]ToolEffects{}
+	for _, action := range actions {
+		result[action] = effect
+	}
+	return result
+}
+
+func mergeEffectMaps(groups ...map[string]ToolEffects) map[string]ToolEffects {
+	result := map[string]ToolEffects{}
+	for _, group := range groups {
+		for action, effect := range group {
+			result[action] = effect
+		}
+	}
+	return result
 }
 
 func (t *Tool) EffectsFor(action string) (ToolEffects, bool) {
@@ -57,6 +77,18 @@ func (t *Tool) EffectsFor(action string) (ToolEffects, bool) {
 	}
 	effects, ok := t.ActionEffects[action]
 	return effects, ok
+}
+
+func (t *Tool) EffectsForArgs(args map[string]any, action string) (ToolEffects, bool) {
+	if t == nil {
+		return ToolEffects{}, false
+	}
+	if t.EffectHandler != nil {
+		if effects, ok := t.EffectHandler(args, action); ok {
+			return effects, true
+		}
+	}
+	return t.EffectsFor(action)
 }
 
 type ToolSchema struct {

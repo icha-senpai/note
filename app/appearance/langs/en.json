@@ -638,6 +638,7 @@
   "snippetsTip": "The code snippet has been updated, do you want to save it?",
   "addBelowAbove": "Click <span class='ft__on-surface'>Add below</span><br>⌥Click <span class='ft__on-surface'>Add above</span>",
   "imported": "Import completed",
+  "dropImportUnsupported": "Unsupported import file: ${x}",
   "mirrorTip": "Mirror database, all data updates will be synchronized to all other mirrors",
   "includeTime": "Include time",
   "goToTab1": "Go to tab #1",

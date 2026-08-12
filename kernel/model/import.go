@@ -1607,12 +1607,52 @@ func ImportEbookFromLocalPath(boxID, localPath, toPath string) error {
 	return ImportFromLocalPath(boxID, importDir, toPath)
 }
 
+func ImportDocumentFromLocalPath(boxID, localPath, toPath string) error {
+	ext := strings.ToLower(filepath.Ext(localPath))
+	if !isSupportedDocumentImportExt(ext) {
+		return fmt.Errorf("unsupported document format [%s]", ext)
+	}
+	if !gulu.File.IsExist(localPath) {
+		return fmt.Errorf("document file [%s] not found", localPath)
+	}
+
+	importDir, err := convertDocumentToMarkdownImportDir(localPath)
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(importDir)
+
+	return ImportFromLocalPath(boxID, importDir, toPath)
+}
+
 func isSupportedEbookImportExt(ext string) bool {
 	switch ext {
 	case ".epub", ".mobi", ".azw", ".azw3":
 		return true
 	default:
 		return false
+	}
+}
+
+func isSupportedDocumentImportExt(ext string) bool {
+	_, ok := pandocDocumentImportFormat(ext)
+	return ok
+}
+
+func pandocDocumentImportFormat(ext string) (string, bool) {
+	switch strings.ToLower(ext) {
+	case ".docx":
+		return "docx", true
+	case ".html", ".htm":
+		return "html", true
+	case ".odt":
+		return "odt", true
+	case ".rtf":
+		return "rtf", true
+	case ".txt":
+		return "markdown", true
+	default:
+		return "", false
 	}
 }
 
@@ -1668,6 +1708,54 @@ func convertEPUBToMarkdownImportDir(epubPath string) (string, error) {
 		_ = os.RemoveAll(importDir)
 		logging.LogErrorf("convert EPUB import [%s] failed: %s", epubPath, msg)
 		return "", fmt.Errorf("convert EPUB import failed: %s", msg)
+	}
+	return importDir, nil
+}
+
+func convertDocumentToMarkdownImportDir(documentPath string) (string, error) {
+	if !util.IsValidPandocBin(Conf.Export.PandocBin) {
+		Conf.Export.PandocBin = util.PandocBinPath
+		if !util.IsValidPandocBin(Conf.Export.PandocBin) {
+			return "", errors.New(Conf.Language(115))
+		}
+	}
+
+	format, ok := pandocDocumentImportFormat(filepath.Ext(documentPath))
+	if !ok {
+		return "", fmt.Errorf("unsupported document format [%s]", filepath.Ext(documentPath))
+	}
+
+	importDir := filepath.Join(util.TempDir, "import", "document", gulu.Rand.String(7))
+	if err := os.MkdirAll(importDir, 0755); err != nil {
+		return "", err
+	}
+
+	documentName := util.FilterFileName(strings.TrimSuffix(filepath.Base(documentPath), filepath.Ext(documentPath)))
+	if "" == documentName {
+		documentName = "document"
+	}
+	outputPath := filepath.Join(importDir, documentName+".md")
+	args := []string{
+		documentPath,
+		"--from", format,
+		"--to", "gfm+footnotes+hard_line_breaks",
+		"--extract-media", "assets",
+		"-s",
+		"-o", outputPath,
+	}
+
+	cmd := exec.Command(Conf.Export.PandocBin, args...)
+	gulu.CmdAttr(cmd)
+	cmd.Dir = importDir
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		msg := gulu.DecodeCmdOutput(output)
+		if msg == "" {
+			msg = err.Error()
+		}
+		_ = os.RemoveAll(importDir)
+		logging.LogErrorf("convert document import [%s] failed: %s", documentPath, msg)
+		return "", fmt.Errorf("convert document import failed: %s", msg)
 	}
 	return importDir, nil
 }

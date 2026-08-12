@@ -36,7 +36,9 @@ var ImportTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	Handler: importHandler,
+	EffectScope:   EffectScopeLocal,
+	ActionEffects: effectMap(ToolEffects{LocalRead: true, LocalWrite: true}, "md", "sy", "data"),
+	Handler:       importHandler,
 }
 
 func init() {

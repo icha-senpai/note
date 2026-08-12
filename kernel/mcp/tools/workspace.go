@@ -33,7 +33,9 @@ var WorkspaceTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	Handler: workspaceHandler,
+	EffectScope:   EffectScopeLocal,
+	ActionEffects: effectMap(ToolEffects{LocalRead: true}, "list", "info"),
+	Handler:       workspaceHandler,
 }
 
 func init() {

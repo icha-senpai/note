@@ -28,7 +28,9 @@ import {
 import {App} from "../../index";
 import {refreshFileTree} from "../../dialog/processSystem";
 /// #if !BROWSER
-import {ipcRenderer} from "electron";
+import {ipcRenderer, webUtils} from "electron";
+import * as fs from "fs";
+import * as nodePath from "path";
 /// #endif
 import {hideTooltip, showTooltip} from "../../dialog/tooltip";
 import {selectOpenTab} from "./util";
@@ -39,6 +41,29 @@ import {
     expandFileTree,
     isFileTreeCollapsing
 } from "./fileTreeAnimation";
+
+/// #if !BROWSER
+const getLocalFileImportEndpoint = (localPath: string) => {
+    const ext = nodePath.extname(localPath).toLowerCase();
+    if ([".md", ".markdown"].includes(ext)) {
+        return "/api/import/importStdMd";
+    }
+    if ([".docx", ".html", ".htm", ".odt", ".rtf", ".txt"].includes(ext)) {
+        return "/api/import/importDocument";
+    }
+    if ([".epub", ".mobi", ".azw", ".azw3"].includes(ext)) {
+        return "/api/import/importEbook";
+    }
+    try {
+        if (fs.statSync(localPath).isDirectory()) {
+            return "/api/import/importStdMd";
+        }
+    } catch (e) {
+        console.warn("stat local import path failed [" + e + "]");
+    }
+    return "";
+};
+/// #endif
 
 export class Files extends Model {
     public element: HTMLElement;
@@ -505,7 +530,9 @@ export class Files extends Model {
             /// #endif
         });
         this.element.addEventListener("dragover", (event: DragEvent & { target: HTMLElement }) => {
-            if (window.scribli.config.readonly || !window.scribli.dragElement || event.dataTransfer.types.includes(Constants.SCRIBLI_DROP_TAB)) {
+            const isLocalFileImportDrop = !window.scribli.dragElement && event.dataTransfer.types.includes("Files");
+            if (window.scribli.config.readonly || event.dataTransfer.types.includes(Constants.SCRIBLI_DROP_TAB) ||
+                (!window.scribli.dragElement && !isLocalFileImportDrop)) {
                 event.preventDefault();
                 return;
             }
@@ -534,6 +561,21 @@ export class Files extends Model {
                 if (!liElement) {
                     dragOverLastObj.element = null;
                     hideDragTip();
+                    event.preventDefault();
+                    return;
+                }
+                if (isLocalFileImportDrop) {
+                    if (dragOverLastObj.element !== liElement) {
+                        dragOverLastObj.element?.classList.remove("dragover", "dragover__bottom", "dragover__top");
+                    }
+                    liElement.classList.remove("dragover__top", "dragover__bottom");
+                    liElement.classList.add("dragover");
+                    dragOverLastObj.element = liElement;
+                    dragOverLastObj.positionY = event.clientY;
+                    const name = liElement.querySelector(".b3-list-item__text")?.textContent || "";
+                    const fileCount = event.dataTransfer.files.length;
+                    const title = fileCount > 1 ? `${fileCount} files` : event.dataTransfer.files[0]?.name || "";
+                    showDragTip(title, `${window.scribli.languages.import} ${name}`, event.clientX, event.clientY);
                     event.preventDefault();
                     return;
                 }
@@ -667,6 +709,44 @@ export class Files extends Model {
             const oldScrollTop = this.element.scrollTop;
             const toURL = newUlElement.getAttribute("data-url");
             const toPath = newElement.getAttribute("data-path");
+            if (!window.scribli.dragElement && event.dataTransfer.types.includes("Files")) {
+                event.preventDefault();
+                /// #if !BROWSER
+                let importedCount = 0;
+                const unsupportedNames: string[] = [];
+                for (let i = 0; i < event.dataTransfer.files.length; i++) {
+                    const file = event.dataTransfer.files[i];
+                    const localPath = webUtils.getPathForFile(file);
+                    if (!localPath) {
+                        unsupportedNames.push(file.name);
+                        continue;
+                    }
+                    const endpoint = getLocalFileImportEndpoint(localPath);
+                    if (!endpoint) {
+                        unsupportedNames.push(file.name);
+                        continue;
+                    }
+                    const response = await fetchSyncPost(endpoint, {
+                        notebook: toURL,
+                        localPath,
+                        toPath,
+                    });
+                    if (response?.code === 0) {
+                        importedCount++;
+                    }
+                }
+                if (importedCount > 0) {
+                    newElement.querySelector(".b3-list-item__toggle")?.classList.remove("fn__hidden");
+                    this.getLeaf(newElement, toURL, true);
+                    showMessage(window.scribli.languages.imported);
+                }
+                if (unsupportedNames.length > 0) {
+                    showMessage(window.scribli.languages.dropImportUnsupported.replace("${x}", unsupportedNames.join(", ")), 0, "error");
+                }
+                /// #endif
+                newElement.classList.remove("dragover", "dragover__bottom", "dragover__top");
+                return;
+            }
             let gutterType = "";
             for (const item of event.dataTransfer.items) {
                 if (item.type.startsWith(Constants.SCRIBLI_DROP_GUTTER)) {

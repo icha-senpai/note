@@ -49,7 +49,9 @@ var QuestionTool = &Tool{
 		},
 		Required: []string{"questions"},
 	},
-	Handler: questionHandler,
+	EffectScope:   EffectScopeLocal,
+	ActionEffects: effectMap(ToolEffects{}, ""),
+	Handler:       questionHandler,
 }
 
 func init() {

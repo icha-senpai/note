@@ -44,6 +44,11 @@ var BlockTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: mergeEffectMaps(
+		effectMap(ToolEffects{LocalRead: true}, "get", "get_kramdown", "get_children", "tree_stat", "dom", "breadcrumb", "batch_get", "batch_kramdown"),
+		effectMap(ToolEffects{LocalWrite: true}, "insert", "append", "prepend", "update", "delete", "move"),
+	),
 	Handler: blockHandler,
 }
 

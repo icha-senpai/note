@@ -43,7 +43,9 @@ var TodoWriteTool = &Tool{
 		},
 		Required: []string{"todos"},
 	},
-	Handler: todoWriteHandler,
+	EffectScope:   EffectScopeLocal,
+	ActionEffects: effectMap(ToolEffects{}, ""),
+	Handler:       todoWriteHandler,
 }
 
 func init() {

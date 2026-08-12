@@ -26,3 +26,47 @@ func TestGetAllToolsSorted(t *testing.T) {
 		}
 	}
 }
+
+func TestNativeToolsDeclareEffectMetadata(t *testing.T) {
+	validScopes := map[string]bool{
+		EffectScopeLocal:    true,
+		EffectScopeExternal: true,
+		EffectScopeMixed:    true,
+		EffectScopeUnknown:  true,
+	}
+
+	for _, tool := range GetAllTools() {
+		if tool == nil || (tool.Source != "" && tool.Source != "native") {
+			continue
+		}
+		if !validScopes[tool.EffectScope] {
+			t.Errorf("%s must declare a valid effect scope, got %q", tool.Name, tool.EffectScope)
+		}
+		if len(tool.ActionEffects) == 0 {
+			t.Errorf("%s must declare action effects", tool.Name)
+			continue
+		}
+
+		actionProp, hasAction := tool.InputSchema.Properties["action"]
+		if !hasAction || len(actionProp.Enum) == 0 {
+			continue
+		}
+
+		actionSet := map[string]bool{}
+		for _, action := range actionProp.Enum {
+			actionSet[action] = true
+			if _, ok := tool.EffectsFor(action); !ok {
+				t.Errorf("%s action %q must declare effects", tool.Name, action)
+			}
+		}
+
+		for action := range tool.ActionEffects {
+			if action == "" {
+				continue
+			}
+			if !actionSet[action] && tool.Name != "frontend" {
+				t.Errorf("%s declares effects for unknown action %q", tool.Name, action)
+			}
+		}
+	}
+}

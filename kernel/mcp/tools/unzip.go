@@ -39,7 +39,9 @@ var UnzipTool = &Tool{
 		},
 		Required: []string{"zipPath", "destPath"},
 	},
-	Handler: unzipHandler,
+	EffectScope:   EffectScopeLocal,
+	ActionEffects: effectMap(ToolEffects{LocalRead: true, LocalWrite: true}, ""),
+	Handler:       unzipHandler,
 }
 
 func init() {

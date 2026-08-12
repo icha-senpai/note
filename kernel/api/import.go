@@ -465,6 +465,43 @@ func importStdMd(c *gin.Context) {
 	}
 }
 
+func importDocument(c *gin.Context) {
+	ret := gulu.Ret.NewResult()
+	defer c.JSON(http.StatusOK, ret)
+
+	arg, ok := util.JsonArg(c, ret)
+	if !ok {
+		return
+	}
+
+	notebook := arg["notebook"].(string)
+	localPath := arg["localPath"].(string)
+	toPath := arg["toPath"].(string)
+
+	if gulu.File.IsSubPath(util.WorkingDir, localPath) {
+		msg := fmt.Sprintf("import from local path [%s] failed: local path is sub path of working dir", localPath)
+		logging.LogError(msg)
+		ret.Code = -1
+		ret.Msg = msg
+		return
+	}
+
+	if util.IsSensitivePath(localPath) {
+		msg := fmt.Sprintf("import from local path [%s] failed: local path is sensitive path", localPath)
+		logging.LogError(msg)
+		ret.Code = -1
+		ret.Msg = msg
+		return
+	}
+
+	err := model.ImportDocumentFromLocalPath(notebook, localPath, toPath)
+	if err != nil {
+		ret.Code = -1
+		ret.Msg = err.Error()
+		return
+	}
+}
+
 func importEbook(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)

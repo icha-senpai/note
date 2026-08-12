@@ -36,7 +36,9 @@ var DailynoteTool = &Tool{
 		},
 		Required: []string{"action", "notebook"},
 	},
-	Handler: dailynoteHandler,
+	EffectScope:   EffectScopeLocal,
+	ActionEffects: effectMap(ToolEffects{LocalWrite: true}, "create", "append", "prepend"),
+	Handler:       dailynoteHandler,
 }
 
 func init() {

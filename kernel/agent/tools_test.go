@@ -21,6 +21,8 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/icha-senpai/note/kernel/apiroutes"
 	"github.com/icha-senpai/note/kernel/mcp/tools"
 	"github.com/sashabaranov/go-openai"
 )
@@ -134,14 +136,56 @@ func TestNeedsConfirmScopesReadOnlyActionsByToolSource(t *testing.T) {
 	if !needsConfirm("unzip", "", nil) || !needsLocalSnapshot("unzip", "") {
 		t.Fatal("actionless write tool must require confirmation and create a local snapshot")
 	}
-	if needsConfirm("web_fetch", "", nil) || needsLocalSnapshot("web_fetch", "") {
-		t.Fatal("actionless read-only tool must not require confirmation or create a snapshot")
+	if !needsConfirm("web_fetch", "", nil) || needsLocalSnapshot("web_fetch", "") {
+		t.Fatal("web_fetch must confirm external data access without creating a local snapshot")
 	}
 	if needsConfirm("todo_write", "", nil) || needsLocalSnapshot("todo_write", "") {
 		t.Fatal("agent session todo updates must not require confirmation or create a repository snapshot")
 	}
-	if needsConfirm("http_request", "", nil) || needsLocalSnapshot("http_request", "") {
-		t.Fatal("http_request without an action defaults to a read-only GET")
+	if !needsConfirm("http_request", "", nil) || needsLocalSnapshot("http_request", "") {
+		t.Fatal("http_request without an action must confirm external data access without creating a local snapshot")
+	}
+}
+
+func TestLocalStateEffectsConfirmWithoutSnapshot(t *testing.T) {
+	for _, test := range []struct {
+		toolName string
+		action   string
+	}{
+		{toolName: "export", action: "md"},
+		{toolName: "repo", action: "create"},
+		{toolName: "notebook", action: "open"},
+	} {
+		if !needsConfirm(test.toolName, test.action, nil) {
+			t.Errorf("%s::%s must require confirmation", test.toolName, test.action)
+		}
+		if needsLocalSnapshot(test.toolName, test.action) {
+			t.Errorf("%s::%s must not create a repository snapshot", test.toolName, test.action)
+		}
+	}
+}
+
+func TestAPICallDynamicEffects(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	server := gin.New()
+	server.POST("/api/block/getBlockKramdown", func(c *gin.Context) {})
+	server.POST("/api/block/updateBlock", func(c *gin.Context) {})
+	server.POST("/api/export/exportMd", func(c *gin.Context) {})
+	apiroutes.SetFromGinRoutes(server.Routes())
+
+	readArgs := map[string]any{"method": "POST", "path": "/api/block/getBlockKramdown"}
+	if needsConfirmForArgs("api_call", "", readArgs, nil) || needsLocalSnapshotForArgs("api_call", "", readArgs) {
+		t.Fatal("read-only api_call route must not require confirmation or create a snapshot")
+	}
+
+	writeArgs := map[string]any{"method": "POST", "path": "/api/block/updateBlock"}
+	if !needsConfirmForArgs("api_call", "", writeArgs, nil) || !needsLocalSnapshotForArgs("api_call", "", writeArgs) {
+		t.Fatal("workspace-writing api_call route must require confirmation and create a snapshot")
+	}
+
+	exportArgs := map[string]any{"method": "POST", "path": "/api/export/exportMd"}
+	if !needsConfirmForArgs("api_call", "", exportArgs, nil) || needsLocalSnapshotForArgs("api_call", "", exportArgs) {
+		t.Fatal("state-writing api_call route must require confirmation without creating a snapshot")
 	}
 }
 

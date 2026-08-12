@@ -33,7 +33,9 @@ var SystemTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	Handler: systemHandler,
+	EffectScope:   EffectScopeLocal,
+	ActionEffects: effectMap(ToolEffects{LocalRead: true}, "version", "current_time", "workspace"),
+	Handler:       systemHandler,
 }
 
 func init() {

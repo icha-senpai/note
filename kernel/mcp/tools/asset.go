@@ -39,6 +39,11 @@ var AssetTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: mergeEffectMaps(
+		effectMap(ToolEffects{LocalRead: true}, "unused", "stat"),
+		effectMap(ToolEffects{LocalRead: true, LocalWrite: true}, "upload", "clean"),
+	),
 	Handler: assetHandler,
 }
 

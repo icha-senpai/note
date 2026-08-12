@@ -18,6 +18,9 @@ app/Scribli-Kernel
 kernel/.cache/
 kernel/.codex-*/
 kernel/.codex-smoke*/
+**/.cache/
+**/.codex-*/
+**/.codex-smoke*/
 ios
 pprof
 

@@ -31,7 +31,9 @@ var WebFetchTool = &Tool{
 		},
 		Required: []string{"url"},
 	},
-	Handler: webFetchHandler,
+	EffectScope:   EffectScopeExternal,
+	ActionEffects: effectMap(ToolEffects{DataEgress: true}, ""),
+	Handler:       webFetchHandler,
 }
 
 func init() {

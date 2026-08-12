@@ -34,6 +34,11 @@ var ExportTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: effectMap(
+		ToolEffects{LocalRead: true, LocalStateWrite: true},
+		"md", "html", "preview", "docx", "sy", "md-zip", "data",
+	),
 	Handler: exportHandler,
 }
 

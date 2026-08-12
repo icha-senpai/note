@@ -43,6 +43,12 @@ var RepoTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	EffectScope: EffectScopeLocal,
+	ActionEffects: mergeEffectMaps(
+		effectMap(ToolEffects{LocalRead: true}, "list", "diff", "search", "file_get", "file_open"),
+		effectMap(ToolEffects{LocalStateWrite: true}, "create", "tag", "untag", "purge", "file_export"),
+		effectMap(ToolEffects{LocalWrite: true}, "checkout", "file_rollback"),
+	),
 	Handler: repoHandler,
 }
 

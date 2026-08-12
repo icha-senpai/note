@@ -46,7 +46,8 @@ var HTTPRequestTool = &Tool{
 		},
 		Required: []string{"url"},
 	},
-	Handler: httpRequestHandler,
+	ActionEffects: effectMap(ToolEffects{DataEgress: true}, "", "get", "post", "put", "delete", "patch"),
+	Handler:       httpRequestHandler,
 }
 
 func init() {

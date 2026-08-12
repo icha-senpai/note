@@ -775,13 +775,13 @@ func AgentChat(ctx context.Context, client *openai.Client, model string, session
 						Arguments: args,
 					})
 
-					if needsConfirm(tc.Function.Name, action, alwaysAllow) {
+					if needsConfirmForArgs(tc.Function.Name, action, args, alwaysAllow) {
 						confirmID := fmt.Sprintf("%s_%s_%d", turn.TurnID, tc.ID, i)
 						ch2 := make(chan confirmResult, 1)
 						confirmChannelsMu.Lock()
 						confirmChannels[confirmID] = ch2
 						confirmChannelsMu.Unlock()
-						effects, _ := mcptools.GetTool(tc.Function.Name).EffectsFor(action)
+						effects, _ := mcptools.GetTool(tc.Function.Name).EffectsForArgs(args, action)
 						sendCriticalEvent(ctx, ch, AgentEvent{
 							Type: "confirm", Name: tc.Function.Name, Arguments: args, ConfirmID: confirmID, Effects: effects,
 						})
@@ -866,7 +866,7 @@ func AgentChat(ctx context.Context, client *openai.Client, model string, session
 					default:
 					}
 
-					if !snapshotCreated && needsLocalSnapshot(tc.Function.Name, action) {
+					if !snapshotCreated && needsLocalSnapshotForArgs(tc.Function.Name, action, args) {
 						id, err := kernelModel.IndexRepo("AI agent auto snapshot")
 						if err != nil {
 							logging.LogErrorf("agent auto snapshot failed: %s", err)
@@ -1085,6 +1085,10 @@ var safeWholeTools = map[string]bool{
 }
 
 func needsConfirm(toolName string, action string, alwaysAllow map[string]bool) bool {
+	return needsConfirmForArgs(toolName, action, nil, alwaysAllow)
+}
+
+func needsConfirmForArgs(toolName string, action string, args map[string]any, alwaysAllow map[string]bool) bool {
 	if alwaysAllow["*"] {
 		return false
 	}
@@ -1092,8 +1096,8 @@ func needsConfirm(toolName string, action string, alwaysAllow map[string]bool) b
 	if alwaysAllow[toolName+"::"+action] {
 		return false
 	}
-	if effects, ok := tool.EffectsFor(action); ok {
-		return effects.LocalWrite || effects.DataEgress || effects.ExternalCost
+	if effects, ok := tool.EffectsForArgs(args, action); ok {
+		return effects.LocalWrite || effects.LocalStateWrite || effects.DataEgress || effects.ExternalCost
 	}
 	if tool != nil && tool.Source != "" && tool.Source != "native" {
 
@@ -1121,8 +1125,12 @@ func needsConfirm(toolName string, action string, alwaysAllow map[string]bool) b
 }
 
 func needsLocalSnapshot(toolName, action string) bool {
+	return needsLocalSnapshotForArgs(toolName, action, nil)
+}
+
+func needsLocalSnapshotForArgs(toolName, action string, args map[string]any) bool {
 	tool := mcptools.GetTool(toolName)
-	if effects, ok := tool.EffectsFor(action); ok {
+	if effects, ok := tool.EffectsForArgs(args, action); ok {
 		return effects.LocalWrite
 	}
 	if toolName == "http_request" && action == "" {

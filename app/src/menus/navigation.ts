@@ -753,6 +753,31 @@ export const genImportMenu = (notebookId: string, pathString: string) => {
             }
         };
     };
+    const importDocument = () => {
+        return {
+            id: "importDocument",
+            icon: "iconDocx",
+            label: "Document (.docx, .html, .rtf, .odt, .txt)",
+            click: async () => {
+                const localPath = await ipcRenderer.invoke(Constants.SCRIBLI_GET, {
+                    cmd: "showOpenDialog",
+                    defaultPath: window.scribli.config.system.homeDir,
+                    filters: [{name: "Document", extensions: ["docx", "html", "htm", "rtf", "odt", "txt"]}],
+                    properties: ["openFile"],
+                });
+                if (localPath.filePaths.length === 0) {
+                    return;
+                }
+                fetchPost("/api/import/importDocument", {
+                    notebook: notebookId,
+                    localPath: localPath.filePaths[0],
+                    toPath: pathString,
+                }, () => {
+                    reloadDocTree();
+                });
+            }
+        };
+    };
     /// #endif
     window.scribli.menus.menu.append(new MenuItem({
         id: "import",
@@ -798,6 +823,7 @@ export const genImportMenu = (notebookId: string, pathString: string) => {
             /// #if !BROWSER
             importstdmd("Markdown " + window.scribli.languages.doc, true),
             importstdmd("Markdown " + window.scribli.languages.folder),
+            importDocument(),
             importEbook()
             /// #endif
         ],

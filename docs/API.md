@@ -2,6 +2,8 @@
 
 <!-- markdownlint-disable MD013 MD031 MD033 MD060 -->
 
+This hand-written reference documents a stable subset of Scribli's HTTP API. For the current live API/MCP coverage boundary and route-family counts, see [Scribli API and MCP Surface](API-MCP-SURFACE.md).
+
 * [Specification](#specification)
   * [Parameters and return values](#parameters-and-return-values)
   * [Authentication](#authentication)

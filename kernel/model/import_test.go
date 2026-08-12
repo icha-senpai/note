@@ -38,3 +38,33 @@ func TestIsSYNotebookExport(t *testing.T) {
 		})
 	}
 }
+
+func TestPandocDocumentImportFormat(t *testing.T) {
+	tests := []struct {
+		ext        string
+		wantFormat string
+		wantOK     bool
+	}{
+		{ext: ".docx", wantFormat: "docx", wantOK: true},
+		{ext: ".HTML", wantFormat: "html", wantOK: true},
+		{ext: ".htm", wantFormat: "html", wantOK: true},
+		{ext: ".odt", wantFormat: "odt", wantOK: true},
+		{ext: ".rtf", wantFormat: "rtf", wantOK: true},
+		{ext: ".txt", wantFormat: "markdown", wantOK: true},
+		{ext: ".pdf", wantOK: false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.ext, func(t *testing.T) {
+			gotFormat, gotOK := pandocDocumentImportFormat(test.ext)
+			if gotFormat != test.wantFormat || gotOK != test.wantOK {
+				t.Fatalf("pandocDocumentImportFormat(%q) = (%q, %v), want (%q, %v)",
+					test.ext, gotFormat, gotOK, test.wantFormat, test.wantOK)
+			}
+			if isSupportedDocumentImportExt(test.ext) != test.wantOK {
+				t.Fatalf("isSupportedDocumentImportExt(%q) = %v, want %v",
+					test.ext, isSupportedDocumentImportExt(test.ext), test.wantOK)
+			}
+		})
+	}
+}

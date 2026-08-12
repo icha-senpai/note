@@ -24,54 +24,20 @@
             height: 100%;
         }
 
-        #bg svg {
+        #bootLogo {
             width: 24vh;
             height: 24vh;
             align-self: center;
+            object-fit: contain;
         }
 
-        /* Diagonal light streaks converge toward the logo after kernel progress reaches 15%, then fade out. */
-        #bg svg .streak {
+        #bootLogo {
             opacity: 0;
-            transform-box: fill-box;
-            transform-origin: center;
-        }
-
-        #bg svg.started .streak {
-            animation: bootStreakConverge 2.5s cubic-bezier(0.33, 0, 0.2, 1) var(--delay, 0s) forwards,
-                       bootStreakFade 0.85s ease 2.2s forwards;
-        }
-
-        @keyframes bootStreakConverge {
-            0% {
-                opacity: 0;
-                transform: translate(var(--dx, 0), var(--dy, 0));
-            }
-            20% {
-                opacity: 0.9;
-            }
-            100% {
-                opacity: 0.9;
-                transform: translate(0, 0);
-            }
-        }
-
-        @keyframes bootStreakFade {
-            to {
-                opacity: 0;
-            }
-        }
-
-        /* Logo fragments fade in near the end of the streak animation and then hold still. */
-        #bg svg .logo path {
-            opacity: 0;
-            transform-box: fill-box;
-            transform-origin: center;
             transform: scale(0.94);
         }
 
-        #bg svg.started .logo path {
-            animation: bootLogoForm 1s cubic-bezier(0.22, 1, 0.36, 1) 2.1s forwards;
+        #bootLogo.started {
+            animation: bootLogoForm 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         @keyframes bootLogoForm {
@@ -124,15 +90,7 @@
 </head>
 <body>
 <div id="bg">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-        <g class="streaks"></g>
-        <g class="logo">
-            <path fill="#d23f31" d="M37.052 371.676l269.857-269.857v550.507l-269.857 269.857z"></path>
-            <path fill="#3b3e43" d="M306.909 101.818l205.091 205.091v550.507l-205.091-205.091z"></path>
-            <path fill="#d23f31" d="M512 306.909l205.091-205.091v550.507l-205.091 205.091z"></path>
-            <path fill="#3b3e43" d="M717.091 101.818l269.857 269.857v550.507l-269.857-269.857z"></path>
-        </g>
-    </svg>
+    <img id="bootLogo" src="icon.png" alt="">
 </div>
 <div id="progressWrap">
     <div id="progressTrack"></div>
@@ -165,63 +123,16 @@
         // Random base progress (15-25); fill to this value smoothly while waiting for kernel progress.
         const baseProgress = 15 + Math.random() * 10
 
-        // Create diagonal light streaks along the logo fold edges so they outline the logo when converged.
-        const streaksG = document.querySelector("#bg svg .streaks");
-        if (streaksG) {
-            const svgNS = "http://www.w3.org/2000/svg";
-            const edges = [
-                {x1: 37, y1: 372, x2: 307, y2: 102, color: "#d23f31"},
-                {x1: 37, y1: 922, x2: 307, y2: 652, color: "#d23f31"},
-                {x1: 307, y1: 102, x2: 512, y2: 307, color: "#3b3e43"},
-                {x1: 307, y1: 652, x2: 512, y2: 857, color: "#3b3e43"},
-                {x1: 512, y1: 307, x2: 717, y2: 102, color: "#d23f31"},
-                {x1: 512, y1: 857, x2: 717, y2: 652, color: "#d23f31"},
-                {x1: 717, y1: 102, x2: 987, y2: 372, color: "#3b3e43"},
-                {x1: 717, y1: 652, x2: 987, y2: 922, color: "#3b3e43"},
-            ];
-            const perEdge = 12;
-            edges.forEach((e) => {
-                for (let i = 0; i < perEdge; i++) {
-                    const t = (i + 0.5) / perEdge + (Math.random() - 0.5) * 0.08;
-                    const ex = e.x1 + (e.x2 - e.x1) * t;
-                    const ey = e.y1 + (e.y2 - e.y1) * t;
-                    const len = 60 + Math.random() * 80;
-                    const ux = (e.x2 - e.x1);
-                    const uy = (e.y2 - e.y1);
-                    const ul = Math.sqrt(ux * ux + uy * uy);
-                    const sx = ex - ux / ul * len;
-                    const sy = ey - uy / ul * len;
-                    const line = document.createElementNS(svgNS, "line");
-                    line.setAttribute("x1", sx);
-                    line.setAttribute("y1", sy);
-                    line.setAttribute("x2", ex);
-                    line.setAttribute("y2", ey);
-                    line.setAttribute("stroke", e.color);
-                    line.setAttribute("stroke-width", 3 + Math.random() * 3);
-                    line.setAttribute("stroke-linecap", "round");
-                    line.setAttribute("class", "streak");
-                    line.style.filter = "drop-shadow(0 0 4px rgba(210,63,49,.5))";
-                    const angle = Math.random() * Math.PI * 2;
-                    const dist = 600 + Math.random() * 800;
-                    line.style.setProperty("--dx", Math.cos(angle) * dist + "px");
-                    line.style.setProperty("--dy", Math.sin(angle) * dist + "px");
-                    line.style.setProperty("--delay", (Math.random() * 0.6) + "s");
-                    streaksG.appendChild(line);
-                }
-            });
-        }
-
         // Keep displayed progress monotonic so early kernel values below the base do not rewind the bar.
         let currentDisplay = 0
-        const bgSvg = document.querySelector("#bg svg")
+        const bootLogo = document.getElementById("bootLogo")
         let animStart = 0
         const setProgress = (target) => {
             if (target > currentDisplay) {
                 currentDisplay = target
                 progressEl.style.width = target + '%'
-                // Trigger the logo convergence animation when displayed progress reaches 15%.
-                if (bgSvg && !bgSvg.classList.contains("started") && currentDisplay >= 15) {
-                    bgSvg.classList.add("started")
+                if (bootLogo && !bootLogo.classList.contains("started") && currentDisplay >= 15) {
+                    bootLogo.classList.add("started")
                     animStart = Date.now()
                 }
             }
@@ -246,17 +157,15 @@
                     progressing = true
                     es.close()
                     // Once the kernel finishes, fast-forward the remaining animation to the final state.
-                    if (animStart > 0) {
-                        const animTotalMs = 3100
+                    if (animStart > 0 && bootLogo) {
+                        const animTotalMs = 800
                         const elapsed = Date.now() - animStart
                         const remaining = animTotalMs - elapsed
                         if (remaining > 0) {
                             // Use a very short finish window (200ms) to fast-forward to the final state.
                             const rate = remaining / 200
-                            bgSvg.querySelectorAll(".streak, .logo path").forEach((el) => {
-                                el.getAnimations().forEach((a) => {
-                                    a.playbackRate = rate
-                                })
+                            bootLogo.getAnimations().forEach((a) => {
+                                a.playbackRate = rate
                             })
                         }
                     }
