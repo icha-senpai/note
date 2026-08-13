@@ -14,7 +14,7 @@ import {transaction} from "../wysiwyg/transaction";
 import {getAssetName, getDisplayName, isEncryptedBox, pathPosix} from "../../util/pathName";
 import {genEmptyElement} from "../../block/util";
 import {updateListOrder} from "../wysiwyg/list";
-import {escapeHtml} from "../../util/escape";
+import {escapeHtml, stripSearchMark} from "../../util/escape";
 import {zoomOut} from "../../menus/protyle";
 import {hideElements} from "../ui/hideElements";
 import {genAssetHTML} from "../../asset/renderAssets";
@@ -484,11 +484,12 @@ export const hintRef = (key: string, protyle: IProtyle, source: THintSource): IH
             });
         }
         response.data.blocks.forEach((item: IBlock) => {
-            let value = `<span data-type="block-ref" data-id="${item.id}" data-subtype="d">${item.name || item.refText.replace(new RegExp(Constants.ZWSP, "g"), "")}</span>`;
+            const name = item.name ? stripSearchMark(item.name) : item.refText.replace(new RegExp(Constants.ZWSP, "g"), "");
+            let value = `<span data-type="block-ref" data-id="${item.id}" data-subtype="d">${name}</span>`;
             if (source === "search") {
-                value = `<span data-type="block-ref" data-id="${item.id}" data-subtype="s">${key}${Constants.ZWSP}${item.name || item.refText.replace(new RegExp(Constants.ZWSP, "g"), "")}</span>`;
+                value = `<span data-type="block-ref" data-id="${item.id}" data-subtype="s">${key}${Constants.ZWSP}${name}</span>`;
             } else if (source === "av") {
-                let refText = item.name || item.refText.replace(new RegExp(Constants.ZWSP, "g"), "");
+                let refText = name;
                 if (nodeElement) {
                     refText = item.ial["custom-sy-av-s-text-" + nodeElement.getAttribute("data-av-id")] || refText;
                 }

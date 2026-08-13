@@ -17,9 +17,12 @@
 package model
 
 import (
+	gosql "database/sql"
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/icha-senpai/note/kernel/conf"
 )
 
 func TestValidEmbedBlockIDs(t *testing.T) {
@@ -177,8 +180,11 @@ func TestBuildRefUsedOrderByEmpty(t *testing.T) {
 }
 
 func TestBuildOrderByPrioritizesExactDocumentAndHeading(t *testing.T) {
+	setSearchCaseSensitive(t, true)
 	orderBy := buildOrderBy("math", 0, 0)
 	assertOrderBySequence(t, orderBy,
+		"name = 'math'",
+		"instr(',' || alias || ',', ',math,') > 0",
 		"content = 'math' AND type = 'd'",
 		"content LIKE '%math%' AND type = 'd'",
 		"content = 'math' AND type = 'h'",
@@ -200,10 +206,160 @@ func TestBuildOrderByPrioritizesExactDocumentAndHeading(t *testing.T) {
 }
 
 func TestBuildOrderByEscapesKeyword(t *testing.T) {
+	setSearchCaseSensitive(t, true)
 	orderBy := buildOrderBy("O'Reilly", 0, 7)
 	if !strings.Contains(orderBy, "content = 'O''Reilly'") {
 		t.Fatalf("keyword was not escaped correctly in order clause: %q", orderBy)
 	}
+}
+
+func TestBuildExactSearchOrderConditionEscapesKeyword(t *testing.T) {
+	setSearchCaseSensitive(t, true)
+	condition := buildExactSearchOrderCondition("content", "O'Reilly%_\\")
+	if expected := "content = 'O''Reilly%_\\'"; expected != condition {
+		t.Fatalf("case-sensitive exact condition mismatch: got %q, want %q", condition, expected)
+	}
+
+	Conf.Search.CaseSensitive = false
+	condition = buildExactSearchOrderCondition("content", "O'Reilly%_\\")
+	if expected := "content LIKE 'O''Reilly\\%\\_\\\\' ESCAPE '\\'"; expected != condition {
+		t.Fatalf("case-insensitive exact condition mismatch: got %q, want %q", condition, expected)
+	}
+}
+
+func TestBuildOrderByPrioritizesCaseInsensitiveExactMatches(t *testing.T) {
+	setSearchCaseSensitive(t, false)
+
+	orderBy := buildOrderBy("seo", 0, 0)
+	assertOrderBySequence(t, orderBy,
+		"name LIKE 'seo' ESCAPE '\\'",
+		"(',' || alias || ',') LIKE '%,seo,%' ESCAPE '\\'",
+		"content LIKE 'seo' ESCAPE '\\' AND type = 'd'",
+		"content LIKE '%seo%' AND type = 'd'",
+		"content LIKE 'seo' ESCAPE '\\' AND type = 'h'",
+		"content LIKE '%seo%' AND type = 'h'",
+		"sort ASC",
+	)
+
+	orderBy = buildOrderBy("seo", 0, 7)
+	assertOrderBySequence(t, orderBy,
+		"content LIKE 'seo' ESCAPE '\\' AND type = 'd'",
+		"content LIKE 'seo' ESCAPE '\\' AND type = 'h'",
+		"rank",
+	)
+
+	orderBy = buildOrderBy("seo", 0, 6)
+	if strings.Contains(orderBy, "content LIKE 'seo'") {
+		t.Fatalf("ascending relevance should not put exact matches first: %q", orderBy)
+	}
+}
+
+func TestBuildOrderByRanksCaseInsensitiveExactContentFirst(t *testing.T) {
+	setSearchCaseSensitive(t, false)
+	testDB, err := gosql.Open("sqlite3_extended", ":memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		testDB.Close()
+	})
+	if _, err = testDB.Exec("CREATE TABLE blocks (name TEXT, alias TEXT, content TEXT, type TEXT, sort INTEGER, updated TEXT)"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = testDB.Exec("INSERT INTO blocks VALUES ('', '', 'Learn seo', 'd', 0, ''), ('', '', 'SEO', 'd', 1, '')"); err != nil {
+		t.Fatal(err)
+	}
+
+	row := testDB.QueryRow("SELECT content FROM blocks " + buildOrderBy("seo", 0, 0) + " LIMIT 1")
+	var content string
+	if err = row.Scan(&content); err != nil {
+		t.Fatal(err)
+	}
+	if content != "SEO" {
+		t.Fatalf("case-insensitive exact content should rank first: %q", content)
+	}
+}
+
+func TestBuildOrderByRanksExactAliasSegmentFirst(t *testing.T) {
+	setSearchCaseSensitive(t, false)
+	testDB, err := gosql.Open("sqlite3_extended", ":memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		testDB.Close()
+	})
+	if _, err = testDB.Exec("CREATE TABLE blocks (name TEXT, alias TEXT, content TEXT, type TEXT, sort INTEGER, updated TEXT)"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = testDB.Exec("INSERT INTO blocks VALUES ('', '', 'SEO Guide', 'd', 0, ''), ('', 'AS,SEO', 'Other', 'd', 1, '')"); err != nil {
+		t.Fatal(err)
+	}
+
+	row := testDB.QueryRow("SELECT content FROM blocks " + buildOrderBy("seo", 0, 0) + " LIMIT 1")
+	var content string
+	if err = row.Scan(&content); err != nil {
+		t.Fatal(err)
+	}
+	if content != "Other" {
+		t.Fatalf("exact alias segment should rank before partial document content: %q", content)
+	}
+}
+
+func TestBuildExactAliasSearchOrderCondition(t *testing.T) {
+	tests := []struct {
+		name          string
+		caseSensitive bool
+		alias         string
+		query         string
+		matched       bool
+	}{
+		{name: "single alias", caseSensitive: true, alias: "technical", query: "technical", matched: true},
+		{name: "first alias", caseSensitive: true, alias: "technical,writing", query: "technical", matched: true},
+		{name: "middle alias", caseSensitive: true, alias: "docs,technical,writing", query: "technical", matched: true},
+		{name: "last alias", caseSensitive: true, alias: "docs,technical", query: "technical", matched: true},
+		{name: "partial alias", caseSensitive: true, alias: "technical-writing", query: "technical", matched: false},
+		{name: "case sensitive mismatch", caseSensitive: true, alias: "SEO", query: "seo", matched: false},
+		{name: "case insensitive match", alias: "AS,SEO", query: "seo", matched: true},
+		{name: "escaped wildcard and backslash", alias: `other,100%_\\path,tail`, query: `100%_\\path`, matched: true},
+		{name: "escaped quote", alias: "other,O'Reilly,tail", query: "O'Reilly", matched: true},
+		{name: "comma query", alias: "foo,bar", query: "foo,bar", matched: false},
+		{name: "empty query", alias: "", query: "", matched: false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			setSearchCaseSensitive(t, test.caseSensitive)
+			testDB, err := gosql.Open("sqlite3_extended", ":memory:")
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				testDB.Close()
+			})
+
+			condition := buildExactAliasSearchOrderCondition("alias", test.query)
+			row := testDB.QueryRow("SELECT CASE WHEN "+condition+" THEN 1 ELSE 0 END FROM (SELECT ? AS alias)", test.alias)
+			var matched int
+			if err = row.Scan(&matched); err != nil {
+				t.Fatal(err)
+			}
+			if test.matched != (matched == 1) {
+				t.Fatalf("unexpected exact alias match state: condition=%q alias=%q query=%q result=%d", condition, test.alias, test.query, matched)
+			}
+		})
+	}
+}
+
+func setSearchCaseSensitive(t *testing.T, caseSensitive bool) {
+	t.Helper()
+	oldConf := Conf
+	Conf = NewAppConf()
+	Conf.Search = conf.NewSearch()
+	Conf.Search.CaseSensitive = caseSensitive
+	t.Cleanup(func() {
+		Conf = oldConf
+	})
 }
 
 func assertOrderBySequence(t *testing.T, orderBy string, fragments ...string) {

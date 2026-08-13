@@ -25,6 +25,7 @@ import {highlightRender} from "../render/highlightRender";
 import {assetMenu, imgMenu} from "../../menus/protyle";
 import {hideElements} from "../ui/hideElements";
 import {fetchPost} from "../../util/fetch";
+import {stripSearchMark} from "../../util/escape";
 import {getDisplayName, isEncryptedBox, pathPosix} from "../../util/pathName";
 import {
     addEmoji,
@@ -365,7 +366,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
             response.data.blocks.forEach((item: IBlock, index: number) => {
                 let blockRefHTML;
                 if (source === "av") {
-                    let refText = item.name || item.refText.replace(new RegExp(Constants.ZWSP, "g"), "");
+                    let refText = item.name ? stripSearchMark(item.name) : item.refText.replace(new RegExp(Constants.ZWSP, "g"), "");
                     if (nodeElement) {
                         refText = item.ial["custom-sy-av-s-text-" + nodeElement.getAttribute("data-av-id")] || refText;
                     }
