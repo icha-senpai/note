@@ -94,16 +94,50 @@ func TestConvertSchemaRootAnyOf(t *testing.T) {
 	}
 }
 
+func TestConvertSchemaPreservesRawJSONSchema(t *testing.T) {
+	raw := map[string]any{
+		"type":                  "object",
+		"unevaluatedProperties": false,
+	}
+	out := convertSchema(tools.ToolSchema{Raw: raw}).(map[string]any)
+	if out["unevaluatedProperties"] != false {
+		t.Fatalf("raw schema was not preserved: %#v", out)
+	}
+}
+
+func TestResultToStringUsesStructuredContent(t *testing.T) {
+	result := resultToString(tools.CallToolResult{
+		StructuredContent: map[string]any{"status": "ok"},
+	})
+	if result != `{"status":"ok"}` {
+		t.Fatalf("unexpected structured result: %q", result)
+	}
+}
+
+func TestResultToStringUsesExplicitNullStructuredContent(t *testing.T) {
+	result := resultToString(tools.CallToolResult{StructuredContentSet: true})
+	if result != "null" {
+		t.Fatalf("unexpected explicit null result: %q", result)
+	}
+}
+
 func TestNeedsConfirmScopesReadOnlyActionsByToolSource(t *testing.T) {
 	const externalWrite = "test_external_write"
 	const externalRead = "test_external_read"
 	const nativeWrite = "test_native_write"
 	const nativeExternalWrite = "test_native_external_write"
-	tools.SetTool(externalWrite, &tools.Tool{Name: externalWrite, Source: "mcp"})
-	tools.SetTool(externalRead, &tools.Tool{Name: externalRead, Source: "mcp", ReadOnlyHint: true})
-	tools.SetTool(nativeWrite, &tools.Tool{Name: nativeWrite, Source: "native"})
+	tools.SetTool(externalWrite, &tools.Tool{
+		Name: externalWrite, Source: "mcp", InputSchema: tools.ToolSchema{Type: "object"},
+	})
+	tools.SetTool(externalRead, &tools.Tool{
+		Name: externalRead, Source: "mcp", ReadOnlyHint: true, InputSchema: tools.ToolSchema{Type: "object"},
+	})
+	tools.SetTool(nativeWrite, &tools.Tool{
+		Name: nativeWrite, Source: "native", InputSchema: tools.ToolSchema{Type: "object"},
+	})
 	tools.SetTool(nativeExternalWrite, &tools.Tool{
 		Name: nativeExternalWrite, Source: "native", EffectScope: tools.EffectScopeExternal,
+		InputSchema: tools.ToolSchema{Type: "object"},
 	})
 	t.Cleanup(func() {
 		tools.RemoveTool(externalWrite)
@@ -324,8 +358,9 @@ func TestWaitCompletionKeepsConcurrentlyAcceptedResults(t *testing.T) {
 func TestExecuteToolPropagatesUnknownExecution(t *testing.T) {
 	const toolName = "test_unknown_execution"
 	tools.SetTool(toolName, &tools.Tool{
-		Name:   toolName,
-		Source: "mcp",
+		Name:        toolName,
+		Source:      "mcp",
+		InputSchema: tools.ToolSchema{Type: "object"},
 		Handler: func(args map[string]any) (tools.CallToolResult, error) {
 			return tools.CallToolResult{
 				Content:          []tools.ContentItem{{Type: "text", Text: "result unknown"}},
@@ -349,7 +384,8 @@ func TestExecuteToolCancellationMarksExecutionUnknown(t *testing.T) {
 	started := make(chan struct{})
 	release := make(chan struct{})
 	tools.SetTool(toolName, &tools.Tool{
-		Name: toolName,
+		Name:        toolName,
+		InputSchema: tools.ToolSchema{Type: "object"},
 		Handler: func(args map[string]any) (tools.CallToolResult, error) {
 			close(started)
 			<-release
@@ -389,7 +425,8 @@ func TestExecuteToolDoesNotStartAfterCancellation(t *testing.T) {
 	const toolName = "test_pre_cancelled_execution"
 	invoked := false
 	tools.SetTool(toolName, &tools.Tool{
-		Name: toolName,
+		Name:        toolName,
+		InputSchema: tools.ToolSchema{Type: "object"},
 		Handler: func(args map[string]any) (tools.CallToolResult, error) {
 			invoked = true
 			return tools.CallToolResult{}, nil

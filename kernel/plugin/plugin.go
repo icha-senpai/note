@@ -372,8 +372,10 @@ func (p *KernelPlugin) unbindRpcMethod(name string) error {
 
 // registerMcpTool registers a tool to the global MCP registry with a plugin-specific prefix, and tracks it for cleanup on plugin stop.
 func (p *KernelPlugin) registerMcpTool(name string, tool *tools.Tool) error {
+	if err := tools.SetTool(tool.Name, tool); err != nil {
+		return err
+	}
 	p.mcpTools.Store(name, tool)
-	tools.SetTool(tool.Name, tool)
 	return nil
 }
 
@@ -423,7 +425,8 @@ func (p *KernelPlugin) invokeMcpTool(handler goja.Callable, args map[string]any)
 
 		if taskResult.value == nil {
 			return tools.CallToolResult{
-				Content: []tools.ContentItem{{Type: "text", Text: "null"}},
+				Content:              []tools.ContentItem{{Type: "text", Text: "null"}},
+				StructuredContentSet: true,
 			}, nil
 		}
 
@@ -436,7 +439,9 @@ func (p *KernelPlugin) invokeMcpTool(handler goja.Callable, args map[string]any)
 		}
 
 		return tools.CallToolResult{
-			Content: []tools.ContentItem{{Type: "text", Text: string(jsonBytes)}},
+			Content:              []tools.ContentItem{{Type: "text", Text: string(jsonBytes)}},
+			StructuredContent:    taskResult.value,
+			StructuredContentSet: true,
 		}, nil
 
 	case <-p.context.Done():

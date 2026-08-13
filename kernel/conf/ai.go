@@ -118,7 +118,8 @@ type Model struct {
 }
 
 type MCP struct {
-	Servers []MCPServer `json:"servers"`
+	Servers        []MCPServer       `json:"servers"`
+	ExposurePolicy *CapabilityPolicy `json:"exposurePolicy,omitempty"`
 }
 
 type MCPServer struct {
@@ -133,6 +134,16 @@ type MCPServer struct {
 	Timeout              int               `json:"timeout"`
 	TrustToolAnnotations bool              `json:"trustToolAnnotations"`
 }
+
+type CapabilityPolicy struct {
+	Default   string            `json:"default,omitempty"`
+	Overrides map[string]string `json:"overrides,omitempty"`
+}
+
+const (
+	CapabilityPolicyAllow = "allow"
+	CapabilityPolicyDeny  = "deny"
+)
 
 func defaultEmbedding() *Embedding {
 	return &Embedding{Timeout: 30}
@@ -170,10 +181,14 @@ func defaultImageGeneration() *ImageGeneration {
 	return &ImageGeneration{RequestTimeout: 300, Size: "1024x1024", Quality: "auto", OutputFormat: "png"}
 }
 
+func defaultCapabilityPolicy() *CapabilityPolicy {
+	return &CapabilityPolicy{Default: CapabilityPolicyAllow, Overrides: map[string]string{}}
+}
+
 func NewAI() *AI {
 	ai := &AI{
 		Providers:       []*Provider{},
-		MCP:             &MCP{Servers: []MCPServer{}},
+		MCP:             &MCP{Servers: []MCPServer{}, ExposurePolicy: defaultCapabilityPolicy()},
 		Embedding:       defaultEmbedding(),
 		Rerank:          defaultRerank(),
 		Agent:           defaultAgent(),
@@ -361,9 +376,12 @@ func (ai *AI) Normalize() {
 		ai.Providers = []*Provider{}
 	}
 	if ai.MCP == nil {
-		ai.MCP = &MCP{Servers: []MCPServer{}}
-	} else if ai.MCP.Servers == nil {
-		ai.MCP.Servers = []MCPServer{}
+		ai.MCP = &MCP{Servers: []MCPServer{}, ExposurePolicy: defaultCapabilityPolicy()}
+	} else {
+		if ai.MCP.Servers == nil {
+			ai.MCP.Servers = []MCPServer{}
+		}
+		ai.MCP.ExposurePolicy = normalizeCapabilityPolicy(ai.MCP.ExposurePolicy)
 	}
 	serverIDs := map[string]bool{}
 	for i := range ai.MCP.Servers {
@@ -519,6 +537,47 @@ func (ai *AI) Normalize() {
 	if !ast.IsNodeIDPattern(ai.Rerank.ID) {
 		ai.Rerank.ID = ast.NewNodeID()
 	}
+}
+
+func normalizeCapabilityPolicy(policy *CapabilityPolicy) *CapabilityPolicy {
+	if policy == nil {
+		return defaultCapabilityPolicy()
+	}
+	defaultAction := normalizeCapabilityPolicyAction(policy.Default)
+	if defaultAction == "" {
+		defaultAction = CapabilityPolicyAllow
+	}
+	overrides := make(map[string]string, len(policy.Overrides))
+	for capabilityID, action := range policy.Overrides {
+		capabilityID = strings.TrimSpace(capabilityID)
+		normalized := normalizeCapabilityPolicyAction(action)
+		if capabilityID == "" || normalized == "" {
+			continue
+		}
+		overrides[capabilityID] = normalized
+	}
+	return &CapabilityPolicy{Default: defaultAction, Overrides: overrides}
+}
+
+func normalizeCapabilityPolicyAction(action string) string {
+	switch strings.ToLower(strings.TrimSpace(action)) {
+	case CapabilityPolicyAllow:
+		return CapabilityPolicyAllow
+	case CapabilityPolicyDeny:
+		return CapabilityPolicyDeny
+	default:
+		return ""
+	}
+}
+
+func (policy *CapabilityPolicy) Allows(capabilityID string) bool {
+	policy = normalizeCapabilityPolicy(policy)
+	if capabilityID != "" {
+		if action, ok := policy.Overrides[capabilityID]; ok {
+			return action == CapabilityPolicyAllow
+		}
+	}
+	return policy.Default != CapabilityPolicyDeny
 }
 
 func (ai *AI) DecryptAPIKeys() {
@@ -705,6 +764,12 @@ func findProviderByBaseURL(providers []*Provider, baseURL string) *Provider {
 
 func migrateMCP(raw map[string]any) *MCP {
 	mcp := &MCP{}
+	if policy, ok := raw["exposurePolicy"].(map[string]any); ok {
+		mcp.ExposurePolicy = &CapabilityPolicy{
+			Default:   getString(policy, "default"),
+			Overrides: getStringMap(policy, "overrides"),
+		}
+	}
 	servers, ok := raw["servers"].([]any)
 	if !ok {
 		return mcp

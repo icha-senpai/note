@@ -34,3 +34,41 @@ func TestNormalizeMCPServerIDs(t *testing.T) {
 		seen[server.ID] = true
 	}
 }
+
+func TestNormalizeMCPExposurePolicy(t *testing.T) {
+	ai := &AI{MCP: &MCP{ExposurePolicy: &CapabilityPolicy{
+		Default: "DENY",
+		Overrides: map[string]string{
+			" native/backend/search ": "ALLOW",
+			"":                        "allow",
+			"native/backend/delete":   "maybe",
+		},
+	}}}
+	ai.Normalize()
+
+	if ai.MCP.ExposurePolicy.Default != CapabilityPolicyDeny {
+		t.Fatalf("default policy = %q, want deny", ai.MCP.ExposurePolicy.Default)
+	}
+	if !ai.MCP.ExposurePolicy.Allows("native/backend/search") {
+		t.Fatal("explicit allow override was not honored")
+	}
+	if ai.MCP.ExposurePolicy.Allows("native/backend/delete") {
+		t.Fatal("invalid override should have been discarded")
+	}
+	if ai.MCP.ExposurePolicy.Allows("native/backend/list") {
+		t.Fatal("default deny was not honored")
+	}
+}
+
+func TestNilMCPExposurePolicyDefaultsToAllow(t *testing.T) {
+	var policy *CapabilityPolicy
+	if !policy.Allows("native/backend/read") {
+		t.Fatal("nil policy should default to allow")
+	}
+
+	ai := &AI{MCP: &MCP{}}
+	ai.Normalize()
+	if ai.MCP.ExposurePolicy == nil || !ai.MCP.ExposurePolicy.Allows("native/backend/read") {
+		t.Fatalf("normalize did not install default allow policy: %#v", ai.MCP.ExposurePolicy)
+	}
+}

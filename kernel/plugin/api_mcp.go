@@ -128,7 +128,11 @@ func injectMcp(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err err
 				Description:  description,
 				InputSchema:  *inputSchema,
 				OutputSchema: outputSchema,
+				CapabilityID: tools.BuildCapabilityID("plugin", "backend", p.Name, name),
 				Source:       "plugin",
+				OwnerID:      p.Name,
+				OwnerName:    p.Name,
+				Runtime:      "plugin-worker",
 				ReadOnlyHint: readOnlyHint,
 				EffectScope:  tools.EffectScopeUnknown,
 				Handler: func(args map[string]any) (tools.CallToolResult, error) {
@@ -136,7 +140,9 @@ func injectMcp(p *KernelPlugin, rt *goja.Runtime, scribli *goja.Object) (err err
 				},
 			}
 
-			p.registerMcpTool(name, tool)
+			if err = p.registerMcpTool(name, tool); err != nil {
+				return
+			}
 
 			result = map[string]any{
 				"name":         fullToolName,

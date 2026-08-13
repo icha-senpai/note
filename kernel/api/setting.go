@@ -24,6 +24,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/icha-senpai/note/kernel/conf"
+	"github.com/icha-senpai/note/kernel/mcp"
 	mcpclient "github.com/icha-senpai/note/kernel/mcp/client"
 	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/server/proxy"
@@ -169,6 +170,7 @@ func setAI(c *gin.Context) {
 	}
 	ai.Normalize()
 	model.Conf.SetAI(ai)
+	mcp.RefreshToolExposure()
 
 	if model.Conf.AI.MCP != nil {
 		newServers := model.Conf.AI.MCP.Servers
