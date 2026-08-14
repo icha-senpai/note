@@ -512,14 +512,15 @@ const bindCanvasToBlock = async (blockElement: HTMLElement, id: string) => {
 };
 
 const currentCanvasBlock = (surfaceElement: HTMLElement, blockElement?: HTMLElement, blockID?: string) => {
-    const closestBlock = surfaceElement.closest(".protyle-wysiwyg [data-node-id][data-type]") as HTMLElement;
-    if (!blockID && isEditableCanvasBlock(closestBlock)) {
+    const closestBlock = surfaceElement.closest(".protyle-wysiwyg [data-node-id][data-type]") as HTMLElement | null;
+    const isEditableBlock = (element?: Element | null): boolean => isEditableCanvasBlock(element);
+    if (!blockID && closestBlock && isEditableBlock(closestBlock)) {
         return closestBlock;
     }
-    if (isEditableCanvasBlock(blockElement)) {
+    if (blockElement && isEditableBlock(blockElement)) {
         return blockElement;
     }
-    if (isEditableCanvasBlock(closestBlock)) {
+    if (closestBlock && isEditableBlock(closestBlock)) {
         return closestBlock;
     }
     const id = blockID || blockElement?.getAttribute("data-node-id") || closestBlock?.getAttribute("data-node-id") || surfaceElement.closest("[data-node-id]")?.getAttribute("data-node-id") || "";
