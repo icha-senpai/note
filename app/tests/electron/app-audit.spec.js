@@ -1,15 +1,40 @@
 const path = require("path");
 const {test, expect} = require("./helpers/playwright");
-const {checkBlockExists, createAttributeView, createDoc, getCanvas, insertBlock, launchScribli, newNodeID, openDoc, removeDocByID, updateBlock} = require("./helpers/scribli");
+const {checkBlockExists, createAttributeView, createDoc, getBlockKramdown, getCanvas, insertBlock, launchScribli, newNodeID, openDoc, removeDocByID, updateBlock} = require("./helpers/scribli");
 
 const visibleCanvas = (page) => page.locator(".layout__wnd--active .protyle-wysiwyg .scribli-canvas:visible:has(.scribli-canvas__toolbar)").last();
 const visibleEditor = (page) => page.locator(".layout__wnd--active .protyle-wysiwyg:visible").last();
 const htmlAttr = (value) => value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const treeDocRow = (page, id) => page.locator(`.sy__file li[data-node-id="${id}"][data-type="navigation-file"], .sy__file li[data-node-id="${id}"][data-type="navigation-root"]`).first();
 
 const blockIDByText = async (page, text) => page.evaluate((text) => {
     const blocks = Array.from(document.querySelectorAll(".layout__wnd--active .protyle-wysiwyg [data-node-id][data-type]"));
     return blocks.find((block) => (block.textContent || "").includes(text))?.getAttribute("data-node-id") || "";
 }, text);
+
+const focusedTreeDocID = async (page) => page.evaluate(() => {
+    const row = document.querySelector(".sy__file li.b3-list-item--focus[data-node-id][data-type='navigation-file']");
+    return row?.getAttribute("data-node-id") || "";
+});
+
+const clickFileTreeRootNew = async (page) => {
+    const rootRow = page.locator(".sy__file ul[data-url] > li[data-type='navigation-root']:visible").first();
+    await expect(rootRow).toBeVisible();
+    await rootRow.hover();
+    const newButton = rootRow.locator("[data-type='new']");
+    await expect(newButton).toBeVisible();
+    await newButton.click();
+};
+
+const typeIntoActiveDoc = async (page, text) => {
+    const editor = visibleEditor(page);
+    await expect(editor).toBeVisible();
+    const editable = editor.locator("[contenteditable='true'], [contenteditable='plaintext-only']").first();
+    await expect(editable).toBeVisible();
+    await editable.click();
+    await page.keyboard.type(text);
+    await expect(editor).toContainText(text);
+};
 
 test("Scribli Electron audit covers document creation and Canvas card workflows", async ({}, testInfo) => {
     const scribli = await launchScribli(testInfo, {workspaceArg: false});
@@ -27,6 +52,40 @@ test("Scribli Electron audit covers document creation and Canvas card workflows"
         await updateBlock(scribli, smokeTextID, savedText);
         await openDoc(scribli, smokeDocID, smokeTitle);
         await expect(visibleEditor(scribli.page)).toContainText(savedText);
+
+        const uiTypedText = `UI-created file text ${Date.now()}`;
+        await clickFileTreeRootNew(scribli.page);
+        await scribli.page.waitForFunction((previousID) => {
+            const row = document.querySelector(".sy__file li.b3-list-item--focus[data-node-id][data-type='navigation-file']");
+            return Boolean(row && row.getAttribute("data-node-id") !== previousID);
+        }, smokeDocID);
+        const uiDocID = await focusedTreeDocID(scribli.page);
+        expect(uiDocID, "expected file-tree plus button to create and focus a document").toBeTruthy();
+        expect(uiDocID).not.toBe(smokeDocID);
+        await typeIntoActiveDoc(scribli.page, uiTypedText);
+        await expect.poll(async () => (await getBlockKramdown(scribli, uiDocID)).kramdown).toContain(uiTypedText);
+
+        const uiDeleteText = `UI delete candidate ${Date.now()}`;
+        await clickFileTreeRootNew(scribli.page);
+        await scribli.page.waitForFunction((previousID) => {
+            const row = document.querySelector(".sy__file li.b3-list-item--focus[data-node-id][data-type='navigation-file']");
+            return Boolean(row && row.getAttribute("data-node-id") !== previousID);
+        }, uiDocID);
+        const uiDeleteDocID = await focusedTreeDocID(scribli.page);
+        expect(uiDeleteDocID, "expected second file-tree plus click to create and focus a document").toBeTruthy();
+        expect(uiDeleteDocID).not.toBe(uiDocID);
+        await typeIntoActiveDoc(scribli.page, uiDeleteText);
+        await expect.poll(async () => (await getBlockKramdown(scribli, uiDeleteDocID)).kramdown).toContain(uiDeleteText);
+
+        await treeDocRow(scribli.page, uiDocID).click();
+        await expect(visibleEditor(scribli.page)).toContainText(uiTypedText);
+        await treeDocRow(scribli.page, uiDeleteDocID).click();
+        await expect(visibleEditor(scribli.page)).toContainText(uiDeleteText);
+        await treeDocRow(scribli.page, uiDeleteDocID).locator("[data-type='more-file']").click();
+        await scribli.page.locator(".b3-menu__item[data-id='delete']:visible").click();
+        await scribli.page.locator("#confirmDialogConfirmBtn").click();
+        await expect.poll(async () => checkBlockExists(scribli, uiDeleteDocID)).toBeFalsy();
+        await expect(treeDocRow(scribli.page, uiDeleteDocID)).toHaveCount(0);
 
         const deleteTitle = `Delete Lifecycle ${Date.now()}`;
         const deleteDocID = await createDoc(scribli, deleteTitle, `# ${deleteTitle}\n\nThis document should be removed by the Electron audit.\n`);

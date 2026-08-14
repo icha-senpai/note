@@ -243,6 +243,10 @@ const getCanvas = async (scribli, id) => {
     return data.structuredContent.canvas;
 };
 
+const getBlockKramdown = async (scribli, id) => {
+    return scribli.api("/api/block/getBlockKramdown", {id, mode: "md"});
+};
+
 const createAttributeView = async (scribli, id, blockID) => {
     const data = await scribli.api("/api/av/renderAttributeView", {id, blockID, createIfNotExist: true, page: 1, pageSize: 10});
     expect(data.id || data.av?.id, `expected database ${id} to render`).toBeTruthy();
@@ -257,4 +261,4 @@ const removeDocByID = async (scribli, id) => {
     return scribli.api("/api/filetree/removeDocByID", {id});
 };
 
-module.exports = {appRoot, artifactRoot, checkBlockExists, createAttributeView, createDoc, getCanvas, insertBlock, launchScribli, newNodeID, openDoc, removeDocByID, repoRoot, updateBlock};
+module.exports = {appRoot, artifactRoot, checkBlockExists, createAttributeView, createDoc, getBlockKramdown, getCanvas, insertBlock, launchScribli, newNodeID, openDoc, removeDocByID, repoRoot, updateBlock};
