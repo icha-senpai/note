@@ -225,6 +225,9 @@ const canvasTemplateButtonsHTML = (type: string) => CANVAS_TEMPLATES.map((templa
 const iconButton = (type: string, icon: string, label: string, extraClass = "") =>
     `<button class="block__icon ariaLabel scribli-canvas__toolbar-button${extraClass}" data-type="${type}" data-position="4north" aria-label="${escapeAttr(label)}"><svg><use xlink:href="#${icon}"></use></svg></button>`;
 
+const nodeButton = (type: string, icon: string, label: string) =>
+    `<button class="ariaLabel scribli-canvas__node-button" data-type="${type}" data-position="4north" aria-label="${escapeAttr(label)}"><svg><use xlink:href="#${icon}"></use></svg></button>`;
+
 const wireCanvasToolbar = (surfaceElement: HTMLElement, canvas: ICanvasPayload, id?: string, blockElement?: HTMLElement, placeholder = false) => {
     canvasRuntime.set(surfaceElement, {canvas, id, blockElement, placeholder});
     ensureCanvasToolbarDelegation();
@@ -250,9 +253,7 @@ const ensureCanvasToolbarDelegation = () => {
         if (type === "canvas-import-file") {
             return;
         }
-        if (target.closest(".scribli-canvas__node") && (
-            type === "canvas-node-duplicate" || type === "canvas-node-delete" || type === "canvas-open-node"
-        )) {
+        if (target.closest(".scribli-canvas__node") && type === "canvas-open-node") {
             return;
         }
         if (event.type === "click" && Date.now() - lastCanvasPointerCommand < 750) {
@@ -264,6 +265,17 @@ const ensureCanvasToolbarDelegation = () => {
         event.preventDefault();
         event.stopPropagation();
         const runtime = await resolveCanvasRuntime(surfaceElement);
+        if (type === "canvas-node-duplicate" || type === "canvas-node-delete") {
+            const nodeID = target.closest(".scribli-canvas__node")?.getAttribute("data-node-id") || "";
+            const state = canvasState(surfaceElement);
+            state.selectedNodeID = nodeID;
+            if (runtime.id && type === "canvas-node-duplicate") {
+                await duplicateSelectedNode(surfaceElement, runtime.canvas, runtime.id, runtime.blockElement);
+            } else if (runtime.id && type === "canvas-node-delete") {
+                await deleteSelectedNode(surfaceElement, runtime.canvas, runtime.id, runtime.blockElement);
+            }
+            return;
+        }
         await handleCanvasCommand(surfaceElement, runtime.canvas, runtime.id, runtime.blockElement, target, runtime.placeholder);
     };
     const handleNodeClick = async (event: Event) => {
@@ -334,6 +346,14 @@ const resolveCanvasRuntime = async (surfaceElement: HTMLElement) => {
     };
     canvasRuntime.set(surfaceElement, resolved);
     return resolved;
+};
+
+const loadStoredCanvas = async (id: string, fallback: ICanvasPayload) => {
+    const response = await fetchSyncPost("/api/canvas/call", {action: "get", id});
+    if (response.code !== 0 || response.data?.isError) {
+        return normalizeCanvasPayload(cloneCanvas(fallback));
+    }
+    return normalizeCanvasPayload(response.data?.structuredContent?.canvas || fallback);
 };
 
 const handleCanvasCommand = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, id: string | undefined, blockElement: HTMLElement | undefined, target: HTMLElement, placeholder = false) => {
@@ -554,8 +574,9 @@ const addTextNode = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
     if (text === null) {
         return;
     }
-    const previous = cloneCanvas(canvas);
-    const nodes = canvas.nodes || [];
+    const latestCanvas = await loadStoredCanvas(id, canvas);
+    const previous = cloneCanvas(latestCanvas);
+    const nodes = latestCanvas.nodes || [];
     nodes.push({
         id: Lute.NewNodeID(),
         type: "text",
@@ -564,8 +585,8 @@ const addTextNode = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
         width: 260,
         height: 140,
     });
-    canvas.nodes = nodes;
-    await persistCanvas(surfaceElement, canvas, id, blockElement, previous);
+    latestCanvas.nodes = nodes;
+    await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
 };
 
 const addScribliNodeFromPrompt = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, id: string, blockElement: HTMLElement | undefined, kind: string) => {
@@ -581,7 +602,8 @@ const addScribliNodeFromPrompt = async (surfaceElement: HTMLElement, canvas: ICa
         return;
     }
     const label = await canvasInputDialog(lang("canvasLabelPrompt", "Label")) || undefined;
-    const position = nextNodePosition(canvas.nodes || []);
+    const latestCanvas = await loadStoredCanvas(id, canvas);
+    const position = nextNodePosition(latestCanvas.nodes || []);
     const args: Record<string, any> = {
         action: "add_scribli_node",
         id,
@@ -601,7 +623,7 @@ const addScribliNodeFromPrompt = async (surfaceElement: HTMLElement, canvas: ICa
     } else {
         args.refID = value;
     }
-    const previous = cloneCanvas(canvas);
+    const previous = cloneCanvas(latestCanvas);
     const response = await fetchSyncPost("/api/canvas/call", args);
     if (response.code === 0 && !response.data?.isError) {
         pushCanvasHistory(surfaceElement, previous);
@@ -646,40 +668,42 @@ const appendTemplate = async (surfaceElement: HTMLElement, canvas: ICanvasPayloa
     if (!template) {
         return;
     }
-    const previous = cloneCanvas(canvas);
-    const offset = (canvas.nodes || []).length * 24;
-    const nextNodes = (canvas.nodes || []).concat((template.nodes || []).map((node) => ({
+    const latestCanvas = await loadStoredCanvas(id, canvas);
+    const previous = cloneCanvas(latestCanvas);
+    const offset = (latestCanvas.nodes || []).length * 24;
+    const nextNodes = (latestCanvas.nodes || []).concat((template.nodes || []).map((node) => ({
         ...cloneNode(node),
         id: Lute.NewNodeID(),
         x: numberValue(node.x, 0) + offset,
         y: numberValue(node.y, 0) + offset,
     })));
     const idMap = new Map<string, string>();
-    (template.nodes || []).forEach((node, index) => idMap.set(node.id, nextNodes[(canvas.nodes || []).length + index].id));
-    const nextEdges = (canvas.edges || []).concat((template.edges || []).map((edge) => ({
+    (template.nodes || []).forEach((node, index) => idMap.set(node.id, nextNodes[(latestCanvas.nodes || []).length + index].id));
+    const nextEdges = (latestCanvas.edges || []).concat((template.edges || []).map((edge) => ({
         id: Lute.NewNodeID(),
         fromNode: idMap.get(edge.fromNode) || edge.fromNode,
         toNode: idMap.get(edge.toNode) || edge.toNode,
     })));
-    canvas.nodes = nextNodes;
-    canvas.edges = nextEdges;
-    await persistCanvas(surfaceElement, canvas, id, blockElement, previous);
+    latestCanvas.nodes = nextNodes;
+    latestCanvas.edges = nextEdges;
+    await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
 };
 
 const duplicateSelectedNode = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, id: string, blockElement?: HTMLElement) => {
     const state = canvasState(surfaceElement);
-    const node = (canvas.nodes || []).find((item) => item.id === state.selectedNodeID);
+    const latestCanvas = await loadStoredCanvas(id, canvas);
+    const node = (latestCanvas.nodes || []).find((item) => item.id === state.selectedNodeID);
     if (!node) {
         return;
     }
-    const previous = cloneCanvas(canvas);
+    const previous = cloneCanvas(latestCanvas);
     const clone = cloneNode(node);
     clone.id = Lute.NewNodeID();
     clone.x = numberValue(node.x, 0) + 36;
     clone.y = numberValue(node.y, 0) + 36;
-    canvas.nodes = (canvas.nodes || []).concat(clone);
+    latestCanvas.nodes = (latestCanvas.nodes || []).concat(clone);
     state.selectedNodeID = clone.id;
-    await persistCanvas(surfaceElement, canvas, id, blockElement, previous);
+    await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
 };
 
 const deleteSelectedNode = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, id: string, blockElement?: HTMLElement) => {
@@ -688,12 +712,13 @@ const deleteSelectedNode = async (surfaceElement: HTMLElement, canvas: ICanvasPa
     if (!selectedID) {
         return;
     }
-    const previous = cloneCanvas(canvas);
-    canvas.nodes = (canvas.nodes || []).filter((node) => node.id !== selectedID);
-    canvas.edges = (canvas.edges || []).filter((edge) => edge.fromNode !== selectedID && edge.toNode !== selectedID);
+    const latestCanvas = await loadStoredCanvas(id, canvas);
+    const previous = cloneCanvas(latestCanvas);
+    latestCanvas.nodes = (latestCanvas.nodes || []).filter((node) => node.id !== selectedID);
+    latestCanvas.edges = (latestCanvas.edges || []).filter((edge) => edge.fromNode !== selectedID && edge.toNode !== selectedID);
     state.selectedNodeID = undefined;
     state.connectFromID = undefined;
-    await persistCanvas(surfaceElement, canvas, id, blockElement, previous);
+    await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
 };
 
 const undoCanvas = async (surfaceElement: HTMLElement, id: string, blockElement?: HTMLElement) => {
@@ -727,24 +752,6 @@ const pushCanvasHistory = (surfaceElement: HTMLElement, canvas: ICanvasPayload) 
 };
 
 const wireCanvasActions = (surfaceElement: HTMLElement, canvas: ICanvasPayload, id?: string, blockElement?: HTMLElement) => {
-    surfaceElement.querySelectorAll(".scribli-canvas__node").forEach((nodeElement: HTMLElement) => {
-        nodeElement.addEventListener("click", async (event) => {
-            const target = event.target as HTMLElement;
-            if (isCanvasNodeControlTarget(target, nodeElement)) {
-                return;
-            }
-            event.preventDefault();
-            event.stopPropagation();
-            const nodeID = nodeElement.dataset.nodeId || "";
-            const state = canvasState(surfaceElement);
-            if (state.connectFromID !== undefined && id) {
-                await connectNode(surfaceElement, canvas, id, blockElement, nodeID);
-                return;
-            }
-            state.selectedNodeID = state.selectedNodeID === nodeID ? undefined : nodeID;
-            renderCanvasSurface(surfaceElement, canvas, id, blockElement);
-        });
-    });
     surfaceElement.querySelectorAll('[data-type="canvas-open-node"]').forEach((buttonElement: HTMLElement) => {
         buttonElement.addEventListener("pointerdown", (event) => {
             event.stopPropagation();
@@ -753,28 +760,6 @@ const wireCanvasActions = (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
             event.preventDefault();
             event.stopPropagation();
             await openCanvasNode(buttonElement);
-        });
-    });
-    surfaceElement.querySelectorAll('[data-type="canvas-node-delete"]').forEach((buttonElement: HTMLElement) => {
-        buttonElement.addEventListener("click", async (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const state = canvasState(surfaceElement);
-            state.selectedNodeID = (buttonElement.closest(".scribli-canvas__node") as HTMLElement)?.dataset.nodeId;
-            if (id) {
-                await deleteSelectedNode(surfaceElement, canvas, id, blockElement);
-            }
-        });
-    });
-    surfaceElement.querySelectorAll('[data-type="canvas-node-duplicate"]').forEach((buttonElement: HTMLElement) => {
-        buttonElement.addEventListener("click", async (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const state = canvasState(surfaceElement);
-            state.selectedNodeID = (buttonElement.closest(".scribli-canvas__node") as HTMLElement)?.dataset.nodeId;
-            if (id) {
-                await duplicateSelectedNode(surfaceElement, canvas, id, blockElement);
-            }
         });
     });
 };
@@ -792,14 +777,15 @@ const connectNode = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
         renderCanvasSurface(surfaceElement, canvas, id, blockElement);
         return;
     }
-    const previous = cloneCanvas(canvas);
-    canvas.edges = (canvas.edges || []).concat({
+    const latestCanvas = await loadStoredCanvas(id, canvas);
+    const previous = cloneCanvas(latestCanvas);
+    latestCanvas.edges = (latestCanvas.edges || []).concat({
         id: Lute.NewNodeID(),
         fromNode: state.connectFromID,
         toNode: nodeID,
     });
     state.connectFromID = undefined;
-    await persistCanvas(surfaceElement, canvas, id, blockElement, previous);
+    await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
 };
 
 const openCanvasNode = async (buttonElement: HTMLElement) => {
@@ -841,7 +827,8 @@ const wireCanvasEditing = (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
                 return;
             }
             const nodeID = (editElement.closest(".scribli-canvas__node") as HTMLElement)?.dataset.nodeId;
-            const node = (canvas.nodes || []).find((item) => item.id === nodeID);
+            const latestCanvas = await loadStoredCanvas(id, canvas);
+            const node = (latestCanvas.nodes || []).find((item) => item.id === nodeID);
             if (!node) {
                 return;
             }
@@ -849,12 +836,12 @@ const wireCanvasEditing = (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
             if (nextText === (node.text || "")) {
                 return;
             }
-            const previous = cloneCanvas(canvas);
+            const previous = cloneCanvas(latestCanvas);
             node.text = nextText;
             if (node.scribli?.kind === "text") {
                 node.scribli.label = firstLine(nextText);
             }
-            await persistCanvas(surfaceElement, canvas, id, blockElement, previous);
+            await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
         });
     });
 };
@@ -877,12 +864,21 @@ const wireCanvasDragging = (surfaceElement: HTMLElement, canvas: ICanvasPayload,
         if (!active) {
             return;
         }
+        const movedNodeID = active.node.id;
+        const nextX = active.node.x;
+        const nextY = active.node.y;
         const previous = active.previous;
         active = undefined;
         document.removeEventListener("pointermove", handleDragMove, true);
         document.removeEventListener("pointerup", handleDragUp, true);
         if (id) {
-            await persistCanvas(surfaceElement, canvas, id, blockElement, previous);
+            const latestCanvas = await loadStoredCanvas(id, canvas);
+            const latestNode = (latestCanvas.nodes || []).find((node) => node.id === movedNodeID);
+            if (latestNode) {
+                latestNode.x = nextX;
+                latestNode.y = nextY;
+                await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
+            }
         }
     };
     surfaceElement.querySelectorAll(".scribli-canvas__node").forEach((nodeElement: HTMLElement) => {
@@ -933,12 +929,21 @@ const wireCanvasResizing = (surfaceElement: HTMLElement, canvas: ICanvasPayload,
         if (!active) {
             return;
         }
+        const resizedNodeID = active.node.id;
+        const nextWidth = active.node.width;
+        const nextHeight = active.node.height;
         const previous = active.previous;
         active = undefined;
         document.removeEventListener("pointermove", handleResizeMove, true);
         document.removeEventListener("pointerup", handleResizeUp, true);
         if (id) {
-            await persistCanvas(surfaceElement, canvas, id, blockElement, previous);
+            const latestCanvas = await loadStoredCanvas(id, canvas);
+            const latestNode = (latestCanvas.nodes || []).find((node) => node.id === resizedNodeID);
+            if (latestNode) {
+                latestNode.width = nextWidth;
+                latestNode.height = nextHeight;
+                await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
+            }
         }
     };
     surfaceElement.querySelectorAll(".scribli-canvas__resize").forEach((resizeElement: HTMLElement) => {
@@ -1097,7 +1102,7 @@ const nodeHTML = (node: ICanvasNode, state: ICanvasViewState) => {
     const selectedClass = state.selectedNodeID === node.id ? " scribli-canvas__node--selected" : "";
     const connectClass = state.connectFromID === node.id ? " scribli-canvas__node--connecting" : "";
     return `<div class="scribli-canvas__node${selectedClass}${connectClass}" data-node-id="${escapeAttr(node.id)}" data-kind="${escapeAttr(kind)}" data-ref-id="${escapeAttr(node.scribli?.refID || "")}" data-query="${escapeAttr(node.scribli?.query || "")}" data-asset-path="${escapeAttr(node.file || node.scribli?.assetPath || "")}" data-database-id="${escapeAttr(node.scribli?.databaseID || "")}" style="left:${numberValue(node.x, 0)}px;top:${numberValue(node.y, 0)}px;width:${numberValue(node.width, DEFAULT_NODE_WIDTH)}px;height:${numberValue(node.height, DEFAULT_NODE_HEIGHT)}px">
-    <div class="scribli-canvas__node-title"><span>${escapeHtml(title)}</span>${nodeActionHTML(node, kind)}${iconButton("canvas-node-duplicate", "iconCopy", lang("duplicate", "Duplicate"))}${iconButton("canvas-node-delete", "iconTrashcan", lang("delete", "Delete"))}</div>
+    <div class="scribli-canvas__node-title"><div class="scribli-canvas__drag-handle" aria-label="${escapeAttr(lang("drag", "Drag"))}"><svg><use xlink:href="#iconDrag"></use></svg></div><span>${escapeHtml(title)}</span>${nodeActionHTML(node, kind)}${nodeButton("canvas-node-duplicate", "iconCopy", lang("duplicate", "Duplicate"))}${nodeButton("canvas-node-delete", "iconTrashcan", lang("delete", "Delete"))}</div>
     <div class="scribli-canvas__node-body">${body}</div>
     <div class="scribli-canvas__resize"></div>
 </div>`;
@@ -1129,7 +1134,7 @@ const nodeActionHTML = (node: ICanvasNode, kind: string) => {
     if (!isActionableNode(node, kind)) {
         return "";
     }
-    return iconButton("canvas-open-node", "iconOpenWindow", nodeActionLabel(kind));
+    return nodeButton("canvas-open-node", "iconOpenWindow", nodeActionLabel(kind));
 };
 
 const nodeActionLabel = (kind: string) => {
