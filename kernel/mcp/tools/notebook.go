@@ -119,8 +119,25 @@ func notebookRename(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "id and name are required"}}, IsError: true}, nil
 	}
 
+	reclose := false
+	if box := model.Conf.GetBox(id); box != nil && box.Closed {
+		if _, err := model.Mount(id); err != nil {
+			return CallToolResult{Content: []ContentItem{{Type: "text", Text: "rename notebook failed: notebook is closed and could not be opened: " + err.Error()}}, IsError: true}, nil
+		}
+		reclose = true
+	}
 	if err := model.RenameBox(id, name); err != nil {
+		if reclose {
+			model.Unmount(id)
+			time.Sleep(1 * time.Second)
+			sql.FlushQueue()
+		}
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "rename notebook failed: " + err.Error()}}, IsError: true}, nil
+	}
+	if reclose {
+		model.Unmount(id)
+		time.Sleep(1 * time.Second)
+		sql.FlushQueue()
 	}
 
 	evt := util.NewCmdResult("renamenotebook", 0, util.PushModeBroadcast)

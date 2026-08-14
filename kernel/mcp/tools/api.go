@@ -18,10 +18,12 @@ package tools
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"sort"
@@ -132,7 +134,6 @@ func apiCatalogHandler(args map[string]any) (CallToolResult, error) {
 	filtered := make([]apiroutes.Route, 0)
 	familyCounts := map[string]int{}
 	for _, route := range apiroutes.List() {
-		familyCounts[route.Family]++
 		if family != "" && route.Family != family {
 			continue
 		}
@@ -140,6 +141,7 @@ func apiCatalogHandler(args map[string]any) (CallToolResult, error) {
 			continue
 		}
 		filtered = append(filtered, route)
+		familyCounts[route.Family]++
 	}
 
 	families := make([]map[string]any, 0, len(familyCounts))
@@ -230,7 +232,7 @@ func apiCallHandler(args map[string]any) (CallToolResult, error) {
 	}
 	req.Header.Set("Authorization", "Token "+model.Conf.Api.Token)
 
-	client := &http.Client{Timeout: 60 * time.Second}
+	client := apiHTTPClient(requestURL)
 	resp, err := client.Do(req)
 	if err != nil {
 		return errorResult("api_call error: request failed: " + err.Error()), nil
@@ -248,6 +250,32 @@ func apiCallHandler(args map[string]any) (CallToolResult, error) {
 
 	result := fmt.Sprintf("HTTP %d %s\n%s\n\n%s", resp.StatusCode, resp.Status, resp.Header.Get("Content-Type"), text)
 	return CallToolResult{Content: []ContentItem{{Type: "text", Text: result}}, IsError: resp.StatusCode >= 400}, nil
+}
+
+func apiHTTPClient(requestURL string) *http.Client {
+	client := &http.Client{Timeout: 60 * time.Second}
+	parsed, err := url.Parse(requestURL)
+	if err != nil || parsed.Scheme != "https" || !isLoopbackHost(parsed.Hostname()) {
+		return client
+	}
+
+	// Scribli's own local HTTPS server can use a self-signed 127.0.0.1 cert.
+	client.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+	return client
+}
+
+func isLoopbackHost(host string) bool {
+	if host == "" {
+		return false
+	}
+	if strings.EqualFold(host, "localhost") {
+		return true
+	}
+	if splitHost, _, err := net.SplitHostPort(host); err == nil {
+		host = splitHost
+	}
+	ip := net.ParseIP(host)
+	return ip != nil && ip.IsLoopback()
 }
 
 func apiCallEffects(args map[string]any, action string) (ToolEffects, bool) {

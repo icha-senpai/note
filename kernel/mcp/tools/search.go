@@ -125,6 +125,7 @@ func fulltextSearch(args map[string]any) (CallToolResult, error) {
 		if content == "" {
 			content = b.Content
 		}
+		content = redactSensitiveText(content)
 		if len(content) > 200 {
 			content = content[:200] + "..."
 		}
@@ -175,6 +176,7 @@ func semanticSearch(args map[string]any) (CallToolResult, error) {
 		if content == "" {
 			content = b.Content
 		}
+		content = redactSensitiveText(content)
 		if len(content) > 200 {
 			content = content[:200] + "..."
 		}
@@ -232,7 +234,7 @@ func assetSearch(args map[string]any) (CallToolResult, error) {
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("Found %d asset matches (page %d/%d):\n\n", matchedAssetCount, page, pageCount))
 	for _, a := range assetContents {
-		content := a.Content
+		content := redactSensitiveText(a.Content)
 		if len(content) > 200 {
 			content = content[:200] + "..."
 		}
@@ -268,7 +270,7 @@ func getAssetHandler(args map[string]any) (CallToolResult, error) {
 	sb.WriteString(fmt.Sprintf("Size: %s\n", a.HSize))
 	sb.WriteString(fmt.Sprintf("ID: %s\n", a.ID))
 	sb.WriteString("\nContent:\n")
-	sb.WriteString(a.Content)
+	sb.WriteString(redactSensitiveText(a.Content))
 	return CallToolResult{
 		Content: []ContentItem{{Type: "text", Text: sb.String()}},
 	}, nil

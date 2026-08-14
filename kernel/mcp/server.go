@@ -86,8 +86,8 @@ func (projection *toolProjection) sync(name string, tool *tools.Tool) {
 		}
 		return
 	}
-	if current == tool {
-		return
+	if current != nil {
+		projection.server.RemoveTools(name)
 	}
 	if syncGuardedTool(projection.server, name, tool, func() bool {
 		return projection.allowsCall(name, tool)
@@ -139,6 +139,9 @@ func externalMCPToolAllowed(tool *tools.Tool) bool {
 	if tool == nil || tool.Source == "mcp" || tool.Runtime == "mcp" {
 		return false
 	}
+	if tool.Name == "frontend" || tool.Name == "question" {
+		return false
+	}
 	if model.Conf == nil || model.Conf.AI == nil || model.Conf.AI.MCP == nil {
 		return true
 	}
@@ -159,6 +162,9 @@ func newServer() *mcpsdk.Server {
 func privateCacheMiddleware() mcpsdk.Middleware {
 	return func(next mcpsdk.MethodHandler) mcpsdk.MethodHandler {
 		return func(ctx context.Context, method string, request mcpsdk.Request) (mcpsdk.Result, error) {
+			if method == "tools/list" || method == "discover" {
+				RefreshToolExposure()
+			}
 			result, err := next(ctx, method, request)
 			switch cacheable := result.(type) {
 			case *mcpsdk.DiscoverResult:

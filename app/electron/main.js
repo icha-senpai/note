@@ -844,27 +844,25 @@ const initKernel = (workspace, port, lang, safeMode) => {
             return;
         }
 
-        if (!isDevEnv || workspaces.length > 0) {
-            if (port && "" !== port) {
-                kernelPort = port;
-            } else {
-                const getAvailablePort = () => {
-                    // https://gist.github.com/mikeal/1840641
-                    return new Promise((portResolve, portReject) => {
-                        const server = gNet.createServer();
-                        server.on("error", error => {
-                            writeLog(error);
-                            kernelPort = "";
-                            portReject();
-                        });
-                        server.listen(0, () => {
-                            kernelPort = server.address().port;
-                            server.close(() => portResolve(kernelPort));
-                        });
+        if (port && "" !== port) {
+            kernelPort = port;
+        } else if (workspaces.length > 0) {
+            const getAvailablePort = () => {
+                // https://gist.github.com/mikeal/1840641
+                return new Promise((portResolve, portReject) => {
+                    const server = gNet.createServer();
+                    server.on("error", error => {
+                        writeLog(error);
+                        kernelPort = "";
+                        portReject();
                     });
-                };
-                await getAvailablePort();
-            }
+                    server.listen(0, () => {
+                        kernelPort = server.address().port;
+                        server.close(() => portResolve(kernelPort));
+                    });
+                });
+            };
+            await getAvailablePort();
         }
         writeLog("got kernel port [" + kernelPort + "]");
         if (!kernelPort) {

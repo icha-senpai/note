@@ -49,7 +49,11 @@ func TestAPICatalogFiltersLiveRoutes(t *testing.T) {
 
 	var payload struct {
 		MatchedRoutes int `json:"matchedRoutes"`
-		Routes        []struct {
+		Families      []struct {
+			Family string `json:"family"`
+			Routes int    `json:"routes"`
+		} `json:"families"`
+		Routes []struct {
 			Method string `json:"method"`
 			Path   string `json:"path"`
 		} `json:"routes"`
@@ -60,8 +64,55 @@ func TestAPICatalogFiltersLiveRoutes(t *testing.T) {
 	if payload.MatchedRoutes != 1 || len(payload.Routes) != 1 {
 		t.Fatalf("unexpected matched routes: %#v", payload)
 	}
+	if len(payload.Families) != 1 || payload.Families[0].Family != "/api/block" || payload.Families[0].Routes != 1 {
+		t.Fatalf("unexpected filtered families: %#v", payload.Families)
+	}
 	if payload.Routes[0].Method != http.MethodPost || payload.Routes[0].Path != "/api/block/getBlockKramdown" {
 		t.Fatalf("unexpected route: %#v", payload.Routes[0])
+	}
+}
+
+func TestAPICallAllowsSelfSignedLoopbackHTTPS(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	routeServer := gin.New()
+	routeServer.POST("/api/test/tls", func(c *gin.Context) {})
+	apiroutes.SetFromGinRoutes(routeServer.Routes())
+
+	oldConf := model.Conf
+	oldURL := util.ServerURL
+	t.Cleanup(func() {
+		model.Conf = oldConf
+		util.ServerURL = oldURL
+	})
+
+	model.Conf = &model.AppConf{Api: &conf.API{Token: "secret-token"}}
+	tlsServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get("Authorization"); got != "Token secret-token" {
+			t.Fatalf("unexpected Authorization header: %q", got)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"tls":true}`))
+	}))
+	defer tlsServer.Close()
+
+	parsedURL, err := url.Parse(tlsServer.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	util.ServerURL = parsedURL
+
+	result, err := apiCallHandler(map[string]any{
+		"method": "POST",
+		"path":   "/api/test/tls",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.IsError || len(result.Content) != 1 {
+		t.Fatalf("unexpected api_call TLS result: %#v", result)
+	}
+	if !strings.Contains(result.Content[0].Text, `{"tls":true}`) {
+		t.Fatalf("missing TLS response body: %s", result.Content[0].Text)
 	}
 }
 

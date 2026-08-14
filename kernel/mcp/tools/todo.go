@@ -45,6 +45,7 @@ var TodoWriteTool = &Tool{
 	},
 	EffectScope:   EffectScopeLocal,
 	ActionEffects: effectMap(ToolEffects{}, ""),
+	OutputSchema:  structuredOutputSchema(),
 	Handler:       todoWriteHandler,
 }
 
@@ -86,8 +87,11 @@ func todoWriteHandler(args map[string]any) (CallToolResult, error) {
 		todos = append(todos, model.AgentTodoItem{Content: content, Status: status})
 	}
 
-	// Save todos for this session
-	if err := model.SaveAgentTodos(args["_sessionID"].(string), todos); err != nil {
+	sessionID, _ := args["_sessionID"].(string)
+	if sessionID == "" {
+		sessionID = "mcp-external"
+	}
+	if err := model.SaveAgentTodos(sessionID, todos); err != nil {
 		return CallToolResult{
 			Content: []ContentItem{{Type: "text", Text: "todo_write error: " + err.Error()}},
 			IsError: true,
@@ -95,9 +99,12 @@ func todoWriteHandler(args map[string]any) (CallToolResult, error) {
 	}
 
 	result := formatTodoResult(todos)
-	return CallToolResult{
-		Content: []ContentItem{{Type: "text", Text: result}},
-	}, nil
+	return structuredTextResult(result, map[string]any{
+		"action":    "update",
+		"status":    "ok",
+		"sessionID": sessionID,
+		"todos":     todos,
+	}), nil
 }
 
 func formatTodoResult(todos []model.AgentTodoItem) string {

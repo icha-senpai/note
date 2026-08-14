@@ -53,6 +53,24 @@ func newTestHTTPServer(t *testing.T) (*mcpsdk.Server, *httptest.Server) {
 	return server, httpServer
 }
 
+func TestExternalMCPToolAllowedHidesAgentOnlyTools(t *testing.T) {
+	oldConf := model.Conf
+	model.Conf = nil
+	t.Cleanup(func() {
+		model.Conf = oldConf
+	})
+
+	if externalMCPToolAllowed(&tools.Tool{Name: "frontend", Source: "native", Runtime: "kernel"}) {
+		t.Fatal("frontend should not be exposed through external MCP")
+	}
+	if externalMCPToolAllowed(&tools.Tool{Name: "question", Source: "native", Runtime: "kernel"}) {
+		t.Fatal("question should not be exposed through external MCP")
+	}
+	if !externalMCPToolAllowed(&tools.Tool{Name: "system", Source: "native", Runtime: "kernel"}) {
+		t.Fatal("normal native kernel tools should remain exposed")
+	}
+}
+
 func TestModernProtocolClient(t *testing.T) {
 	server, httpServer := newTestHTTPServer(t)
 	client := mcpsdk.NewClient(&mcpsdk.Implementation{Name: "test-client", Version: "1.0.0"}, nil)

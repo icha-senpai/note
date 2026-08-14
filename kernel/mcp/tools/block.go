@@ -44,7 +44,8 @@ var BlockTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
 		effectMap(ToolEffects{LocalRead: true}, "get", "get_kramdown", "get_children", "tree_stat", "dom", "breadcrumb", "batch_get", "batch_kramdown"),
 		effectMap(ToolEffects{LocalWrite: true}, "insert", "append", "prepend", "update", "delete", "move"),
@@ -108,10 +109,32 @@ func blockGet(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block not found: " + id}}, IsError: true}, nil
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf(
+	created := b.Created
+	if created == "" {
+		created = createdFromID(b.ID)
+	}
+	updated := b.Updated
+	if updated == "" {
+		updated = ialUpdated(b.IAL, model.GetBlockKramdown(id, "md"))
+	}
+	if updated == "" {
+		updated = created
+	}
+	text := fmt.Sprintf(
 		"ID: %s\nType: %s\nHPath: %s\nContent: %s\nMarkdown: %s\nTags: %s\nCreated: %s\nUpdated: %s",
-		b.ID, b.Type, b.HPath, b.Content, b.Markdown, b.Tag, b.Created, b.Updated,
-	)}}}, nil
+		b.ID, b.Type, b.HPath, b.Content, b.Markdown, b.Tag, created, updated,
+	)
+	return structuredTextResult(text, map[string]any{
+		"action":   "get",
+		"id":       b.ID,
+		"type":     b.Type,
+		"hPath":    b.HPath,
+		"content":  b.Content,
+		"markdown": b.Markdown,
+		"tags":     b.Tag,
+		"created":  created,
+		"updated":  updated,
+	}), nil
 }
 
 func blockGetKramdown(args map[string]any) (CallToolResult, error) {
@@ -125,7 +148,11 @@ func blockGetKramdown(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block not found or empty: " + id}}, IsError: true}, nil
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: kramdown}}}, nil
+	return structuredTextResult(kramdown, map[string]any{
+		"action":   "get_kramdown",
+		"id":       id,
+		"kramdown": kramdown,
+	}), nil
 }
 
 func blockGetChildren(args map[string]any) (CallToolResult, error) {
@@ -136,21 +163,39 @@ func blockGetChildren(args map[string]any) (CallToolResult, error) {
 
 	children := model.GetChildBlocks(id)
 	if len(children) == 0 {
-		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "no child blocks found"}}}, nil
+		return structuredTextResult("no child blocks found", map[string]any{
+			"action":   "get_children",
+			"id":       id,
+			"count":    0,
+			"children": []map[string]any{},
+		}), nil
 	}
 
 	var sb strings.Builder
+	items := make([]map[string]any, 0, len(children))
 	for _, c := range children {
 		content := c.Markdown
 		if content == "" {
 			content = c.Content
 		}
+		items = append(items, map[string]any{
+			"id":       c.ID,
+			"type":     c.Type,
+			"subType":  c.SubType,
+			"content":  c.Content,
+			"markdown": c.Markdown,
+		})
 		if len(content) > 200 {
 			content = content[:200] + "..."
 		}
 		sb.WriteString(fmt.Sprintf("- [%s] %s (%s)\n", c.Type, content, c.ID))
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":   "get_children",
+		"id":       id,
+		"count":    len(items),
+		"children": items,
+	}), nil
 }
 
 func blockInsert(args map[string]any) (CallToolResult, error) {
@@ -210,7 +255,12 @@ func blockInsert(args map[string]any) (CallToolResult, error) {
 		}
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block inserted"}}}, nil
+	return structuredTextResult("block inserted", map[string]any{
+		"action":     "insert",
+		"parentID":   parentID,
+		"previousID": previousID,
+		"nextID":     nextID,
+	}), nil
 }
 
 func blockAppend(args map[string]any) (CallToolResult, error) {
@@ -249,7 +299,10 @@ func blockAppend(args map[string]any) (CallToolResult, error) {
 	if bt := treenode.GetBlockTree(parentID); bt != nil {
 		util.PushReloadProtyle(bt.RootID)
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block appended"}}}, nil
+	return structuredTextResult("block appended", map[string]any{
+		"action":   "append",
+		"parentID": parentID,
+	}), nil
 }
 
 func blockPrepend(args map[string]any) (CallToolResult, error) {
@@ -288,7 +341,10 @@ func blockPrepend(args map[string]any) (CallToolResult, error) {
 	if bt := treenode.GetBlockTree(parentID); bt != nil {
 		util.PushReloadProtyle(bt.RootID)
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block prepended"}}}, nil
+	return structuredTextResult("block prepended", map[string]any{
+		"action":   "prepend",
+		"parentID": parentID,
+	}), nil
 }
 
 func blockUpdate(args map[string]any) (CallToolResult, error) {
@@ -301,15 +357,84 @@ func blockUpdate(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "data is required"}}, IsError: true}, nil
 	}
 
-	data = pinBlockID(data, dataType, id)
+	operationCount, err := updateBlockContent(id, data, dataType)
+	if err != nil {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "update block failed: " + err.Error()}}, IsError: true}, nil
+	}
+	return structuredTextResult("block updated", map[string]any{
+		"action":           "update",
+		"id":               id,
+		"operationCount":   operationCount,
+		"inputContentType": dataType,
+	}), nil
+}
 
-	transactions := []*model.Transaction{{
-		DoOperations: []*model.Operation{{
-			Action: "update",
-			ID:     id,
-			Data:   data,
-		}},
-	}}
+func updateBlockContent(id, data, dataType string) (operationCount int, err error) {
+	luteEngine := util.NewLute()
+	if dataType == "markdown" {
+		data, err = markdownToBlockDOM(data)
+		if err != nil {
+			return 0, fmt.Errorf("convert markdown failed: %w", err)
+		}
+	}
+	tree := luteEngine.BlockDOM2Tree(data)
+	if nil == tree || nil == tree.Root || nil == tree.Root.FirstChild {
+		return 0, fmt.Errorf("parse tree failed")
+	}
+
+	block, err := model.GetBlock(id, nil)
+	if err != nil {
+		return 0, fmt.Errorf("get block failed: %w", err)
+	}
+	if block == nil {
+		return 0, fmt.Errorf("block not found: %s", id)
+	}
+
+	var transactions []*model.Transaction
+	if "NodeDocument" == block.Type {
+		oldTree, loadErr := filesys.LoadTree(block.Box, block.Path, luteEngine)
+		if loadErr != nil {
+			return 0, fmt.Errorf("load tree failed: %w", loadErr)
+		}
+		var toRemoves []*ast.Node
+		var ops []*model.Operation
+		for n := oldTree.Root.FirstChild; nil != n; n = n.Next {
+			toRemoves = append(toRemoves, n)
+			ops = append(ops, &model.Operation{Action: "delete", ID: n.ID, Data: map[string]any{
+				"createEmptyParagraph": false,
+			}})
+		}
+		for _, n := range toRemoves {
+			n.Unlink()
+		}
+		ops = append(ops, &model.Operation{Action: "appendInsert", Data: data, ParentID: id})
+		transactions = append(transactions, &model.Transaction{DoOperations: ops})
+		operationCount = len(ops)
+	} else {
+		if "NodeListItem" == block.Type && ast.NodeList == tree.Root.FirstChild.Type {
+			tree.Root.AppendChild(tree.Root.FirstChild.FirstChild)
+			tree.Root.FirstChild.Unlink()
+			if nil != tree.Root.FirstChild && ast.NodeKramdownBlockIAL == tree.Root.FirstChild.Type {
+				tree.Root.FirstChild.Unlink()
+			}
+		}
+
+		if nil != tree.Root.FirstChild {
+			tree.Root.FirstChild.SetIALAttr("id", id)
+		} else {
+			tree.Root.AppendChild(treenode.NewParagraph(id))
+		}
+
+		data = luteEngine.Tree2BlockDOM(tree, luteEngine.RenderOptions, luteEngine.ParseOptions)
+		transactions = []*model.Transaction{{
+			DoOperations: []*model.Operation{{
+				Action: "update",
+				ID:     id,
+				Data:   data,
+			}},
+		}}
+		operationCount = 1
+	}
 
 	model.PerformTransactions(&transactions)
 	model.FlushTxQueue()
@@ -317,7 +442,7 @@ func blockUpdate(args map[string]any) (CallToolResult, error) {
 	if bt := treenode.GetBlockTree(id); bt != nil {
 		util.PushReloadProtyle(bt.RootID)
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block updated"}}}, nil
+	return operationCount, nil
 }
 
 func pinBlockID(data, dataType, id string) string {
@@ -373,7 +498,10 @@ func blockDelete(args map[string]any) (CallToolResult, error) {
 	if bt != nil {
 		util.PushReloadProtyle(bt.RootID)
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block deleted: " + id}}}, nil
+	return structuredTextResult("block deleted: "+id, map[string]any{
+		"action": "delete",
+		"id":     id,
+	}), nil
 }
 
 func getBlockData(args map[string]any) (data, dataType string) {
@@ -430,7 +558,12 @@ func blockMove(args map[string]any) (CallToolResult, error) {
 	if bt := treenode.GetBlockTree(id); bt != nil {
 		util.PushReloadProtyle(bt.RootID)
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block moved: " + id}}}, nil
+	return structuredTextResult("block moved: "+id, map[string]any{
+		"action":     "move",
+		"id":         id,
+		"parentID":   parentID,
+		"previousID": previousID,
+	}), nil
 }
 
 func blockBreadcrumb(args map[string]any) (CallToolResult, error) {
@@ -445,10 +578,16 @@ func blockBreadcrumb(args map[string]any) (CallToolResult, error) {
 	}
 
 	var sb strings.Builder
+	items := make([]map[string]any, 0, len(paths))
 	for _, p := range paths {
 		sb.WriteString(fmt.Sprintf("%s/%s (%s)\n", p.Type, p.Name, p.ID))
+		items = append(items, map[string]any{"id": p.ID, "type": p.Type, "name": p.Name})
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":     "breadcrumb",
+		"id":         id,
+		"breadcrumb": items,
+	}), nil
 }
 
 func blockTreeStat(args map[string]any) (CallToolResult, error) {
@@ -462,7 +601,16 @@ func blockTreeStat(args map[string]any) (CallToolResult, error) {
 	}
 	text := fmt.Sprintf("Document statistics:\n- Characters: %d\n- Words: %d\n- Blocks: %d\n- Links: %d\n- Images: %d\n- Refs: %d",
 		stat.RuneCount, stat.WordCount, stat.BlockCount, stat.LinkCount, stat.ImageCount, stat.RefCount)
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: text}}}, nil
+	return structuredTextResult(text, map[string]any{
+		"action":     "tree_stat",
+		"id":         id,
+		"characters": stat.RuneCount,
+		"words":      stat.WordCount,
+		"blocks":     stat.BlockCount,
+		"links":      stat.LinkCount,
+		"images":     stat.ImageCount,
+		"refs":       stat.RefCount,
+	}), nil
 }
 
 func blockDom(args map[string]any) (CallToolResult, error) {
@@ -474,7 +622,11 @@ func blockDom(args map[string]any) (CallToolResult, error) {
 	if dom == "" {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block not found or empty: " + id}}, IsError: true}, nil
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: dom}}}, nil
+	return structuredTextResult(dom, map[string]any{
+		"action": "dom",
+		"id":     id,
+		"dom":    dom,
+	}), nil
 }
 
 func blockBatchGet(args map[string]any) (CallToolResult, error) {
@@ -512,7 +664,26 @@ func blockBatchGet(args map[string]any) (CallToolResult, error) {
 		}
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	items := make([]map[string]any, 0, len(ids))
+	for _, id := range ids {
+		item := map[string]any{"id": id, "found": false}
+		for _, info := range infos {
+			if info.ID == id {
+				item["found"] = true
+				item["name"] = info.Name
+				item["rootID"] = info.RootID
+				item["refCount"] = info.RefCount
+				break
+			}
+		}
+		items = append(items, item)
+	}
+	return structuredTextResult(sb.String(), map[string]any{
+		"action": "batch_get",
+		"ids":    ids,
+		"count":  len(infos),
+		"items":  items,
+	}), nil
 }
 
 func blockBatchKramdown(args map[string]any) (CallToolResult, error) {
@@ -542,5 +713,15 @@ func blockBatchKramdown(args map[string]any) (CallToolResult, error) {
 		}
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	items := make([]map[string]any, 0, len(ids))
+	for _, id := range ids {
+		kramdown, found := kramdowns[id]
+		items = append(items, map[string]any{"id": id, "found": found, "kramdown": kramdown})
+	}
+	return structuredTextResult(sb.String(), map[string]any{
+		"action": "batch_kramdown",
+		"ids":    ids,
+		"count":  len(kramdowns),
+		"items":  items,
+	}), nil
 }

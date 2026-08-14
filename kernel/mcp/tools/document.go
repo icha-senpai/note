@@ -28,24 +28,25 @@ import (
 
 var DocumentTool = &Tool{
 	Name:        "document",
-	Description: "Document operations. Actions: get(id), create(notebook, path=hPath, title, markdown?), list(notebook, path=hPath default /), delete(id), rename(id, title), move(id, notebook, path=target hPath), duplicate(id), search_docs(keyword), info(id).",
+	Description: "Document operations. Actions: get(id), create(notebook, path=hPath, title, markdown?), update(id, markdown), list(notebook, path=hPath default /), delete(id), rename(id, title), move(id, notebook, path=target hPath), duplicate(id), search_docs(keyword), info(id).",
 	InputSchema: ToolSchema{
 		Type: "object",
 		Properties: map[string]Property{
-			"action":   {Type: "string", Description: "Operation", Enum: []string{"get", "create", "list", "delete", "rename", "move", "duplicate", "search_docs", "info"}},
+			"action":   {Type: "string", Description: "Operation", Enum: []string{"get", "create", "update", "list", "delete", "rename", "move", "duplicate", "search_docs", "info"}},
 			"id":       {Type: "string", Description: "Document block ID"},
 			"title":    {Type: "string", Description: "Document title (for create, rename)"},
 			"path":     {Type: "string", Description: "Document hPath, the human-readable path shown in the document tree (e.g. /folder/doc). Used for create, list, move."},
-			"markdown": {Type: "string", Description: "Initial markdown content (for create)"},
+			"markdown": {Type: "string", Description: "Markdown content (for create, update)"},
 			"keyword":  {Type: "string", Description: "Search keyword (for search_docs)"},
 			"notebook": {Type: "string", Description: "Notebook ID (required for create, list, move)"},
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
 		effectMap(ToolEffects{LocalRead: true}, "get", "list", "search_docs", "info"),
-		effectMap(ToolEffects{LocalWrite: true}, "create", "delete", "rename", "move", "duplicate"),
+		effectMap(ToolEffects{LocalWrite: true}, "create", "update", "delete", "rename", "move", "duplicate"),
 	),
 	Handler: documentHandler,
 }
@@ -61,6 +62,8 @@ func documentHandler(args map[string]any) (CallToolResult, error) {
 		return documentGet(args)
 	case "create":
 		return documentCreate(args)
+	case "update":
+		return documentUpdate(args)
 	case "list":
 		return documentList(args)
 	case "delete":
@@ -77,7 +80,7 @@ func documentHandler(args map[string]any) (CallToolResult, error) {
 		return documentInfo(args)
 	}
 	return CallToolResult{
-		Content: []ContentItem{{Type: "text", Text: "unknown action '" + action + "', expected one of: [get, create, list, delete, rename, move, duplicate, search_docs, info]"}},
+		Content: []ContentItem{{Type: "text", Text: "unknown action '" + action + "', expected one of: [get, create, update, list, delete, rename, move, duplicate, search_docs, info]"}},
 		IsError: true,
 	}, nil
 }
@@ -98,10 +101,57 @@ func documentGet(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "document not found: " + id}}, IsError: true}, nil
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf(
+	info, _ := model.GetDocInfo(id)
+	title := b.Name
+	if info != nil && info.Name != "" {
+		title = info.Name
+	}
+	if title == "" {
+		title = tree.Root.IALAttr("title")
+	}
+	markdown := b.Markdown
+	if markdown == "" {
+		markdown = model.GetBlockKramdown(id, "md")
+	}
+	created := b.Created
+	if created == "" {
+		created = createdFromID(tree.Root.ID)
+	}
+	updated := b.Updated
+	if updated == "" && info != nil {
+		updated = ialUpdated(info.IAL, markdown)
+	}
+	if updated == "" {
+		updated = ialUpdated(b.IAL, markdown)
+	}
+	if updated == "" {
+		updated = created
+	}
+	content := b.Content
+	if content == "" {
+		content = title
+	}
+	hPath := b.HPath
+	if hPath == "" {
+		hPath = tree.HPath
+	}
+	text := fmt.Sprintf(
 		"ID: %s\nTitle: %s\nHPath: %s\nBox: %s\nContent: %s\nMarkdown: %s\nType: %s\nCreated: %s\nUpdated: %s",
-		b.ID, b.Name, b.HPath, b.Box, b.Content, b.Markdown, b.Type, b.Created, b.Updated,
-	)}}}, nil
+		b.ID, title, hPath, b.Box, content, markdown, b.Type, created, updated,
+	)
+	return structuredTextResult(text, map[string]any{
+		"action":   "get",
+		"id":       b.ID,
+		"title":    title,
+		"hPath":    hPath,
+		"notebook": b.Box,
+		"path":     b.Path,
+		"content":  content,
+		"markdown": markdown,
+		"type":     b.Type,
+		"created":  created,
+		"updated":  updated,
+	}), nil
 }
 
 func documentCreate(args map[string]any) (CallToolResult, error) {
@@ -140,7 +190,33 @@ func documentCreate(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("create doc failed: %s", err)}}, IsError: true}, nil
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("document created: %s (hPath: %s)", tree.Root.ID, hPath)}}}, nil
+	message := fmt.Sprintf("document created: %s (hPath: %s)", tree.Root.ID, hPath)
+	return structuredTextResult(message, map[string]any{
+		"action":   "create",
+		"id":       tree.Root.ID,
+		"title":    title,
+		"hPath":    hPath,
+		"notebook": notebook,
+		"path":     tree.Path,
+	}), nil
+}
+
+func documentUpdate(args map[string]any) (CallToolResult, error) {
+	id, _ := args["id"].(string)
+	if id == "" {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "id is required"}}, IsError: true}, nil
+	}
+	markdown, _ := args["markdown"].(string)
+	if markdown == "" {
+		markdown = "\n"
+	}
+	if _, err := updateBlockContent(id, markdown, "markdown"); err != nil {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "update document failed: " + err.Error()}}, IsError: true}, nil
+	}
+	return structuredTextResult("document updated: "+id, map[string]any{
+		"action": "update",
+		"id":     id,
+	}), nil
 }
 
 func parentDir(p string) string {
@@ -180,7 +256,21 @@ func documentList(args map[string]any) (CallToolResult, error) {
 	for _, f := range files {
 		sb.WriteString(fmt.Sprintf("- %s (id: %s, hPath: %s)\n", f.Name, f.ID, strings.TrimRight(hPath, "/")+"/"+f.Name))
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	items := make([]map[string]any, 0, len(files))
+	for _, f := range files {
+		items = append(items, map[string]any{
+			"id":    f.ID,
+			"name":  f.Name,
+			"hPath": strings.TrimRight(hPath, "/") + "/" + f.Name,
+		})
+	}
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":   "list",
+		"notebook": notebook,
+		"hPath":    hPath,
+		"count":    len(items),
+		"items":    items,
+	}), nil
 }
 
 func documentDelete(args map[string]any) (CallToolResult, error) {
@@ -197,7 +287,10 @@ func documentDelete(args map[string]any) (CallToolResult, error) {
 	if err = model.RemoveDoc(tree.Box, tree.Path); err != nil {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("delete doc failed: %s", err)}}, IsError: true}, nil
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "document deleted: " + id}}}, nil
+	return structuredTextResult("document deleted: "+id, map[string]any{
+		"action": "delete",
+		"id":     id,
+	}), nil
 }
 
 func documentRename(args map[string]any) (CallToolResult, error) {
@@ -216,7 +309,11 @@ func documentRename(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("rename doc failed: %s", err)}}, IsError: true}, nil
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("document renamed: %s -> %s", id, title)}}}, nil
+	return structuredTextResult(fmt.Sprintf("document renamed: %s -> %s", id, title), map[string]any{
+		"action": "rename",
+		"id":     id,
+		"title":  title,
+	}), nil
 }
 
 func documentMove(args map[string]any) (CallToolResult, error) {
@@ -245,7 +342,12 @@ func documentMove(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("move doc failed: %s", err)}}, IsError: true}, nil
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("document moved: %s -> %s (hPath: %s)", id, notebook, hPath)}}}, nil
+	return structuredTextResult(fmt.Sprintf("document moved: %s -> %s (hPath: %s)", id, notebook, hPath), map[string]any{
+		"action":   "move",
+		"id":       id,
+		"notebook": notebook,
+		"hPath":    hPath,
+	}), nil
 }
 
 func documentDuplicate(args map[string]any) (CallToolResult, error) {
@@ -259,9 +361,17 @@ func documentDuplicate(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("load doc failed: %s", err)}}, IsError: true}, nil
 	}
 
+	originalID := id
 	model.DuplicateDoc(tree)
 	util.PushReloadFiletree()
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "document duplicated: " + id}}}, nil
+	return structuredTextResult("document duplicated: "+originalID+" -> "+tree.Root.ID, map[string]any{
+		"action":     "duplicate",
+		"id":         tree.Root.ID,
+		"originalID": originalID,
+		"hPath":      tree.HPath,
+		"path":       tree.Path,
+		"notebook":   tree.Box,
+	}), nil
 }
 
 func documentSearchDocs(args map[string]any) (CallToolResult, error) {
@@ -272,15 +382,55 @@ func documentSearchDocs(args map[string]any) (CallToolResult, error) {
 
 	docs := model.SearchDocs(keyword, false, nil)
 	if len(docs) == 0 {
-		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "no documents found"}}}, nil
+		return structuredTextResult("no documents found", map[string]any{
+			"action":  "search_docs",
+			"keyword": keyword,
+			"count":   0,
+			"items":   []map[string]any{},
+		}), nil
 	}
 
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("Documents matching '%s' (%d):\n\n", keyword, len(docs)))
 	for _, d := range docs {
-		sb.WriteString(fmt.Sprintf("- %s (id: %s, hPath: %s)\n", d["name"], d["id"], d["hPath"]))
+		item := documentSearchDocItem(d)
+		sb.WriteString(fmt.Sprintf("- %s (id: %s, hPath: %s)\n", item["name"], item["id"], item["hPath"]))
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	items := make([]map[string]any, 0, len(docs))
+	for _, d := range docs {
+		items = append(items, documentSearchDocItem(d))
+	}
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":  "search_docs",
+		"keyword": keyword,
+		"count":   len(items),
+		"items":   items,
+	}), nil
+}
+
+func documentSearchDocItem(d map[string]string) map[string]any {
+	item := map[string]any{
+		"id":       d["id"],
+		"name":     d["name"],
+		"hPath":    d["hPath"],
+		"path":     d["path"],
+		"notebook": d["box"],
+		"boxIcon":  d["boxIcon"],
+	}
+	if item["id"] == "" && d["path"] != "" && d["path"] != "/" {
+		item["id"] = util.GetTreeID(d["path"])
+	}
+	if item["name"] == "" {
+		hPath := strings.TrimRight(d["hPath"], "/")
+		if hPath != "" {
+			parts := strings.Split(hPath, "/")
+			item["name"] = parts[len(parts)-1]
+		}
+	}
+	if item["id"] == "" {
+		item["id"] = d["box"]
+	}
+	return item
 }
 
 func documentInfo(args map[string]any) (CallToolResult, error) {
@@ -318,5 +468,20 @@ func documentInfo(args map[string]any) (CallToolResult, error) {
 		}
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	attrViews := make([]map[string]any, 0, len(info.AttrViews))
+	for _, item := range info.AttrViews {
+		attrViews = append(attrViews, map[string]any{"id": item.ID, "name": item.Name})
+	}
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":       "info",
+		"id":           info.ID,
+		"rootID":       info.RootID,
+		"name":         info.Name,
+		"refCount":     info.RefCount,
+		"subFileCount": info.SubFileCount,
+		"icon":         info.Icon,
+		"refIDs":       info.RefIDs,
+		"attrViews":    attrViews,
+		"ial":          info.IAL,
+	}), nil
 }
