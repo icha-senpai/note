@@ -39,6 +39,10 @@ var DocumentTool = &Tool{
 			"markdown": {Type: "string", Description: "Markdown content (for create, update)"},
 			"keyword":  {Type: "string", Description: "Search keyword (for search_docs)"},
 			"notebook": {Type: "string", Description: "Notebook ID (required for create, list, move)"},
+			"redactSecrets": {
+				Type:        "boolean",
+				Description: "Redact likely credentials/tokens from read responses. Defaults to true.",
+			},
 		},
 		Required: []string{"action"},
 	},
@@ -131,13 +135,15 @@ func documentGet(args map[string]any) (CallToolResult, error) {
 	if content == "" {
 		content = title
 	}
+	displayContent := maybeRedactSensitiveText(args, content)
+	displayMarkdown := maybeRedactSensitiveText(args, markdown)
 	hPath := b.HPath
 	if hPath == "" {
 		hPath = tree.HPath
 	}
 	text := fmt.Sprintf(
 		"ID: %s\nTitle: %s\nHPath: %s\nBox: %s\nContent: %s\nMarkdown: %s\nType: %s\nCreated: %s\nUpdated: %s",
-		b.ID, title, hPath, b.Box, content, markdown, b.Type, created, updated,
+		b.ID, title, hPath, b.Box, displayContent, displayMarkdown, b.Type, created, updated,
 	)
 	return structuredTextResult(text, map[string]any{
 		"action":   "get",
@@ -146,8 +152,8 @@ func documentGet(args map[string]any) (CallToolResult, error) {
 		"hPath":    hPath,
 		"notebook": b.Box,
 		"path":     b.Path,
-		"content":  content,
-		"markdown": markdown,
+		"content":  displayContent,
+		"markdown": displayMarkdown,
 		"type":     b.Type,
 		"created":  created,
 		"updated":  updated,
@@ -461,6 +467,7 @@ func documentInfo(args map[string]any) (CallToolResult, error) {
 	if len(info.IAL) > 0 {
 		sb.WriteString("\nIAL:")
 		for k, v := range info.IAL {
+			v = maybeRedactSensitiveText(args, v)
 			if len(v) > 100 {
 				v = v[:100] + "..."
 			}
@@ -482,6 +489,6 @@ func documentInfo(args map[string]any) (CallToolResult, error) {
 		"icon":         info.Icon,
 		"refIDs":       info.RefIDs,
 		"attrViews":    attrViews,
-		"ial":          info.IAL,
+		"ial":          maybeRedactStringMap(args, info.IAL),
 	}), nil
 }

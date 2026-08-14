@@ -33,8 +33,10 @@ var WorkspaceTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeLocal,
 	ActionEffects: effectMap(ToolEffects{LocalRead: true}, "list", "info"),
+	ReadOnlyHint:  true,
 	Handler:       workspaceHandler,
 }
 
@@ -64,6 +66,7 @@ func workspaceList(args map[string]any) (CallToolResult, error) {
 
 	var sb strings.Builder
 	seen := map[string]bool{}
+	items := []map[string]any{}
 	sb.WriteString(fmt.Sprintf("Registered workspaces (%d):\n\n", len(paths)))
 	for _, p := range paths {
 		key := strings.ToLower(p)
@@ -72,15 +75,30 @@ func workspaceList(args map[string]any) (CallToolResult, error) {
 		}
 		seen[key] = true
 		sb.WriteString(fmt.Sprintf("- %s\n", p))
+		items = append(items, map[string]any{
+			"path":  p,
+			"valid": util.IsWorkspaceDir(p),
+		})
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action": "list",
+		"count":  len(items),
+		"items":  items,
+	}), nil
 }
 
 func workspaceInfo(args map[string]any) (CallToolResult, error) {
 	dir := util.WorkspaceDir
+	valid := util.IsWorkspaceDir(dir)
 	sb := strings.Builder{}
 	sb.WriteString(fmt.Sprintf("Path:    %s\n", dir))
 	sb.WriteString(fmt.Sprintf("Version: %s\n", util.Ver))
-	sb.WriteString(fmt.Sprintf("Valid:   %v\n", util.IsWorkspaceDir(dir)))
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	sb.WriteString(fmt.Sprintf("Valid:   %v\n", valid))
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":    "info",
+		"path":      dir,
+		"version":   util.Ver,
+		"valid":     valid,
+		"container": util.Container,
+	}), nil
 }

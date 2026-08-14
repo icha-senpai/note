@@ -33,8 +33,10 @@ var SystemTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeLocal,
 	ActionEffects: effectMap(ToolEffects{LocalRead: true}, "version", "current_time", "workspace"),
+	ReadOnlyHint:  true,
 	Handler:       systemHandler,
 }
 
@@ -59,15 +61,30 @@ func systemHandler(args map[string]any) (CallToolResult, error) {
 }
 
 func systemVersion(args map[string]any) (CallToolResult, error) {
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: util.Ver}}}, nil
+	return structuredTextResult(util.Ver, map[string]any{
+		"action":  "version",
+		"version": util.Ver,
+	}), nil
 }
 
 func systemCurrentTime(args map[string]any) (CallToolResult, error) {
 	ms := util.CurrentTimeMillis()
 	t := time.UnixMilli(ms)
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: t.Format(time.RFC3339)}}}, nil
+	formatted := t.Format(time.RFC3339)
+	return structuredTextResult(formatted, map[string]any{
+		"action":       "current_time",
+		"unixMillis":   ms,
+		"rfc3339":      formatted,
+		"timezoneName": t.Location().String(),
+	}), nil
 }
 
 func systemWorkspace(args map[string]any) (CallToolResult, error) {
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("Workspace: %s\nVersion: %s\nContainer: %s", util.WorkspaceDir, util.Ver, util.Container)}}}, nil
+	message := fmt.Sprintf("Workspace: %s\nVersion: %s\nContainer: %s", util.WorkspaceDir, util.Ver, util.Container)
+	return structuredTextResult(message, map[string]any{
+		"action":    "workspace",
+		"workspace": util.WorkspaceDir,
+		"version":   util.Ver,
+		"container": util.Container,
+	}), nil
 }

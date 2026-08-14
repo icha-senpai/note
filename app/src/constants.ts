@@ -842,6 +842,6 @@ export abstract class Constants {
         "js", "ts", "html", "toml", "c#", "bat"
     ];
     public static readonly SCRIBLI_RENDER_CODE_LANGUAGES: string[] = [
-        "abc", "plantuml", "mermaid", "flowchart", "echarts", "mindmap", "graphviz", "math"
+        "abc", "plantuml", "mermaid", "flowchart", "echarts", "mindmap", "graphviz", "math", "scribli-canvas"
     ];
 }

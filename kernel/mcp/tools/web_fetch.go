@@ -31,6 +31,7 @@ var WebFetchTool = &Tool{
 		},
 		Required: []string{"url"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeExternal,
 	ActionEffects: effectMap(ToolEffects{DataEgress: true}, ""),
 	Handler:       webFetchHandler,

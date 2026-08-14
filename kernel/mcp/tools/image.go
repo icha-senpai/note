@@ -56,7 +56,8 @@ var ImageTool = &Tool{
 		},
 		Required: []string{"action", "documentID"},
 	},
-	EffectScope: EffectScopeMixed,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeMixed,
 	ActionEffects: map[string]ToolEffects{
 		"list":     {LocalRead: true},
 		"analyze":  {LocalRead: true, DataEgress: true, ExternalCost: true},

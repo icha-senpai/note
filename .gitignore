@@ -23,6 +23,7 @@ kernel/.codex-smoke*/
 **/.codex-smoke*/
 ios
 pprof
+tmp/
 
 # Test binary, build with `go test -c`
 *.test

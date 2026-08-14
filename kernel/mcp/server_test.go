@@ -60,14 +60,68 @@ func TestExternalMCPToolAllowedHidesAgentOnlyTools(t *testing.T) {
 		model.Conf = oldConf
 	})
 
-	if externalMCPToolAllowed(&tools.Tool{Name: "frontend", Source: "native", Runtime: "kernel"}) {
-		t.Fatal("frontend should not be exposed through external MCP")
+	if externalMCPToolAllowed(&tools.Tool{Name: "frontend", Source: "native", Runtime: "kernel", AgentOnly: true}) {
+		t.Fatal("agent-only frontend should not be exposed through external MCP")
 	}
-	if externalMCPToolAllowed(&tools.Tool{Name: "question", Source: "native", Runtime: "kernel"}) {
-		t.Fatal("question should not be exposed through external MCP")
+	if externalMCPToolAllowed(&tools.Tool{Name: "question", Source: "native", Runtime: "kernel", AgentOnly: true}) {
+		t.Fatal("agent-only question should not be exposed through external MCP")
 	}
 	if !externalMCPToolAllowed(&tools.Tool{Name: "system", Source: "native", Runtime: "kernel"}) {
 		t.Fatal("normal native kernel tools should remain exposed")
+	}
+}
+
+func TestExternalMCPProjectionDoesNotAdvertiseOutputSchemas(t *testing.T) {
+	oldConf := model.Conf
+	model.Conf = nil
+	t.Cleanup(func() {
+		model.Conf = oldConf
+	})
+
+	server := newServer()
+	projection := newToolProjection(server, externalMCPToolAllowed)
+	projection.sync("structured", &tools.Tool{
+		Name:         "structured",
+		Description:  "Structured external tool",
+		InputSchema:  tools.ToolSchema{Type: "object"},
+		OutputSchema: &tools.ToolSchema{Type: "object"},
+		Handler: func(map[string]any) (tools.CallToolResult, error) {
+			return tools.CallToolResult{
+				Content:              []tools.ContentItem{{Type: "text", Text: "ok"}},
+				StructuredContent:    map[string]any{"status": "ok"},
+				StructuredContentSet: true,
+			}, nil
+		},
+	})
+	httpServer := httptest.NewServer(newHTTPHandler(server))
+	t.Cleanup(httpServer.Close)
+
+	client := mcpsdk.NewClient(&mcpsdk.Implementation{Name: "test-client", Version: "1.0.0"}, nil)
+	session, err := client.Connect(t.Context(), &mcpsdk.StreamableClientTransport{Endpoint: httpServer.URL}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		session.Close()
+	})
+
+	result, err := session.ListTools(t.Context(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(result.Tools) != 1 || result.Tools[0].Name != "structured" {
+		t.Fatalf("unexpected tools: %#v", result.Tools)
+	}
+	if result.Tools[0].OutputSchema != nil {
+		t.Fatalf("external MCP tool advertised output schema: %#v", result.Tools[0].OutputSchema)
+	}
+
+	callResult, err := session.CallTool(t.Context(), &mcpsdk.CallToolParams{Name: "structured"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if structured, ok := callResult.StructuredContent.(map[string]any); !ok || structured["status"] != "ok" {
+		t.Fatalf("structured content was not preserved: %#v", callResult.StructuredContent)
 	}
 }
 

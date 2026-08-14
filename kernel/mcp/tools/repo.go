@@ -43,7 +43,8 @@ var RepoTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
 		effectMap(ToolEffects{LocalRead: true}, "list", "diff", "search", "file_get", "file_open"),
 		effectMap(ToolEffects{LocalStateWrite: true}, "create", "tag", "untag", "purge", "file_export"),

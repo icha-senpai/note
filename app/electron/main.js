@@ -18,6 +18,13 @@
 // https://www.electronjs.org/docs/latest/tutorial/security
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true";
 
+const electron = require("electron");
+if (!electron.app) {
+    console.error("Scribli cannot start because Electron is running in Node mode.");
+    console.error("Unset ELECTRON_RUN_AS_NODE and launch Scribli again.");
+    process.exit(1);
+}
+
 const {
     net,
     app,
@@ -35,7 +42,7 @@ const {
     dialog,
     systemPreferences,
     powerMonitor
-} = require("electron");
+} = electron;
 const path = require("path");
 const fs = require("fs");
 const gNet = require("net");

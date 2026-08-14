@@ -42,7 +42,8 @@ var TemplateTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
 		effectMap(ToolEffects{LocalRead: true}, "search", "get", "render"),
 		effectMap(ToolEffects{LocalWrite: true}, "remove", "save_as", "create"),

@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -89,7 +90,7 @@ func (projection *toolProjection) sync(name string, tool *tools.Tool) {
 	if current != nil {
 		projection.server.RemoveTools(name)
 	}
-	if syncGuardedTool(projection.server, name, tool, func() bool {
+	if syncGuardedTool(projection.server, name, tool, false, func() bool {
 		return projection.allowsCall(name, tool)
 	}) {
 		projection.exposed[name] = tool
@@ -106,7 +107,7 @@ func (projection *toolProjection) allowsCall(name string, tool *tools.Tool) bool
 }
 
 func (projection *toolProjection) refresh() {
-	allTools := tools.GetAllTools()
+	allTools := tools.GetDirectTools()
 	registered := make(map[string]bool, len(allTools))
 	for _, tool := range allTools {
 		registered[tool.Name] = true
@@ -139,7 +140,7 @@ func externalMCPToolAllowed(tool *tools.Tool) bool {
 	if tool == nil || tool.Source == "mcp" || tool.Runtime == "mcp" {
 		return false
 	}
-	if tool.Name == "frontend" || tool.Name == "question" {
+	if tool.AgentOnly {
 		return false
 	}
 	if model.Conf == nil || model.Conf.AI == nil || model.Conf.AI.MCP == nil {
@@ -221,10 +222,10 @@ func serveHTTP(handler http.Handler) gin.HandlerFunc {
 }
 
 func syncTool(server *mcpsdk.Server, name string, tool *tools.Tool) {
-	syncGuardedTool(server, name, tool, nil)
+	syncGuardedTool(server, name, tool, true, nil)
 }
 
-func syncGuardedTool(server *mcpsdk.Server, name string, tool *tools.Tool, allowed func() bool) (synced bool) {
+func syncGuardedTool(server *mcpsdk.Server, name string, tool *tools.Tool, advertiseOutputSchema bool, allowed func() bool) (synced bool) {
 	if tool == nil {
 		server.RemoveTools(name)
 		return true
@@ -249,7 +250,7 @@ func syncGuardedTool(server *mcpsdk.Server, name string, tool *tools.Tool, allow
 		Description: tool.Description,
 		InputSchema: tool.InputSchema,
 	}
-	if tool.OutputSchema != nil {
+	if advertiseOutputSchema && tool.OutputSchema != nil {
 		sdkTool.OutputSchema = tool.OutputSchema
 	}
 	if tool.ReadOnlyHint {
@@ -287,6 +288,9 @@ func syncGuardedTool(server *mcpsdk.Server, name string, tool *tools.Tool, allow
 		if err != nil {
 			return toolErrorResult(err.Error()), nil
 		}
+		if tool.OutputSchema != nil {
+			result = ensureStructuredContent(result, name, arguments)
+		}
 		if err = validator.ValidateOutputContext(ctx, result); err != nil {
 			return toolErrorResult(fmt.Sprintf(
 				"invalid tool output after execution; execution result may have side effects and must not be retried automatically: %v",
@@ -314,6 +318,55 @@ func syncGuardedTool(server *mcpsdk.Server, name string, tool *tools.Tool, allow
 		}, nil
 	})
 	return true
+}
+
+func ensureStructuredContent(result tools.CallToolResult, toolName string, arguments map[string]any) tools.CallToolResult {
+	if result.IsError || result.HasStructuredContent() {
+		return result
+	}
+
+	action, _ := arguments["action"].(string)
+	if action == "" {
+		action = toolName
+	}
+
+	contentTypes := make([]string, 0, len(result.Content))
+	textLength := 0
+	message := "tool returned content"
+	for _, item := range result.Content {
+		contentTypes = append(contentTypes, item.Type)
+		if item.Type != "text" {
+			continue
+		}
+		textLength += len(item.Text)
+		if message == "tool returned content" {
+			text := strings.TrimSpace(item.Text)
+			if text != "" {
+				message = truncateRunes(text, 200)
+			}
+		}
+	}
+
+	result.StructuredContent = map[string]any{
+		"action":       action,
+		"status":       "ok",
+		"message":      message,
+		"contentTypes": contentTypes,
+		"textLength":   textLength,
+	}
+	result.StructuredContentSet = true
+	return result
+}
+
+func truncateRunes(text string, limit int) string {
+	if limit <= 0 {
+		return ""
+	}
+	runes := []rune(text)
+	if len(runes) <= limit {
+		return text
+	}
+	return string(runes[:limit]) + "..."
 }
 
 func convertContentItem(item tools.ContentItem) (mcpsdk.Content, error) {

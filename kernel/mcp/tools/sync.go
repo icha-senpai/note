@@ -32,7 +32,8 @@ var SyncTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeMixed,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeMixed,
 	ActionEffects: map[string]ToolEffects{
 		"perform":  {LocalRead: true, LocalWrite: true, DataEgress: true},
 		"upload":   {LocalRead: true, DataEgress: true},

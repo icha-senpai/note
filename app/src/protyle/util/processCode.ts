@@ -7,6 +7,8 @@ import {mindmapRender} from "../render/mindmapRender";
 import {flowchartRender} from "../render/flowchartRender";
 import {plantumlRender} from "../render/plantumlRender";
 import {htmlRender} from "../render/htmlRender";
+import {executableBlockRender} from "../render/executableBlockRender";
+import {canvasRender} from "../render/canvasRender";
 import {Constants} from "../../constants";
 import {escapeHtml} from "../../util/escape";
 
@@ -47,6 +49,11 @@ const RENDER_MAP: Record<string, (previewPanel: Element) => void> = {
     mindmap: mindmapRender,
     graphviz: graphvizRender,
     math: mathRender,
+    "scribli-chart": executableBlockRender,
+    "scribli-api": executableBlockRender,
+    "scribli-canvas": canvasRender,
+    "scribli-js": executableBlockRender,
+    "scribli-sql": executableBlockRender,
 };
 
 export const processRender = (previewPanel: Element) => {

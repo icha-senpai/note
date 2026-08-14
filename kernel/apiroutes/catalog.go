@@ -231,7 +231,7 @@ func routeIsRead(method, name, lowerPath string) bool {
 		return true
 	}
 	readPrefixes := []string{
-		"get", "list", "ls", "search", "render", "query", "diff", "check",
+		"get", "batchget", "list", "ls", "read", "search", "render", "query", "diff", "check",
 		"version", "currenttime", "bootprogress", "stat", "mcpstatus",
 	}
 	for _, prefix := range readPrefixes {

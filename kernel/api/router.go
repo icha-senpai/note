@@ -190,6 +190,8 @@ func ServeAPI(ginServer *gin.Engine) {
 
 	ginServer.Handle("POST", "/api/query/sql", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, SQL)
 	ginServer.Handle("POST", "/api/sqlite/flushTransaction", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, flushTransaction)
+	ginServer.Handle("POST", "/api/executableBlock/call", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, executableBlockCall)
+	ginServer.Handle("POST", "/api/canvas/call", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, canvasCall)
 
 	ginServer.Handle("POST", "/api/search/searchTag", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, searchTag)
 	ginServer.Handle("POST", "/api/search/searchTemplate", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, searchTemplate)

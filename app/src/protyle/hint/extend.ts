@@ -161,6 +161,11 @@ export const hintSlash = (key: string, protyle: IProtyle) => {
         value: "```",
         html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconCode"></use></svg><span class="b3-list-item__text">${window.scribli.languages.code}</span>${getHotkeyOrMarker(window.scribli.config.keymap.editor.insert.code.custom, "```" + window.scribli.languages.enterKey)}</div>`,
     }, {
+        filter: [window.scribli.languages.canvas, "canvas", "visual board", "board"],
+        id: "canvas",
+        value: "```scribli-canvas\n" + Lute.Caret + "\n```",
+        html: `<div class="b3-list-item__first"><svg class="b3-list-item__graphic"><use xlink:href="#iconBoth"></use></svg><span class="b3-list-item__text">${window.scribli.languages.canvas}</span></div>`,
+    }, {
         filter: [window.scribli.languages.table, "table", "biaoge", "bg"],
         id: "table",
         value: `| ${Lute.Caret} |  |  |\n| --- | --- | --- |\n|  |  |  |\n|  |  |  |`,

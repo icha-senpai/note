@@ -38,7 +38,8 @@ var AttrTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
 		effectMap(ToolEffects{LocalRead: true}, "get", "batch-get"),
 		effectMap(ToolEffects{LocalWrite: true}, "set"),

@@ -18,6 +18,7 @@ package tools
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/icha-senpai/note/kernel/sql"
@@ -34,7 +35,8 @@ var SQLTool = &Tool{
 		},
 		Required: []string{"action", "stmt"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: map[string]ToolEffects{
 		"":      {LocalRead: true},
 		"query": {LocalRead: true},
@@ -82,21 +84,33 @@ func sqlQuery(args map[string]any) (CallToolResult, error) {
 	}
 
 	if len(rows) == 0 {
-		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "no results"}}}, nil
+		return structuredTextResult("no results", map[string]any{
+			"action": "query",
+			"stmt":   stmt,
+			"count":  0,
+			"rows":   []map[string]any{},
+		}), nil
 	}
 
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("Query results (%d rows):\n\n", len(rows)))
-	sb.WriteString("| " + strings.Join(keysOf(rows[0]), " | ") + " |\n")
-	sb.WriteString("|" + strings.Repeat("---|", len(rows[0])) + "\n")
+	keys := keysOf(rows[0])
+	sb.WriteString("| " + strings.Join(keys, " | ") + " |\n")
+	sb.WriteString("|" + strings.Repeat("---|", len(keys)) + "\n")
 	for _, row := range rows {
 		vals := make([]string, 0, len(row))
-		for _, k := range keysOf(row) {
+		for _, k := range keys {
 			vals = append(vals, fmt.Sprintf("%v", row[k]))
 		}
 		sb.WriteString("| " + strings.Join(vals, " | ") + " |\n")
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action": "query",
+		"stmt":   stmt,
+		"count":  len(rows),
+		"keys":   keys,
+		"rows":   rows,
+	}), nil
 }
 
 func keysOf(m map[string]any) []string {
@@ -104,5 +118,6 @@ func keysOf(m map[string]any) []string {
 	for k := range m {
 		keys = append(keys, k)
 	}
+	sort.Strings(keys)
 	return keys
 }

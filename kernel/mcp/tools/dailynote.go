@@ -36,6 +36,7 @@ var DailynoteTool = &Tool{
 		},
 		Required: []string{"action", "notebook"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeLocal,
 	ActionEffects: effectMap(ToolEffects{LocalWrite: true}, "create", "append", "prepend"),
 	Handler:       dailynoteHandler,

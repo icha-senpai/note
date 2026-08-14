@@ -14,12 +14,18 @@ import (
 )
 
 var sensitiveTextRedactors = []*regexp.Regexp{
+	regexp.MustCompile(`(?is)-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----`),
 	regexp.MustCompile(`(?i)\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}`),
 	regexp.MustCompile(`(?i)\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,}`),
+	regexp.MustCompile(`\bglpat-[A-Za-z0-9_-]{20,}\b`),
+	regexp.MustCompile(`\bxox[baprs]-[A-Za-z0-9-]{20,}\b`),
+	regexp.MustCompile(`\bnpm_[A-Za-z0-9]{20,}\b`),
+	regexp.MustCompile(`\bpypi-[A-Za-z0-9_-]{20,}\b`),
+	regexp.MustCompile(`\bAIza[0-9A-Za-z_-]{30,}\b`),
 	regexp.MustCompile(`\bAKIA[0-9A-Z]{16}\b`),
 	regexp.MustCompile(`\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b`),
 	regexp.MustCompile(`(?i)\bBearer\s+[A-Za-z0-9._~+/=-]{16,}`),
-	regexp.MustCompile(`(?i)\b(api[_-]?key|access[_-]?token|refresh[_-]?token|auth[_-]?token|token|secret|password|passwd|authorization)\b\s*[:=]\s*["']?[^"',;\s]+`),
+	regexp.MustCompile(`(?i)\b(api[_-]?key|access[_-]?token|refresh[_-]?token|auth[_-]?token|private[_-]?key|token|secret|password|passwd|authorization)\b\s*[:=]\s*["']?[^"',;\s]+`),
 }
 
 func redactSensitiveText(text string) string {
@@ -49,4 +55,26 @@ func redactSensitiveText0(text string) string {
 		})
 	}
 	return text
+}
+
+func shouldRedactSecrets(args map[string]any) bool {
+	if v, ok := args["redactSecrets"].(bool); ok {
+		return v
+	}
+	return true
+}
+
+func maybeRedactSensitiveText(args map[string]any, text string) string {
+	if !shouldRedactSecrets(args) {
+		return text
+	}
+	return redactSensitiveText(text)
+}
+
+func maybeRedactStringMap(args map[string]any, values map[string]string) map[string]string {
+	next := map[string]string{}
+	for k, v := range values {
+		next[k] = maybeRedactSensitiveText(args, v)
+	}
+	return next
 }

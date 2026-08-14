@@ -31,3 +31,35 @@ func TestRedactSensitiveTextWithSearchMarks(t *testing.T) {
 		t.Fatalf("marked secret was not redacted: %s", output)
 	}
 }
+
+func TestRedactSensitiveTextAdditionalProviders(t *testing.T) {
+	slackToken := strings.Join([]string{
+		"xoxb",
+		"123456789012",
+		"123456789012",
+		"abcdefghijklmnopqrstuvwxyz",
+	}, "-")
+	input := strings.Join([]string{
+		`slack = "` + slackToken + `"`,
+		`gitlab = "glpat-aaaaaaaaaaaaaaaaaaaaaaaa"`,
+		`npm = "npm_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"`,
+		`google = "AIzaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"`,
+		"-----BEGIN PRIVATE KEY-----\nabc123\n-----END PRIVATE KEY-----",
+	}, "\n")
+	output := redactSensitiveText(input)
+	for _, leaked := range []string{"xoxb-", "glpat-", "npm_", "AIza", "PRIVATE KEY"} {
+		if strings.Contains(output, leaked) {
+			t.Fatalf("provider secret leaked %q in %s", leaked, output)
+		}
+	}
+}
+
+func TestMaybeRedactSensitiveTextDefaultsOn(t *testing.T) {
+	input := `token = "sk-proj-dddddddddddddddddddddddddddddddd"`
+	if output := maybeRedactSensitiveText(map[string]any{}, input); strings.Contains(output, "sk-proj") {
+		t.Fatalf("default redaction leaked token: %s", output)
+	}
+	if output := maybeRedactSensitiveText(map[string]any{"redactSecrets": false}, input); !strings.Contains(output, "sk-proj") {
+		t.Fatalf("explicit raw output was redacted: %s", output)
+	}
+}

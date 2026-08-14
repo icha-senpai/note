@@ -41,6 +41,10 @@ var BlockTool = &Tool{
 			"parentID":   {Type: "string", Description: "Parent block ID"},
 			"nextID":     {Type: "string", Description: "Next sibling block ID (for insert)"},
 			"previousID": {Type: "string", Description: "Previous sibling block ID (for insert)"},
+			"redactSecrets": {
+				Type:        "boolean",
+				Description: "Redact likely credentials/tokens from read responses. Defaults to true.",
+			},
 		},
 		Required: []string{"action"},
 	},
@@ -120,17 +124,19 @@ func blockGet(args map[string]any) (CallToolResult, error) {
 	if updated == "" {
 		updated = created
 	}
+	content := maybeRedactSensitiveText(args, b.Content)
+	markdown := maybeRedactSensitiveText(args, b.Markdown)
 	text := fmt.Sprintf(
 		"ID: %s\nType: %s\nHPath: %s\nContent: %s\nMarkdown: %s\nTags: %s\nCreated: %s\nUpdated: %s",
-		b.ID, b.Type, b.HPath, b.Content, b.Markdown, b.Tag, created, updated,
+		b.ID, b.Type, b.HPath, content, markdown, b.Tag, created, updated,
 	)
 	return structuredTextResult(text, map[string]any{
 		"action":   "get",
 		"id":       b.ID,
 		"type":     b.Type,
 		"hPath":    b.HPath,
-		"content":  b.Content,
-		"markdown": b.Markdown,
+		"content":  content,
+		"markdown": markdown,
 		"tags":     b.Tag,
 		"created":  created,
 		"updated":  updated,
@@ -143,7 +149,7 @@ func blockGetKramdown(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "id is required"}}, IsError: true}, nil
 	}
 
-	kramdown := model.GetBlockKramdown(id, "md")
+	kramdown := maybeRedactSensitiveText(args, model.GetBlockKramdown(id, "md"))
 	if kramdown == "" {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block not found or empty: " + id}}, IsError: true}, nil
 	}
@@ -178,12 +184,15 @@ func blockGetChildren(args map[string]any) (CallToolResult, error) {
 		if content == "" {
 			content = c.Content
 		}
+		displayContent := maybeRedactSensitiveText(args, c.Content)
+		displayMarkdown := maybeRedactSensitiveText(args, c.Markdown)
+		content = maybeRedactSensitiveText(args, content)
 		items = append(items, map[string]any{
 			"id":       c.ID,
 			"type":     c.Type,
 			"subType":  c.SubType,
-			"content":  c.Content,
-			"markdown": c.Markdown,
+			"content":  displayContent,
+			"markdown": displayMarkdown,
 		})
 		if len(content) > 200 {
 			content = content[:200] + "..."
@@ -618,7 +627,7 @@ func blockDom(args map[string]any) (CallToolResult, error) {
 	if id == "" {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "id is required"}}, IsError: true}, nil
 	}
-	dom := model.GetBlockDOM(id)
+	dom := maybeRedactSensitiveText(args, model.GetBlockDOM(id))
 	if dom == "" {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block not found or empty: " + id}}, IsError: true}, nil
 	}
@@ -707,6 +716,7 @@ func blockBatchKramdown(args map[string]any) (CallToolResult, error) {
 	sb.WriteString(fmt.Sprintf("Batch kramdown %d blocks (found %d):\n\n", len(ids), len(kramdowns)))
 	for _, id := range ids {
 		if kd, ok := kramdowns[id]; ok {
+			kd = maybeRedactSensitiveText(args, kd)
 			sb.WriteString(fmt.Sprintf("--- %s ---\n%s\n\n", id, kd))
 		} else {
 			sb.WriteString(fmt.Sprintf("--- %s ---\n(not found)\n\n", id))
@@ -716,6 +726,7 @@ func blockBatchKramdown(args map[string]any) (CallToolResult, error) {
 	items := make([]map[string]any, 0, len(ids))
 	for _, id := range ids {
 		kramdown, found := kramdowns[id]
+		kramdown = maybeRedactSensitiveText(args, kramdown)
 		items = append(items, map[string]any{"id": id, "found": found, "kramdown": kramdown})
 	}
 	return structuredTextResult(sb.String(), map[string]any{

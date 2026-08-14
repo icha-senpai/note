@@ -19,7 +19,7 @@
     "build:desktop": "webpack --mode production --config webpack.desktop.js",
     "build:export": "webpack --mode production --config webpack.export.js",
     "gen:types": "tsc -d",
-    "start": "cross-env NODE_ENV=development electron ./electron/main.js",
+    "start": "node ./scripts/start-electron.js",
     "install:electron": "node node_modules/electron/install.js",
     "dist": "electron-builder --config electron-builder.yml --publish=never",
     "dist-arm64": "electron-builder --arm64 --config electron-builder-arm64.yml --publish=never"

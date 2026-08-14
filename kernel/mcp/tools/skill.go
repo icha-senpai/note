@@ -38,7 +38,8 @@ var SkillTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: map[string]ToolEffects{
 		"":        {LocalRead: true},
 		"load":    {LocalRead: true},

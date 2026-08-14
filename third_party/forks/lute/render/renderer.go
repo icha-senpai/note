@@ -720,7 +720,7 @@ func (r *BaseRenderer) NodeAttrsStr(node *ast.Node) (ret string) {
 	return
 }
 
-var languagesNoHighlight = []string{"mermaid", "echarts", "abc", "graphviz", "mindmap", "flowchart", "plantuml", "infographic"}
+var languagesNoHighlight = []string{"mermaid", "echarts", "abc", "graphviz", "mindmap", "flowchart", "plantuml", "infographic", "scribli-canvas"}
 
 func NoHighlight(language string) bool {
 	if "" == language {

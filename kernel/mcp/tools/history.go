@@ -41,7 +41,8 @@ var HistoryTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
 		effectMap(ToolEffects{LocalRead: true}, "list", "search", "get"),
 		effectMap(ToolEffects{LocalWrite: true}, "rollback", "clear"),

@@ -36,6 +36,7 @@ var ImportTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeLocal,
 	ActionEffects: effectMap(ToolEffects{LocalRead: true, LocalWrite: true}, "md", "sy", "data"),
 	Handler:       importHandler,
@@ -82,7 +83,12 @@ func importMd(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "import md failed: " + err.Error()}}, IsError: true}, nil
 	}
 	util.PushReloadFiletree()
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "markdown imported to notebook " + notebook}}}, nil
+	return structuredTextResult("markdown imported to notebook "+notebook, map[string]any{
+		"action":     "md",
+		"notebook":   notebook,
+		"path":       absPath,
+		"targetPath": targetPath,
+	}), nil
 }
 
 func importSy(args map[string]any) (CallToolResult, error) {
@@ -106,7 +112,12 @@ func importSy(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "import sy failed: " + err.Error()}}, IsError: true}, nil
 	}
 	util.PushReloadFiletree()
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "sy archive imported to notebook " + notebook}}}, nil
+	return structuredTextResult("sy archive imported to notebook "+notebook, map[string]any{
+		"action":     "sy",
+		"notebook":   notebook,
+		"path":       absPath,
+		"targetPath": targetPath,
+	}), nil
 }
 
 func importData(args map[string]any) (CallToolResult, error) {
@@ -121,5 +132,8 @@ func importData(args map[string]any) (CallToolResult, error) {
 	if err := model.ImportData(absPath); err != nil {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "import data failed: " + err.Error()}}, IsError: true}, nil
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "data backup imported"}}}, nil
+	return structuredTextResult("data backup imported", map[string]any{
+		"action": "data",
+		"path":   absPath,
+	}), nil
 }

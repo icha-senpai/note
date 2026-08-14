@@ -36,10 +36,15 @@ var ExportTool = &Tool{
 			"action": {Type: "string", Description: "Operation", Enum: []string{"md", "html", "preview", "docx", "sy", "md-zip", "data"}},
 			"id":     {Type: "string", Description: "Document block ID (for md, html, preview, docx, sy, md-zip)"},
 			"output": {Type: "string", Description: "Output .docx file path or output directory (required for docx, optional for others)"},
+			"redactSecrets": {
+				Type:        "boolean",
+				Description: "Redact likely credentials/tokens from inline md/html/preview responses. Defaults to true.",
+			},
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: effectMap(
 		ToolEffects{LocalRead: true, LocalStateWrite: true},
 		"md", "html", "preview", "docx", "sy", "md-zip", "data",
@@ -85,8 +90,15 @@ func exportMd(args map[string]any) (CallToolResult, error) {
 	if content == "" {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "export failed or empty"}}, IsError: true}, nil
 	}
+	content = maybeRedactSensitiveText(args, content)
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("# %s\n\n%s", hPath, content)}}}, nil
+	text := fmt.Sprintf("# %s\n\n%s", hPath, content)
+	return structuredTextResult(text, map[string]any{
+		"action":   "md",
+		"id":       id,
+		"hPath":    hPath,
+		"markdown": content,
+	}), nil
 }
 
 func exportHtml(args map[string]any) (CallToolResult, error) {
@@ -98,7 +110,12 @@ func exportHtml(args map[string]any) (CallToolResult, error) {
 	if dom == "" {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "export failed or empty"}}, IsError: true}, nil
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: dom}}}, nil
+	dom = maybeRedactSensitiveText(args, dom)
+	return structuredTextResult(dom, map[string]any{
+		"action": "html",
+		"id":     id,
+		"html":   dom,
+	}), nil
 }
 
 func exportPreview(args map[string]any) (CallToolResult, error) {
@@ -110,7 +127,12 @@ func exportPreview(args map[string]any) (CallToolResult, error) {
 	if html == "" {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "export preview failed or empty"}}, IsError: true}, nil
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: html}}}, nil
+	html = maybeRedactSensitiveText(args, html)
+	return structuredTextResult(html, map[string]any{
+		"action": "preview",
+		"id":     id,
+		"html":   html,
+	}), nil
 }
 
 func exportDocx(args map[string]any) (CallToolResult, error) {
@@ -127,7 +149,12 @@ func exportDocx(args map[string]any) (CallToolResult, error) {
 	if err != nil {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "export docx failed: " + err.Error()}}, IsError: true}, nil
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("exported docx to: %s", fullPath)}}}, nil
+	return structuredTextResult(fmt.Sprintf("exported docx to: %s", fullPath), map[string]any{
+		"action": "docx",
+		"id":     id,
+		"output": output,
+		"path":   fullPath,
+	}), nil
 }
 
 func exportDocxToOutput(id, output string) (string, error) {
@@ -164,7 +191,11 @@ func exportSy(args map[string]any) (CallToolResult, error) {
 	if zipPath == "" {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "export sy failed"}}, IsError: true}, nil
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("exported sy.zip to: %s", zipPath)}}}, nil
+	return structuredTextResult(fmt.Sprintf("exported sy.zip to: %s", zipPath), map[string]any{
+		"action": "sy",
+		"id":     id,
+		"path":   zipPath,
+	}), nil
 }
 
 func exportMdZip(args map[string]any) (CallToolResult, error) {
@@ -176,7 +207,11 @@ func exportMdZip(args map[string]any) (CallToolResult, error) {
 	if zipPath == "" {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "export md-zip failed"}}, IsError: true}, nil
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("exported md zip to: %s", zipPath)}}}, nil
+	return structuredTextResult(fmt.Sprintf("exported md zip to: %s", zipPath), map[string]any{
+		"action": "md-zip",
+		"id":     id,
+		"path":   zipPath,
+	}), nil
 }
 
 func exportData(args map[string]any) (CallToolResult, error) {
@@ -184,5 +219,8 @@ func exportData(args map[string]any) (CallToolResult, error) {
 	if err != nil {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "export data failed: " + err.Error()}}, IsError: true}, nil
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("exported data backup to: %s", zipPath)}}}, nil
+	return structuredTextResult(fmt.Sprintf("exported data backup to: %s", zipPath), map[string]any{
+		"action": "data",
+		"path":   zipPath,
+	}), nil
 }

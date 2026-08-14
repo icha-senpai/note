@@ -27,6 +27,61 @@ func TestGetAllToolsSorted(t *testing.T) {
 	}
 }
 
+func TestGetDirectToolsExcludesAgentOnlyTools(t *testing.T) {
+	allTools := GetAllTools()
+	directTools := GetDirectTools()
+	allNames := map[string]bool{}
+	directNames := map[string]bool{}
+	for _, tool := range allTools {
+		allNames[tool.Name] = true
+	}
+	for _, tool := range directTools {
+		directNames[tool.Name] = true
+		if tool.AgentOnly {
+			t.Fatalf("agent-only tool %q was returned by GetDirectTools", tool.Name)
+		}
+	}
+
+	for _, name := range []string{"frontend", "question"} {
+		if !allNames[name] {
+			t.Fatalf("%s should remain available to the in-app agent", name)
+		}
+		if directNames[name] {
+			t.Fatalf("%s should not be exposed to direct MCP clients", name)
+		}
+	}
+}
+
+func TestDirectToolsExposeStructuredOutputSchemas(t *testing.T) {
+	for _, tool := range GetDirectTools() {
+		if tool.OutputSchema == nil {
+			t.Fatalf("%s missing output schema", tool.Name)
+		}
+		if tool.OutputSchema.Type != "object" {
+			t.Fatalf("%s output schema type = %q, want object", tool.Name, tool.OutputSchema.Type)
+		}
+	}
+}
+
+func TestDirectToolsDoNotExposeTemporarySmokeAliases(t *testing.T) {
+	for _, name := range []string{"system.version", "system.current_time", "system.workspace", "workspace.info", "workspace.list"} {
+		if tool := GetTool(name); tool != nil {
+			t.Fatalf("temporary duplicate alias %s should not be registered", name)
+		}
+	}
+}
+
+func TestParentSmokeToolsAreMarkedReadOnly(t *testing.T) {
+	for _, tool := range []*Tool{SystemTool, WorkspaceTool, APICatalogTool, APIRouteTool} {
+		if tool == nil {
+			t.Fatal("smoke tool is nil")
+		}
+		if !tool.ReadOnlyHint {
+			t.Fatalf("%s should advertise readOnlyHint for Pro/read-only connector use", tool.Name)
+		}
+	}
+}
+
 func TestNativeToolsDeclareEffectMetadata(t *testing.T) {
 	validScopes := map[string]bool{
 		EffectScopeLocal:    true,

@@ -86,6 +86,17 @@ func GetAllTools() []*Tool {
 	return result
 }
 
+func GetDirectTools() []*Tool {
+	allTools := GetAllTools()
+	result := make([]*Tool, 0, len(allTools))
+	for _, tool := range allTools {
+		if tool != nil && !tool.AgentOnly {
+			result = append(result, tool)
+		}
+	}
+	return result
+}
+
 func SetTool(name string, t *Tool) error {
 	validator, err := CompileToolValidator(t)
 	if err != nil {

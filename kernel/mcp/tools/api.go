@@ -53,6 +53,7 @@ var APICatalogTool = &Tool{
 			"limit":   {Type: "number", Description: "Maximum number of routes to return. Defaults to 100; maximum 500."},
 		},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeLocal,
 	ActionEffects: effectMap(ToolEffects{LocalRead: true}, ""),
 	Handler:       apiCatalogHandler,
@@ -71,6 +72,7 @@ var APIRouteTool = &Tool{
 		},
 		Required: []string{"path"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeLocal,
 	ActionEffects: effectMap(ToolEffects{LocalRead: true}, ""),
 	Handler:       apiRouteHandler,
@@ -103,7 +105,8 @@ var APICallTool = &Tool{
 		},
 		Required: []string{"path"},
 	},
-	EffectScope: EffectScopeMixed,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeMixed,
 	ActionEffects: effectMap(
 		ToolEffects{LocalRead: true, LocalWrite: true, DataEgress: true},
 		"", "GET", "POST", "PUT", "DELETE", "PATCH",
@@ -152,7 +155,8 @@ func apiCatalogHandler(args map[string]any) (CallToolResult, error) {
 		return families[i]["family"].(string) < families[j]["family"].(string)
 	})
 
-	return jsonToolResult(map[string]any{
+	return structuredJSONResult("api catalog returned", map[string]any{
+		"action":         "catalog",
 		"totalRoutes":    len(apiroutes.List()),
 		"matchedRoutes":  len(filtered),
 		"returnedRoutes": min(limit, len(filtered)),
@@ -182,14 +186,21 @@ func apiRouteHandler(args map[string]any) (CallToolResult, error) {
 		return errorResult("api_route error: route not found in api_catalog"), nil
 	}
 
-	return jsonToolResult(map[string]any{
-		"routes": routes,
+	details := make([]map[string]any, 0, len(routes))
+	for _, route := range routes {
+		details = append(details, apiRouteDetail(route))
+	}
+	firstSchema := apiRequestSchema(routes[0])
+	return structuredJSONResult("api route returned", map[string]any{
+		"action":        "route",
+		"routes":        details,
+		"requestSchema": firstSchema,
 		"apiCall": map[string]any{
-			"tool":   "api_call",
-			"path":   apiPath,
-			"method": routes[0].Method,
+			"tool":          "api_call",
+			"arguments":     apiCallArguments(routes[0], apiPath),
+			"requestSchema": firstSchema,
 		},
-		"note": "Payload schemas are not generated yet; use docs/API.md, existing MCP tools, or frontend/API source examples when payload shape is unclear.",
+		"note": "requestSchema is exact when confidence is exact; otherwise it is inferred from route naming and should be checked against source if the API rejects the payload.",
 	})
 }
 
@@ -248,8 +259,21 @@ func apiCallHandler(args map[string]any) (CallToolResult, error) {
 		text += "\n\n[response truncated at byte limit]"
 	}
 
-	result := fmt.Sprintf("HTTP %d %s\n%s\n\n%s", resp.StatusCode, resp.Status, resp.Header.Get("Content-Type"), text)
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: result}}, IsError: resp.StatusCode >= 400}, nil
+	message := fmt.Sprintf("HTTP %d %s\n%s\n\n%s", resp.StatusCode, resp.Status, resp.Header.Get("Content-Type"), text)
+	status := "ok"
+	if resp.StatusCode >= 400 {
+		status = "error"
+	}
+	result := structuredTextResult(message, map[string]any{
+		"action":      "call",
+		"status":      status,
+		"statusCode":  resp.StatusCode,
+		"httpStatus":  resp.Status,
+		"contentType": resp.Header.Get("Content-Type"),
+		"body":        text,
+	})
+	result.IsError = resp.StatusCode >= 400
+	return result, nil
 }
 
 func apiHTTPClient(requestURL string) *http.Client {
@@ -398,6 +422,18 @@ func jsonToolResult(v any) (CallToolResult, error) {
 		return errorResult("marshal result failed: " + err.Error()), nil
 	}
 	return CallToolResult{Content: []ContentItem{{Type: "text", Text: string(data)}}}, nil
+}
+
+func structuredJSONResult(message string, structured map[string]any) (CallToolResult, error) {
+	data, err := json.MarshalIndent(structured, "", "  ")
+	if err != nil {
+		return errorResult("marshal result failed: " + err.Error()), nil
+	}
+	result := structuredTextResult(string(data), structured)
+	if content, ok := result.StructuredContent.(map[string]any); ok {
+		content["message"] = message
+	}
+	return result, nil
 }
 
 func errorResult(message string) CallToolResult {

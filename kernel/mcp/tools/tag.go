@@ -37,7 +37,8 @@ var TagTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
 		effectMap(ToolEffects{LocalRead: true}, "list"),
 		effectMap(ToolEffects{LocalWrite: true}, "rename", "remove"),

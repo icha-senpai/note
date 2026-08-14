@@ -54,6 +54,10 @@ var DatabaseTool = &Tool{
 			"itemID":             {Type: "string", Description: "Item ID (for item_update)"},
 			"itemIDs":            {Type: "string", Description: "Comma-separated item IDs (for item_remove)"},
 			"value":              {Type: "string", Description: "JSON value for the cell (for item_update)"},
+			"redactSecrets": {
+				Type:        "boolean",
+				Description: "Redact likely credentials/tokens from read responses. Defaults to true.",
+			},
 		},
 		Required: []string{"action"},
 	},
@@ -246,7 +250,7 @@ func databaseRender(args map[string]any) (CallToolResult, error) {
 			for _, row := range table.Rows {
 				vals := make([]string, 0, len(row.Cells))
 				for _, cell := range row.Cells {
-					vals = append(vals, databaseCellDisplay(cell.Value))
+					vals = append(vals, maybeRedactSensitiveText(args, databaseCellDisplay(cell.Value)))
 				}
 				sb.WriteString(strings.Join(vals, " | ") + "\n")
 			}
@@ -259,7 +263,7 @@ func databaseRender(args map[string]any) (CallToolResult, error) {
 		"query":    query,
 		"page":     page,
 		"pageSize": pageSize,
-		"rows":     databaseRenderedRows(viewable),
+		"rows":     databaseRenderedRows(args, viewable),
 	}), nil
 }
 
@@ -493,7 +497,7 @@ func databaseViewSummaries(attrView *av.AttributeView) []map[string]any {
 	return views
 }
 
-func databaseRenderedRows(viewable av.Viewable) []map[string]any {
+func databaseRenderedRows(args map[string]any, viewable av.Viewable) []map[string]any {
 	table, ok := viewable.(*av.Table)
 	if !ok || table == nil {
 		return []map[string]any{}
@@ -511,7 +515,7 @@ func databaseRenderedRows(viewable av.Viewable) []map[string]any {
 			cells = append(cells, map[string]any{
 				"keyID":     cell.ID,
 				"valueType": string(cell.ValueType),
-				"value":     databaseCellDisplay(cell.Value),
+				"value":     maybeRedactSensitiveText(args, databaseCellDisplay(cell.Value)),
 			})
 		}
 		rows = append(rows, map[string]any{"id": row.ID, "cells": cells})

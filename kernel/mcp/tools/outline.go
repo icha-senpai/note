@@ -34,6 +34,7 @@ var OutlineTool = &Tool{
 		},
 		Required: []string{"action", "id"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeLocal,
 	ActionEffects: effectMap(ToolEffects{LocalRead: true}, "get"),
 	Handler:       outlineHandler,

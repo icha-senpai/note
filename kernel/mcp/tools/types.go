@@ -66,6 +66,7 @@ type Tool struct {
 	Runtime      string `json:"runtime,omitempty"`
 
 	ReadOnlyHint bool `json:"readOnlyHint,omitempty"`
+	AgentOnly    bool `json:"-"`
 
 	EffectScope string `json:"effectScope,omitempty"`
 

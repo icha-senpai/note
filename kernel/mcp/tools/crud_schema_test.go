@@ -15,8 +15,25 @@ import (
 	"github.com/icha-senpai/note/kernel/util"
 )
 
-func TestCoreCRUDToolsExposeStructuredOutputSchemas(t *testing.T) {
-	for _, tool := range []*Tool{BlockTool, DatabaseTool, DocumentTool, TodoWriteTool} {
+func TestCoreWorkflowToolsExposeStructuredOutputSchemas(t *testing.T) {
+	for _, tool := range []*Tool{
+		APICallTool,
+		APICatalogTool,
+		APIRouteTool,
+		BlockTool,
+		CanvasTool,
+		DatabaseTool,
+		DocumentTool,
+		ExecutableBlockTool,
+		ExportTool,
+		ImportTool,
+		NotebookTool,
+		SearchTool,
+		SQLTool,
+		SystemTool,
+		TodoWriteTool,
+		WorkspaceTool,
+	} {
 		if tool.OutputSchema == nil {
 			t.Fatalf("%s missing output schema", tool.Name)
 		}
@@ -44,6 +61,18 @@ func TestDocumentToolExposesUpdateAction(t *testing.T) {
 		}
 	}
 	t.Fatalf("document action enum missing update: %#v", action.Enum)
+}
+
+func TestReadToolsExposeRedactSecretsOption(t *testing.T) {
+	for _, tool := range []*Tool{BlockTool, DatabaseTool, DocumentTool, ExportTool} {
+		prop, ok := tool.InputSchema.Properties["redactSecrets"]
+		if !ok {
+			t.Fatalf("%s missing redactSecrets input", tool.Name)
+		}
+		if prop.Type != "boolean" {
+			t.Fatalf("%s redactSecrets type = %q, want boolean", tool.Name, prop.Type)
+		}
+	}
 }
 
 func TestStructuredTextResultSetsStructuredContent(t *testing.T) {

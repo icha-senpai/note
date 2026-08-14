@@ -50,6 +50,7 @@ var QuestionTool = &Tool{
 		Required: []string{"questions"},
 	},
 	EffectScope:   EffectScopeLocal,
+	AgentOnly:     true,
 	ActionEffects: effectMap(ToolEffects{}, ""),
 	Handler:       questionHandler,
 }

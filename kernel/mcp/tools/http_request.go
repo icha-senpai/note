@@ -46,6 +46,7 @@ var HTTPRequestTool = &Tool{
 		},
 		Required: []string{"url"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	ActionEffects: effectMap(ToolEffects{DataEgress: true}, "", "get", "post", "put", "delete", "patch"),
 	Handler:       httpRequestHandler,
 }

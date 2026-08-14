@@ -50,7 +50,8 @@ var FileTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
 		effectMap(ToolEffects{LocalRead: true}, "list", "read", "grep", "find", "stat"),
 		effectMap(ToolEffects{LocalWrite: true}, "write", "delete", "rename"),

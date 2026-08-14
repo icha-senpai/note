@@ -30,6 +30,7 @@ var WebSearchTool = &Tool{
 		},
 		Required: []string{"query"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeExternal,
 	ActionEffects: effectMap(ToolEffects{DataEgress: true, ExternalCost: true}, ""),
 	Handler:       webSearchHandler,

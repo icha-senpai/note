@@ -39,6 +39,7 @@ var UnzipTool = &Tool{
 		},
 		Required: []string{"zipPath", "destPath"},
 	},
+	OutputSchema:  structuredOutputSchema(),
 	EffectScope:   EffectScopeLocal,
 	ActionEffects: effectMap(ToolEffects{LocalRead: true, LocalWrite: true}, ""),
 	Handler:       unzipHandler,

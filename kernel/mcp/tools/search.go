@@ -44,7 +44,8 @@ var SearchTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeMixed,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeMixed,
 	ActionEffects: map[string]ToolEffects{
 		"fulltext": {LocalRead: true},
 		"semantic": {LocalRead: true, DataEgress: true, ExternalCost: true},
@@ -115,11 +116,17 @@ func fulltextSearch(args map[string]any) (CallToolResult, error) {
 	)
 
 	if matchedCount == 0 {
-		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "No results found."}}}, nil
+		return structuredTextResult("No results found.", map[string]any{
+			"action": "fulltext",
+			"query":  query,
+			"count":  0,
+			"items":  []map[string]any{},
+		}), nil
 	}
 
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("Found %d results (page %d/%d):\n\n", matchedCount, page, pageCount))
+	items := make([]map[string]any, 0, len(blocks))
 	for _, b := range blocks {
 		content := b.Markdown
 		if content == "" {
@@ -130,13 +137,30 @@ func fulltextSearch(args map[string]any) (CallToolResult, error) {
 			content = content[:200] + "..."
 		}
 		sb.WriteString(fmt.Sprintf("- [%s] %s\n  %s\n  id: %s\n\n", b.HPath, b.Type, content, b.ID))
+		items = append(items, map[string]any{
+			"id":       b.ID,
+			"hPath":    b.HPath,
+			"notebook": b.Box,
+			"path":     b.Path,
+			"type":     b.Type,
+			"subtype":  b.SubType,
+			"content":  content,
+		})
 	}
 	if docMode {
 		sb.WriteString(fmt.Sprintf("(grouped by document, %d documents matched)\n", matchedRootCount))
 	}
-	return CallToolResult{
-		Content: []ContentItem{{Type: "text", Text: sb.String()}},
-	}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":           "fulltext",
+		"query":            query,
+		"page":             page,
+		"pageSize":         pageSize,
+		"pageCount":        pageCount,
+		"count":            matchedCount,
+		"matchedRootCount": matchedRootCount,
+		"groupedByDoc":     docMode,
+		"items":            items,
+	}), nil
 }
 
 func semanticSearch(args map[string]any) (CallToolResult, error) {
@@ -166,11 +190,17 @@ func semanticSearch(args map[string]any) (CallToolResult, error) {
 	)
 
 	if matchedCount == 0 {
-		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "No semantic search results. Make sure AI embedding is configured in Scribli settings."}}}, nil
+		return structuredTextResult("No semantic search results. Make sure AI embedding is configured in Scribli settings.", map[string]any{
+			"action": "semantic",
+			"query":  query,
+			"count":  0,
+			"items":  []map[string]any{},
+		}), nil
 	}
 
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("Found %d semantic results (page %d/%d):\n\n", matchedCount, page, pageCount))
+	items := make([]map[string]any, 0, len(blocks))
 	for _, b := range blocks {
 		content := b.Markdown
 		if content == "" {
@@ -181,13 +211,29 @@ func semanticSearch(args map[string]any) (CallToolResult, error) {
 			content = content[:200] + "..."
 		}
 		sb.WriteString(fmt.Sprintf("- [%s] %s\n  %s\n  id: %s\n\n", b.HPath, b.Type, content, b.ID))
+		items = append(items, map[string]any{
+			"id":       b.ID,
+			"hPath":    b.HPath,
+			"notebook": b.Box,
+			"path":     b.Path,
+			"type":     b.Type,
+			"subtype":  b.SubType,
+			"content":  content,
+		})
 	}
 	if matchedRootCount > 0 {
 		sb.WriteString(fmt.Sprintf("(%d documents matched)\n", matchedRootCount))
 	}
-	return CallToolResult{
-		Content: []ContentItem{{Type: "text", Text: sb.String()}},
-	}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":           "semantic",
+		"query":            query,
+		"page":             page,
+		"pageSize":         pageSize,
+		"pageCount":        pageCount,
+		"count":            matchedCount,
+		"matchedRootCount": matchedRootCount,
+		"items":            items,
+	}), nil
 }
 
 func assetSearch(args map[string]any) (CallToolResult, error) {
@@ -228,11 +274,17 @@ func assetSearch(args map[string]any) (CallToolResult, error) {
 	}
 
 	if matchedAssetCount == 0 {
-		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "No asset content results found."}}}, nil
+		return structuredTextResult("No asset content results found.", map[string]any{
+			"action": "asset",
+			"query":  query,
+			"count":  0,
+			"items":  []map[string]any{},
+		}), nil
 	}
 
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("Found %d asset matches (page %d/%d):\n\n", matchedAssetCount, page, pageCount))
+	items := make([]map[string]any, 0, len(assetContents))
 	for _, a := range assetContents {
 		content := redactSensitiveText(a.Content)
 		if len(content) > 200 {
@@ -243,10 +295,24 @@ func assetSearch(args map[string]any) (CallToolResult, error) {
 		sb.WriteString(fmt.Sprintf("  size: %s\n", a.HSize))
 		sb.WriteString(fmt.Sprintf("  content: %s\n", content))
 		sb.WriteString(fmt.Sprintf("  id: %s\n\n", a.ID))
+		items = append(items, map[string]any{
+			"id":      a.ID,
+			"name":    a.Name,
+			"ext":     a.Ext,
+			"path":    a.Path,
+			"size":    a.HSize,
+			"content": content,
+		})
 	}
-	return CallToolResult{
-		Content: []ContentItem{{Type: "text", Text: sb.String()}},
-	}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":    "asset",
+		"query":     query,
+		"page":      page,
+		"pageSize":  pageSize,
+		"pageCount": pageCount,
+		"count":     matchedAssetCount,
+		"items":     items,
+	}), nil
 }
 
 func getAssetHandler(args map[string]any) (CallToolResult, error) {
@@ -271,9 +337,15 @@ func getAssetHandler(args map[string]any) (CallToolResult, error) {
 	sb.WriteString(fmt.Sprintf("ID: %s\n", a.ID))
 	sb.WriteString("\nContent:\n")
 	sb.WriteString(redactSensitiveText(a.Content))
-	return CallToolResult{
-		Content: []ContentItem{{Type: "text", Text: sb.String()}},
-	}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":  "getasset",
+		"id":      a.ID,
+		"name":    a.Name,
+		"ext":     a.Ext,
+		"path":    a.Path,
+		"size":    a.HSize,
+		"content": redactSensitiveText(a.Content),
+	}), nil
 }
 
 func parseStringSlice(v any) []string {

@@ -39,7 +39,8 @@ var NotebookTool = &Tool{
 		},
 		Required: []string{"action"},
 	},
-	EffectScope: EffectScopeLocal,
+	OutputSchema: structuredOutputSchema(),
+	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
 		effectMap(ToolEffects{LocalRead: true}, "list"),
 		effectMap(ToolEffects{LocalStateWrite: true}, "open", "close"),
@@ -86,10 +87,16 @@ func notebookList(args map[string]any) (CallToolResult, error) {
 
 	var sb strings.Builder
 	sb.WriteString(fmt.Sprintf("Notebooks (%d):\n\n", len(notebooks)))
+	items := make([]map[string]any, 0, len(notebooks))
 	for _, nb := range notebooks {
 		sb.WriteString(fmt.Sprintf("- %s (id: %s, icon: %s, closed: %v)\n", nb.Name, nb.ID, nb.Icon, nb.Closed))
+		items = append(items, notebookSummary(nb))
 	}
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action": "list",
+		"count":  len(items),
+		"items":  items,
+	}), nil
 }
 
 func notebookCreate(args map[string]any) (CallToolResult, error) {
@@ -109,7 +116,11 @@ func notebookCreate(args map[string]any) (CallToolResult, error) {
 		util.PushEvent(evt)
 	}
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "notebook created: " + name + " (id: " + id + ")"}}}, nil
+	return structuredTextResult("notebook created: "+name+" (id: "+id+")", map[string]any{
+		"action": "create",
+		"id":     id,
+		"name":   name,
+	}), nil
 }
 
 func notebookRename(args map[string]any) (CallToolResult, error) {
@@ -144,7 +155,12 @@ func notebookRename(args map[string]any) (CallToolResult, error) {
 	evt.Data = map[string]any{"box": id}
 	util.PushEvent(evt)
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "notebook renamed: " + id + " -> " + name}}}, nil
+	return structuredTextResult("notebook renamed: "+id+" -> "+name, map[string]any{
+		"action":   "rename",
+		"id":       id,
+		"name":     name,
+		"reopened": reclose,
+	}), nil
 }
 
 func notebookRemove(args map[string]any) (CallToolResult, error) {
@@ -161,7 +177,10 @@ func notebookRemove(args map[string]any) (CallToolResult, error) {
 	evt.Data = map[string]any{"box": id}
 	util.PushEvent(evt)
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "notebook removed: " + id}}}, nil
+	return structuredTextResult("notebook removed: "+id, map[string]any{
+		"action": "remove",
+		"id":     id,
+	}), nil
 }
 
 func notebookOpen(args map[string]any) (CallToolResult, error) {
@@ -187,7 +206,11 @@ func notebookOpen(args map[string]any) (CallToolResult, error) {
 	time.Sleep(1 * time.Second)
 	sql.FlushQueue()
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "notebook opened: " + id}}}, nil
+	return structuredTextResult("notebook opened: "+id, map[string]any{
+		"action":  "open",
+		"id":      id,
+		"existed": existed,
+	}), nil
 }
 
 func notebookClose(args map[string]any) (CallToolResult, error) {
@@ -201,7 +224,10 @@ func notebookClose(args map[string]any) (CallToolResult, error) {
 	time.Sleep(1 * time.Second)
 	sql.FlushQueue()
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "notebook closed: " + id}}}, nil
+	return structuredTextResult("notebook closed: "+id, map[string]any{
+		"action": "close",
+		"id":     id,
+	}), nil
 }
 
 func notebookSetIcon(args map[string]any) (CallToolResult, error) {
@@ -227,7 +253,11 @@ func notebookSetIcon(args map[string]any) (CallToolResult, error) {
 	model.SetBoxIcon(id, icon)
 	util.PushReloadFiletree()
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: "notebook icon set: " + id + " -> " + icon}}}, nil
+	return structuredTextResult("notebook icon set: "+id+" -> "+icon, map[string]any{
+		"action": "set_icon",
+		"id":     id,
+		"icon":   icon,
+	}), nil
 }
 
 func notebookRandomIcon(args map[string]any) (CallToolResult, error) {
@@ -257,15 +287,38 @@ func notebookRandomIcon(args map[string]any) (CallToolResult, error) {
 	}
 
 	var sb strings.Builder
+	items := make([]map[string]any, 0, len(targets))
 	sb.WriteString(fmt.Sprintf("Randomized icons for %d notebook(s):\n", len(targets)))
 	for _, nb := range targets {
 		oldIcon := nb.Icon
 		newIcon := randomEmoji()
 		model.SetBoxIcon(nb.ID, newIcon)
 		sb.WriteString(fmt.Sprintf("- %s (id: %s): %s -> %s\n", nb.Name, nb.ID, oldIcon, newIcon))
+		items = append(items, map[string]any{
+			"id":      nb.ID,
+			"name":    nb.Name,
+			"oldIcon": oldIcon,
+			"newIcon": newIcon,
+		})
 	}
 
 	util.PushReloadFiletree()
 
-	return CallToolResult{Content: []ContentItem{{Type: "text", Text: sb.String()}}}, nil
+	return structuredTextResult(sb.String(), map[string]any{
+		"action": "random_icon",
+		"count":  len(items),
+		"items":  items,
+	}), nil
+}
+
+func notebookSummary(nb *model.Box) map[string]any {
+	if nb == nil {
+		return map[string]any{}
+	}
+	return map[string]any{
+		"id":     nb.ID,
+		"name":   nb.Name,
+		"icon":   nb.Icon,
+		"closed": nb.Closed,
+	}
 }

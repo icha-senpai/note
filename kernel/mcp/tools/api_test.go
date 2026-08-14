@@ -136,9 +136,18 @@ func TestAPIRouteReturnsEffectsAndCallGuidance(t *testing.T) {
 			Effects     struct {
 				LocalWrite bool `json:"localWrite"`
 			} `json:"effects"`
-			Risk string `json:"risk"`
+			Risk          string `json:"risk"`
+			RequestSchema struct {
+				Confidence string `json:"confidence"`
+				Body       struct {
+					Required []string `json:"required"`
+				} `json:"body"`
+			} `json:"requestSchema"`
 		} `json:"routes"`
-		APICall map[string]any `json:"apiCall"`
+		APICall struct {
+			Tool      string         `json:"tool"`
+			Arguments map[string]any `json:"arguments"`
+		} `json:"apiCall"`
 	}
 	if err = json.Unmarshal([]byte(result.Content[0].Text), &payload); err != nil {
 		t.Fatal(err)
@@ -146,8 +155,65 @@ func TestAPIRouteReturnsEffectsAndCallGuidance(t *testing.T) {
 	if len(payload.Routes) != 1 || payload.Routes[0].EffectScope != "local" || !payload.Routes[0].Effects.LocalWrite || payload.Routes[0].Risk != "write" {
 		t.Fatalf("unexpected route effects: %#v", payload)
 	}
-	if payload.APICall["tool"] != "api_call" || payload.APICall["path"] != "/api/block/updateBlock" {
+	if payload.Routes[0].RequestSchema.Confidence != "exact" || !sameStrings(payload.Routes[0].RequestSchema.Body.Required, []string{"id", "dataType", "data"}) {
+		t.Fatalf("unexpected request schema: %#v", payload.Routes[0].RequestSchema)
+	}
+	if payload.APICall.Tool != "api_call" || payload.APICall.Arguments["path"] != "/api/block/updateBlock" {
 		t.Fatalf("unexpected api_call guidance: %#v", payload.APICall)
+	}
+}
+
+func TestAPIRouteReadSchemasStayReadOnly(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	server := gin.New()
+	server.POST("/api/attr/batchGetBlockAttrs", func(c *gin.Context) {})
+	server.POST("/api/file/readDir", func(c *gin.Context) {})
+	apiroutes.SetFromGinRoutes(server.Routes())
+
+	for _, test := range []struct {
+		path     string
+		required []string
+	}{
+		{path: "/api/attr/batchGetBlockAttrs", required: []string{"ids"}},
+		{path: "/api/file/readDir", required: []string{"path"}},
+	} {
+		result, err := apiRouteHandler(map[string]any{"method": "POST", "path": test.path})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if result.IsError || len(result.Content) != 1 {
+			t.Fatalf("unexpected route result for %s: %#v", test.path, result)
+		}
+
+		var payload struct {
+			Routes []struct {
+				Effects struct {
+					LocalRead       bool `json:"localRead"`
+					LocalWrite      bool `json:"localWrite"`
+					LocalStateWrite bool `json:"localStateWrite"`
+				} `json:"effects"`
+				Risk          string `json:"risk"`
+				RequestSchema struct {
+					Confidence string `json:"confidence"`
+					Body       struct {
+						Required []string `json:"required"`
+					} `json:"body"`
+				} `json:"requestSchema"`
+			} `json:"routes"`
+		}
+		if err = json.Unmarshal([]byte(result.Content[0].Text), &payload); err != nil {
+			t.Fatal(err)
+		}
+		if len(payload.Routes) != 1 {
+			t.Fatalf("missing route for %s: %#v", test.path, payload)
+		}
+		route := payload.Routes[0]
+		if !route.Effects.LocalRead || route.Effects.LocalWrite || route.Effects.LocalStateWrite || route.Risk != "read" {
+			t.Fatalf("%s should be read-only, got %#v", test.path, route)
+		}
+		if route.RequestSchema.Confidence != "exact" || !sameStrings(route.RequestSchema.Body.Required, test.required) {
+			t.Fatalf("unexpected schema for %s: %#v", test.path, route.RequestSchema)
+		}
 	}
 }
 
@@ -238,4 +304,16 @@ func TestAPICallUsesInternalTokenAndLocalPathOnly(t *testing.T) {
 	if !result.IsError || !strings.Contains(result.Content[0].Text, "path must be a local path") {
 		t.Fatalf("full URL should be rejected: %#v", result)
 	}
+}
+
+func sameStrings(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
