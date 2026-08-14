@@ -58,7 +58,7 @@ process.noAsar = true;
 const appDir = path.dirname(app.getAppPath());
 const isDevEnv = process.env.NODE_ENV === "development";
 const appVer = app.getVersion();
-const confDir = path.join(app.getPath("home"), ".config", "scribli");
+const confDir = process.env.SCRIBLI_CONFIG_DIR || path.join(app.getPath("home"), ".config", "scribli");
 const windowStatePath = path.join(confDir, "windowState.json");
 const appCrashLogPath = path.join(confDir, "app.crash.log");
 const appCrashMarkerPath = path.join(confDir, "app.crash.json");
@@ -893,56 +893,60 @@ const initKernel = (workspace, port, lang, safeMode) => {
         }
         let cmd = `ui version [${appVer}], booting kernel [${kernelPath} ${cmds.join(" ")}]`;
         writeLog(cmd);
-        if (!isDevEnv || workspaces.length > 0) {
-            const kernelProcess = childProcess.spawn(kernelPath, cmds, {
-                detached: false, // Do not launch the desktop kernel process in detached mode.
-                stdio: "ignore",
-            },);
+        const kernelProcess = childProcess.spawn(kernelPath, cmds, {
+            detached: false, // Do not launch the desktop kernel process in detached mode.
+            stdio: "ignore",
+        },);
 
-            const kernelPortKey = currentKernelPort.toString();
-            kernelProcesses.set(kernelPortKey, kernelProcess);
-            writeLog("booted kernel process [pid=" + kernelProcess.pid + ", port=" + currentKernelPort + "]");
-            kernelProcess.on("close", (code, signal) => {
-                if (kernelProcesses.get(kernelPortKey) === kernelProcess) {
-                    kernelProcesses.delete(kernelPortKey);
+        const kernelPortKey = currentKernelPort.toString();
+        kernelProcesses.set(kernelPortKey, kernelProcess);
+        writeLog("booted kernel process [pid=" + kernelProcess.pid + ", port=" + currentKernelPort + "]");
+        kernelProcess.on("error", (error) => {
+            if (kernelProcesses.get(kernelPortKey) === kernelProcess) {
+                kernelProcesses.delete(kernelPortKey);
+            }
+            writeLog(`kernel spawn failed [port=${currentKernelPort}]: ${error.message}`);
+        });
+        kernelProcess.on("close", (code, signal) => {
+            if (kernelProcesses.get(kernelPortKey) === kernelProcess) {
+                kernelProcesses.delete(kernelPortKey);
+            }
+            const expectedExit = expectedKernelExitPorts.delete(kernelPortKey);
+            writeLog(`kernel [pid=${kernelProcess.pid}, port=${currentKernelPort}] exited with code [${code}], signal [${signal}], expected [${expectedExit}]`);
+            if (0 !== code && !expectedExit) {
+                let errorWindowId;
+                switch (code) {
+                    case 20:
+                        errorWindowId = showErrorWindow("The database is unavailable", "The database is unavailable", "<div>Cannot access the database file. Please check workspace/temp/scribli.log for detailed error information.</div>");
+                        break;
+                    case 21:
+                        errorWindowId = showErrorWindow("Failed to listen to port " + currentKernelPort, "Failed to listen to port " + currentKernelPort, "<div>Failed to listen to port " + currentKernelPort + ". Please make sure Scribli has network permissions and is not blocked by firewalls or antivirus software.</div>");
+                        break;
+                    case 24: // The workspace is locked; try switching to the first open workspace.
+                        if (workspaces && 0 < workspaces.length) {
+                            showWindow(workspaces[0].browserWindow);
+                        }
+
+                        errorWindowId = showErrorWindow("The workspace is locked", "The workspace is locked", "<div>The workspace is being used. End the Scribli-Kernel process in Task Manager or restart the operating system, then start Scribli again.</div>");
+                        break;
+                    case 25:
+                        errorWindowId = showErrorWindow("Failed to create workspace directory", "Failed to create workspace directory", "<div>Insufficient permissions for the workspace folder. Please check workspace/temp/scribli.log for detailed error information.</div>");
+                        break;
+                    case 26:
+                        errorWindowId = showErrorWindow("Potential data corruption avoided", "Potential data corruption avoided", "<div>Files in the workspace are currently opened or locked by third-party software such as sync software or antivirus tools. Continuing could corrupt data, so Scribli Kernel shut down safely.</div><div>Move the workspace to another path, stop sync software from syncing the workspace, and add the workspace to your antivirus trust list if needed.</div>", "🚒");
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        errorWindowId = showErrorWindow("The kernel exited for unknown reasons", "The kernel exited for unknown reasons", `<div>Scribli Kernel exited for unknown reasons [code=${code}]. Try restarting the operating system, then start Scribli again. If the issue continues, check whether antivirus software is blocking Scribli Kernel.</div>`);
+                        break;
                 }
-                const expectedExit = expectedKernelExitPorts.delete(kernelPortKey);
-                writeLog(`kernel [pid=${kernelProcess.pid}, port=${currentKernelPort}] exited with code [${code}], signal [${signal}], expected [${expectedExit}]`);
-                if (0 !== code && !expectedExit) {
-                    let errorWindowId;
-                    switch (code) {
-                        case 20:
-                            errorWindowId = showErrorWindow("The database is unavailable", "The database is unavailable", "<div>Cannot access the database file. Please check workspace/temp/scribli.log for detailed error information.</div>");
-                            break;
-                        case 21:
-                            errorWindowId = showErrorWindow("Failed to listen to port " + currentKernelPort, "Failed to listen to port " + currentKernelPort, "<div>Failed to listen to port " + currentKernelPort + ". Please make sure Scribli has network permissions and is not blocked by firewalls or antivirus software.</div>");
-                            break;
-                        case 24: // The workspace is locked; try switching to the first open workspace.
-                            if (workspaces && 0 < workspaces.length) {
-                                showWindow(workspaces[0].browserWindow);
-                            }
 
-                            errorWindowId = showErrorWindow("The workspace is locked", "The workspace is locked", "<div>The workspace is being used. End the Scribli-Kernel process in Task Manager or restart the operating system, then start Scribli again.</div>");
-                            break;
-                        case 25:
-                            errorWindowId = showErrorWindow("Failed to create workspace directory", "Failed to create workspace directory", "<div>Insufficient permissions for the workspace folder. Please check workspace/temp/scribli.log for detailed error information.</div>");
-                            break;
-                        case 26:
-                            errorWindowId = showErrorWindow("Potential data corruption avoided", "Potential data corruption avoided", "<div>Files in the workspace are currently opened or locked by third-party software such as sync software or antivirus tools. Continuing could corrupt data, so Scribli Kernel shut down safely.</div><div>Move the workspace to another path, stop sync software from syncing the workspace, and add the workspace to your antivirus trust list if needed.</div>", "🚒");
-                            break;
-                        case 0:
-                            break;
-                        default:
-                            errorWindowId = showErrorWindow("The kernel exited for unknown reasons", "The kernel exited for unknown reasons", `<div>Scribli Kernel exited for unknown reasons [code=${code}]. Try restarting the operating system, then start Scribli again. If the issue continues, check whether antivirus software is blocking Scribli Kernel.</div>`);
-                            break;
-                    }
-
-                    exitApp(currentKernelPort, errorWindowId);
-                    bootWindow.destroy();
-                    resolve(false);
-                }
-            });
-        }
+                exitApp(currentKernelPort, errorWindowId);
+                bootWindow.destroy();
+                resolve(false);
+            }
+        });
 
         let apiData;
         let count = 0;

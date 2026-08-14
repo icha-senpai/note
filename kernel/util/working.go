@@ -455,6 +455,9 @@ func WriteWorkspacePaths(workspacePaths []string) (err error) {
 }
 
 func UserHomeConfDir() string {
+	if confDir := os.Getenv("SCRIBLI_CONFIG_DIR"); confDir != "" {
+		return confDir
+	}
 	return filepath.Join(HomeDir, ".config", "scribli")
 }
 

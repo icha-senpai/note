@@ -93,6 +93,7 @@ left:${left || "auto"};top:${top || "auto"}">
     }
 
     public destroy(options?: IObject) {
+        this.element.style.pointerEvents = "none";
         this.element.classList.remove("b3-dialog--open");
         setTimeout(() => {
             if ((this.element.querySelector(".b3-dialog") as HTMLElement).style.zIndex < window.scribli.menus.menu.element.style.zIndex) {

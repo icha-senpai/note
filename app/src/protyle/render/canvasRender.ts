@@ -848,7 +848,7 @@ const wireCanvasEditing = (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
 
 const wireCanvasDragging = (surfaceElement: HTMLElement, canvas: ICanvasPayload, id?: string, blockElement?: HTMLElement) => {
     let active: { element: HTMLElement, node: ICanvasNode, startX: number, startY: number, x: number, y: number, previous: ICanvasPayload } | undefined;
-    const handleDragMove = (event: PointerEvent) => {
+    const handleDragMove = (event: PointerEvent | MouseEvent) => {
         if (!active) {
             return;
         }
@@ -871,6 +871,8 @@ const wireCanvasDragging = (surfaceElement: HTMLElement, canvas: ICanvasPayload,
         active = undefined;
         document.removeEventListener("pointermove", handleDragMove, true);
         document.removeEventListener("pointerup", handleDragUp, true);
+        document.removeEventListener("mousemove", handleDragMove, true);
+        document.removeEventListener("mouseup", handleDragUp, true);
         if (id) {
             const latestCanvas = await loadStoredCanvas(id, canvas);
             const latestNode = (latestCanvas.nodes || []).find((node) => node.id === movedNodeID);
@@ -882,9 +884,12 @@ const wireCanvasDragging = (surfaceElement: HTMLElement, canvas: ICanvasPayload,
         }
     };
     surfaceElement.querySelectorAll(".scribli-canvas__node").forEach((nodeElement: HTMLElement) => {
-        nodeElement.addEventListener("pointerdown", (event: PointerEvent) => {
-            const target = event.target as HTMLElement;
-            if (isCanvasNodeControlTarget(target, nodeElement) || target.closest(".scribli-canvas__resize")) {
+        const dragHandle = nodeElement.querySelector(".scribli-canvas__drag-handle") as HTMLElement;
+        if (!dragHandle) {
+            return;
+        }
+        const startDrag = (event: PointerEvent | MouseEvent) => {
+            if (active) {
                 return;
             }
             const node = (canvas.nodes || []).find((item) => item.id === nodeElement.dataset.nodeId);
@@ -893,7 +898,9 @@ const wireCanvasDragging = (surfaceElement: HTMLElement, canvas: ICanvasPayload,
             }
             event.preventDefault();
             event.stopPropagation();
-            nodeElement.setPointerCapture(event.pointerId);
+            if ("pointerId" in event) {
+                nodeElement.setPointerCapture(event.pointerId);
+            }
             active = {
                 element: nodeElement,
                 node,
@@ -906,7 +913,11 @@ const wireCanvasDragging = (surfaceElement: HTMLElement, canvas: ICanvasPayload,
             canvasState(surfaceElement).selectedNodeID = node.id;
             document.addEventListener("pointermove", handleDragMove, true);
             document.addEventListener("pointerup", handleDragUp, true);
-        });
+            document.addEventListener("mousemove", handleDragMove, true);
+            document.addEventListener("mouseup", handleDragUp, true);
+        };
+        dragHandle.addEventListener("pointerdown", startDrag);
+        dragHandle.addEventListener("mousedown", startDrag);
     });
 };
 
