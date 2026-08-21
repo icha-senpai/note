@@ -10,8 +10,10 @@ package tools
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/icha-senpai/note/kernel/model"
 	"github.com/icha-senpai/note/kernel/util"
 )
 
@@ -71,6 +73,69 @@ func TestReadToolsExposeRedactSecretsOption(t *testing.T) {
 		}
 		if prop.Type != "boolean" {
 			t.Fatalf("%s redactSecrets type = %q, want boolean", tool.Name, prop.Type)
+		}
+	}
+}
+
+func TestSearchToolPageSizeContractMatchesDefault(t *testing.T) {
+	pageSize := SearchTool.InputSchema.Properties["pageSize"]
+	for _, text := range []string{SearchTool.Description, pageSize.Description} {
+		if !strings.Contains(text, "32") {
+			t.Fatalf("search pageSize contract does not mention default 32: %q", text)
+		}
+		if strings.Contains(text, "20") {
+			t.Fatalf("search pageSize contract still mentions stale default 20: %q", text)
+		}
+	}
+}
+
+func TestSystemToolMCPToolsDiagnosticAction(t *testing.T) {
+	oldConf := model.Conf
+	model.Conf = nil
+	t.Cleanup(func() {
+		model.Conf = oldConf
+	})
+
+	action := SystemTool.InputSchema.Properties["action"]
+	actionSet := map[string]bool{}
+	for _, allowed := range action.Enum {
+		actionSet[allowed] = true
+	}
+	if !actionSet["mcp_tools"] {
+		t.Fatalf("system action enum missing mcp_tools: %#v", action.Enum)
+	}
+	if _, ok := SystemTool.EffectsFor("mcp_tools"); !ok {
+		t.Fatal("system mcp_tools action missing effect metadata")
+	}
+
+	result, err := systemHandler(map[string]any{"action": "mcp_tools"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.IsError {
+		t.Fatalf("mcp_tools returned tool error: %#v", result.Content)
+	}
+	content, ok := result.StructuredContent.(map[string]any)
+	if !ok {
+		t.Fatalf("structured content type = %T, want map", result.StructuredContent)
+	}
+	if content["action"] != "mcp_tools" {
+		t.Fatalf("action = %v, want mcp_tools", content["action"])
+	}
+	if content["registeredCount"].(int) < content["externalEligibleCount"].(int) {
+		t.Fatalf("eligible tools exceeded registered tools: %#v", content)
+	}
+
+	byName := map[string]map[string]any{}
+	for _, item := range content["tools"].([]map[string]any) {
+		byName[item["name"].(string)] = item
+	}
+	if byName["system"]["externalMcpEligible"] != true {
+		t.Fatalf("system should be externally eligible: %#v", byName["system"])
+	}
+	for _, name := range []string{"frontend", "question"} {
+		if byName[name]["hiddenReason"] != "agent_only" {
+			t.Fatalf("%s hidden reason = %v, want agent_only", name, byName[name]["hiddenReason"])
 		}
 	}
 }

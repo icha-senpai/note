@@ -22,6 +22,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"sort"
 	"strings"
 	"testing"
 
@@ -122,6 +123,80 @@ func TestExternalMCPProjectionDoesNotAdvertiseOutputSchemas(t *testing.T) {
 	}
 	if structured, ok := callResult.StructuredContent.(map[string]any); !ok || structured["status"] != "ok" {
 		t.Fatalf("structured content was not preserved: %#v", callResult.StructuredContent)
+	}
+}
+
+func TestToolsListExposesEveryEligibleNativeDirectTool(t *testing.T) {
+	oldConf := model.Conf
+	externalToolProjectionMu.RLock()
+	oldProjection := externalToolProjection
+	externalToolProjectionMu.RUnlock()
+	model.Conf = nil
+	t.Cleanup(func() {
+		model.Conf = oldConf
+		externalToolProjectionMu.Lock()
+		externalToolProjection = oldProjection
+		externalToolProjectionMu.Unlock()
+	})
+
+	server := newServer()
+	projection := newToolProjection(server, externalMCPToolAllowed)
+	externalToolProjectionMu.Lock()
+	externalToolProjection = projection
+	externalToolProjectionMu.Unlock()
+
+	httpServer := httptest.NewServer(newHTTPHandler(server))
+	t.Cleanup(httpServer.Close)
+
+	client := mcpsdk.NewClient(&mcpsdk.Implementation{Name: "test-client", Version: "1.0.0"}, nil)
+	session, err := client.Connect(t.Context(), &mcpsdk.StreamableClientTransport{Endpoint: httpServer.URL}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		session.Close()
+	})
+
+	result, err := session.ListTools(t.Context(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	allTools := tools.GetAllTools()
+	expected := map[string]bool{}
+	for _, tool := range allTools {
+		if tool == nil || tool.Source != "native" || !externalMCPToolAllowed(tool) {
+			continue
+		}
+		expected[tool.Name] = true
+	}
+	actual := map[string]bool{}
+	for _, tool := range result.Tools {
+		actual[tool.Name] = true
+	}
+
+	var missing, unexpected []string
+	for name := range expected {
+		if !actual[name] {
+			missing = append(missing, name)
+		}
+	}
+	for name := range actual {
+		if !expected[name] {
+			unexpected = append(unexpected, name)
+		}
+	}
+	sort.Strings(missing)
+	sort.Strings(unexpected)
+	if len(missing) > 0 || len(unexpected) > 0 {
+		t.Fatalf("tools/list mismatch: missing=%v unexpected=%v", missing, unexpected)
+	}
+	t.Logf("registry tools=%d; registry eligible native direct tools=%d; SDK advertised tools=%d", len(allTools), len(expected), len(actual))
+	if actual["frontend"] || actual["question"] {
+		t.Fatalf("tools/list exposed agent-only tools: frontend=%v question=%v", actual["frontend"], actual["question"])
+	}
+	if len(actual) == 0 {
+		t.Fatal("tools/list returned no native direct tools")
 	}
 }
 

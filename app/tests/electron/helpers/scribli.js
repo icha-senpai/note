@@ -210,7 +210,7 @@ const createDoc = async (scribli, title, markdown) => {
     });
 };
 
-const newNodeID = async (scribli) => scribli.page.evaluate(() => Lute.NewNodeID());
+const newNodeID = async (scribli) => scribli.page.evaluate(() => window.Lute.NewNodeID());
 
 const insertBlock = async (scribli, data, options = {}) => {
     return scribli.api("/api/block/insertBlock", {

@@ -23,16 +23,18 @@ import (
 	"github.com/icha-senpai/note/kernel/model"
 )
 
+const defaultSearchPageSize = 32
+
 var SearchTool = &Tool{
 	Name:        "search",
-	Description: "Search. Actions: fulltext(query, page=1, pageSize=20, notebook?, path?, type?, subtype?, method?, orderBy?, groupBy?), semantic(query, page=1, pageSize=20, notebook?, path?, type?, subtype?) — semantic needs AI embedding configured; asset(query, page=1, pageSize=32, ext?, method?, orderBy?) — full-text search inside asset file contents (PDF/Word/Excel/txt etc.), returns matched snippets with <mark> tags; getasset(path) — get the full indexed content of one asset file by its path (e.g. 'assets/foo.pdf').",
+	Description: searchToolDescription(),
 	InputSchema: ToolSchema{
 		Type: "object",
 		Properties: map[string]Property{
 			"action":   {Type: "string", Description: "Operation: fulltext, semantic, asset, or getasset", Enum: []string{"fulltext", "semantic", "asset", "getasset"}},
 			"query":    {Type: "string", Description: "Search keywords (required for fulltext/semantic/asset)"},
 			"page":     {Type: "number", Description: "Page number (default 1)"},
-			"pageSize": {Type: "number", Description: "Results per page (default 20 for fulltext/semantic, 32 for asset)"},
+			"pageSize": {Type: "number", Description: fmt.Sprintf("Results per page (default %d)", defaultSearchPageSize)},
 			"notebook": {Type: "string", Description: "Comma-separated notebook IDs to filter (optional, fulltext/semantic only)"},
 			"path":     {Type: "string", Description: "Comma-separated path prefixes to filter (optional, fulltext/semantic only); for getasset, a single asset file path like 'assets/foo.pdf'"},
 			"type":     {Type: "string", Description: "Comma-separated block types to filter, e.g. 'document,heading,paragraph' (optional, fulltext/semantic only)"},
@@ -53,6 +55,10 @@ var SearchTool = &Tool{
 		"getasset": {LocalRead: true},
 	},
 	Handler: searchHandler,
+}
+
+func searchToolDescription() string {
+	return fmt.Sprintf("Search. Actions: fulltext(query, page=1, pageSize=%d, notebook?, path?, type?, subtype?, method?, orderBy?, groupBy?), semantic(query, page=1, pageSize=%d, notebook?, path?, type?, subtype?) — semantic needs AI embedding configured; asset(query, page=1, pageSize=%d, ext?, method?, orderBy?) — full-text search inside asset file contents (PDF/Word/Excel/txt etc.), returns matched snippets with <mark> tags; getasset(path) — get the full indexed content of one asset file by its path (e.g. 'assets/foo.pdf').", defaultSearchPageSize, defaultSearchPageSize, defaultSearchPageSize)
 }
 
 func init() {
@@ -83,7 +89,7 @@ func fulltextSearch(args map[string]any) (CallToolResult, error) {
 	if v, ok := args["page"].(float64); ok {
 		page = int(v)
 	}
-	pageSize := 32
+	pageSize := defaultSearchPageSize
 	if v, ok := args["pageSize"].(float64); ok {
 		pageSize = int(v)
 	}
@@ -91,7 +97,7 @@ func fulltextSearch(args map[string]any) (CallToolResult, error) {
 		page = 1
 	}
 	if pageSize < 1 {
-		pageSize = 32
+		pageSize = defaultSearchPageSize
 	}
 
 	notebooks := parseStringSlice(args["notebook"])
@@ -169,7 +175,7 @@ func semanticSearch(args map[string]any) (CallToolResult, error) {
 	if v, ok := args["page"].(float64); ok {
 		page = int(v)
 	}
-	pageSize := 32
+	pageSize := defaultSearchPageSize
 	if v, ok := args["pageSize"].(float64); ok {
 		pageSize = int(v)
 	}
@@ -177,7 +183,7 @@ func semanticSearch(args map[string]any) (CallToolResult, error) {
 		page = 1
 	}
 	if pageSize < 1 {
-		pageSize = 32
+		pageSize = defaultSearchPageSize
 	}
 
 	notebooks := parseStringSlice(args["notebook"])
@@ -242,7 +248,7 @@ func assetSearch(args map[string]any) (CallToolResult, error) {
 	if v, ok := args["page"].(float64); ok {
 		page = int(v)
 	}
-	pageSize := 32
+	pageSize := defaultSearchPageSize
 	if v, ok := args["pageSize"].(float64); ok {
 		pageSize = int(v)
 	}
@@ -250,7 +256,7 @@ func assetSearch(args map[string]any) (CallToolResult, error) {
 		page = 1
 	}
 	if pageSize < 1 {
-		pageSize = 32
+		pageSize = defaultSearchPageSize
 	}
 
 	extSlice := parseStringSlice(args["ext"])

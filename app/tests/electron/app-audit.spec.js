@@ -36,7 +36,7 @@ const typeIntoActiveDoc = async (page, text) => {
     await expect(editor).toContainText(text);
 };
 
-test("Scribli Electron audit covers document creation and Canvas card workflows", async ({}, testInfo) => {
+test("Scribli Electron audit covers document creation and Canvas card workflows", async (_fixtures, testInfo) => {
     const scribli = await launchScribli(testInfo, {workspaceArg: false});
     try {
         await expect(scribli.page).toHaveTitle(/Scribli/);
