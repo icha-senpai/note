@@ -45,6 +45,10 @@ const waitForExit = (child, timeout = 3000) => new Promise((resolve) => {
     });
 });
 
+const removeRunRoot = async (runRoot) => {
+    await fs.promises.rm(runRoot, {recursive: true, force: true, maxRetries: 3, retryDelay: 100});
+};
+
 const killProcessTree = async (child) => {
     if (!child || child.exitCode !== null || child.killed) {
         return;
@@ -148,8 +152,9 @@ const launchScribli = async (testInfo, options = {}) => {
     const consoleErrors = [];
     let browser;
     let page;
-    const cleanup = async () => {
-        if (pageErrors.length || consoleErrors.length) {
+    const cleanup = async (cleanupOptions = {}) => {
+        const preserveArtifacts = Boolean(cleanupOptions.preserveArtifacts);
+        if (preserveArtifacts && (pageErrors.length || consoleErrors.length)) {
             fs.writeFileSync(path.join(runRoot, "browser-errors.json"), JSON.stringify({pageErrors, consoleErrors}, undefined, 2));
         }
         if (browser) {
@@ -162,6 +167,9 @@ const launchScribli = async (testInfo, options = {}) => {
             } catch (error) {
                 // Ignore duplicate close errors during failed launches.
             }
+        }
+        if (!preserveArtifacts) {
+            await removeRunRoot(runRoot);
         }
     };
 
@@ -178,7 +186,7 @@ const launchScribli = async (testInfo, options = {}) => {
         });
         await page.waitForFunction(() => Boolean(window.scribli && window.openFileByURL), null, {timeout: readyTimeout});
     } catch (error) {
-        await cleanup();
+        await cleanup({preserveArtifacts: true});
         error.message = `${error.message}\nElectron logs: ${outLogPath}\n${errLogPath}`;
         throw error;
     }

@@ -1092,9 +1092,12 @@
       border-bottom: 1px solid var(--b3-theme-surface-lighter);
       color: var(--b3-theme-on-background);
       display: flex;
+      flex: none;
       gap: 6px;
       font-weight: 600;
       padding: 8px 10px;
+      position: relative;
+      z-index: 5;
 
       > span:not(.scribli-canvas__drag-handle) {
         flex: 1;
@@ -1161,10 +1164,13 @@
     &__node-body {
       color: var(--b3-theme-on-surface);
       flex: 1;
+      min-height: 0;
       overflow: hidden;
       padding: 8px 10px;
+      position: relative;
       white-space: pre-wrap;
       word-break: break-word;
+      z-index: 1;
 
       img {
         border-radius: var(--b3-border-radius);
@@ -1184,6 +1190,32 @@
         cursor: text;
         min-height: 100%;
         outline: none;
+      }
+
+      .scribli-canvas__text-editor,
+      .scribli-canvas__text-inline {
+        background: transparent;
+        border: 0;
+        color: inherit;
+        cursor: text;
+        display: block;
+        font: inherit;
+        height: 100%;
+        margin: 0;
+        overflow: auto;
+        padding: 0;
+        resize: none;
+        text-align: left;
+        user-select: text;
+        white-space: pre-wrap;
+        width: 100%;
+      }
+
+      .scribli-canvas__text-inline {
+        outline: none;
+        pointer-events: auto;
+        position: relative;
+        z-index: 4;
       }
     }
 

@@ -2,7 +2,7 @@ import {fetchSyncPost} from "../../util/fetch";
 import {escapeAttr, escapeHtml} from "../../util/escape";
 import {hasClosestByClassName} from "../util/hasClosest";
 import {genIconHTML} from "./util";
-import {openAsset, openFileById} from "../../editor/util";
+import {openAsset} from "../../editor/util";
 import {openSearch} from "../../search/spread";
 import {Constants} from "../../constants";
 import {pathPosix} from "../../util/pathName";
@@ -60,6 +60,10 @@ interface ICanvasViewState {
     panel?: "library" | "templates";
 }
 
+type InlineTextEditorElement = HTMLTextAreaElement & {
+    scribliFinishTextEdit?: (save: boolean) => Promise<void>;
+};
+
 const canvasStates = new WeakMap<HTMLElement, ICanvasViewState>();
 const canvasRuntime = new WeakMap<HTMLElement, { canvas: ICanvasPayload, id?: string, blockElement?: HTMLElement, placeholder?: boolean }>();
 let canvasToolbarDelegationWired = false;
@@ -99,7 +103,7 @@ export const canvasRender = (element: Element) => {
         if (!renderElement) {
             return;
         }
-        renderElement.innerHTML = `<div class="scribli-canvas" contenteditable="false"><div class="scribli-canvas__status">${escapeHtml(lang("loading", "Loading..."))}</div></div>`;
+        renderElement.innerHTML = `<div class="scribli-canvas"><div class="scribli-canvas__status">${escapeHtml(lang("loading", "Loading..."))}</div></div>`;
         loadCanvas(item).then(({canvas, id, placeholder}) => {
             renderCanvasSurface(renderElement.firstElementChild as HTMLElement, normalizeCanvasPayload(canvas), id, item, placeholder);
         }).catch((error) => {
@@ -170,10 +174,10 @@ const renderCanvasSurface = (surfaceElement: HTMLElement, canvas: ICanvasPayload
     wireCanvasDragging(surfaceElement, canvas, id, blockElement);
     wireCanvasResizing(surfaceElement, canvas, id, blockElement);
     wireCanvasPanning(surfaceElement, canvas, id, blockElement);
-    wireCanvasEditing(surfaceElement, canvas, id, blockElement);
+    wireCanvasTextEditing(surfaceElement, canvas, id, blockElement);
 };
 
-const canvasToolbarHTML = (state: ICanvasViewState) => `<div class="scribli-canvas__toolbar">
+const canvasToolbarHTML = (state: ICanvasViewState) => `<div class="scribli-canvas__toolbar" contenteditable="false">
     ${iconButton("canvas-add-text", "iconAdd", lang("text", "Text"))}
     ${iconButton("canvas-add-document", "iconFile", lang("document", "Document"))}
     ${iconButton("canvas-add-block", "iconFiles", lang("block", "Block"))}
@@ -198,7 +202,7 @@ const canvasToolbarHTML = (state: ICanvasViewState) => `<div class="scribli-canv
     ${iconButton("canvas-reset-view", "iconRefresh", lang("reset", "Reset"))}
 </div>`;
 
-const emptyCanvasHTML = () => `<div class="scribli-canvas__empty">
+const emptyCanvasHTML = () => `<div class="scribli-canvas__empty" contenteditable="false">
     <div class="scribli-canvas__empty-actions">
         <button class="b3-button b3-button--outline" data-type="canvas-create"><svg><use xlink:href="#iconAdd"></use></svg>${escapeHtml(lang("createCanvas", "Create Canvas"))}</button>
         ${canvasTemplateButtonsHTML("canvas-create-template")}
@@ -208,7 +212,7 @@ const emptyCanvasHTML = () => `<div class="scribli-canvas__empty">
     </div>
 </div>`;
 
-const canvasPanelHTML = (panel: "library" | "templates") => `<div class="scribli-canvas__panel" data-panel="${panel}">
+const canvasPanelHTML = (panel: "library" | "templates") => `<div class="scribli-canvas__panel" contenteditable="false" data-panel="${panel}">
     <div class="scribli-canvas__panel-header">
         <strong>${escapeHtml(panel === "library" ? lang("canvasLibrary", "Canvas Library") : lang("canvasTemplates", "Templates"))}</strong>
         ${iconButton("canvas-close-panel", "iconClose", lang("close", "Close"))}
@@ -243,6 +247,18 @@ const ensureCanvasToolbarDelegation = () => {
     if (canvasToolbarDelegationWired) {
         return;
     }
+    const handleTextEditorEvent = (event: Event) => {
+        const editorElement = (event.target as HTMLElement).closest('[data-type="canvas-inline-text-editor"]') as HTMLTextAreaElement | null;
+        if (!editorElement?.closest(".scribli-canvas")) {
+            return;
+        }
+        event.stopImmediatePropagation();
+        [0, 50, 150, 350].forEach((delay) => {
+            window.setTimeout(() => {
+                editorElement.focus();
+            }, delay);
+        });
+    };
     const handleToolbarEvent = async (event: Event) => {
         const target = (event.target as HTMLElement).closest("button[data-type^=\"canvas-\"], input[data-type^=\"canvas-\"]") as HTMLElement;
         const surfaceElement = target?.closest(".scribli-canvas") as HTMLElement;
@@ -254,6 +270,11 @@ const ensureCanvasToolbarDelegation = () => {
             return;
         }
         if (target.closest(".scribli-canvas__node") && type === "canvas-open-node") {
+            event.preventDefault();
+            event.stopPropagation();
+            if (event.type === "pointerdown") {
+                await openCanvasNode(target);
+            }
             return;
         }
         if (event.type === "click" && Date.now() - lastCanvasPointerCommand < 750) {
@@ -264,8 +285,9 @@ const ensureCanvasToolbarDelegation = () => {
         }
         event.preventDefault();
         event.stopPropagation();
+        await finishActiveTextNodeEdit(surfaceElement);
         const runtime = await resolveCanvasRuntime(surfaceElement);
-        if (type === "canvas-node-duplicate" || type === "canvas-node-delete") {
+        if (type === "canvas-node-duplicate" || type === "canvas-node-delete" || type === "canvas-node-edit-info") {
             const nodeID = target.closest(".scribli-canvas__node")?.getAttribute("data-node-id") || "";
             const state = canvasState(surfaceElement);
             state.selectedNodeID = nodeID;
@@ -273,6 +295,8 @@ const ensureCanvasToolbarDelegation = () => {
                 await duplicateSelectedNode(surfaceElement, runtime.canvas, runtime.id, runtime.blockElement);
             } else if (runtime.id && type === "canvas-node-delete") {
                 await deleteSelectedNode(surfaceElement, runtime.canvas, runtime.id, runtime.blockElement);
+            } else if (runtime.id && type === "canvas-node-edit-info") {
+                await editScribliNodeInfo(surfaceElement, runtime.canvas, runtime.id, runtime.blockElement, nodeID);
             }
             return;
         }
@@ -306,6 +330,11 @@ const ensureCanvasToolbarDelegation = () => {
         state.selectedNodeID = state.selectedNodeID === nodeID ? undefined : nodeID;
         renderCanvasSurface(surfaceElement, runtime.canvas, runtime.id, runtime.blockElement);
     };
+    document.addEventListener("pointerdown", handleTextEditorEvent, true);
+    document.addEventListener("pointerup", handleTextEditorEvent, true);
+    document.addEventListener("mousedown", handleTextEditorEvent, true);
+    document.addEventListener("mouseup", handleTextEditorEvent, true);
+    document.addEventListener("click", handleTextEditorEvent, true);
     document.addEventListener("pointerdown", handleToolbarEvent, true);
     document.addEventListener("click", handleToolbarEvent, true);
     document.addEventListener("pointerdown", handleNodeClick, true);
@@ -324,7 +353,11 @@ const isCanvasNodeControlTarget = (target: HTMLElement, nodeElement: HTMLElement
     if (typedElement && nodeElement.contains(typedElement)) {
         return true;
     }
-    const editableElement = target.closest("[contenteditable=true]");
+    const formElement = target.closest("input, textarea, select");
+    if (formElement && nodeElement.contains(formElement)) {
+        return true;
+    }
+    const editableElement = target.closest("[contenteditable=true], [contenteditable='plaintext-only']");
     return !!editableElement && nodeElement.contains(editableElement);
 };
 
@@ -503,7 +536,7 @@ const bindCanvasToBlock = async (blockElement: HTMLElement, id: string) => {
             blockElement.setAttribute("data-render", "true");
             blockElement.classList.remove("code-block");
             blockElement.classList.add("render-node");
-            blockElement.innerHTML = `${blockElement.firstElementChild?.outerHTML || ""}<div><div class="scribli-canvas" contenteditable="false"></div></div><div class="protyle-attr" contenteditable="false">${Constants.ZWSP}</div>`;
+            blockElement.innerHTML = `${blockElement.firstElementChild?.outerHTML || ""}<div><div class="scribli-canvas"></div></div><div class="protyle-attr" contenteditable="false">${Constants.ZWSP}</div>`;
             return blockElement;
         }
     }
@@ -591,14 +624,7 @@ const addTextNode = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
 };
 
 const addScribliNodeFromPrompt = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, id: string, blockElement: HTMLElement | undefined, kind: string) => {
-    const promptLabel = {
-        document: lang("canvasDocumentPrompt", "Document ID"),
-        block: lang("canvasBlockPrompt", "Block ID"),
-        asset: lang("canvasAssetPrompt", "Asset path"),
-        query: lang("canvasQueryPrompt", "Search query"),
-        database: lang("canvasDatabasePrompt", "Database ID"),
-    }[kind] || kind;
-    const value = await canvasInputDialog(promptLabel);
+    const value = await canvasInputDialog(scribliNodeValueLabel(kind));
     if (!value) {
         return;
     }
@@ -630,6 +656,86 @@ const addScribliNodeFromPrompt = async (surfaceElement: HTMLElement, canvas: ICa
         pushCanvasHistory(surfaceElement, previous);
         renderCanvasSurface(surfaceElement, response.data?.structuredContent?.canvas || canvas, id, blockElement);
     }
+};
+
+const editScribliNodeInfo = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, id: string, blockElement: HTMLElement | undefined, nodeID: string) => {
+    if (!nodeID) {
+        return;
+    }
+    const latestCanvas = await loadStoredCanvas(id, canvas);
+    const node = (latestCanvas.nodes || []).find((item) => item.id === nodeID);
+    if (!node) {
+        return;
+    }
+    const kind = node.scribli?.kind || node.type || "text";
+    if (!canEditScribliNodeInfo(node, kind)) {
+        return;
+    }
+    const nextValue = await canvasInputDialog(scribliNodeValueLabel(kind), scribliNodeCurrentValue(node, kind));
+    if (nextValue === null || !nextValue.trim()) {
+        return;
+    }
+    const currentLabel = node.scribli?.label || firstLine(node.text) || scribliNodeCurrentValue(node, kind);
+    const nextLabel = await canvasInputDialog(lang("canvasLabelPrompt", "Label"), currentLabel);
+    if (nextLabel === null) {
+        return;
+    }
+    const previous = cloneCanvas(latestCanvas);
+    if (!node.scribli) {
+        node.scribli = {};
+    }
+    node.scribli.kind = kind;
+    node.scribli.label = nextLabel.trim() || nextValue.trim();
+    node.text = node.scribli.label;
+    applyScribliNodeValue(node, kind, nextValue.trim());
+    await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
+};
+
+const scribliNodeValueLabel = (kind: string) => {
+    return {
+        document: lang("canvasDocumentPrompt", "Document ID"),
+        block: lang("canvasBlockPrompt", "Block ID"),
+        executable_output: lang("canvasBlockPrompt", "Block ID"),
+        asset: lang("canvasAssetPrompt", "Asset path"),
+        query: lang("canvasQueryPrompt", "Search query"),
+        database: lang("canvasDatabasePrompt", "Database ID"),
+    }[kind] || kind;
+};
+
+const scribliNodeCurrentValue = (node: ICanvasNode, kind: string) => {
+    if (kind === "asset") {
+        return node.file || node.scribli?.assetPath || "";
+    }
+    if (kind === "query") {
+        return node.scribli?.query || "";
+    }
+    if (kind === "database") {
+        return node.scribli?.refID || node.scribli?.databaseID || "";
+    }
+    return node.scribli?.refID || "";
+};
+
+const applyScribliNodeValue = (node: ICanvasNode, kind: string, value: string) => {
+    if (!node.scribli) {
+        node.scribli = {};
+    }
+    if (kind === "asset") {
+        node.file = value;
+        node.scribli.assetPath = value;
+    } else if (kind === "query") {
+        node.scribli.query = value;
+    } else if (kind === "database") {
+        node.scribli.databaseID = value;
+    } else {
+        node.scribli.refID = value;
+    }
+};
+
+const canEditScribliNodeInfo = (node: ICanvasNode, kind: string) => {
+    if (!node.scribli) {
+        return false;
+    }
+    return ["document", "block", "executable_output", "asset", "query", "database"].includes(kind);
 };
 
 const canvasInputDialog = (title: string, value = ""): Promise<string | null> => {
@@ -705,6 +811,74 @@ const duplicateSelectedNode = async (surfaceElement: HTMLElement, canvas: ICanva
     latestCanvas.nodes = (latestCanvas.nodes || []).concat(clone);
     state.selectedNodeID = clone.id;
     await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
+};
+
+const finishActiveTextNodeEdit = async (surfaceElement: HTMLElement) => {
+    const activeElement = document.activeElement as HTMLElement | null;
+    const editorElement = activeElement?.closest('[data-type="canvas-inline-text-editor"]') as InlineTextEditorElement | null;
+    if (!editorElement || !surfaceElement.contains(editorElement)) {
+        return;
+    }
+    if (!editorElement?.scribliFinishTextEdit) {
+        return;
+    }
+    await editorElement.scribliFinishTextEdit(true);
+};
+
+const wireCanvasTextEditing = (surfaceElement: HTMLElement, canvas: ICanvasPayload, id?: string, blockElement?: HTMLElement) => {
+    surfaceElement.querySelectorAll('[data-type="canvas-inline-text-editor"]').forEach((editorElement: InlineTextEditorElement) => {
+        const nodeID = editorElement.dataset.nodeId || "";
+        let finishPromise: Promise<void> | undefined;
+        const finish = async (save: boolean) => {
+            if (finishPromise) {
+                return finishPromise;
+            }
+            finishPromise = (async () => {
+                if (!id) {
+                    return;
+                }
+                const latestCanvas = await loadStoredCanvas(id, canvas);
+                if (!save) {
+                    renderCanvasSurface(surfaceElement, latestCanvas, id, blockElement);
+                    return;
+                }
+                const latestNode = (latestCanvas.nodes || []).find((item) => item.id === nodeID);
+                if (!latestNode || editorElement.value === (latestNode.text || "")) {
+                    return;
+                }
+                const previous = cloneCanvas(latestCanvas);
+                latestNode.text = editorElement.value;
+                if (latestNode.scribli?.kind === "text") {
+                    latestNode.scribli.label = firstLine(editorElement.value);
+                }
+                await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
+            })();
+            return finishPromise;
+        };
+        editorElement.scribliFinishTextEdit = finish;
+        ["keydown", "keyup", "beforeinput", "input", "compositionstart", "compositionend", "paste", "pointerdown", "mousedown", "click"].forEach((eventName) => {
+            editorElement.addEventListener(eventName, (event) => {
+                event.stopPropagation();
+                if (eventName === "pointerdown" || eventName === "mousedown" || eventName === "click") {
+                    window.setTimeout(() => {
+                        editorElement.focus();
+                    });
+                }
+            });
+        });
+        editorElement.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                finish(false);
+            } else if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+                event.preventDefault();
+                editorElement.blur();
+            }
+        });
+        editorElement.addEventListener("blur", () => {
+            finish(true);
+        });
+    });
 };
 
 const deleteSelectedNode = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, id: string, blockElement?: HTMLElement) => {
@@ -791,14 +965,21 @@ const connectNode = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
 
 const openCanvasNode = async (buttonElement: HTMLElement) => {
     const nodeElement = buttonElement.closest(".scribli-canvas__node") as HTMLElement;
-    const app = window.scribli.ws?.app;
-    if (!nodeElement || !app) {
+    if (!nodeElement) {
         return;
     }
     const kind = nodeElement.dataset.kind || "";
     const refID = nodeElement.dataset.refId || "";
     if (["document", "block", "executable_output"].includes(kind) && refID) {
-        await openFileById({app, id: refID, action: [Constants.CB_GET_FOCUS]});
+        window.openFileByURL(`scribli://blocks/${refID}?focus=1`);
+        return;
+    }
+    if (kind === "database" && refID) {
+        window.openFileByURL(`scribli://blocks/${refID}?focus=1`);
+        return;
+    }
+    const app = window.scribli.ws?.app;
+    if (!app) {
         return;
     }
     if (kind === "asset" && nodeElement.dataset.assetPath) {
@@ -810,41 +991,10 @@ const openCanvasNode = async (buttonElement: HTMLElement) => {
         return;
     }
     if (kind === "database") {
-        if (refID) {
-            await openFileById({app, id: refID, action: [Constants.CB_GET_FOCUS]});
-        } else if (nodeElement.dataset.databaseId) {
+        if (nodeElement.dataset.databaseId) {
             await openSearch({app, hotkey: Constants.DIALOG_GLOBALSEARCH, key: nodeElement.dataset.databaseId});
         }
     }
-};
-
-const wireCanvasEditing = (surfaceElement: HTMLElement, canvas: ICanvasPayload, id?: string, blockElement?: HTMLElement) => {
-    surfaceElement.querySelectorAll('[data-type="canvas-edit-text"]').forEach((editElement: HTMLElement) => {
-        editElement.addEventListener("pointerdown", (event) => {
-            event.stopPropagation();
-        });
-        editElement.addEventListener("blur", async () => {
-            if (!id) {
-                return;
-            }
-            const nodeID = (editElement.closest(".scribli-canvas__node") as HTMLElement)?.dataset.nodeId;
-            const latestCanvas = await loadStoredCanvas(id, canvas);
-            const node = (latestCanvas.nodes || []).find((item) => item.id === nodeID);
-            if (!node) {
-                return;
-            }
-            const nextText = editElement.innerText.trim();
-            if (nextText === (node.text || "")) {
-                return;
-            }
-            const previous = cloneCanvas(latestCanvas);
-            node.text = nextText;
-            if (node.scribli?.kind === "text") {
-                node.scribli.label = firstLine(nextText);
-            }
-            await persistCanvas(surfaceElement, latestCanvas, id, blockElement, previous);
-        });
-    });
 };
 
 const wireCanvasDragging = (surfaceElement: HTMLElement, canvas: ICanvasPayload, id?: string, blockElement?: HTMLElement) => {
@@ -1114,9 +1264,9 @@ const nodeHTML = (node: ICanvasNode, state: ICanvasViewState) => {
     const selectedClass = state.selectedNodeID === node.id ? " scribli-canvas__node--selected" : "";
     const connectClass = state.connectFromID === node.id ? " scribli-canvas__node--connecting" : "";
     return `<div class="scribli-canvas__node${selectedClass}${connectClass}" data-node-id="${escapeAttr(node.id)}" data-kind="${escapeAttr(kind)}" data-ref-id="${escapeAttr(node.scribli?.refID || "")}" data-query="${escapeAttr(node.scribli?.query || "")}" data-asset-path="${escapeAttr(node.file || node.scribli?.assetPath || "")}" data-database-id="${escapeAttr(node.scribli?.databaseID || "")}" style="left:${numberValue(node.x, 0)}px;top:${numberValue(node.y, 0)}px;width:${numberValue(node.width, DEFAULT_NODE_WIDTH)}px;height:${numberValue(node.height, DEFAULT_NODE_HEIGHT)}px">
-    <div class="scribli-canvas__node-title"><div class="scribli-canvas__drag-handle" aria-label="${escapeAttr(lang("drag", "Drag"))}"><svg><use xlink:href="#iconDrag"></use></svg></div><span>${escapeHtml(title)}</span>${nodeActionHTML(node, kind)}${nodeButton("canvas-node-duplicate", "iconCopy", lang("duplicate", "Duplicate"))}${nodeButton("canvas-node-delete", "iconTrashcan", lang("delete", "Delete"))}</div>
-    <div class="scribli-canvas__node-body">${body}</div>
-    <div class="scribli-canvas__resize"></div>
+    <div class="scribli-canvas__node-title" contenteditable="false"><div class="scribli-canvas__drag-handle" aria-label="${escapeAttr(lang("drag", "Drag"))}"><svg><use xlink:href="#iconDrag"></use></svg></div><span>${escapeHtml(title)}</span>${nodeActionHTML(node, kind)}${nodeButton("canvas-node-duplicate", "iconCopy", lang("duplicate", "Duplicate"))}${nodeButton("canvas-node-delete", "iconTrashcan", lang("delete", "Delete"))}</div>
+    <div class="scribli-canvas__node-body" contenteditable="false">${body}</div>
+    <div class="scribli-canvas__resize" contenteditable="false"></div>
 </div>`;
 };
 
@@ -1137,7 +1287,7 @@ const nodeBody = (node: ICanvasNode) => {
         return `<div class="scribli-canvas__node-kicker">${escapeHtml(lang("database", "Database"))}</div><code>${escapeHtml(node.scribli.databaseID)}${node.scribli.viewID ? " / " + escapeHtml(node.scribli.viewID) : ""}</code>`;
     }
     if (kind === "text" || node.type === "text") {
-        return `<div data-type="canvas-edit-text" contenteditable="true" spellcheck="${window.scribli.config.editor.spellcheck}">${escapeHtml(node.text || "")}</div>`;
+        return `<textarea class="scribli-canvas__text-inline" data-type="canvas-inline-text-editor" data-node-id="${escapeAttr(node.id)}" spellcheck="${window.scribli.config.editor.spellcheck}" tabindex="0">${escapeHtml(node.text || "")}</textarea>`;
     }
     return escapeHtml(node.text || node.scribli?.refID || "");
 };
@@ -1146,7 +1296,8 @@ const nodeActionHTML = (node: ICanvasNode, kind: string) => {
     if (!isActionableNode(node, kind)) {
         return "";
     }
-    return nodeButton("canvas-open-node", "iconOpenWindow", nodeActionLabel(kind));
+    const editButton = canEditScribliNodeInfo(node, kind) ? nodeButton("canvas-node-edit-info", "iconEdit", lang("edit", "Edit")) : "";
+    return `${nodeButton("canvas-open-node", "iconOpenWindow", nodeActionLabel(kind))}${editButton}`;
 };
 
 const nodeActionLabel = (kind: string) => {

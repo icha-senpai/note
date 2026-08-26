@@ -1,3 +1,4 @@
+const fs = require("fs");
 const path = require("path");
 const {test, expect} = require("./helpers/playwright");
 const {checkBlockExists, createAttributeView, createDoc, getBlockKramdown, getCanvas, insertBlock, launchScribli, newNodeID, openDoc, removeDocByID, updateBlock} = require("./helpers/scribli");
@@ -23,7 +24,7 @@ const clickFileTreeRootNew = async (page) => {
     await rootRow.hover();
     const newButton = rootRow.locator("[data-type='new']");
     await expect(newButton).toBeVisible();
-    await newButton.click();
+    await newButton.click({force: true});
 };
 
 const typeIntoActiveDoc = async (page, text) => {
@@ -36,8 +37,10 @@ const typeIntoActiveDoc = async (page, text) => {
     await expect(editor).toContainText(text);
 };
 
-test("Scribli Electron audit covers document creation and Canvas card workflows", async (_fixtures, testInfo) => {
+test("Scribli Electron audit covers document creation and Canvas card workflows", async ({browserName: _browserName}, testInfo) => {
+    void _browserName;
     const scribli = await launchScribli(testInfo, {workspaceArg: false});
+    let preserveArtifacts = false;
     try {
         await expect(scribli.page).toHaveTitle(/Scribli/);
         await expect(visibleEditor(scribli.page)).toBeVisible();
@@ -81,7 +84,9 @@ test("Scribli Electron audit covers document creation and Canvas card workflows"
         await expect(visibleEditor(scribli.page)).toContainText(uiTypedText);
         await treeDocRow(scribli.page, uiDeleteDocID).click();
         await expect(visibleEditor(scribli.page)).toContainText(uiDeleteText);
-        await treeDocRow(scribli.page, uiDeleteDocID).locator("[data-type='more-file']").click();
+        const uiDeleteRow = treeDocRow(scribli.page, uiDeleteDocID);
+        await uiDeleteRow.hover();
+        await uiDeleteRow.locator("[data-type='more-file']").click({force: true});
         await scribli.page.locator(".b3-menu__item[data-id='delete']:visible").click();
         await scribli.page.locator("#confirmDialogConfirmBtn").click();
         await expect.poll(async () => checkBlockExists(scribli, uiDeleteDocID)).toBeFalsy();
@@ -184,16 +189,92 @@ test("Scribli Electron audit covers document creation and Canvas card workflows"
 
         const editedText = `Edited source ${Date.now()}`;
         const addedText = `Added source ${Date.now()}`;
-        await canvas.locator("[data-type='canvas-edit-text']").first().fill(editedText);
+        const inlineEditor = canvas.locator("[data-type='canvas-inline-text-editor']").first();
+        const editBox = await inlineEditor.boundingBox();
+        expect(editBox).toBeTruthy();
+        await scribli.page.mouse.move(editBox.x + editBox.width / 2, editBox.y + editBox.height / 2);
+        await scribli.page.mouse.down();
+        await scribli.page.mouse.up();
+        await expect(inlineEditor).toBeVisible();
+        await scribli.page.waitForTimeout(500);
+        await expect(inlineEditor).toBeVisible();
+        await expect.poll(async () => inlineEditor.evaluate((element) => document.activeElement === element)).toBe(true);
+        await scribli.page.keyboard.press("Control+A");
+        await scribli.page.keyboard.type(editedText);
+        await expect(inlineEditor).toHaveValue(editedText);
         await canvas.locator("[data-type='canvas-add-text']").click();
-        await scribli.page.locator("[data-type='canvas-prompt-input']").fill(addedText);
-        await scribli.page.locator("[data-type='canvas-prompt-confirm']").click();
+        await scribli.page.locator("[data-type='canvas-prompt-input']:visible").last().fill(addedText);
+        await scribli.page.locator("[data-type='canvas-prompt-confirm']:visible").last().click();
         await expect.poll(async () => {
             const texts = (await getCanvas(scribli, canvasID)).nodes.map((node) => node.text || "").sort();
             return texts.join("|");
         }).toBe([addedText, editedText].sort().join("|"));
 
-        const draggedNode = canvas.locator(".scribli-canvas__node").first();
+        await visibleCanvas(scribli.page).locator("[data-type='canvas-add-document']").click();
+        await scribli.page.locator("[data-type='canvas-prompt-input']:visible").last().fill(smokeDocID);
+        await scribli.page.locator("[data-type='canvas-prompt-confirm']:visible").last().click();
+        await scribli.page.locator("[data-type='canvas-prompt-input']:visible").last().fill(smokeTitle);
+        await scribli.page.locator("[data-type='canvas-prompt-confirm']:visible").last().click();
+        let documentNode = visibleCanvas(scribli.page).locator(`.scribli-canvas__node[data-ref-id="${smokeDocID}"]`);
+        await expect(documentNode).toBeVisible();
+        const editInfoButton = documentNode.locator("[data-type='canvas-node-edit-info']");
+        await expect(editInfoButton).toBeVisible();
+        await editInfoButton.click();
+        await scribli.page.locator("[data-type='canvas-prompt-input']:visible").last().fill(uiDocID);
+        await scribli.page.locator("[data-type='canvas-prompt-confirm']:visible").last().click();
+        const editedDocumentLabel = `Edited canvas link ${Date.now()}`;
+        await scribli.page.locator("[data-type='canvas-prompt-input']:visible").last().fill(editedDocumentLabel);
+        await scribli.page.locator("[data-type='canvas-prompt-confirm']:visible").last().click();
+        documentNode = visibleCanvas(scribli.page).locator(`.scribli-canvas__node[data-ref-id="${uiDocID}"]`);
+        await expect(documentNode).toBeVisible();
+        await expect(documentNode).toContainText(editedDocumentLabel);
+        const openButton = documentNode.locator("[data-type='canvas-open-node']");
+        await expect(openButton).toBeVisible();
+        const openButtonBox = await openButton.boundingBox();
+        expect(openButtonBox).toBeTruthy();
+        const openButtonHit = await scribli.page.evaluate(({x, y}) => {
+            const element = document.elementFromPoint(x, y);
+            return {
+                className: element?.getAttribute("class") || "",
+                dataType: element?.getAttribute("data-type") || "",
+                tagName: element?.tagName || "",
+                closestButtonType: element?.closest("button")?.getAttribute("data-type") || "",
+            };
+        }, {x: openButtonBox.x + openButtonBox.width / 2, y: openButtonBox.y + openButtonBox.height / 2});
+        expect(openButtonHit.closestButtonType, `open button hit target: ${JSON.stringify(openButtonHit)}`).toBe("canvas-open-node");
+        await openButton.click();
+        await expect(visibleEditor(scribli.page)).toContainText(uiTypedText);
+        await openDoc(scribli, docID, title);
+
+        const notebooksData = await scribli.api("/api/notebook/lsNotebooks");
+        const notebookID = notebooksData.notebooks?.[0]?.id;
+        expect(notebookID, "expected a notebook for raw asset path coverage").toBeTruthy();
+        const rawAssetName = `canvas-raw-open-${Date.now()}.svg`;
+        const rawAssetPath = path.join(scribli.workspace, "data", notebookID, "assets", rawAssetName);
+        fs.mkdirSync(path.dirname(rawAssetPath), {recursive: true});
+        fs.writeFileSync(rawAssetPath, "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"360\" height=\"180\"><rect width=\"360\" height=\"180\" fill=\"#1d4ed8\"/><text x=\"36\" y=\"102\" font-size=\"34\" fill=\"#fff\">Raw Asset</text></svg>");
+        const rawAssetLabel = `Raw asset card ${Date.now()}`;
+        await visibleCanvas(scribli.page).locator("[data-type='canvas-add-asset']").click();
+        await scribli.page.locator("[data-type='canvas-prompt-input']:visible").last().fill(rawAssetPath);
+        await scribli.page.locator("[data-type='canvas-prompt-confirm']:visible").last().click();
+        await scribli.page.locator("[data-type='canvas-prompt-input']:visible").last().fill(rawAssetLabel);
+        await scribli.page.locator("[data-type='canvas-prompt-confirm']:visible").last().click();
+        const rawAssetNode = visibleCanvas(scribli.page).locator(".scribli-canvas__node[data-kind='asset']").filter({hasText: rawAssetLabel});
+        await expect(rawAssetNode).toBeVisible();
+        await expect(rawAssetNode.locator("img")).toBeVisible();
+        await rawAssetNode.locator("[data-type='canvas-open-node']").click();
+        await expect.poll(async () => scribli.page.evaluate((rawAssetName) => {
+            return Array.from(document.querySelectorAll(".asset img")).some((image) =>
+                image.currentSrc.includes(rawAssetName) &&
+                image.currentSrc.startsWith("file:///") &&
+                image.complete &&
+                image.naturalWidth > 0 &&
+                image.naturalHeight > 0
+            );
+        }, rawAssetName)).toBeTruthy();
+        await openDoc(scribli, docID, title);
+
+        const draggedNode = visibleCanvas(scribli.page).locator(".scribli-canvas__node").first();
         const draggedNodeID = await draggedNode.getAttribute("data-node-id");
         const beforeMove = await getCanvas(scribli, canvasID);
         const beforeDraggedNode = beforeMove.nodes.find((item) => item.id === draggedNodeID);
@@ -236,7 +317,10 @@ test("Scribli Electron audit covers document creation and Canvas card workflows"
 
         await openDoc(scribli, smokeDocID, smokeTitle);
         await expect(visibleEditor(scribli.page)).toContainText(savedText);
+    } catch (error) {
+        preserveArtifacts = true;
+        throw error;
     } finally {
-        await scribli.close();
+        await scribli.close({preserveArtifacts});
     }
 });

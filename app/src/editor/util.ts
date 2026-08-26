@@ -102,7 +102,8 @@ export const openFileById = async (options: {
 };
 
 export const openAsset = (app: App, assetPath: string, page: number | string, position?: string) => {
-    const suffix = pathPosix().extname(assetPath).split("?")[0];
+    assetPath = normalizeAssetOpenPath(assetPath);
+    const suffix = pathPosix().extname(assetPath).split("?")[0].toLowerCase();
     if (!Constants.SCRIBLI_ASSETS_EXTS.includes(suffix)) {
         return;
     }
@@ -113,6 +114,29 @@ export const openAsset = (app: App, assetPath: string, page: number | string, po
         position,
         removeCurrentTab: true
     });
+};
+
+const normalizeAssetOpenPath = (assetPath: string) => {
+    const pathValue = assetPath.trim();
+    if (!pathValue ||
+        pathValue.startsWith("assets/") ||
+        /^file:\/\//i.test(pathValue) ||
+        /^[a-z][a-z0-9+.-]*:\/\//i.test(pathValue)) {
+        return pathValue;
+    }
+    const match = pathValue.match(/^([^?#]*)([?#].*)?$/);
+    const filePath = match?.[1] || pathValue;
+    const tail = match?.[2] || "";
+    if (/^[a-zA-Z]:[\\/]/.test(filePath)) {
+        return `file:///${encodeURI(filePath.replace(/\\/g, "/"))}${tail}`;
+    }
+    if (/^\\\\/.test(filePath)) {
+        return `file:${encodeURI(filePath.replace(/\\/g, "/"))}${tail}`;
+    }
+    if (filePath.startsWith("/")) {
+        return `file://${encodeURI(filePath)}${tail}`;
+    }
+    return pathValue;
 };
 
 export const openFile = async (options: IOpenFileOptions) => {
