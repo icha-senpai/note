@@ -349,6 +349,121 @@
   }
 }
 
+.protyle-child-docs {
+  box-sizing: border-box;
+  max-width: var(--b3-width-protyle-wysiwyg);
+  margin: 4px auto 32px;
+  padding: 0 16px 0 24px;
+  user-select: none;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 24px;
+    color: var(--b3-theme-on-surface);
+    font-size: 12px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      color: var(--b3-theme-on-surface);
+    }
+  }
+
+  &__total,
+  &__count {
+    color: var(--b3-theme-on-surface);
+    font-size: 12px;
+  }
+
+  &__list {
+    display: grid;
+    gap: 2px;
+    margin-top: 4px;
+  }
+
+  &__item {
+    display: grid;
+    position: relative;
+    grid-template-columns: 16px 18px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    min-height: 30px;
+    width: 100%;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--b3-theme-on-background);
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+
+    &[draggable="true"] {
+      cursor: grab;
+    }
+
+    &:not([draggable="true"]) {
+      grid-template-columns: 18px minmax(0, 1fr) auto;
+    }
+
+    &--dragging {
+      opacity: .38;
+    }
+
+    &.dragover__top::after,
+    &.dragover__bottom::after {
+      content: "";
+      position: absolute;
+      right: 8px;
+      left: 8px;
+      height: 2px;
+      border-radius: 1px;
+      background-color: var(--b3-theme-primary);
+    }
+
+    &.dragover__top::after {
+      top: -1px;
+    }
+
+    &.dragover__bottom::after {
+      bottom: -1px;
+    }
+
+    &:hover {
+      background-color: var(--b3-list-hover);
+    }
+
+    &:focus {
+      outline: 2px solid var(--b3-theme-primary-light);
+      outline-offset: 1px;
+    }
+  }
+
+  &__drag {
+    display: flex;
+    align-items: center;
+    color: var(--b3-theme-on-surface);
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__icon {
+    overflow: hidden;
+    text-align: center;
+  }
+
+  &__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .protyle-top:hover .protyle-background--enable {
   .protyle-background__action,
   .protyle-background__img .protyle-icons {

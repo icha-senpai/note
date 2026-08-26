@@ -18,6 +18,7 @@ import {hideTooltip} from "../../dialog/tooltip";
 import {stickyRow} from "../render/av/row";
 import {getContenteditableElement} from "../wysiwyg/getBlock";
 import {isEncryptedBox} from "../../util/pathName";
+import {clearChildDocs, renderChildDocs} from "./childDocs";
 
 export const onGet = (options: {
     data: IWebSocketData,
@@ -33,6 +34,7 @@ export const onGet = (options: {
     }
     options.protyle.wysiwyg.element.removeAttribute("data-top");
     if (options.data.code === 1) {
+        clearChildDocs(options.protyle);
         if (!options.action.includes(Constants.CB_GET_APPEND)) {
             if (options.protyle.model) {
                 options.protyle.model.parent.parent.removeTab(options.protyle.model.parent.id);
@@ -44,6 +46,7 @@ export const onGet = (options: {
     }
     if (options.data.code === 3) {
         // block not found
+        clearChildDocs(options.protyle);
         return;
     }
     options.protyle.notebookId = options.data.data.box;
@@ -125,6 +128,7 @@ export const onGet = (options: {
             afterCB: options.afterCB,
             scrollPosition: options.scrollPosition
         }, options.protyle);
+        renderChildDocs(options.protyle);
         removeLoading(options.protyle);
     });
 };

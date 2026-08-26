@@ -39,6 +39,7 @@ import {hideAllElements} from "./protyle/ui/hideElements";
 import {loadPlugins, reloadPlugin} from "./plugin/loader";
 import "./assets/scss/base.scss";
 import {reloadEmoji} from "./emoji";
+import {refreshChildDocsByFiletreeSort} from "./protyle/util/childDocs";
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -189,6 +190,14 @@ export class App {
                                 data.data.ids.includes(window.scribli.config.onboarding.documentID)) {
                                 void activateOnboarding(this, window.scribli.config.onboarding);
                             }
+                            break;
+                        case "filetreeSortChanged":
+                            getAllModels().files.forEach((item) => {
+                                item.updateFiletreeSort(data.data);
+                            });
+                            getAllModels().editor.forEach((item) => {
+                                refreshChildDocsByFiletreeSort(item.editor.protyle, data.data);
+                            });
                             break;
                         case "onboarding":
                             void activateOnboarding(this, data.data);

@@ -1075,6 +1075,60 @@ export class Files extends Model {
         });
     }
 
+    public updateFiletreeSort(data: { parentPath?: string, childIDs?: string[] }) {
+        if (!data.childIDs || data.childIDs.length < 2) {
+            return;
+        }
+
+        const firstVisibleChild = data.childIDs.map((id) => {
+            return this.element.querySelector<HTMLElement>(`li[data-node-id="${id}"]`);
+        }).find(Boolean);
+        if (!firstVisibleChild) {
+            return;
+        }
+
+        const notebookElement = firstVisibleChild.closest<HTMLElement>("ul[data-url]");
+        const notebook = notebookElement?.dataset.url;
+        if (!notebook) {
+            return;
+        }
+
+        const parentPath = this.normalizeFiletreeSortParentPath(data.parentPath);
+        const parentLiElement = parentPath === "/" ?
+            notebookElement.querySelector<HTMLElement>(":scope > li[data-type=\"navigation-root\"]") :
+            notebookElement.querySelector<HTMLElement>(`li[data-path="${parentPath}"]`);
+        if (!parentLiElement || parentLiElement.nextElementSibling?.tagName !== "UL") {
+            return;
+        }
+
+        const focusedID = this.element.querySelector<HTMLElement>("li.b3-list-item--focus[data-node-id]")?.dataset.nodeId;
+        const scrollTop = this.element.scrollTop;
+        fetchPost("/api/filetree/listDocsByPath", {
+            notebook,
+            path: parentPath,
+            app: Constants.SCRIBLI_APPID,
+        }, response => {
+            if (response.code !== 0) {
+                return;
+            }
+            this.onLsHTML(response.data, scrollTop);
+            if (focusedID) {
+                const focusedElement = this.element.querySelector<HTMLElement>(`li[data-node-id="${focusedID}"]`);
+                if (focusedElement) {
+                    this.setCurrent(focusedElement, false);
+                }
+            }
+            this.getOpenPaths();
+        });
+    }
+
+    private normalizeFiletreeSortParentPath(parentPath?: string) {
+        if (!parentPath || parentPath === "/") {
+            return "/";
+        }
+        return parentPath.endsWith(".sy") ? parentPath : `${parentPath}.sy`;
+    }
+
     private updateItemArrow(notebookId: string, filePath: string) {
         const treeElement = this.element.querySelector(`[data-url="${notebookId}"]`);
         if (!treeElement) {

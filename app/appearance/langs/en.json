@@ -1079,6 +1079,7 @@
   "exportDataTip": "Package and export all files in the <code class='fn__code'>workspace/data/</code> folder as a zip archive",
   "importDataTip": "Import the exported zip archive, overwriting the <code class='fn__code'>workspace/data/</code> folder by path",
   "includeChildDoc": "Include child documents",
+  "childPages": "Child pages",
   "text": "Text",
   "lastUsed": "Recently used appearance",
   "removedNotebook": "Removed notebook",

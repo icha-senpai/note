@@ -46,6 +46,7 @@ import {isSupportCSSHL} from "./render/searchMarkRender";
 import {renderAVAttribute} from "./render/av/blockAttr";
 import {setFoldById, zoomOut} from "../menus/protyle";
 import {setEditMode} from "./util/setEditMode";
+import {clearChildDocs, renderChildDocs} from "./util/childDocs";
 
 export class Protyle {
 
@@ -205,6 +206,7 @@ export class Protyle {
                                     });
                                 }
                             }
+                            renderChildDocs(this.protyle);
                             break;
                         case "rename":
                             if (this.protyle.path === data.data.path) {
@@ -238,12 +240,14 @@ export class Protyle {
                                     item.innerHTML = data.data.refText;
                                 }
                             });
+                            renderChildDocs(this.protyle);
                             break;
                         case "moveDoc":
                             if (this.protyle.path === data.data.fromPath) {
                                 this.protyle.path = data.data.newPath;
                                 this.protyle.notebookId = data.data.toNotebook;
                             }
+                            renderChildDocs(this.protyle);
                             break;
                         case "closeBox":
                         case "removeBox":
@@ -260,7 +264,13 @@ export class Protyle {
                                 }
                                 delete window.scribli.storage[Constants.LOCAL_FILEPOSITION][this.protyle.block.rootID];
                                 setStorageVal(Constants.LOCAL_FILEPOSITION, window.scribli.storage[Constants.LOCAL_FILEPOSITION]);
+                            } else {
+                                renderChildDocs(this.protyle);
                             }
+                            break;
+                        case "create":
+                        case "createdailynote":
+                            renderChildDocs(this.protyle);
                             break;
                     }
                 }
@@ -269,6 +279,7 @@ export class Protyle {
                 this.protyle.block.rootID = options.blockId;
                 renderBacklink(this.protyle, options.backlinkData);
                 this.protyle.wysiwyg.element.style.padding = "4px 16px 4px 24px";
+                clearChildDocs(this.protyle);
                 return;
             }
             if (!options.blockId) {
