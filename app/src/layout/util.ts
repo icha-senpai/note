@@ -301,7 +301,7 @@ const ensureAgentChatDock = (layout: Pick<Config.IUiLayout, "left" | "right" | "
 
 const initInternalDock = (dockItem: Config.IUILayoutDockTab[]) => {
     dockItem.forEach((existSubItem, index) => {
-        if (window.scribli.isPublish && (existSubItem.type === "inbox" || existSubItem.type === "agentChat")) {
+        if (existSubItem.type === "inbox" || (window.scribli.isPublish && existSubItem.type === "agentChat")) {
             dockItem.splice(index, 1);
             return;
         }

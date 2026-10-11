@@ -7,6 +7,9 @@ import {upDownHint} from "../../../util/upDownHint";
 import {escapeAriaLabel, escapeAttr, escapeHtml} from "../../../util/escape";
 import {hasClosestByClassName} from "../../util/hasClosest";
 import {Constants} from "../../../constants";
+import {getSavedDatabase, getViewBlockIDs} from "./undo";
+import {showMessage} from "../../../dialog/message";
+import * as dayjs from "dayjs";
 
 const countFilterLeaves = (filters: IAVFilter[]): number => {
     let count = 0;
@@ -87,14 +90,28 @@ export const openViewMenu = (options: { protyle: IProtyle, blockElement: HTMLEle
             id: "delete",
             icon: "iconTrashcan",
             label: window.scribli.languages.delete,
-            click() {
+            async click() {
                 document.querySelector(".av__panel")?.remove();
-                transaction(options.protyle, [{
-                    action: "removeAttrViewView",
-                    avID: options.blockElement.dataset.avId,
-                    id: options.element.dataset.id,
-                    blockID: options.blockElement.dataset.nodeId
-                }]);
+                try {
+                    const avID = options.blockElement.dataset.avId;
+                    const saved = await getSavedDatabase(avID);
+                    const index = saved.views.findIndex(view => view.id === options.element.dataset.id);
+                    const blockIDs = await getViewBlockIDs(avID, options.element.dataset.id);
+                    if (index < 0 || saved.views.length < 2 || options.protyle.disabled) { return; }
+                    const updated = dayjs().format("YYYYMMDDHHmmss");
+                    transaction(options.protyle, [{
+                        action: "removeAttrViewView",
+                        avID: options.blockElement.dataset.avId,
+                        id: options.element.dataset.id,
+                        blockID: options.blockElement.dataset.nodeId
+                    }, {action: "doUpdateUpdated", id: options.blockElement.dataset.nodeId, data: updated}], [{
+                        action: "restoreAttrViewView", avID, id: saved.views[index].id,
+                        blockID: options.blockElement.dataset.nodeId,
+                        previousID: saved.views[index - 1]?.id || "", data: saved.views[index],
+                    }, ...blockIDs.filter(id => id !== options.blockElement.dataset.nodeId).map(blockID => ({
+                        action: "setAttrViewBlockView" as const, avID, blockID, id: saved.views[index].id,
+                    })), {action: "doUpdateUpdated", id: options.blockElement.dataset.nodeId, data: options.blockElement.getAttribute("updated") || updated}]);
+                } catch (error) { showMessage(error.message); }
             }
         });
     }

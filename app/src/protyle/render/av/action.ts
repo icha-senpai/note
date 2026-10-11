@@ -41,6 +41,8 @@ import {clearSelect} from "../../util/clear";
 import {removeCompressURL} from "../../../util/image";
 import {createAttributeViewItem, openNewItemTemplateMenu} from "./newItemTemplate";
 import {openDatabaseRowByData} from "./openDatabaseRow";
+import {kanbanColumnAction} from "./kanban/columns";
+import {openMoveToColumnMenu} from "./kanban/move";
 
 const isDetachedDatabaseCell = (cellElement: HTMLElement) => {
     return cellElement.dataset.detached === "true" || !cellElement.querySelector(".av__celltext--ref");
@@ -102,7 +104,13 @@ export const avClick = (protyle: IProtyle, event: MouseEvent & { target: HTMLEle
     let target = event.target;
     while (target && !target.isEqualNode(blockElement)) {
         const type = target.getAttribute("data-type");
-        if (type === "av-header-add" && !protyle.disabled) {
+        if (["av-kanban-add-column", "av-kanban-rename-column", "av-kanban-column-menu", "av-kanban-starter"].includes(type) &&
+            !protyle.disabled && !protyle.options.history) {
+            kanbanColumnAction(protyle, blockElement, target, type);
+            event.preventDefault();
+            event.stopPropagation();
+            return true;
+        } else if (type === "av-header-add" && !protyle.disabled) {
             const addMenu = addCol(protyle, blockElement);
             const addRect = target.getBoundingClientRect();
             addMenu.open({
@@ -440,6 +448,12 @@ export const avContextmenu = (protyle: IProtyle, rowElement: HTMLElement, positi
     }
     const menu = new Menu();
     const rowElements = blockElement.querySelectorAll(".av__row--select:not(.av__row--header), .av__gallery-item--select");
+    if (avType === "kanban" && !protyle.disabled) {
+        menu.addItem({
+            icon: "iconRight", label: window.scribli.languages.kanbanMoveCard,
+            click() { void openMoveToColumnMenu(protyle, blockElement, Array.from(rowElements) as HTMLElement[], position).catch(error => showMessage(error.message)); },
+        });
+    }
     const keyCellElement = rowElements[0].querySelector('.av__cell[data-dtype="block"]') as HTMLElement;
     const ids = Array.from(rowElements).map(item => item.querySelector('[data-dtype="block"] .av__celltext').getAttribute("data-id"));
     if (rowElements.length === 1 && keyCellElement.getAttribute("data-detached") !== "true") {

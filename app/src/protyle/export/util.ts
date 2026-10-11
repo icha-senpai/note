@@ -12,17 +12,19 @@ import {highlightRender, lineNumberRender} from "../render/highlightRender";
 import {processRender} from "../util/processCode";
 import {isIPhone, isSafari, saveExportFile, setStorageVal} from "../util/compatibility";
 import {useShell} from "../../util/pathName";
+import {recordExport} from "./recentExports";
 
 const IMAGE_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
 export const afterExport = (exportPath: string, msgId: string) => {
     /// #if !BROWSER
-    showMessage(`${window.scribli.languages.exported} ${escapeHtml(exportPath)}
+    recordExport(exportPath);
+    const messageID = showMessage(`${window.scribli.languages.exported} ${escapeHtml(exportPath)}
 <div class="fn__space"></div>
 <button class="b3-button b3-button--white">${window.scribli.languages.showInFolder}</button>`, 6000, "info", msgId);
-    document.querySelector(`#message [data-id="${msgId}"] button`).addEventListener("click", () => {
+    document.querySelector(`#message [data-id="${messageID}"] button`)?.addEventListener("click", () => {
         useShell("showItemInFolder", path.join(exportPath));
-        hideMessage(msgId);
+        hideMessage(messageID);
     });
     /// #endif
 };

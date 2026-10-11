@@ -1,7 +1,9 @@
 import {genUUID} from "../util/genID";
 import {Constants} from "../constants";
+import {initAccessibleControls} from "../util/accessibleControls";
 
 export const initMessage = () => {
+    initAccessibleControls();
     const messageElement = document.getElementById("message");
     messageElement.innerHTML = '<div class="fn__flex-1"></div>';
     messageElement.addEventListener("click", (event) => {

@@ -28,6 +28,7 @@ import {openRecentDocs} from "../business/openRecentDocs";
 import * as dayjs from "dayjs";
 import {upDownHint} from "../util/upDownHint";
 import {openDataMigration} from "./dataMigration";
+import {openRecentExports} from "../protyle/export/recentExports";
 
 const editLayout = (layoutName?: string) => {
     const dialog = new Dialog({
@@ -536,6 +537,14 @@ export const workspaceMenu = (app: App, rect: DOMRect) => {
                 }
             }).element);
             if (!window.scribli.config.readonly) {
+                window.scribli.menus.menu.append(new MenuItem({
+                    id: "recentExports", label: window.scribli.languages.recentExports, icon: "iconUpload",
+                    click: openRecentExports,
+                }).element);
+                window.scribli.menus.menu.append(new MenuItem({
+                    id: "recentlyDeleted", label: window.scribli.languages.recentlyDeleted, icon: "iconTrashcan",
+                    click() { openHistory(app, "doc", {operation: "delete"}); },
+                }).element);
                 window.scribli.menus.menu.append(new MenuItem({
                     id: "dataMigration",
                     label: window.scribli.languages.dataMigration,

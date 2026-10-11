@@ -9,6 +9,7 @@ import {hideMessage, showMessage} from "../../dialog/message";
 import {isScribliUriProtocol} from "../../util/pathName";
 import {isBrowser} from "../../util/functions";
 import type {App} from "../../index";
+import {recordExport} from "../export/recentExports";
 
 export const isPhablet = () => {
     return /Android|webOS|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i.test(navigator.userAgent) || isIPhone() || isIPad();
@@ -105,6 +106,7 @@ export const saveExportFile = async (uri: string, msgId?: string) => {
         if (copyResponse.code !== 0) {
             throw new Error(copyResponse.msg);
         }
+        recordExport(result.filePath);
         if (msgId) {
             hideMessage(msgId);
         }

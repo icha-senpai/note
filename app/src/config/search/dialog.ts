@@ -47,6 +47,7 @@ export const switchSettingTab = (
 };
 
 const syncSettingSearch = (dialogElement: HTMLElement, app: App) => {
+    dialogElement.querySelector('[data-type="settings-no-results"]')?.remove();
     const keywords = getSearchKeywordsLower(dialogElement);
     if (!keywords) {
         dialogElement.querySelectorAll(".config__side .b3-list-item").forEach((item: HTMLElement) => {
@@ -89,6 +90,24 @@ const syncSettingSearch = (dialogElement: HTMLElement, app: App) => {
         dialogElement.querySelectorAll(".config__tab-container").forEach((item) => {
             item.classList.add("fn__none");
         });
+        const empty = document.createElement("div");
+        empty.dataset.type = "settings-no-results";
+        empty.className = "b3-list--empty";
+        empty.setAttribute("role", "status");
+        const text = document.createElement("p");
+        text.textContent = window.scribli.languages.noMatchingSettings;
+        const clear = document.createElement("button");
+        clear.type = "button";
+        clear.className = "b3-button b3-button--outline";
+        clear.textContent = window.scribli.languages.clearSearch;
+        clear.addEventListener("click", () => {
+            const input = dialogElement.querySelector<HTMLInputElement>(".config__tab-head input");
+            input.value = "";
+            syncSettingSearch(dialogElement, app);
+            input.focus();
+        });
+        empty.append(text, clear);
+        dialogElement.querySelector(".config__tab-wrap").append(empty);
     }
 };
 

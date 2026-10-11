@@ -20,8 +20,12 @@ const renderRecentDocsContent = async (data: {
 }[], element: Element, key?: string) => {
     let tabHtml = "";
     let index = 0;
+    let firstMatchID = "";
+    const renderID = (parseInt(element.getAttribute("data-render-id") || "0") + 1).toString();
+    element.setAttribute("data-render-id", renderID);
     data.forEach((item) => {
         if (!key || item.title.toLowerCase().includes(key.toLowerCase())) {
+            firstMatchID ||= item.rootID;
             tabHtml += `<li data-index="${index}" data-node-id="${item.rootID}" class="b3-list-item${index === 0 ? " b3-list-item--focus" : ""}">
     ${unicode2Emoji(item.icon || window.scribli.storage[Constants.LOCAL_IMAGES].file, "b3-list-item__graphic", true)}
     <span class="b3-list-item__text">${escapeHtml(item.title)}</span>
@@ -32,9 +36,12 @@ const renderRecentDocsContent = async (data: {
     let switchPath = "";
     if (tabHtml) {
         const pathResponse = await fetchSyncPost("/api/filetree/getFullHPathByID", {
-            id: data[0].rootID
+            id: firstMatchID
         });
         switchPath = escapeHtml(pathResponse.data);
+    }
+    if (element.getAttribute("data-render-id") !== renderID || !element.isConnected) {
+        return;
     }
     let dockHtml = "";
     if (!isWindow()) {

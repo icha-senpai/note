@@ -13,6 +13,8 @@ import {getFieldsByData} from "./view";
 import {getFieldIdByCellElement} from "./row";
 import {Constants} from "../../../constants";
 import {setPosition} from "../../../util/setPosition";
+import {deleteDatabaseOption} from "./undo";
+import {showMessage} from "../../../dialog/message";
 
 let cellValues: IAVCellValue[];
 
@@ -297,7 +299,7 @@ export const setColOption = (protyle: IProtyle, data: IAV, target: HTMLElement, 
         label: window.scribli.languages.delete,
         icon: "iconTrashcan",
         click() {
-            confirmDialog(window.scribli.languages.deleteOpConfirm, window.scribli.languages.confirmDelete, () => {
+            confirmDialog(window.scribli.languages.deleteOpConfirm, window.scribli.languages.confirmDelete, async () => {
                 let colOptions: { name: string, color: string }[] = [];
                 fields.find(column => {
                     if (column.id === colId) {
@@ -306,21 +308,9 @@ export const setColOption = (protyle: IProtyle, data: IAV, target: HTMLElement, 
                     }
                 });
                 const newName = target.parentElement.dataset.name;
-                transaction(protyle, [{
-                    action: "removeAttrViewColOption",
-                    id: colId,
-                    avID: data.id,
-                    data: newName,
-                }, {
-                    action: "doUpdateUpdated",
-                    id: blockID,
-                    data: dayjs().format("YYYYMMDDHHmmss"),
-                }], [{
-                    action: "updateAttrViewColOptions",
-                    id: colId,
-                    avID: data.id,
-                    data: colOptions
-                }]);
+                try {
+                    if (!await deleteDatabaseOption(protyle, data.id, blockID, colId, newName)) { return; }
+                } catch (error) { showMessage(error.message); return; }
                 colOptions.find((item, index) => {
                     if (item.name === newName) {
                         colOptions.splice(index, 1);

@@ -18,6 +18,7 @@ const registerSyncGroup = (tab: SettingTabBuilder) => {
         title: window.scribli.languages.syncProvider,
         desc: window.scribli.languages.syncProviderTip,
         options: [
+            {value: 0, label: window.scribli.languages.syncOff},
             {value: 2, label: "S3"},
             {value: 3, label: "WebDAV"},
             ...(["std", "docker"].includes(window.scribli.config.system.container) ? [{value: 4, label: window.scribli.languages.localFileSystem}] : []),

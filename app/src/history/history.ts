@@ -325,7 +325,7 @@ const renderRmNotebook = (element: HTMLElement) => {
     });
 };
 
-export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc") => {
+export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc", options?: {operation: string}) => {
     if (window.scribli.config.readonly) {
         return;
     }
@@ -340,6 +340,7 @@ export const openHistory = (app: App, tab: "doc" | "notebook" | "repo" = "doc") 
     }
 
     const localHistory = window.scribli.storage[Constants.LOCAL_HISTORY];
+    if (options) { Object.assign(localHistory, {operation: options.operation, type: 0, notebookId: "%"}); }
     let notebookSelectHTML = `<option value='%' ${localHistory.notebookId === "%" ? "selected" : ""}>${window.scribli.languages.allNotebooks}</option>`;
     window.scribli.notebooks.forEach((item) => {
         if (!item.closed) {
@@ -563,8 +564,9 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                     name = target.previousElementSibling.previousElementSibling.textContent.trim();
                     time = dayjs(parseInt(target.parentElement.getAttribute("data-created")) * 1000).format("YYYY-MM-DD HH:mm:ss");
                 }
-                confirmDialog("⚠️ " + window.scribli.languages.rollback,
-                    window.scribli.languages.rollbackConfirm.replace("${name}", name).replace("${time}", time),
+                const isDeletedDoc = target.parentElement.getAttribute("data-type") === "doc" && target.closest('[data-op="delete"]');
+                confirmDialog(isDeletedDoc ? window.scribli.languages.restore : "⚠️ " + window.scribli.languages.rollback,
+                    (isDeletedDoc ? window.scribli.languages.restoreDeletedConfirm : window.scribli.languages.rollbackConfirm).replace("${name}", name).replace("${time}", time),
                     () => {
                         if (dataType === "assets") {
                             fetchPost("/api/history/rollbackAssetsHistory", {
@@ -709,11 +711,11 @@ const bindEvent = (app: App, element: Element, dialog?: Dialog) => {
                                     chipClass += "b3-chip--warning ";
                                     ariaLabel = window.scribli.languages.historyOutline;
                                 }
-                                html += `<li data-notebook-id="${docItem.notebook}" data-created="${created}" data-type="${typeElement.value === "4" ? "av" : (typeElement.value === "2" ? "assets" : "doc")}" data-path="${docItem.path}" class="b3-list-item b3-list-item--hide-action" style="padding-left: 22px">
+                                html += `<li data-op="${docItem.op}" data-notebook-id="${docItem.notebook}" data-created="${created}" data-type="${typeElement.value === "4" ? "av" : (typeElement.value === "2" ? "assets" : "doc")}" data-path="${docItem.path}" class="b3-list-item b3-list-item--hide-action" style="padding-left: 22px">
     <span class="${opElement.value === "all" ? "" : "fn__none"}${chipClass}ariaLabel" data-position="6south" aria-label="${ariaLabel}">${docItem.op.substring(0, 1).toUpperCase()}</span>
     <span class="b3-list-item__text" title="${escapeAttr(docItem.title)}">${escapeHtml(docItem.title)}</span>
     <span class="fn__space"></span>
-    <span class="b3-list-item__action ariaLabel" data-type="rollback" data-position="6south" aria-label="${window.scribli.languages.rollback}">
+    <span class="b3-list-item__action ariaLabel" data-type="rollback" data-position="6south" aria-label="${docItem.op === "delete" && !["2", "4"].includes(typeElement.value) ? window.scribli.languages.restore : window.scribli.languages.rollback}">
         <svg><use xlink:href="#iconUndo"></use></svg>
     </span>
 </li>`;

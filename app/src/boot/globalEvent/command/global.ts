@@ -1,5 +1,6 @@
 import {newDailyNote} from "../../../util/mount";
 import {openHistory} from "../../../history/history";
+import {openRecentExports} from "../../../protyle/export/recentExports";
 import {Editor} from "../../../editor";
 import {openNewWindow} from "../../../window/openNewWindow";
 import {openBacklink, openGraph, openOutline, selectOpenTab, toggleDockBar} from "../../../layout/dock/util";
@@ -39,6 +40,12 @@ import {setStorageVal} from "../../../protyle/util/compatibility";
 
 export const globalCommand = (command: string, app: App) => {
     switch (command) {
+        case "recentExports":
+            openRecentExports();
+            return true;
+        case "recentlyDeleted":
+            openHistory(app, "doc", {operation: "delete"});
+            return true;
         case "fileTree":
             getDockByType("file").toggleModel("file");
             return true;
@@ -47,8 +54,9 @@ export const globalCommand = (command: string, app: App) => {
             return true;
         case "bookmark":
         case "tag":
-        case "inbox":
             getDockByType(command).toggleModel(command);
+            return true;
+        case "inbox":
             return true;
         case "backlinks":
             getDockByType("backlink").toggleModel("backlink");

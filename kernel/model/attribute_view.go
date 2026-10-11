@@ -3260,7 +3260,7 @@ func (tx *Transaction) doSortAttrViewView(operation *Operation) (ret *TxErr) {
 func (tx *Transaction) doRemoveAttrViewView(operation *Operation) (ret *TxErr) {
 	var err error
 	avID := operation.AvID
-	attrView, err := av.ParseAttributeView(avID)
+	attrView, err := avParseView(avID, operation.BlockID)
 	if err != nil {
 		logging.LogErrorf("parse attribute view [%s] failed: %s", avID, err)
 		return &TxErr{code: TxErrCodeBlockNotFound, id: avID}
@@ -3272,6 +3272,9 @@ func (tx *Transaction) doRemoveAttrViewView(operation *Operation) (ret *TxErr) {
 	}
 
 	view, err := getAttrViewViewByBlockID(attrView, operation.BlockID)
+	if operation.ID != "" {
+		view = attrView.GetView(operation.ID)
+	}
 	if nil == view {
 		logging.LogWarnf("get view failed: %s", operation.BlockID)
 		return

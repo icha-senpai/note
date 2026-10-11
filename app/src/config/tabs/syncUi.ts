@@ -138,16 +138,9 @@ const SYNC_PROVIDER_DEFS: Record<Config.ISync["provider"], SyncProviderDef> = {
         api: "/api/sync/setSyncProviderLocal",
         getConfig: () => window.scribli.config.sync.local,
         genIntro: () => `<div class="b3-label b3-label--inner">
-    <div class="ft__error">
-        ${window.scribli.languages.mobileNotSupport}
-    </div>
-    <div class="fn__hr"></div>
     ${window.scribli.languages.syncThirdPartyProviderLocalIntro}
 </div>`,
-        genUnavailableIntro: () => `${genThirdPartyUnavailableIntro()}<div class="ft__error">
-    <div class="fn__hr--b"></div>
-    ${window.scribli.languages.mobileNotSupport}
-</div>`,
+        genUnavailableIntro: genThirdPartyUnavailableIntro,
         fields: [
             {type: "input", label: "Endpoint", id: "endpoint"},
             {type: "input", label: "Timeout (s)", id: "timeout", attrs: 'type="number" min="7" max="300"'},

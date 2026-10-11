@@ -102,6 +102,7 @@ ${cell.color ? `color:${cell.color};` : ""}">${renderCell(cell.value, options.ro
         const kanbanRow = options.row as IAVGalleryItem;
         const kanbanData = options.data as IAVKanban;
         html += `<div data-id="${kanbanRow.id}" data-index="${options.rowIndex}" draggable="true" class="av__gallery-item">`;
+        html += `<span class="av__kanban-drag ariaLabel" data-type="av-kanban-drag" draggable="true" contenteditable="false" data-position="north" aria-label="${window.scribli.languages.kanbanDragCard}"><svg><use xlink:href="#iconDrag"></use></svg></span>`;
         if (kanbanData.coverFrom !== 0) {
             const coverClass = "av__gallery-cover av__gallery-cover--" + kanbanData.cardAspectRatio;
             if (kanbanRow.coverURL) {

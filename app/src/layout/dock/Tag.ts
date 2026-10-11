@@ -192,6 +192,9 @@ export class Tag extends Model {
                 this.openNodes = this.tree.getExpandIds();
             }
             this.tree.updateData(response.data);
+            if (response.data.length === 0) {
+                this.tree.element.querySelector(".b3-list--empty").textContent = window.scribli.languages.tagEmptyAction;
+            }
             if (this.openNodes) {
                 this.tree.setExpandIds(this.openNodes);
             } else {

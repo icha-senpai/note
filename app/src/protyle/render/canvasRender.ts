@@ -7,6 +7,7 @@ import {openSearch} from "../../search/spread";
 import {Constants} from "../../constants";
 import {pathPosix} from "../../util/pathName";
 import {Dialog} from "../../dialog";
+import {pickCanvasReference} from "./canvasPicker";
 
 interface ICanvasNode {
     id: string;
@@ -624,11 +625,12 @@ const addTextNode = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
 };
 
 const addScribliNodeFromPrompt = async (surfaceElement: HTMLElement, canvas: ICanvasPayload, id: string, blockElement: HTMLElement | undefined, kind: string) => {
-    const value = await canvasInputDialog(scribliNodeValueLabel(kind));
+    const reference = kind === "query" ? null : await pickCanvasReference(kind, blockElement?.dataset.nodeId);
+    const value = kind === "query" ? await canvasInputDialog(scribliNodeValueLabel(kind)) : reference?.value;
     if (!value) {
         return;
     }
-    const label = await canvasInputDialog(lang("canvasLabelPrompt", "Label")) || undefined;
+    const label = reference?.label || value;
     const latestCanvas = await loadStoredCanvas(id, canvas);
     const position = nextNodePosition(latestCanvas.nodes || []);
     const args: Record<string, any> = {
@@ -671,12 +673,13 @@ const editScribliNodeInfo = async (surfaceElement: HTMLElement, canvas: ICanvasP
     if (!canEditScribliNodeInfo(node, kind)) {
         return;
     }
-    const nextValue = await canvasInputDialog(scribliNodeValueLabel(kind), scribliNodeCurrentValue(node, kind));
+    const reference = kind === "query" ? null : await pickCanvasReference(kind === "executable_output" ? "block" : kind, blockElement?.dataset.nodeId);
+    const nextValue = kind === "query" ? await canvasInputDialog(scribliNodeValueLabel(kind), scribliNodeCurrentValue(node, kind)) : reference?.value;
     if (nextValue === null || !nextValue.trim()) {
         return;
     }
     const currentLabel = node.scribli?.label || firstLine(node.text) || scribliNodeCurrentValue(node, kind);
-    const nextLabel = await canvasInputDialog(lang("canvasLabelPrompt", "Label"), currentLabel);
+    const nextLabel = reference?.label || (kind === "query" ? await canvasInputDialog(lang("canvasLabelPrompt", "Label"), currentLabel) : currentLabel);
     if (nextLabel === null) {
         return;
     }

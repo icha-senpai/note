@@ -22,8 +22,9 @@ import {Plugin} from "../../plugin";
 import {Custom} from "./Custom";
 import {clearBeforeResizeTop, recordBeforeResizeTop} from "../../protyle/util/resize";
 import {Constants} from "../../constants";
+import {escapeAttr, escapeHtml} from "../../util/escape";
 
-const TYPES = ["file", "outline", "inbox", "bookmark", "tag", "graph", "globalGraph", "backlink", "agentChat"];
+const TYPES = ["file", "outline", "bookmark", "tag", "graph", "globalGraph", "backlink", "agentChat"];
 
 export class Dock {
     public elements: HTMLElement[];
@@ -420,7 +421,7 @@ export class Dock {
     }
 
     public toggleModel(type: TDock | string, show = false, close = false, removeDock = false, isSaveLayout = true) {
-        if (!type) {
+        if (!type || type === "inbox") {
             return;
         }
         if (this.pin) {
@@ -875,6 +876,7 @@ export class Dock {
     public genButton(data: Config.IUILayoutDockTab[], index: number, tabIndex?: number) {
         let html = "";
         data.forEach(item => {
+            if (item.type === "inbox") { return; }
             if (typeof tabIndex === "undefined" && !TYPES.includes(item.type)) {
                 return;
             }
@@ -883,9 +885,9 @@ export class Dock {
             } else if (item.type === "tags") {
                 item.icon = "iconTag";
             }
-            html += `<span data-height="${item.size.height}" data-width="${item.size.width}" data-type="${item.type}" data-index="${index}" data-hotkey="${item.hotkey || ""}" data-hotkeylangid="${item.hotkeyLangId || ""}" data-title="${item.title}" class="dock__item${item.show ? " dock__item--active" : ""} ariaLabel" aria-label="<span style='white-space:pre'>${item.title} ${item.hotkey ? updateHotkeyTip(item.hotkey) : ""}${window.scribli.languages.dockTip}</span>">
+            html += `<button type="button" data-position="${this.position === "Right" ? "west" : this.position === "Left" ? "east" : "north"}" data-height="${item.size.height}" data-width="${item.size.width}" data-type="${item.type}" data-index="${index}" data-hotkey="${item.hotkey || ""}" data-hotkeylangid="${item.hotkeyLangId || ""}" data-title="${escapeAttr(escapeHtml(item.title))}" class="dock__item${item.show ? " dock__item--active" : ""} ariaLabel" aria-label="${escapeAttr(escapeHtml(item.title))}" data-tooltip="${escapeAttr(`<span style='white-space:pre'>${escapeHtml(item.title)} ${item.hotkey ? updateHotkeyTip(item.hotkey) : ""}${window.scribli.languages.dockTip}</span>`)}">
     <svg><use xlink:href="#${item.icon}"></use></svg>
-</span>`;
+</button>`;
             this.data[item.type] = true;
         });
         if (typeof tabIndex === "number") {

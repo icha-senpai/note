@@ -23,6 +23,8 @@ import {updateCardHV} from "./util";
 import {showMessage} from "../dialog/message";
 import {Menu} from "../plugin/Menu";
 import {transaction} from "../protyle/wysiwyg/transaction";
+import {fetchSyncPost} from "../util/fetch";
+import {openSearch} from "../search/spread";
 
 const genCardCount = (cardsData: ICardData, allIndex = 0) => {
     let newIndex = 0;
@@ -82,7 +84,7 @@ export const genCardHTML = (options: {
     <div class="card__block fn__flex-1 ${options.cardsData.cards.length === 0 ? "fn__none" : ""}" data-type="render"></div>
     <div class="card__empty card__empty--space${options.cardsData.cards.length === 0 ? "" : " fn__none"}" data-type="empty">
         <div>🔮</div>
-        ${window.scribli.languages.noDueCard}
+        ${options.cardsData.totalCards === 0 ? `${window.scribli.languages.flashcardsEmptyAction}<div class="fn__hr"></div><button type="button" data-type="choose-note" class="b3-button b3-button--outline">${window.scribli.languages.chooseNote}</button>` : window.scribli.languages.noDueCard}
     </div>
     <div class="fn__flex card__action fn__none">
         <button class="b3-button b3-button--cancel" disabled="disabled" data-type="-2" style="width: 25%;">
@@ -777,6 +779,12 @@ export const openCardByData = async (app: App, cardsData: ICardData, cardType: T
     for (let i = 0; i < app.plugins.length; i++) {
         cardsData = await app.plugins[i].updateCards(cardsData);
     }
+    if (cardsData.cards.length === 0 && cardType === "all") {
+        const decks = await fetchSyncPost("/api/riff/getRiffDecks", {});
+        if (decks.code === 0) {
+            cardsData.totalCards = decks.data.reduce((total: number, deck: {size: number}) => total + deck.size, 0);
+        }
+    }
     const dialog = new Dialog({
         hideCloseIcon: true,
         positionId: Constants.DIALOG_OPENCARD,
@@ -812,6 +820,10 @@ export const openCardByData = async (app: App, cardsData: ICardData, cardType: T
     dialog.editors = {
         card: editor
     };
+    dialog.element.querySelector('[data-type="choose-note"]')?.addEventListener("click", () => {
+        dialog.destroy();
+        openSearch({app, hotkey: Constants.DIALOG_SEARCH, key: ""});
+    });
     const focusElement = dialog.element.querySelector(".block__icons button.block__icon") as HTMLElement;
     focusElement.focus();
     const range = document.createRange();

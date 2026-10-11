@@ -393,6 +393,10 @@
   }
 
   &__item {
+    border: 0;
+    background: transparent;
+    font: inherit;
+    flex-shrink: 0;
     padding: 5px;
     color: var(--b3-theme-on-surface-light);
     display: flex;
@@ -400,6 +404,10 @@
     margin: 7px;
     cursor: pointer;
     touch-action: none;
+    &:focus-visible {
+      outline: 2px solid var(--b3-theme-primary);
+      outline-offset: 1px;
+    }
 
     &:hover:not(.dock__item--activefocus),
     &--active {

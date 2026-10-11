@@ -5,6 +5,7 @@ import {syncGuide} from "../sync/syncGuide";
 import {setNoteBook} from "../util/pathName";
 import type {App} from "../index";
 import {openFileById} from "../editor/util";
+import {openSetting} from "../config";
 
 export const ensureOnboarding = async () => {
     const onboarding = window.scribli.config.onboarding;
@@ -68,8 +69,11 @@ const renderOnboarding = (app: App) => {
 <button class="b3-button b3-button--outline fn__block" data-type="import">
     <svg><use xlink:href="#iconDownload"></use></svg>${window.scribli.languages.importExistingData}
 </button>
+<button class="b3-button b3-button--outline fn__block" data-type="settings">
+    <svg><use xlink:href="#iconSettings"></use></svg>${window.scribli.languages.config}
+</button>
 <button class="b3-button b3-button--outline fn__block" data-type="sync">
-    <svg><use xlink:href="#iconCloud"></use></svg>${window.scribli.languages.settingsAndSync}
+    <svg><use xlink:href="#iconCloud"></use></svg>${window.scribli.languages.setupSync}
 </button>`;
     element.addEventListener("click", (event) => {
         const target = (event.target as HTMLElement).closest("[data-type]") as HTMLElement;
@@ -77,6 +81,9 @@ const renderOnboarding = (app: App) => {
             return;
         }
         switch (target.dataset.type) {
+            case "settings":
+                openSetting(app);
+                break;
             case "close":
                 dismissOnboarding();
                 break;

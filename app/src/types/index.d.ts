@@ -48,6 +48,8 @@ type TOperation =
     | "addAttrViewView"
     | "setAttrViewViewName"
     | "removeAttrViewView"
+    | "restoreAttrViewView"
+    | "restoreAttrViewColOption"
     | "setAttrViewViewIcon"
     | "duplicateAttrViewView"
     | "duplicateAttrViewRow"
@@ -327,6 +329,7 @@ interface ICard {
 }
 
 interface ICardData {
+    totalCards?: number;
     cards: ICard[],
     unreviewedCount: number
     unreviewedNewCardCount: number

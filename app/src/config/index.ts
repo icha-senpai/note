@@ -8,6 +8,7 @@ import {clearAccessTabElement} from "./tabs/accessRuntime";
 import {clearSyncTabElement} from "./tabs/syncRuntime";
 import type {TSettingTab} from "./setting/tabs";
 import type {App} from "../index";
+import {bindSettingSaveStatus} from "./util/saveStatus";
 
 const openSettingDialog = (app: App, initialTab: TSettingTab = "editor") => {
     window.scribli.dialogs.find((item) => item.element.querySelector(".config__tab-container"))?.destroy();
@@ -22,6 +23,7 @@ const openSettingDialog = (app: App, initialTab: TSettingTab = "editor") => {
         tabListItems.push(`<li data-name="${def.id}" class="b3-list-item${isActive ? " b3-list-item--focus" : ""}${def.hidden ? " fn__none" : ""}"><svg class="b3-list-item__graphic"><use xlink:href="#${def.icon}"></use></svg><span class="b3-list-item__text">${def.title}</span></li>`);
         tabPanels.push(`<div class="config__tab-container${isActive ? "" : " fn__none"}" data-name="${def.id}"></div>`);
     }
+    const cleanup: Array<() => void> = [];
     const dialog = new Dialog({
         content: `<div class="fn__flex-1 fn__flex config__panel" style="overflow: hidden;position: relative">
     <div class="config__side b3-list b3-list--background">
@@ -31,6 +33,7 @@ const openSettingDialog = (app: App, initialTab: TSettingTab = "editor") => {
                 <span class="b3-list-item__text">${window.scribli.languages.config}</span>
             </div>
             <input placeholder="${window.scribli.languages.search}" class="b3-text-field fn__block">
+            <div class="ft__smaller fn__flex fn__flex-wrap" data-type="settings-save" role="status" aria-live="polite"><span data-type="save-status"></span><button type="button" class="b3-button b3-button--text fn__none">${window.scribli.languages.retry}</button></div>
         </div>
         <ul class="config__tab-scroll">
             ${tabListItems.join("")}
@@ -43,6 +46,7 @@ const openSettingDialog = (app: App, initialTab: TSettingTab = "editor") => {
         width: "max(70vw, min(90vw, 900px))",
         height: "90vh",
         destroyCallback() {
+            cleanup.forEach(clear => clear());
             clearSyncTabElement();
             clearAccessTabElement();
             if (range) {
@@ -54,6 +58,7 @@ const openSettingDialog = (app: App, initialTab: TSettingTab = "editor") => {
 
     const tabWrap = dialog.element.querySelector(".config__tab-wrap") as HTMLElement;
     bindSettingSaveDelegation(tabWrap);
+    cleanup.push(bindSettingSaveStatus(dialog.element.querySelector('[data-type="settings-save"]')));
     initSettingSearch(dialog.element, app);
     (dialog.element.querySelector(".b3-dialog__container") as HTMLElement).style.maxWidth = "1280px";
     dialog.element.querySelectorAll(".config__side .b3-list-item").forEach(item => {

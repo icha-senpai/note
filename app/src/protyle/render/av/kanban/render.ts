@@ -8,13 +8,17 @@ import {escapeHtml} from "../../../../util/escape";
 import {getRowHTML} from "../row";
 import {getBodyVirtualData} from "../virtualScroll";
 import {beginAVRender, getAVLocateParams, isCurrentAVRender, prepareAVLocate} from "../locate";
+import {getKanbanColumnActionsHTML, getKanbanColumnTitleHTML} from "./columns";
 
 interface IIds {
     groupId: string,
     fieldId: string,
 }
 
-const getKanbanTitleHTML = (group: IAVView, counter: number) => {
+const isUncategorizedGroup = (group: IAVView) => ["select", "mSelect"].includes(group.groupKey.type) &&
+    group.groupValue.text?.content === "_@default@_";
+
+const getKanbanTitleHTML = (group: IAVView, counter: number, editable: boolean) => {
     let nameHTML = "";
     if (["mSelect", "select"].includes(group.groupValue.type)) {
         group.groupValue.mSelect.forEach((item) => {
@@ -23,12 +27,14 @@ const getKanbanTitleHTML = (group: IAVView, counter: number) => {
     } else if (group.groupValue.type === "checkbox") {
         nameHTML = `<svg style="width:calc(1.625em - 12px);height:calc(1.625em - 12px);margin: 4px 0;float: left;"><use xlink:href="#icon${group.groupValue.checkbox.checked ? "Check" : "Uncheck"}"></use></svg>`;
     } else {
-        nameHTML = group.name;
+        nameHTML = escapeHtml(isUncategorizedGroup(group) ? window.scribli.languages.kanbanUncategorized : group.name);
     }
+    const column = getKanbanColumnTitleHTML(group, nameHTML, editable);
     return `<div class="av__group-title">
-    <span class="av__group-name fn__ellipsis" style="white-space: nowrap;">${nameHTML}</span>
+    ${column.title}
     ${(!counter || counter === 0) ? '<span class="fn__space"></span>' : `<span aria-label="${window.scribli.languages.entryNum}" data-position="north" class="av__group-counter ariaLabel">${counter}</span>`}
     <span class="fn__flex-1"></span>
+    ${column.menu}
     <span class="av__group-icon av__group-icon--hover ariaLabel" data-type="av-add-top" data-position="north" aria-label="${window.scribli.languages.newRow}"><svg><use xlink:href="#iconAdd"></use></svg></span>
 </div>`;
 };
@@ -171,10 +177,12 @@ export const renderKanban = async (options: {
         return;
     }
     const view = data.view as IAVKanban;
+    const editable = !created && !snapshot &&
+        !hasClosestByAttribute(options.blockElement, "data-type", "NodeBlockQueryEmbed");
     let bodyHTML = "";
     let isSelectGroup = false;
     view.groups.forEach((group: IAVKanban) => {
-        if (group.groupHidden === 0) {
+        if (group.groupHidden === 0 && (!isUncategorizedGroup(group) || group.cardCount > 0)) {
             let selectBg = "";
             if (group.fillColBackgroundColor) {
                 if (["mSelect", "select"].includes(group.groupValue.type)) {
@@ -189,7 +197,7 @@ export const renderKanban = async (options: {
                 }
             }
             bodyHTML += `<div class="av__kanban-group${group.cardSize === 0 ? " av__kanban-group--small" : (group.cardSize === 2 ? " av__kanban-group--big" : "")}"${selectBg}>
-    ${getKanbanTitleHTML(group, group.cardCount)}
+    ${getKanbanTitleHTML(group, group.cardCount, editable)}
     <div data-group-id="${group.id}" data-page-size="${group.pageSize}" data-dtype="${group.groupKey.type}" data-content="${Lute.EscapeHTMLStr(group.groupValue.text?.content || "")}"${virtualData[group.id]?.locate ? ' data-av-locate-window="true"' : ""} class="av__body">${getKanbanHTML(group, options.blockElement, virtualData[group.id])}</div>
 </div>`;
         }
@@ -197,12 +205,15 @@ export const renderKanban = async (options: {
     if (options.renderAll) {
         options.blockElement.firstElementChild.outerHTML = `<div class="av__container fn__block">
     ${genTabHeaderHTML(data, resetData.isSearching || !!resetData.query, !options.protyle.disabled && !hasClosestByAttribute(options.blockElement, "data-type", "NodeBlockQueryEmbed"))}
+    <div class="av__kanban-tools">${getKanbanColumnActionsHTML(data, editable)}</div>
     <div class="av__kanban${isSelectGroup ? " av__kanban--bg" : ""}">
         ${bodyHTML}
     </div>
     <div class="av__cursor" contenteditable="true">${Constants.ZWSP}</div>
 </div>`;
     } else {
+        const tools = options.blockElement.querySelector(".av__kanban-tools");
+        if (tools) { tools.innerHTML = getKanbanColumnActionsHTML(data, editable); }
         const kanbanElement = options.blockElement.querySelector(".av__kanban");
         kanbanElement.innerHTML = bodyHTML;
         if (isSelectGroup) {
@@ -220,6 +231,6 @@ export const renderKanban = async (options: {
         blockElement: options.blockElement,
     });
     if (view.hideAttrViewName) {
-        options.blockElement.querySelector(".av__gallery").classList.add("av__gallery--top");
+        options.blockElement.querySelector(".av__kanban").classList.add("av__gallery--top");
     }
 };

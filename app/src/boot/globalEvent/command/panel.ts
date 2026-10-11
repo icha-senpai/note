@@ -48,7 +48,7 @@ export const commandPanel = (app: App) => {
     const listElement = dialog.element.querySelector("#commands");
     let html = "";
     Object.keys(window.scribli.config.keymap.general).forEach((key) => {
-        const keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "inbox", "backlinks",
+        const keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "backlinks",
             "graphView", "globalGraph", "closeAll", "closeLeft", "closeOthers", "closeRight", "closeTab",
             "closeUnmodified", "config", "dataHistory", "editReadonly", "enter", "enterBack", "globalSearch", "goBack",
             "goForward", "goToEditTabNext", "goToEditTabPrev", "goToTab1", "goToTab2", "goToTab3", "goToTab4",
@@ -75,6 +75,8 @@ export const commandPanel = (app: App) => {
         }
     });
     listElement.insertAdjacentHTML("beforeend", html);
+    listElement.insertAdjacentHTML("beforeend", `<li class="b3-list-item" data-command="recentlyDeleted"><span class="b3-list-item__text">${window.scribli.languages.recentlyDeleted}</span></li>`);
+    listElement.insertAdjacentHTML("beforeend", `<li class="b3-list-item" data-command="recentExports"><span class="b3-list-item__text">${window.scribli.languages.recentExports}</span></li>`);
     app.plugins.forEach(plugin => {
         plugin.commands.forEach(command => {
             const liElement = document.createElement("li");
@@ -144,6 +146,7 @@ export const commandPanel = (app: App) => {
 };
 
 const filterList = (inputElement: HTMLInputElement, listElement: Element) => {
+    listElement.querySelector('[data-type="commands-no-results"]')?.remove();
     const inputValue = inputElement.value.toLowerCase();
     listElement.querySelector(".b3-list-item--focus")?.classList.remove("b3-list-item--focus");
     let hasFocus = false;
@@ -161,6 +164,25 @@ const filterList = (inputElement: HTMLInputElement, listElement: Element) => {
             element.classList.add("fn__none");
         }
     });
+    if (!hasFocus) {
+        const empty = document.createElement("li");
+        empty.dataset.type = "commands-no-results";
+        empty.className = "b3-list--empty";
+        empty.setAttribute("role", "status");
+        const text = document.createElement("p");
+        text.textContent = window.scribli.languages.noMatchingCommands;
+        const clear = document.createElement("button");
+        clear.type = "button";
+        clear.className = "b3-button b3-button--outline";
+        clear.textContent = window.scribli.languages.clearSearch;
+        clear.addEventListener("click", () => {
+            inputElement.value = "";
+            filterList(inputElement, listElement);
+            inputElement.focus();
+        });
+        empty.append(text, clear);
+        listElement.append(empty);
+    }
 };
 
 export const execByCommand = async (options: {

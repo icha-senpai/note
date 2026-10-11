@@ -1,7 +1,6 @@
 import {adjustDockPadding} from "../../layout/dock/util";
 import {exportLayout} from "../../layout/util";
 import {syncHideToolbarLayout, updateBarModeIcon} from "../../layout/topBar";
-import {fetchPost} from "../../util/fetch";
 import {loadAssets} from "../../util/assets";
 import {remountOpenSettingTab} from "../setting/mount";
 import {createConfigNamespaceApi} from "../util/namespaceApi";
@@ -11,8 +10,7 @@ export const appearanceThemeModeValue = (): number =>
 
 export const saveThemeMode = (value: number) => {
     const OSThemeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? 1 : 0;
-    fetchPost("/api/setting/setAppearance", {
-        ...window.scribli.config.appearance,
+    appearanceConfigApi.patchMany({
         mode: (value === 2 ? OSThemeMode : value) as Config.IAppearance["mode"],
         modeOS: value === 2,
     });

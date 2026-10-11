@@ -337,6 +337,10 @@ func performTx(tx *Transaction) (ret *TxErr) {
 				ret = tx.doAddAttrViewView(op)
 			case "removeAttrViewView":
 				ret = tx.doRemoveAttrViewView(op)
+			case "restoreAttrViewView":
+				ret = tx.doRestoreAttrViewView(op)
+			case "restoreAttrViewColOption":
+				ret = tx.doRestoreAttrViewColOption(op)
 			case "setAttrViewViewName":
 				ret = tx.doSetAttrViewViewName(op)
 			case "setAttrViewViewIcon":

@@ -644,6 +644,9 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
             return;
         }
         let target = event.target as HTMLElement;
+        if (target.closest?.('[data-type="av-kanban-drag"]')) {
+            target = hasClosestByClassName(target, "av__gallery-item") as HTMLElement;
+        }
         if (target.classList?.contains("av__gallery-img")) {
             target = hasClosestByClassName(target, "av__gallery-item") as HTMLElement;
         }

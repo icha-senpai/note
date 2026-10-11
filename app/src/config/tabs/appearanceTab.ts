@@ -20,7 +20,7 @@ import {genConfigItemMainHtml, genListSwitchItemHtml} from "../render/fragments"
 import {genStackHtml} from "../render/render";
 import {controlBoolean} from "../setting/control";
 import {editorConfigApi} from "./editorRuntime";
-import {appearanceThemeModeValue, saveThemeMode} from "./appearanceRuntime";
+import {appearanceConfigApi, appearanceThemeModeValue, saveThemeMode} from "./appearanceRuntime";
 import {upDownHint} from "../../util/upDownHint";
 
 interface IFontItem {
@@ -507,10 +507,7 @@ const mountAppearanceSetStatusBar = (root: HTMLElement) => {
                 if (objEquals(statusBar, window.scribli.config.appearance.statusBar)) {
                     return;
                 }
-                fetchPost("/api/setting/setAppearance", {
-                    ...window.scribli.config.appearance,
-                    statusBar
-                });
+                appearanceConfigApi.patch("statusBar", statusBar);
             }
         });
     });
@@ -557,10 +554,7 @@ const mountAppearanceSetNotifications = (root: HTMLElement) => {
                 if (objEquals(notifications, window.scribli.config.appearance.notifications)) {
                     return;
                 }
-                fetchPost("/api/setting/setAppearance", {
-                    ...window.scribli.config.appearance,
-                    notifications
-                });
+                appearanceConfigApi.patch("notifications", notifications);
             }
         });
     });

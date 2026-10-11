@@ -7,6 +7,7 @@ export const showTooltip = (
     event?: MouseEvent,
     space: number = 0.5,
 ) => {
+    message = target.getAttribute("data-tooltip") || message;
     if (isMobile() || !message) {
         return;
     }
@@ -36,6 +37,7 @@ export const showTooltip = (
     const messageElement = document.getElementById("tooltip");
     messageElement.className = tooltipClass ? `tooltip tooltip--${tooltipClass}` : "tooltip";
     messageElement.innerHTML = window.DOMPurify.sanitize(message);
+    messageElement.classList.toggle("tooltip--interactive", !!messageElement.querySelector("a, button, input, select"));
     messageElement.removeAttribute("style");
     const position = target.getAttribute("data-position");
     const parentRect = target.parentElement.getBoundingClientRect();
