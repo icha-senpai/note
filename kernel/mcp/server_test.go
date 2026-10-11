@@ -17,6 +17,7 @@
 package mcp
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"io"
@@ -69,6 +70,28 @@ func TestExternalMCPToolAllowedHidesAgentOnlyTools(t *testing.T) {
 	}
 	if !externalMCPToolAllowed(&tools.Tool{Name: "system", Source: "native", Runtime: "kernel"}) {
 		t.Fatal("normal native kernel tools should remain exposed")
+	}
+}
+
+func TestConvertContentItemSupportsImageContent(t *testing.T) {
+	payload := []byte{0x89, 'P', 'N', 'G'}
+	content, err := convertContentItem(tools.ContentItem{
+		Type:     "image",
+		Data:     payload,
+		MIMEType: "image/png",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	imageContent, ok := content.(*mcpsdk.ImageContent)
+	if !ok {
+		t.Fatalf("content type = %T, want *mcp.ImageContent", content)
+	}
+	if imageContent.MIMEType != "image/png" {
+		t.Fatalf("MIMEType = %q, want image/png", imageContent.MIMEType)
+	}
+	if !bytes.Equal(imageContent.Data, payload) {
+		t.Fatalf("image data changed: %#v", imageContent.Data)
 	}
 }
 
@@ -417,6 +440,94 @@ func TestExplicitNullStructuredContent(t *testing.T) {
 	structured, ok := callResponse.Result["structuredContent"]
 	if !ok || string(structured) != "null" {
 		t.Fatalf("explicit null was not returned: %#v", callResponse.Result)
+	}
+}
+
+func TestScribliToolAliasRewrite(t *testing.T) {
+	_, httpServer := newTestHTTPServer(t)
+	body := `{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"scribli.echo","arguments":{"text":"hello"},"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}`
+
+	response := postMCP(t, httpServer.URL, body, map[string]string{
+		"MCP-Protocol-Version": protocolVersion20260728,
+		"Mcp-Method":           "tools/call",
+		"Mcp-Name":             "scribli.echo",
+	})
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("unexpected status: %d", response.StatusCode)
+	}
+	var callResponse struct {
+		Result struct {
+			Content []struct {
+				Type string `json:"type"`
+				Text string `json:"text"`
+			} `json:"content"`
+			IsError bool `json:"isError"`
+		} `json:"result"`
+	}
+	decodeResponse(t, response, &callResponse)
+	if callResponse.Result.IsError || len(callResponse.Result.Content) != 1 {
+		t.Fatalf("unexpected alias result: %#v", callResponse.Result)
+	}
+	if callResponse.Result.Content[0].Type != "text" || callResponse.Result.Content[0].Text != "hello" {
+		t.Fatalf("unexpected alias content: %#v", callResponse.Result.Content)
+	}
+}
+
+func TestScribliToolAliasResourceReadReturnsGuidance(t *testing.T) {
+	_, httpServer := newTestHTTPServer(t)
+	body := `{"jsonrpc":"2.0","id":1,"method":"resources/read","params":{"uri":"scribli.system","_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}`
+
+	response := postMCP(t, httpServer.URL, body, map[string]string{
+		"MCP-Protocol-Version": protocolVersion20260728,
+		"Mcp-Method":           "resources/read",
+		"Mcp-Name":             "scribli.system",
+	})
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("unexpected status: %d", response.StatusCode)
+	}
+	var resourceResponse struct {
+		Result struct {
+			CacheScope string `json:"cacheScope"`
+			Contents   []struct {
+				URI      string `json:"uri"`
+				MIMEType string `json:"mimeType"`
+				Text     string `json:"text"`
+			} `json:"contents"`
+		} `json:"result"`
+	}
+	decodeResponse(t, response, &resourceResponse)
+	if resourceResponse.Result.CacheScope != "private" || len(resourceResponse.Result.Contents) != 1 {
+		t.Fatalf("unexpected resource response: %#v", resourceResponse.Result)
+	}
+	content := resourceResponse.Result.Contents[0]
+	if content.URI != "scribli.system" || content.MIMEType != "text/plain" {
+		t.Fatalf("unexpected resource content metadata: %#v", content)
+	}
+	if !strings.Contains(content.Text, "tools/call") || !strings.Contains(content.Text, `"system"`) {
+		t.Fatalf("resource guidance did not mention tool call: %q", content.Text)
+	}
+}
+
+func TestUnknownResourceReadReturnsError(t *testing.T) {
+	_, httpServer := newTestHTTPServer(t)
+	body := `{"jsonrpc":"2.0","id":1,"method":"resources/read","params":{"uri":"missing-resource","_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}`
+
+	response := postMCP(t, httpServer.URL, body, map[string]string{
+		"MCP-Protocol-Version": protocolVersion20260728,
+		"Mcp-Method":           "resources/read",
+		"Mcp-Name":             "missing-resource",
+	})
+	if response.StatusCode != http.StatusBadRequest {
+		t.Fatalf("unexpected status: %d", response.StatusCode)
+	}
+	var errorResponse struct {
+		Error struct {
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+	decodeResponse(t, response, &errorResponse)
+	if !strings.Contains(errorResponse.Error.Message, "Resource not found") {
+		t.Fatalf("unexpected error response: %#v", errorResponse.Error)
 	}
 }
 

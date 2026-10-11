@@ -235,9 +235,11 @@ func (r *CallToolResult) UnmarshalJSON(data []byte) error {
 }
 
 type ContentItem struct {
-	Type string `json:"type"`
-	Text string `json:"text"`
-	raw  json.RawMessage
+	Type     string `json:"type"`
+	Text     string `json:"text,omitempty"`
+	Data     []byte `json:"data,omitempty"`
+	MIMEType string `json:"mimeType,omitempty"`
+	raw      json.RawMessage
 }
 
 func (item ContentItem) MarshalJSON() ([]byte, error) {

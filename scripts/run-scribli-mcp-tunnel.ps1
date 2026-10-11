@@ -2,6 +2,7 @@ param(
     [string]$TunnelId = $env:CONTROL_PLANE_TUNNEL_ID,
     [string]$ProfileName = "scribli-local",
     [string]$McpServerUrl = "http://127.0.0.1:6806/mcp",
+    [string]$ApiKeyFile = "",
     [switch]$DoctorOnly,
     [switch]$InitOnly,
     [switch]$OpenWebUi,
@@ -16,6 +17,48 @@ $tunnelClient = Join-Path $toolRoot "v0.0.11\tunnel-client.exe"
 $profileDir = Join-Path $toolRoot "profiles"
 $profileFile = Join-Path $profileDir "$ProfileName.yaml"
 $healthUrlFile = Join-Path $toolRoot "scribli-tunnel-health.url"
+if ([string]::IsNullOrWhiteSpace($ApiKeyFile)) {
+    $ApiKeyFile = Join-Path $repoRoot "tmp\key.txt"
+}
+
+function Has-ControlPlaneApiKey {
+    return ![string]::IsNullOrWhiteSpace($env:CONTROL_PLANE_API_KEY) -or ![string]::IsNullOrWhiteSpace($env:OPENAI_API_KEY)
+}
+
+function Set-ControlPlaneApiKeyFromFile {
+    param([string]$Path)
+
+    if ((Has-ControlPlaneApiKey) -or [string]::IsNullOrWhiteSpace($Path) -or !(Test-Path -LiteralPath $Path)) {
+        return
+    }
+
+    $apiKey = [string](Get-Content -LiteralPath $Path -Raw)
+    $apiKey = $apiKey.Trim()
+    if (![string]::IsNullOrWhiteSpace($apiKey)) {
+        $env:CONTROL_PLANE_API_KEY = $apiKey
+        Write-Host "Loaded CONTROL_PLANE_API_KEY from $Path"
+    }
+}
+
+function Save-ControlPlaneApiKeyToFile {
+    param(
+        [string]$Path,
+        [string]$ApiKey
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or [string]::IsNullOrWhiteSpace($ApiKey)) {
+        return
+    }
+
+    $directory = Split-Path -Parent $Path
+    if (![string]::IsNullOrWhiteSpace($directory)) {
+        New-Item -ItemType Directory -Force -Path $directory | Out-Null
+    }
+    Set-Content -LiteralPath $Path -Value $ApiKey -NoNewline
+    Write-Host "Saved CONTROL_PLANE_API_KEY to $Path"
+}
+
+Set-ControlPlaneApiKeyFromFile -Path $ApiKeyFile
 
 if (!(Test-Path -LiteralPath $tunnelClient)) {
     throw "Missing tunnel-client binary: $tunnelClient"
@@ -25,18 +68,19 @@ if ([string]::IsNullOrWhiteSpace($TunnelId) -and !(Test-Path -LiteralPath $profi
     throw "Set CONTROL_PLANE_TUNNEL_ID in this terminal, or pass -TunnelId tunnel_..."
 }
 
-if ($PromptForApiKey -and [string]::IsNullOrWhiteSpace($env:CONTROL_PLANE_API_KEY) -and [string]::IsNullOrWhiteSpace($env:OPENAI_API_KEY)) {
+if ($PromptForApiKey -and !(Has-ControlPlaneApiKey)) {
     $secureApiKey = Read-Host "CONTROL_PLANE_API_KEY" -AsSecureString
     $apiKeyPtr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureApiKey)
     try {
         $env:CONTROL_PLANE_API_KEY = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($apiKeyPtr)
+        Save-ControlPlaneApiKeyToFile -Path $ApiKeyFile -ApiKey $env:CONTROL_PLANE_API_KEY
     } finally {
         [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($apiKeyPtr)
     }
 }
 
-if (!$InitOnly -and [string]::IsNullOrWhiteSpace($env:CONTROL_PLANE_API_KEY) -and [string]::IsNullOrWhiteSpace($env:OPENAI_API_KEY)) {
-    throw "Set CONTROL_PLANE_API_KEY in this terminal or run with -PromptForApiKey. Do not paste it into chat."
+if (!$InitOnly -and !(Has-ControlPlaneApiKey)) {
+    throw "Set CONTROL_PLANE_API_KEY in this terminal, put it in $ApiKeyFile, or run with -PromptForApiKey."
 }
 
 New-Item -ItemType Directory -Force -Path $profileDir | Out-Null

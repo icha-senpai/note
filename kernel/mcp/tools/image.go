@@ -22,6 +22,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -39,14 +40,15 @@ var ImageTool = &Tool{
 	Name:  "image",
 	Title: "Document images",
 	Description: "List and understand local images referenced by a Scribli document, or generate an image asset. " +
-		"Use list before analyze. analyze sends the selected image to the configured vision provider. " +
+		"Use list before get or analyze. get returns selected image content through MCP. analyze sends the selected image to the configured vision provider. " +
 		"generate creates a reusable image asset in the target document's notebook.",
 	InputSchema: ToolSchema{
 		Type: "object",
 		Properties: map[string]Property{
-			"action":       {Type: "string", Enum: []string{"list", "analyze", "generate"}},
+			"action":       {Type: "string", Enum: []string{"list", "get", "analyze", "generate"}},
 			"documentID":   {Type: "string", Description: "Document or descendant block ID used to resolve the target document and notebook"},
-			"assetPath":    {Type: "string", Description: "Local assets/... path returned by list; required for analyze"},
+			"assetPath":    {Type: "string", Description: "Local assets/... path returned by list; required for get and analyze"},
+			"maxBytes":     {Type: "integer", Description: "Maximum image payload bytes for get. Defaults to 8388608 and is capped at 16777216."},
 			"question":     {Type: "string", Description: "Question for the vision model"},
 			"detail":       {Type: "string", Enum: []string{"auto", "low", "high"}},
 			"prompt":       {Type: "string", Description: "Prompt describing the image to generate"},
@@ -60,6 +62,7 @@ var ImageTool = &Tool{
 	EffectScope:  EffectScopeMixed,
 	ActionEffects: map[string]ToolEffects{
 		"list":     {LocalRead: true},
+		"get":      {LocalRead: true},
 		"analyze":  {LocalRead: true, DataEgress: true, ExternalCost: true},
 		"generate": {LocalWrite: true, DataEgress: true, ExternalCost: true},
 	},
@@ -109,6 +112,8 @@ func imageHandler(ctx context.Context, args map[string]any) (CallToolResult, err
 	switch action {
 	case "list":
 		return imageList(documentID), nil
+	case "get":
+		return imageGet(documentID, args), nil
 	case "analyze":
 		assetPath, _ := args["assetPath"].(string)
 		meta := imageOperationMeta{Action: action, DocumentID: documentID, AssetPath: assetPath}
@@ -131,6 +136,55 @@ func imageList(documentID string) CallToolResult {
 		return imageError(err.Error())
 	}
 	return imageJSON(result)
+}
+
+func imageGet(documentID string, args map[string]any) CallToolResult {
+	assetPath, _ := args["assetPath"].(string)
+	result, err := model.ReadDocumentImage(model.ReadDocumentImageRequest{
+		DocumentID: documentID,
+		AssetPath:  assetPath,
+		MaxBytes:   imageGetMaxBytes(args),
+	})
+	if err != nil {
+		return imageError(err.Error())
+	}
+	message := fmt.Sprintf("image: %s (%s, %dx%d, %d bytes)", result.Artifact.Path, result.MIMEType, result.Width, result.Height, result.Size)
+	metadata := map[string]any{
+		"action":     "get",
+		"status":     "ok",
+		"message":    message,
+		"artifact":   result.Artifact,
+		"mimeType":   result.MIMEType,
+		"width":      result.Width,
+		"height":     result.Height,
+		"size":       result.Size,
+		"sourceSize": result.SourceSize,
+	}
+	return CallToolResult{
+		Content: []ContentItem{
+			{Type: "text", Text: message},
+			{Type: "image", Data: result.Data, MIMEType: result.MIMEType},
+		},
+		StructuredContent:    metadata,
+		StructuredContentSet: true,
+	}
+}
+
+func imageGetMaxBytes(args map[string]any) int {
+	maxBytes := model.DefaultReadDocumentImageMaxBytes
+	switch typed := args["maxBytes"].(type) {
+	case int:
+		maxBytes = typed
+	case int64:
+		maxBytes = int(typed)
+	case float64:
+		maxBytes = int(typed)
+	case json.Number:
+		if parsed, err := typed.Int64(); err == nil {
+			maxBytes = int(parsed)
+		}
+	}
+	return model.NormalizeReadDocumentImageMaxBytes(maxBytes)
 }
 
 func imageAnalyze(ctx context.Context, documentID string, args map[string]any) CallToolResult {

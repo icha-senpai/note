@@ -17,9 +17,11 @@
 package mcp
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"sync"
@@ -167,6 +169,9 @@ func privateCacheMiddleware() mcpsdk.Middleware {
 				RefreshToolExposure()
 			}
 			result, err := next(ctx, method, request)
+			if err != nil {
+				return result, err
+			}
 			switch cacheable := result.(type) {
 			case *mcpsdk.DiscoverResult:
 				cacheable.CacheScope = "private"
@@ -202,12 +207,149 @@ func newHTTPHandler(server *mcpsdk.Server) http.Handler {
 	})
 
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		handled, err := prepareCompatibilityRequest(writer, request)
+		if err != nil {
+			writeCompatibilityError(writer, nil, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if handled {
+			return
+		}
 		if isModernRequest(request) {
 			modern.ServeHTTP(writer, request)
 			return
 		}
 		legacy.ServeHTTP(writer, request)
 	})
+}
+
+type compatibilityRPCRequest struct {
+	JSONRPC string          `json:"jsonrpc"`
+	ID      json.RawMessage `json:"id,omitempty"`
+	Method  string          `json:"method"`
+	Params  map[string]any  `json:"params,omitempty"`
+}
+
+func prepareCompatibilityRequest(writer http.ResponseWriter, request *http.Request) (handled bool, err error) {
+	if request.Method != http.MethodPost || request.Body == nil {
+		return false, nil
+	}
+	body, err := io.ReadAll(request.Body)
+	if err != nil {
+		return false, err
+	}
+	request.Body.Close()
+	request.Body = io.NopCloser(bytes.NewReader(body))
+	if len(bytes.TrimSpace(body)) == 0 {
+		return false, nil
+	}
+
+	var message compatibilityRPCRequest
+	if err = json.Unmarshal(body, &message); err != nil || message.Method == "" {
+		return false, nil
+	}
+	if message.Method == "tools/call" {
+		if normalized := normalizedScribliToolName(stringParam(message.Params, "name")); normalized != "" {
+			message.Params["name"] = normalized
+			if request.Header.Get("Mcp-Name") != "" {
+				request.Header.Set("Mcp-Name", normalized)
+			}
+			rewritten, marshalErr := json.Marshal(message)
+			if marshalErr != nil {
+				return false, marshalErr
+			}
+			request.Body = io.NopCloser(bytes.NewReader(rewritten))
+			request.ContentLength = int64(len(rewritten))
+			request.Header.Set("Content-Length", fmt.Sprintf("%d", len(rewritten)))
+		}
+		return false, nil
+	}
+	if message.Method == "resources/read" && request.Header.Get("Origin") == "" && isScribliCompatibilityResource(stringParam(message.Params, "uri")) {
+		writeScribliCompatibilityResource(writer, message)
+		return true, nil
+	}
+	return false, nil
+}
+
+func stringParam(params map[string]any, key string) string {
+	if params == nil {
+		return ""
+	}
+	value, _ := params[key].(string)
+	return value
+}
+
+func normalizedScribliToolName(name string) string {
+	const dottedPrefix = "scribli."
+	const underscoredPrefix = "scribli_"
+	trimmed := strings.TrimSpace(name)
+	lower := strings.ToLower(trimmed)
+	if strings.HasPrefix(lower, dottedPrefix) {
+		return trimmed[len(dottedPrefix):]
+	}
+	if strings.HasPrefix(lower, underscoredPrefix) {
+		return trimmed[len(underscoredPrefix):]
+	}
+	return ""
+}
+
+func isScribliCompatibilityResource(uri string) bool {
+	normalized := normalizedScribliToolName(uri)
+	return normalized != "" && tools.LookupTool(normalized) != nil
+}
+
+func writeScribliCompatibilityResource(writer http.ResponseWriter, message compatibilityRPCRequest) {
+	uri := stringParam(message.Params, "uri")
+	toolName := normalizedScribliToolName(uri)
+	text := fmt.Sprintf(
+		"%s is a Scribli MCP tool compatibility alias, not a document resource. Call tools/call with name %q and the tool arguments.",
+		uri, toolName,
+	)
+	response := map[string]any{
+		"jsonrpc": "2.0",
+		"id":      compatibilityID(message.ID),
+		"result": map[string]any{
+			"_meta": map[string]any{
+				"io.modelcontextprotocol/serverInfo": map[string]any{"name": "Scribli", "version": util.Ver},
+			},
+			"cacheScope": "private",
+			"ttlMs":      0,
+			"resultType": "complete",
+			"contents": []map[string]any{{
+				"uri":      uri,
+				"mimeType": "text/plain",
+				"text":     text,
+			}},
+		},
+	}
+	writeCompatibilityJSON(writer, response, http.StatusOK)
+}
+
+func writeCompatibilityError(writer http.ResponseWriter, id json.RawMessage, message string, status int) {
+	response := map[string]any{
+		"jsonrpc": "2.0",
+		"id":      compatibilityID(id),
+		"error": map[string]any{
+			"code":    -32602,
+			"message": message,
+		},
+	}
+	writeCompatibilityJSON(writer, response, status)
+}
+
+func compatibilityID(id json.RawMessage) any {
+	if len(id) == 0 {
+		return nil
+	}
+	return id
+}
+
+func writeCompatibilityJSON(writer http.ResponseWriter, response any, status int) {
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(status)
+	if err := json.NewEncoder(writer).Encode(response); err != nil {
+		logging.LogWarnf("mcp: write compatibility response failed: %s", err)
+	}
 }
 
 func isModernRequest(request *http.Request) bool {

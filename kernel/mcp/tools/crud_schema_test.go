@@ -65,6 +65,16 @@ func TestDocumentToolExposesUpdateAction(t *testing.T) {
 	t.Fatalf("document action enum missing update: %#v", action.Enum)
 }
 
+func TestImageToolExposesGetAction(t *testing.T) {
+	action := ImageTool.InputSchema.Properties["action"]
+	for _, allowed := range action.Enum {
+		if allowed == "get" {
+			return
+		}
+	}
+	t.Fatalf("image action enum missing get: %#v", action.Enum)
+}
+
 func TestReadToolsExposeRedactSecretsOption(t *testing.T) {
 	for _, tool := range []*Tool{BlockTool, DatabaseTool, DocumentTool, ExportTool} {
 		prop, ok := tool.InputSchema.Properties["redactSecrets"]

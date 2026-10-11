@@ -276,6 +276,27 @@ type DocumentImageList struct {
 	Images     []ImageArtifactRef `json:"images"`
 }
 
+type ReadDocumentImageRequest struct {
+	DocumentID string `json:"documentId"`
+	AssetPath  string `json:"assetPath"`
+	MaxBytes   int    `json:"maxBytes,omitempty"`
+}
+
+type ReadDocumentImageResult struct {
+	Artifact   ImageArtifactRef `json:"artifact"`
+	Data       []byte           `json:"-"`
+	MIMEType   string           `json:"mimeType"`
+	Width      int              `json:"width"`
+	Height     int              `json:"height"`
+	Size       int              `json:"size"`
+	SourceSize int              `json:"sourceSize"`
+}
+
+const (
+	DefaultReadDocumentImageMaxBytes = 8 * 1024 * 1024
+	HardReadDocumentImageMaxBytes    = 16 * 1024 * 1024
+)
+
 type AnalyzeDocumentImageRequest struct {
 	DocumentID string `json:"documentId"`
 	AssetPath  string `json:"assetPath"`
@@ -366,6 +387,51 @@ func ListDocumentImages(documentID string) (DocumentImageList, error) {
 		refs = append(refs, ImageArtifactRef{Kind: "image", Path: assetPath, DocumentID: bt.RootID})
 	}
 	return DocumentImageList{DocumentID: bt.RootID, Images: refs}, nil
+}
+
+func ReadDocumentImage(request ReadDocumentImageRequest) (ReadDocumentImageResult, error) {
+	if strings.TrimSpace(request.AssetPath) == "" {
+		return ReadDocumentImageResult{}, errors.New("assetPath is required for get")
+	}
+	if !strings.HasPrefix(AssetPathWithoutQuery(request.AssetPath), "assets/") {
+		return ReadDocumentImageResult{}, errors.New("only local assets/... images are supported")
+	}
+	bt, err := resolveMultimodalDocument(request.DocumentID)
+	if err != nil {
+		return ReadDocumentImageResult{}, err
+	}
+	if !documentReferencesImage(bt.RootID, request.AssetPath) {
+		return ReadDocumentImageResult{}, errors.New("assetPath is not an image referenced by the document")
+	}
+	data, err := ReadAssetBytesInBox(bt.BoxID, request.AssetPath)
+	if err != nil {
+		return ReadDocumentImageResult{}, fmt.Errorf("read image failed: %w", err)
+	}
+	prepared, err := util.PrepareForVision(data, NormalizeReadDocumentImageMaxBytes(request.MaxBytes), 0, 0)
+	if err != nil {
+		return ReadDocumentImageResult{}, err
+	}
+	return ReadDocumentImageResult{
+		Artifact: ImageArtifactRef{
+			Kind: "image", Path: request.AssetPath, MIMEType: prepared.MIMEType, DocumentID: bt.RootID,
+		},
+		Data:       prepared.Data,
+		MIMEType:   prepared.MIMEType,
+		Width:      prepared.Width,
+		Height:     prepared.Height,
+		Size:       len(prepared.Data),
+		SourceSize: prepared.SourceSize,
+	}, nil
+}
+
+func NormalizeReadDocumentImageMaxBytes(maxBytes int) int {
+	if maxBytes <= 0 {
+		return DefaultReadDocumentImageMaxBytes
+	}
+	if maxBytes > HardReadDocumentImageMaxBytes {
+		return HardReadDocumentImageMaxBytes
+	}
+	return maxBytes
 }
 
 func AnalyzeDocumentImage(ctx context.Context, request AnalyzeDocumentImageRequest) (AnalyzeDocumentImageResult, error) {
