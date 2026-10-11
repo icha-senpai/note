@@ -1,0 +1,29 @@
+.av__calendar {
+  width: 100%;
+  padding-bottom: 12px;
+  &-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 0; }
+  &-scroll { overflow-x: auto; }
+  &-grid { display: grid; grid-template-columns: repeat(7, minmax(100px, 1fr)); min-width: 700px; border-left: 1px solid var(--b3-border-color); border-top: 1px solid var(--b3-border-color); }
+  &-weekday { padding: 8px; text-align: center; background: var(--b3-theme-background-light); }
+  &-day { min-height: 110px; padding: 6px; border-right: 1px solid var(--b3-border-color); border-bottom: 1px solid var(--b3-border-color); }
+  &-day--outside { background: var(--b3-theme-background-light); }
+  &-day--outside .av__calendar-number { opacity: .5; }
+  &-day--today .av__calendar-number { color: var(--b3-theme-primary); font-weight: bold; }
+  &-number { margin-bottom: 6px; }
+  &-item { display: flex; align-items: center; gap: 2px; margin-bottom: 4px; padding: 3px; border: 1px solid var(--b3-border-color); border-radius: 4px; background: var(--b3-theme-background); }
+  &-item:hover .block__icon, &-item:focus-within .block__icon { opacity: 1; }
+  &-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; white-space: nowrap; color: inherit; border: 0; background: transparent; cursor: pointer; padding: 4px; font: inherit; }
+  &-title:focus-visible { outline: 2px solid var(--b3-theme-primary); border-radius: 2px; }
+  &-undated { margin-top: 12px; }
+  &-undated summary { cursor: pointer; padding: 8px 0; }
+  &-inbox { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; min-height: 24px; }
+}
+.av__rule-colored {
+  background: color-mix(in srgb, var(--av-rule-color) 16%, var(--b3-theme-background));
+  box-shadow: inset 3px 0 var(--av-rule-color);
+  > .av__cell, > .av__colsticky { background: inherit; }
+}
+.av__color-rules { display: flex; flex-direction: column; gap: 12px; }
+.av__color-rule { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.av__color-value { flex: 1; min-width: 100px; }
+.av__color-value input, .av__color-value select { width: 100%; box-sizing: border-box; }

@@ -63,6 +63,9 @@ export const getLayoutHTML = (data: IAV) => {
     <button class="b3-menu__separator"></button>
     <button class="b3-menu__item" data-type="nobg">
         <div class="av__layout">
+            <div data-type="set-layout" data-view-type="calendar" class="av__layout-item${data.viewType === "calendar" ? " av__layout-item--select" : ""}">
+                <svg><use xlink:href="#iconCalendar"></use></svg><div class="fn__hr"></div><div>${window.scribli.languages.calendar}</div>
+            </div>
             <div data-type="set-layout" data-view-type="table" class="av__layout-item${data.viewType === "table" ? " av__layout-item--select" : ""}">
                 <svg><use xlink:href="#iconTable"></use></svg>
                 <div class="fn__hr"></div>

@@ -1,3 +1,4 @@
+import {normalizeColor, selectColorBackground, selectColorStyle} from "../../../util/color";
 import {fetchSyncPost} from "../../../util/fetch";
 import {getColIconByType} from "./col";
 import {Constants} from "../../../constants";
@@ -17,6 +18,7 @@ import {getPageSize} from "./groups";
 import {clearSelect} from "../../util/clear";
 import {showMessage} from "../../../dialog/message";
 import {renderKanban} from "./kanban/render";
+import {renderCalendar} from "./calendar";
 import {bindAvSearch} from "./search";
 import {getBodyVirtualData, initVirtualScroll} from "./virtualScroll";
 import {beginAVRender, finishAVLocate, getAVLocateParams, isCurrentAVRender, prepareAVLocate, setAVLocateRequest} from "./locate";
@@ -107,6 +109,7 @@ export const genTabHeaderHTML = (data: IAV, showSearch: boolean, editable: boole
                 <svg><use xlink:href="#iconSort"></use></svg>
             </span>
             <div class="fn__space"></div>
+            ${editable ? `<button data-type="av-colors" aria-label="${window.scribli.languages.conditionalColors}" data-position="8south" class="ariaLabel block__icon${data.view.conditionalColors?.length ? " block__icon--active" : ""}"><svg><use xlink:href="#iconTheme"></use></svg></button><div class="fn__space"></div>` : ""}
             <button data-type="av-search-icon" aria-label="${window.scribli.languages.search}" data-position="8south" class="ariaLabel block__icon">
                 <svg><use xlink:href="#iconSearch"></use></svg>
             </button>
@@ -236,7 +239,7 @@ export const getGroupTitleHTML = (group: IAVView, counter: number) => {
     let nameHTML = "";
     if (["mSelect", "select"].includes(group.groupValue.type)) {
         group.groupValue.mSelect.forEach((item) => {
-            nameHTML += `<span class="b3-chip" style="background-color:var(--b3-font-background${item.color});color:var(--b3-font-color${item.color})">${escapeHtml(item.content)}</span>`;
+            nameHTML += `<span class="b3-chip" style="${selectColorStyle(item.color)}">${escapeHtml(item.content)}</span>`;
         });
     } else if (group.groupValue.type === "checkbox") {
         nameHTML = `<svg style="width:calc(1.625em - 12px);height:calc(1.625em - 12px)"><use xlink:href="#icon${group.groupValue.checkbox.checked ? "Check" : "Uncheck"}"></use></svg>`;
@@ -536,6 +539,10 @@ export const avRender = async (element: Element, protyle: IProtyle, cb?: (data: 
             continue;
         }
         prepareAVLocate(e, data, resetData);
+        if (data.viewType === "calendar") {
+            renderCalendar(e, protyle, data, cb);
+            continue;
+        }
         if (data.viewType === "gallery") {
             e.setAttribute("data-av-type", data.viewType);
             await renderGallery({blockElement: e, protyle, cb, renderAll, data});
@@ -613,7 +620,7 @@ const isItemInData = (data: IAV, itemID: string): boolean => {
             return items?.some((item: IAVRow | IAVGalleryItem) => item.id === itemID);
         });
     }
-    const items = data.viewType === "table" ? view.rows : view.cards;
+    const items = ["table", "calendar"].includes(data.viewType) ? view.rows : view.cards;
     return items?.some((item: IAVRow | IAVGalleryItem) => item.id === itemID);
 };
 
@@ -803,7 +810,8 @@ export const refreshAV = (protyle: IProtyle, operation: IOperation) => {
                 if (operation.data && hasSelect) {
                     const nameElement = item.querySelector(".av__group-title .b3-chip") as HTMLElement;
                     if (nameElement) {
-                        item.setAttribute("style", `--b3-av-kanban-background:var(--b3-font-background${nameElement.style.backgroundColor.slice(-2, -1)})`);
+                        const color = normalizeColor(nameElement.style.backgroundColor);
+                        item.setAttribute("style", `--b3-av-kanban-background:${color ? selectColorBackground(color) : nameElement.style.backgroundColor}`);
                     } else {
                         item.setAttribute("style", "--b3-av-kanban-background: var(--b3-border-color)");
                     }

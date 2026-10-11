@@ -14,6 +14,7 @@ import {
     getSelectionOffset,
     getSelectionPosition,
 } from "../util/selection";
+import {withFrequentSlashItems, recordSlashUsage} from "./frequentSlashStorage";
 import {genHintItemHTML, hintEmbed, hintRef, hintSlash} from "./extend";
 import {getBlockRefAnchorText, newFileByRefHint, newFileInProtyle} from "../../util/newFile";
 import {isAbnormalItem, upDownHint} from "../../util/upDownHint";
@@ -254,6 +255,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
     }
 
     private getHTMLByData(data: IHintData[]) {
+        if (this.source === "hint") { data = withFrequentSlashItems(data); }
         let hintsHTML = '<div style="flex: 1;overflow:auto;">';
         if (this.source !== "hint") {
             hintsHTML = '<input style="margin:0 8px 4px 8px" class="b3-text-field"><div style="flex: 1;overflow:auto;">';
@@ -267,7 +269,7 @@ ${unicode2Emoji(emoji.unicode)}</button>`;
             if (hintData.html === "separator") {
                 hintsHTML += `<button data-id="${hintData.id || ""}" class="b3-menu__separator"></button>`;
             } else {
-                hintsHTML += `<button data-id="${hintData.id || ""}" style="width: calc(100% - 16px)" class="b3-list-item b3-list-item--two${focusClass}" data-value="${encodeURIComponent(hintData.value)}">${hintData.html}</button>`;
+                hintsHTML += `<button data-id="${hintData.id || ""}"${this.source === "hint" && hintData.filter && /^[a-zA-Z0-9_-]{1,80}$/.test(hintData.id || "") ? ` data-usage-id="${hintData.id}"` : ""} style="width: calc(100% - 16px)" class="b3-list-item b3-list-item--two${focusClass}" data-value="${encodeURIComponent(hintData.value)}">${hintData.html}</button>`;
             }
         });
         return `${hintsHTML}</div>`;
@@ -436,6 +438,10 @@ ${genHintItemHTML(item)}
     }
 
     public fill(value: string, protyle: IProtyle, updateRange = true, refIsS = false) {
+        if (this.source === "hint" && !protyle.disabled) {
+            const item = Array.from(this.element.querySelectorAll<HTMLElement>("[data-usage-id]")).find(item => item.getAttribute("data-value") === encodeURIComponent(value));
+            recordSlashUsage(item?.dataset.usageId);
+        }
         hideElements(["hint", "toolbar"], protyle);
         if (updateRange && this.source !== "av") {
             protyle.toolbar.range = getEditorRange(protyle.wysiwyg.element);

@@ -297,7 +297,7 @@ func FilterViewByPublishAccess(c *gin.Context, publishAccess PublishAccess, view
 	publishIgnore := GetDisablePublishAccess(publishAccess)
 
 	switch ret.GetType() {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		table := ret.(*av.Table)
 		filteredRows := []*av.TableRow{}
 		for _, row := range table.Rows {

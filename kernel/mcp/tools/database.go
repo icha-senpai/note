@@ -423,7 +423,10 @@ func databaseItemUpdate(args map[string]any) (CallToolResult, error) {
 }
 
 func databaseUnused(args map[string]any) (CallToolResult, error) {
-	items := model.UnusedAttributeViews(true)
+	items, err := model.UnusedAttributeViews(true)
+	if err != nil {
+		return CallToolResult{}, err
+	}
 	if len(items) == 0 {
 		return structuredTextResult("no unused databases found", map[string]any{
 			"action": "unused",
@@ -450,14 +453,19 @@ func databaseUnused(args map[string]any) (CallToolResult, error) {
 func databaseClean(args map[string]any) (CallToolResult, error) {
 	id, _ := args["id"].(string)
 	if id != "" {
-		model.RemoveUnusedAttributeView(id)
+		if err := model.RemoveUnusedAttributeView(id); err != nil {
+			return CallToolResult{}, err
+		}
 		return structuredTextResult("unused database cleaned: "+id, map[string]any{
 			"action": "clean",
 			"id":     id,
 			"count":  1,
 		}), nil
 	}
-	removed := model.RemoveUnusedAttributeViews()
+	removed, err := model.RemoveUnusedAttributeViews()
+	if err != nil {
+		return CallToolResult{}, err
+	}
 	return structuredTextResult(fmt.Sprintf("%d unused database(s) cleaned", len(removed)), map[string]any{
 		"action": "clean",
 		"ids":    removed,
@@ -529,7 +537,11 @@ func databaseUnusedSearchMatches(keyword string, seen map[string]bool) []map[str
 		return nil
 	}
 	matches := []map[string]any{}
-	for _, item := range model.UnusedAttributeViews(true) {
+	items, err := model.UnusedAttributeViews(true)
+	if err != nil {
+		return nil
+	}
+	for _, item := range items {
 		if item == nil || seen[item.Item] {
 			continue
 		}

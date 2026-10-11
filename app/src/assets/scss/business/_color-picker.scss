@@ -1,0 +1,11 @@
+.scribli-color-picker {
+  &__inputs { display: grid; grid-template-columns: 40px minmax(90px, 1fr) repeat(3, minmax(45px, .6fr)); gap: 8px; align-items: end; }
+  &__inputs label { display: flex; flex-direction: column; gap: 4px; }
+  &__inputs input { box-sizing: border-box; min-width: 0; width: 100%; }
+  &__inputs input[type="color"] { height: 30px; padding: 2px; border: 1px solid var(--b3-border-color); border-radius: var(--b3-border-radius); background: transparent; }
+  &__section { margin-top: 12px; margin-bottom: 6px; align-items: center; }
+  &__swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+  &__swatch { width: 26px; height: 26px; padding: 0; cursor: pointer; border: 1px solid var(--b3-border-color); border-radius: var(--b3-border-radius); }
+  &__swatch--current, &__swatch:focus-visible { outline: 2px solid var(--b3-theme-primary); outline-offset: 2px; }
+  &__error { min-height: 18px; margin-top: 6px; }
+}

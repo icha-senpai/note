@@ -414,6 +414,10 @@ export const addView = (protyle: IProtyle, blockElement: Element) => {
             }]);
         }
     });
+    addMenu.addItem({icon: "iconCalendar", label: window.scribli.languages.calendar, click() {
+        transaction(protyle, [{action: "addAttrViewView", avID, layout: "calendar", id, blockID: blockElement.getAttribute("data-node-id")}],
+            [{action: "removeAttrViewView", avID, id, blockID: blockElement.getAttribute("data-node-id")}]);
+    }});
     viewElement.classList.add("av__views--show");
     const addRect = viewElement.querySelector('.block__icon[data-type="av-add"]')?.getBoundingClientRect();
     addMenu.open({
@@ -424,6 +428,8 @@ export const addView = (protyle: IProtyle, blockElement: Element) => {
 
 export const getViewIcon = (type: string) => {
     switch (type) {
+        case "calendar":
+            return "iconCalendar";
         case "table":
             return "iconTable";
         case "gallery":
@@ -435,6 +441,8 @@ export const getViewIcon = (type: string) => {
 
 export const getViewName = (type: string) => {
     switch (type) {
+        case "calendar":
+            return window.scribli.languages.calendar;
         case "table":
             return window.scribli.languages.table;
         case "gallery":
@@ -445,7 +453,7 @@ export const getViewName = (type: string) => {
 };
 
 export const getFieldsByData = (data: IAV) => {
-    return data.viewType === "table" ? (data.view as IAVTable).columns : (data.view as IAVGallery).fields;
+    return ["table", "calendar"].includes(data.viewType) ? (data.view as IAVTable).columns : (data.view as IAVGallery).fields;
 };
 
 export const dragoverTab = (event: DragEvent) => {

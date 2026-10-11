@@ -50,7 +50,7 @@ func (tx *Transaction) doRestoreAttrViewView(operation *Operation) *TxErr {
 }
 
 func restoreAttributeViewView(attrView *av.AttributeView, view *av.View, previousID string) error {
-	if view.ID == "" || (view.LayoutType != av.LayoutTypeTable && view.LayoutType != av.LayoutTypeGallery && view.LayoutType != av.LayoutTypeKanban) {
+	if view.ID == "" || (view.LayoutType != av.LayoutTypeTable && view.LayoutType != av.LayoutTypeGallery && view.LayoutType != av.LayoutTypeKanban && view.LayoutType != av.LayoutTypeCalendar) {
 		return errors.New("invalid database view snapshot")
 	}
 	if attrView.GetView(view.ID) != nil {

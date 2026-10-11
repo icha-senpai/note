@@ -19,25 +19,26 @@ package conf
 import "github.com/icha-senpai/note/kernel/util"
 
 type Appearance struct {
-	Mode                int                 `json:"mode"`
-	ModeOS              bool                `json:"modeOS"`
-	DarkThemes          []*AppearanceTheme  `json:"darkThemes"`
-	LightThemes         []*AppearanceTheme  `json:"lightThemes"`
-	ThemeDark           string              `json:"themeDark"`
-	ThemeLight          string              `json:"themeLight"`
-	ThemeVer            string              `json:"themeVer"`
-	Icons               []*AppearanceIcon   `json:"icons"`
-	Icon                string              `json:"icon"`
-	IconVer             string              `json:"iconVer"`
-	CodeBlockThemeLight string              `json:"codeBlockThemeLight"`
-	CodeBlockThemeDark  string              `json:"codeBlockThemeDark"`
-	Lang                string              `json:"lang"`
-	ThemeJS             bool                `json:"themeJS"`
-	CloseButtonBehavior int                 `json:"closeButtonBehavior"`
-	HideToolbar         bool                `json:"hideToolbar"`
-	HideStatusBar       bool                `json:"hideStatusBar"`
-	StatusBar           *util.StatusBar     `json:"statusBar"`
-	Notifications       *util.Notifications `json:"notifications"`
+	InterfaceColors     map[string]map[string]string `json:"interfaceColors,omitempty"`
+	Mode                int                          `json:"mode"`
+	ModeOS              bool                         `json:"modeOS"`
+	DarkThemes          []*AppearanceTheme           `json:"darkThemes"`
+	LightThemes         []*AppearanceTheme           `json:"lightThemes"`
+	ThemeDark           string                       `json:"themeDark"`
+	ThemeLight          string                       `json:"themeLight"`
+	ThemeVer            string                       `json:"themeVer"`
+	Icons               []*AppearanceIcon            `json:"icons"`
+	Icon                string                       `json:"icon"`
+	IconVer             string                       `json:"iconVer"`
+	CodeBlockThemeLight string                       `json:"codeBlockThemeLight"`
+	CodeBlockThemeDark  string                       `json:"codeBlockThemeDark"`
+	Lang                string                       `json:"lang"`
+	ThemeJS             bool                         `json:"themeJS"`
+	CloseButtonBehavior int                          `json:"closeButtonBehavior"`
+	HideToolbar         bool                         `json:"hideToolbar"`
+	HideStatusBar       bool                         `json:"hideStatusBar"`
+	StatusBar           *util.StatusBar              `json:"statusBar"`
+	Notifications       *util.Notifications          `json:"notifications"`
 }
 
 func NewAppearance() *Appearance {

@@ -44,7 +44,11 @@ func removeUnusedAttributeView(c *gin.Context) {
 	if util.InvalidIDPattern(avID, ret) {
 		return
 	}
-	model.RemoveUnusedAttributeView(avID)
+	if err := model.RemoveUnusedAttributeView(avID); err != nil {
+		ret.Code = -1
+		ret.Msg = err.Error()
+		return
+	}
 	ret.Data = map[string]any{
 		"id": avID,
 	}
@@ -54,7 +58,12 @@ func removeUnusedAttributeViews(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
 
-	paths := model.RemoveUnusedAttributeViews()
+	paths, err := model.RemoveUnusedAttributeViews()
+	if err != nil {
+		ret.Code = -1
+		ret.Msg = err.Error()
+		return
+	}
 	ret.Data = map[string]any{
 		"paths": paths,
 	}
@@ -64,7 +73,12 @@ func getUnusedAttributeViews(c *gin.Context) {
 	ret := gulu.Ret.NewResult()
 	defer c.JSON(http.StatusOK, ret)
 
-	unusedAttributeViews := model.UnusedAttributeViews(true)
+	unusedAttributeViews, err := model.UnusedAttributeViews(true)
+	if err != nil {
+		ret.Code = -1
+		ret.Msg = err.Error()
+		return
+	}
 	total := len(unusedAttributeViews)
 
 	const maxUnusedAttributeViews = 512

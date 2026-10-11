@@ -6,6 +6,7 @@ import {Constants} from "../../constants";
 import {hasClosestBlock, hasClosestByAttribute} from "../util/hasClosest";
 import {updateBatchTransaction} from "../wysiwyg/transaction";
 import {lineNumberRender} from "../render/highlightRender";
+import {openColorPicker} from "../../util/colorPicker";
 
 export class Font extends ToolbarItem {
     public element: HTMLElement;
@@ -122,12 +123,14 @@ export const appearanceMenu = (protyle: IProtyle, nodeElements?: Element[]) => {
 <div class="fn__hr--small"></div>
 <div data-id="colorFontWrap" class="fn__flex fn__flex-wrap">
     ${colorHTML}
+    <button type="button" class="b3-button b3-button--text" data-type="customColor">${window.scribli.languages.customTextColor}</button>
 </div>
 <div class="fn__hr"></div>
 <div data-id="colorPrimary">${window.scribli.languages.colorPrimary}</div>
 <div class="fn__hr--small"></div>
 <div data-id="colorPrimaryWrap" class="fn__flex fn__flex-wrap">
     ${bgHTML}
+    <button type="button" class="b3-button b3-button--text" data-type="customBackground">${window.scribli.languages.customHighlightColor}</button>
 </div>
 <div class="fn__hr"></div>
 <div data-id="fontStyle">${window.scribli.languages.fontStyle}</div>
@@ -169,6 +172,18 @@ export const appearanceMenu = (protyle: IProtyle, nodeElements?: Element[]) => {
         while (target && !target.isEqualNode(element)) {
             const dataType = target.getAttribute("data-type");
             if (target.tagName === "BUTTON") {
+                if (dataType === "customColor" || dataType === "customBackground") {
+                    event.stopPropagation();
+                    const range = protyle.toolbar.range.cloneRange();
+                    const type = dataType === "customColor" ? "color" : "backgroundColor";
+                    openColorPicker({title: window.scribli.languages[dataType === "customColor" ? "customTextColor" : "customHighlightColor"],
+                        color: textElement?.style?.[type], allowReset: true, onApply(color) {
+                            protyle.toolbar.range = range;
+                            focusByRange(range);
+                            fontEvent(protyle, nodeElements, type, color || "");
+                        }});
+                    return;
+                }
                 if (dataType === "style1") {
                     fontEvent(protyle, nodeElements, dataType, target.style.backgroundColor + Constants.ZWSP + target.style.color);
                 } else if (dataType === "fontSize") {

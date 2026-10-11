@@ -22,6 +22,7 @@ import {controlBoolean} from "../setting/control";
 import {editorConfigApi} from "./editorRuntime";
 import {appearanceConfigApi, appearanceThemeModeValue, saveThemeMode} from "./appearanceRuntime";
 import {upDownHint} from "../../util/upDownHint";
+import {registerAppearanceColors} from "./appearanceColors";
 
 interface IFontItem {
     family: string;
@@ -609,6 +610,7 @@ const mountAppearanceCodeSnippet = (root: HTMLElement) => {
 export const registerAppearanceTab = (tab: SettingTabBuilder) => {
     registerAppearanceContentGroup(tab);
     registerAppearanceInterfaceGroup(tab);
+    registerAppearanceColors(tab);
     registerAppearanceControlsGroup(tab);
     registerAppearancePersonalizationGroup(tab);
 };

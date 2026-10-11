@@ -1,3 +1,4 @@
+import {selectColorStyle} from "../../../util/color";
 import {Menu} from "../../../plugin/Menu";
 import {transaction} from "../../wysiwyg/transaction";
 import {escapeAttr, escapeHtml} from "../../../util/escape";
@@ -547,7 +548,7 @@ const genInlineSelectHTML = (filter: IAVFilter, colData: IAVColumn, path: string
     const placeholder = isSingle ? window.scribli.languages.select : window.scribli.languages.multiSelect;
 
     const selectedChips = selectedValues.map((item: IAVCellSelectValue) => {
-        return `<span class="b3-chip b3-chip--middle av__select-chip" style="background-color:var(--b3-font-background${item.color});color:var(--b3-font-color${item.color})">${escapeHtml(item.content)}</span>`;
+        return `<span class="b3-chip b3-chip--middle av__select-chip" style="${selectColorStyle(item.color)}">${escapeHtml(item.content)}</span>`;
     }).join("");
     const triggerContent = selectedChips || `<span class="ft__on-surface fn__ellipsis">${placeholder}</span>`;
     const trigger = `<span class="av__select-trigger" data-type="selectTrigger" data-path="${path}">${triggerContent}<svg class="av__select-trigger-arrow"><use xlink:href="#iconDown"></use></svg></span>`;
@@ -557,7 +558,7 @@ const genInlineSelectHTML = (filter: IAVFilter, colData: IAVColumn, path: string
         : "";
     const chips = options.map((option: { name: string; color: string; desc?: string }) => {
         const selected = selectedValues.some((s: IAVCellSelectValue) => s.content === option.name);
-        return `<span class="b3-chip b3-chip--middle${selected ? " b3-chip--primary" : ""} av__select-option" data-name="${escapeAttr(option.name)}" data-color="${option.color}" data-type="selectOption" data-path="${path}" style="background-color:var(--b3-font-background${option.color});color:var(--b3-font-color${option.color})">
+        return `<span class="b3-chip b3-chip--middle${selected ? " b3-chip--primary" : ""} av__select-option" data-name="${escapeAttr(option.name)}" data-color="${option.color}" data-type="selectOption" data-path="${path}" style="${selectColorStyle(option.color)}">
 <svg class="icon"><use xlink:href="#${selected ? "iconCheck" : "iconUncheck"}"></use></svg>
 <span class="fn__ellipsis">${escapeHtml(option.name)}</span>
 </span>`;
@@ -865,7 +866,7 @@ export const bindInlineFilterEvents = (panelElement: HTMLElement, data: IAV, pro
                 if (u && u.getAttribute("xlink:href") === "#iconCheck") {
                     const name = c.dataset.name;
                     const color = c.dataset.color;
-                    selectedChips.push(`<span class="b3-chip b3-chip--middle av__select-chip" style="background-color:var(--b3-font-background${color});color:var(--b3-font-color${color})">${escapeHtml(name)}</span>`);
+                    selectedChips.push(`<span class="b3-chip b3-chip--middle av__select-chip" style="${selectColorStyle(color)}">${escapeHtml(name)}</span>`);
                 }
             });
             const contentHTML = selectedChips.join("") || `<span class="ft__on-surface fn__ellipsis">${placeholderStr}</span>`;

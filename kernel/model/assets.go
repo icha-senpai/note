@@ -876,6 +876,12 @@ func SearchAssetsByName(keyword string, exts []string) (ret []*cache.Asset) {
 	if "" != keyword {
 		keywords = append(keywords, strings.Split(keyword, " ")...)
 	}
+	metadataHits := map[string]int{}
+	if strings.TrimSpace(keyword) != "" {
+		if markdowns, err := sql.QueryImageSpanMarkdowns(); err == nil {
+			metadataHits = imageAssetMetadataHits(markdowns, keywords)
+		}
+	}
 	pathHitCount := map[string]int{}
 	filterByExt := 0 < len(exts)
 	matchedAssets := cache.FilterAssets(func(path string, asset *cache.Asset) bool {
@@ -916,11 +922,15 @@ func SearchAssetsByName(keyword string, exts []string) (ret []*cache.Asset) {
 			}
 		}
 
-		if 1 > hitNameCount+hitPathCount {
+		metadataHitCount := 0
+		if strings.TrimSpace(keyword) != "" {
+			metadataHitCount = metadataHits[asset.Path] + assetMetadataTextHits(util.GetAssetText(asset.Path), keywords)
+		}
+		if 1 > hitNameCount+hitPathCount+metadataHitCount {
 			return false
 		}
 
-		pathHitCount[asset.Path] = hitNameCount + hitPathCount
+		pathHitCount[asset.Path] = hitNameCount + hitPathCount + metadataHitCount
 		return true
 	})
 
@@ -939,6 +949,9 @@ func SearchAssetsByName(keyword string, exts []string) (ret []*cache.Asset) {
 
 	if 0 < len(pathHitCount) {
 		sort.Slice(ret, func(i, j int) bool {
+			if pathHitCount[ret[i].Path] == pathHitCount[ret[j].Path] {
+				return ret[i].Path < ret[j].Path
+			}
 			return pathHitCount[ret[i].Path] > pathHitCount[ret[j].Path]
 		})
 	} else {

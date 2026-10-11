@@ -615,6 +615,11 @@ func setAppearance(c *gin.Context) {
 		return
 	}
 
+	if !conf.ValidInterfaceColors(appearance.InterfaceColors) {
+		ret.Code = -1
+		ret.Msg = "invalid interface colors"
+		return
+	}
 	model.Conf.Appearance = appearance
 	util.StatusBarCfg = model.Conf.Appearance.StatusBar
 	if nil == util.StatusBarCfg {

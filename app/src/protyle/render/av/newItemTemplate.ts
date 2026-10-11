@@ -1,3 +1,4 @@
+import {selectColorStyle} from "../../../util/color";
 import {Dialog} from "../../../dialog";
 import {showMessage} from "../../../dialog/message";
 import {Menu} from "../../../plugin/Menu";
@@ -38,17 +39,17 @@ const getSelectedOptionNames = (element: HTMLElement) => {
 };
 
 const getSelectedOptionsHTML = (column: IAVColumn, selected: string[]) => {
-    return selected.map(name => (column.options || []).find(item => item.name === name)).filter(item => item).map(item => `<span class="b3-chip b3-chip--middle" style="max-width:100%;background-color:var(--b3-font-background${escapeAttr(item.color)});color:var(--b3-font-color${escapeAttr(item.color)})"><span class="fn__ellipsis">${escapeHtml(item.name)}</span></span>`).join("");
+    return selected.map(name => (column.options || []).find(item => item.name === name)).filter(item => item).map(item => `<span class="b3-chip b3-chip--middle" style="max-width:100%;${selectColorStyle(escapeAttr(item.color))}"><span class="fn__ellipsis">${escapeHtml(item.name)}</span></span>`).join("");
 };
 
 const getFieldSelectMenuHTML = (column: IAVColumn, selected: string[], keyword = "") => {
-    const selectedHTML = selected.map(name => (column.options || []).find(item => item.name === name)).filter(item => item).map(item => `<div class="b3-chip b3-chip--middle" data-name="${escapeAttr(item.name)}" style="white-space:nowrap;max-width:100%;background-color:var(--b3-font-background${escapeAttr(item.color)});color:var(--b3-font-color${escapeAttr(item.color)})"><span class="fn__ellipsis">${escapeHtml(item.name)}</span><svg class="b3-chip__close" data-role="remove-field-option"><use xlink:href="#iconClose"></use></svg></div>`).join("");
+    const selectedHTML = selected.map(name => (column.options || []).find(item => item.name === name)).filter(item => item).map(item => `<div class="b3-chip b3-chip--middle" data-name="${escapeAttr(item.name)}" style="white-space:nowrap;max-width:100%;${selectColorStyle(escapeAttr(item.color))}"><span class="fn__ellipsis">${escapeHtml(item.name)}</span><svg class="b3-chip__close" data-role="remove-field-option"><use xlink:href="#iconClose"></use></svg></div>`).join("");
     const normalizedKeyword = keyword.toLowerCase();
     const options = (column.options || []).filter(item => !normalizedKeyword ||
         item.name.toLowerCase().includes(normalizedKeyword) || normalizedKeyword.includes(item.name.toLowerCase()));
     const optionsHTML = options.map((option, index) => `<button class="b3-menu__item${index === 0 ? " b3-menu__item--current" : ""}" data-role="field-option" data-name="${escapeAttr(option.name)}">
     <div class="fn__flex-1">
-        <span class="b3-chip" style="background-color:var(--b3-font-background${escapeAttr(option.color)});color:var(--b3-font-color${escapeAttr(option.color)})"><span class="fn__ellipsis">${escapeHtml(option.name)}</span></span>
+        <span class="b3-chip" style="${selectColorStyle(escapeAttr(option.color))}"><span class="fn__ellipsis">${escapeHtml(option.name)}</span></span>
     </div>
     ${selected.includes(option.name) ? '<svg class="b3-menu__checked"><use xlink:href="#iconSelect"></use></svg>' : ""}
 </button>`).join("");

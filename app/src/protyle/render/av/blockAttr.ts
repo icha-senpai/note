@@ -1,3 +1,4 @@
+import {selectColorStyle} from "../../../util/color";
 import {fetchPost} from "../../../util/fetch";
 import {addCol, getColIconByType} from "./col";
 import {escapeAriaLabel, escapeAttr, escapeHtml} from "../../../util/escape";
@@ -92,7 +93,7 @@ export const genAVValueHTML = (value: IAVCellValue) => {
                 if (value.type === "select" && index > 0) {
                     return;
                 }
-                html += `<span class="b3-chip b3-chip--middle" style="background-color:var(--b3-font-background${item.color});color:var(--b3-font-color${item.color})">${escapeHtml(item.content)}</span>`;
+                html += `<span class="b3-chip b3-chip--middle" style="${selectColorStyle(item.color)}">${escapeHtml(item.content)}</span>`;
             });
             break;
         case "mAsset":

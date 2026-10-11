@@ -33,7 +33,6 @@ import (
 	"github.com/icha-senpai/note/kernel/av"
 	"github.com/icha-senpai/note/kernel/cache"
 	"github.com/icha-senpai/note/kernel/filesys"
-	"github.com/icha-senpai/note/kernel/search"
 	"github.com/icha-senpai/note/kernel/sql"
 	"github.com/icha-senpai/note/kernel/treenode"
 	"github.com/icha-senpai/note/kernel/util"
@@ -47,7 +46,24 @@ import (
 	"github.com/xrash/smetrics"
 )
 
-func RemoveUnusedAttributeView(id string) {
+func RemoveUnusedAttributeView(id string) (err error) {
+	if !ast.IsNodeIDPattern(id) {
+		return fmt.Errorf("invalid database ID: %s", id)
+	}
+	items, err := UnusedAttributeViews(false)
+	if err != nil {
+		return err
+	}
+	unused := false
+	for _, item := range items {
+		if item.Item == id {
+			unused = true
+			break
+		}
+	}
+	if !unused {
+		return errors.New("database is still referenced")
+	}
 	base := filepath.Join(util.DataDir, "storage", "av")
 	absPath := filepath.Join(base, id+".json")
 	if !filelock.IsExist(absPath) {
@@ -80,17 +96,24 @@ func RemoveUnusedAttributeView(id string) {
 	return
 }
 
-func RemoveUnusedAttributeViews() (ret []string) {
+func RemoveUnusedAttributeViews() (ret []string, err error) {
 	ret = []string{}
 	var size int64
 
 	msgId := util.PushMsg(Conf.Language(100), 30*1000)
 	defer func() {
+		if err != nil {
+			util.PushUpdateMsg(msgId, err.Error(), 7000)
+			return
+		}
 		msg := fmt.Sprintf(Conf.Language(280), len(ret), humanize.BytesCustomCeil(uint64(size), 2))
 		util.PushUpdateMsg(msgId, msg, 7000)
 	}()
 
-	unusedAttributeViews := UnusedAttributeViews(false)
+	unusedAttributeViews, err := UnusedAttributeViews(false)
+	if err != nil {
+		return
+	}
 
 	historyDir, err := getHistoryDir(HistoryOpClean)
 	if err != nil {
@@ -119,6 +142,7 @@ func RemoveUnusedAttributeViews() (ret []string) {
 			}
 
 			if removeErr := filelock.RemoveWithoutFatal(absPath); removeErr != nil {
+				err = removeErr
 				logging.LogErrorf("remove unused av [%s] failed: %s", absPath, removeErr)
 				util.PushErrMsg(fmt.Sprintf("%s", removeErr), 7000)
 				return
@@ -134,26 +158,44 @@ func RemoveUnusedAttributeViews() (ret []string) {
 	return
 }
 
-func UnusedAttributeViews(sorted bool) (ret []*UnusedItem) {
-	defer logging.Recover()
+func UnusedAttributeViews(sorted bool) (ret []*UnusedItem, err error) {
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			ret = nil
+			err = fmt.Errorf("scan database references failed: %v", recovered)
+		}
+	}()
 	ret = []*UnusedItem{}
 
 	allAvIDs, err := getAllAvIDs()
 	if err != nil {
+		if os.IsNotExist(err) {
+			err = nil
+		}
 		return
 	}
 
 	docReferencedAvIDs := map[string]bool{}
 	luteEngine := util.NewLute()
-	boxes := Conf.GetBoxes()
+	boxes, err := ListNotebooks()
+	if err != nil {
+		return nil, err
+	}
 	for _, box := range boxes {
-		pages := pagedPaths(filepath.Join(util.DataDir, box.ID), 32)
+		// Encrypted databases live in a separate notebook-local storage directory.
+		if IsEncryptedBox(box.ID) {
+			continue
+		}
+		pages, walkErr := pagedPathsWithError(filepath.Join(util.DataDir, box.ID), 32)
+		if walkErr != nil {
+			return nil, walkErr
+		}
 		for _, paths := range pages {
 			var trees []*parse.Tree
 			for _, localPath := range paths {
 				tree, loadTreeErr := loadTree(localPath, luteEngine)
-				if nil != loadTreeErr {
-					continue
+				if loadTreeErr != nil {
+					return nil, fmt.Errorf("read database references [%s]: %w", localPath, loadTreeErr)
 				}
 				trees = append(trees, tree)
 			}
@@ -165,14 +207,20 @@ func UnusedAttributeViews(sorted bool) (ret []*UnusedItem) {
 		}
 	}
 
-	templateAvIDs := search.FindAllMatchedTargets(filepath.Join(util.DataDir, "templates"), allAvIDs)
+	templateAvIDs, err := scanTemplateDatabaseReferences(filepath.Join(util.DataDir, "templates"), allAvIDs)
+	if err != nil {
+		return nil, err
+	}
 	for _, id := range templateAvIDs {
 		docReferencedAvIDs[id] = true
 	}
 
-	checkedAvIDs := map[string]bool{}
 	for _, id := range allAvIDs {
-		if !docReferencedAvIDs[id] && !isRelatedSrcAvDocReferenced(id, docReferencedAvIDs, checkedAvIDs) {
+		referenced, scanErr := isRelatedSrcAvDocReferenced(id, docReferencedAvIDs, map[string]bool{})
+		if scanErr != nil {
+			return nil, scanErr
+		}
+		if !docReferencedAvIDs[id] && !referenced {
 			name, _ := av.GetAttributeViewName(id)
 
 			var modTime time.Time
@@ -198,33 +246,40 @@ func UnusedAttributeViews(sorted bool) (ret []*UnusedItem) {
 	return
 }
 
-func isRelatedSrcAvDocReferenced(destAvID string, docReferencedAvIDs, checkedAvIDs map[string]bool) bool {
+func isRelatedSrcAvDocReferenced(destAvID string, docReferencedAvIDs, checkedAvIDs map[string]bool) (bool, error) {
 	if checkedAvIDs[destAvID] {
 		if docReferencedAvIDs[destAvID] {
-			return true
+			return true, nil
 		}
-		return false
+		return false, nil
 	}
 	checkedAvIDs[destAvID] = true
 
-	srcAvIDs := av.GetSrcAvIDs(destAvID)
+	srcAvIDs, err := av.GetSrcAvIDsWithError(destAvID)
+	if err != nil {
+		return false, err
+	}
 	srcAvIDs = gulu.Str.RemoveElem(srcAvIDs, destAvID)
 	if 1 > len(srcAvIDs) {
-		return false
+		return false, nil
 	}
 
 	for _, srcAvID := range srcAvIDs {
 		if docReferencedAvIDs[srcAvID] {
-			return true
+			return true, nil
 		}
 	}
 
 	for _, srcAvID := range srcAvIDs {
-		if isRelatedSrcAvDocReferenced(srcAvID, docReferencedAvIDs, checkedAvIDs) {
-			return true
+		referenced, err := isRelatedSrcAvDocReferenced(srcAvID, docReferencedAvIDs, checkedAvIDs)
+		if err != nil {
+			return false, err
+		}
+		if referenced {
+			return true, nil
 		}
 	}
-	return false
+	return false, nil
 }
 
 func getAvIDs(tree *parse.Tree, allAvIDs []string) (ret []string) {
@@ -716,7 +771,7 @@ func syncAttrViewTableColWidth(operation *Operation) (err error) {
 
 	var width string
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		for _, column := range view.Table.Columns {
 			if column.ID == operation.KeyID {
 				width = column.Width
@@ -728,7 +783,7 @@ func syncAttrViewTableColWidth(operation *Operation) (err error) {
 	}
 
 	for _, v := range attrView.Views {
-		if av.LayoutTypeTable == v.LayoutType {
+		if av.LayoutTypeTable == v.LayoutType || av.LayoutTypeCalendar == v.LayoutType {
 			for _, column := range v.Table.Columns {
 				if column.ID == operation.KeyID {
 					column.Width = width
@@ -963,7 +1018,7 @@ func setAttrViewCardAspectRatio(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		return
 	case av.LayoutTypeGallery:
 		view.Gallery.CardAspectRatio = av.CardAspectRatio(operation.Data.(float64))
@@ -1006,11 +1061,23 @@ func ChangeAttrViewLayout(blockID, avID string, newLayout av.LayoutType) (err er
 		return
 	}
 
+	if newLayout != av.LayoutTypeTable && newLayout != av.LayoutTypeGallery && newLayout != av.LayoutTypeKanban && newLayout != av.LayoutTypeCalendar {
+		return av.ErrWrongLayoutType
+	}
 	oldLayout := view.LayoutType
 	view.LayoutType = newLayout
+	if newLayout == av.LayoutTypeCalendar && view.Calendar == nil {
+		view.Calendar = &av.CalendarConfig{}
+	}
+	if newLayout == av.LayoutTypeCalendar && view.Name == av.GetAttributeViewI18n(string(oldLayout)) {
+		view.Name = av.GetAttributeViewI18n("calendar")
+	}
+	if oldLayout == av.LayoutTypeCalendar && view.Name == av.GetAttributeViewI18n("calendar") {
+		view.Name = av.GetAttributeViewI18n(string(newLayout))
+	}
 
 	switch newLayout {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		if view.Name == av.GetAttributeViewI18n("gallery") || view.Name == av.GetAttributeViewI18n("kanban") {
 			view.Name = av.GetAttributeViewI18n("table")
 		}
@@ -1041,7 +1108,7 @@ func ChangeAttrViewLayout(blockID, avID string, newLayout av.LayoutType) (err er
 
 		view.Gallery = av.NewLayoutGallery()
 		switch oldLayout {
-		case av.LayoutTypeTable:
+		case av.LayoutTypeTable, av.LayoutTypeCalendar:
 			for _, col := range view.Table.Columns {
 				view.Gallery.CardFields = append(view.Gallery.CardFields, &av.ViewGalleryCardField{BaseField: &av.BaseField{ID: col.ID}})
 			}
@@ -1061,7 +1128,7 @@ func ChangeAttrViewLayout(blockID, avID string, newLayout av.LayoutType) (err er
 
 		view.Kanban = av.NewLayoutKanban()
 		switch oldLayout {
-		case av.LayoutTypeTable:
+		case av.LayoutTypeTable, av.LayoutTypeCalendar:
 			for _, col := range view.Table.Columns {
 				view.Kanban.Fields = append(view.Kanban.Fields, &av.ViewKanbanField{BaseField: &av.BaseField{ID: col.ID}})
 			}
@@ -1142,7 +1209,7 @@ func setAttrViewWrapField(operation *Operation) (err error) {
 
 	allFieldWrap := operation.Data.(bool)
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		view.Table.WrapField = allFieldWrap
 		for _, col := range view.Table.Columns {
 			col.Wrap = allFieldWrap
@@ -1183,7 +1250,7 @@ func setAttrViewShowIcon(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		view.Table.ShowIcon = operation.Data.(bool)
 	case av.LayoutTypeGallery:
 		view.Gallery.ShowIcon = operation.Data.(bool)
@@ -1215,7 +1282,7 @@ func setAttrViewFitImage(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		return
 	case av.LayoutTypeGallery:
 		view.Gallery.FitImage = operation.Data.(bool)
@@ -1255,7 +1322,7 @@ func setAttrViewDisplayFieldName(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		return
 	case av.LayoutTypeGallery:
 		view.Gallery.DisplayFieldName = operation.Data.(bool)
@@ -1279,7 +1346,7 @@ func setAttrViewFillColBackgroundColor(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		return
 	case av.LayoutTypeGallery:
 		return
@@ -1311,7 +1378,7 @@ func setAttrViewCardSize(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		return
 	case av.LayoutTypeGallery:
 		view.Gallery.CardSize = av.CardSize(operation.Data.(float64))
@@ -1343,7 +1410,7 @@ func setAttrViewCoverFromAssetKeyID(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		return
 	case av.LayoutTypeGallery:
 		view.Gallery.CoverFromAssetKeyID = operation.KeyID
@@ -1375,7 +1442,7 @@ func setAttrViewCoverFrom(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		return
 	case av.LayoutTypeGallery:
 		view.Gallery.CoverFrom = av.CoverFrom(operation.Data.(float64))
@@ -2666,7 +2733,7 @@ func genAttrViewGroups(view *av.View, attrView *av.AttributeView) {
 	for groupValue, groupItems := range groupItemsMap {
 		var v *av.View
 		switch view.LayoutType {
-		case av.LayoutTypeTable:
+		case av.LayoutTypeTable, av.LayoutTypeCalendar:
 			v = av.NewTableView()
 			v.Table = av.NewLayoutTable()
 		case av.LayoutTypeGallery:
@@ -3155,7 +3222,7 @@ func updateAttributeViewColRelation(operation *Operation) (err error) {
 
 		for _, v := range destAv.Views {
 			switch v.LayoutType {
-			case av.LayoutTypeTable:
+			case av.LayoutTypeTable, av.LayoutTypeCalendar:
 				v.Table.Columns = append(v.Table.Columns, &av.ViewTableColumn{BaseField: &av.BaseField{ID: operation.BackRelationKeyID}})
 			case av.LayoutTypeGallery:
 				v.Gallery.CardFields = append(v.Gallery.CardFields, &av.ViewGalleryCardField{BaseField: &av.BaseField{ID: operation.BackRelationKeyID}})
@@ -3397,7 +3464,7 @@ func (tx *Transaction) doDuplicateAttrViewView(operation *Operation) (ret *TxErr
 
 	var view *av.View
 	switch masterView.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		view = av.NewTableView()
 	case av.LayoutTypeGallery:
 		view = av.NewGalleryView()
@@ -3426,7 +3493,7 @@ func (tx *Transaction) doDuplicateAttrViewView(operation *Operation) (ret *TxErr
 	}
 
 	switch masterView.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		for _, col := range masterView.Table.Columns {
 			view.Table.Columns = append(view.Table.Columns, &av.ViewTableColumn{
 				BaseField: &av.BaseField{
@@ -3485,6 +3552,8 @@ func (tx *Transaction) doDuplicateAttrViewView(operation *Operation) (ret *TxErr
 		view.Kanban.WrapField = masterView.Kanban.WrapField
 	}
 
+	view.Calendar = masterView.Calendar
+	view.ConditionalColors = masterView.ConditionalColors
 	view.ItemIDs = masterView.ItemIDs
 
 	if nil != masterView.Group {
@@ -3537,10 +3606,10 @@ func addAttrViewView(avID, viewID, blockID string, layout av.LayoutType) (err er
 
 	var view *av.View
 	switch layout {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		view = av.NewTableView()
 		switch firstView.LayoutType {
-		case av.LayoutTypeTable:
+		case av.LayoutTypeTable, av.LayoutTypeCalendar:
 			for _, col := range firstView.Table.Columns {
 				view.Table.Columns = append(view.Table.Columns, &av.ViewTableColumn{
 					BaseField: &av.BaseField{ID: col.ID}, Width: col.Width, Align: col.Align,
@@ -3558,7 +3627,7 @@ func addAttrViewView(avID, viewID, blockID string, layout av.LayoutType) (err er
 	case av.LayoutTypeGallery:
 		view = av.NewGalleryView()
 		switch firstView.LayoutType {
-		case av.LayoutTypeTable:
+		case av.LayoutTypeTable, av.LayoutTypeCalendar:
 			for _, col := range firstView.Table.Columns {
 				view.Gallery.CardFields = append(view.Gallery.CardFields, &av.ViewGalleryCardField{BaseField: &av.BaseField{ID: col.ID}})
 			}
@@ -3574,7 +3643,7 @@ func addAttrViewView(avID, viewID, blockID string, layout av.LayoutType) (err er
 	case av.LayoutTypeKanban:
 		view = av.NewKanbanView()
 		switch firstView.LayoutType {
-		case av.LayoutTypeTable:
+		case av.LayoutTypeTable, av.LayoutTypeCalendar:
 			for _, col := range firstView.Table.Columns {
 				view.Kanban.Fields = append(view.Kanban.Fields, &av.ViewKanbanField{BaseField: &av.BaseField{ID: col.ID}})
 			}
@@ -3593,6 +3662,11 @@ func addAttrViewView(avID, viewID, blockID string, layout av.LayoutType) (err er
 		return
 	}
 
+	if layout == av.LayoutTypeCalendar {
+		view.LayoutType = layout
+		view.Calendar = &av.CalendarConfig{}
+		view.Name = av.GetAttributeViewI18n("calendar")
+	}
 	view.ItemIDs = firstView.ItemIDs
 	attrView.ViewID = viewID
 	view.ID = viewID
@@ -4023,7 +4097,7 @@ func setAttributeViewColumnCalc(operation *Operation) (err error) {
 
 	calc := &av.FieldCalc{}
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		if err = gulu.JSON.UnmarshalJSON(data, calc); err != nil {
 			return
 		}
@@ -4546,7 +4620,7 @@ func duplicateAttributeViewKey(operation *Operation) (err error) {
 
 	for _, view := range attrView.Views {
 		switch view.LayoutType {
-		case av.LayoutTypeTable:
+		case av.LayoutTypeTable, av.LayoutTypeCalendar:
 			for i, column := range view.Table.Columns {
 				if column.ID == key.ID {
 					view.Table.Columns = append(view.Table.Columns[:i+1], append([]*av.ViewTableColumn{
@@ -4624,7 +4698,7 @@ func setAttributeViewColWidth(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		for _, column := range view.Table.Columns {
 			if column.ID == operation.ID {
 				column.Width = operation.Data.(string)
@@ -4658,7 +4732,7 @@ func setAttributeViewColAlign(operation *Operation) (err error) {
 		return
 	}
 
-	if av.LayoutTypeTable != view.LayoutType {
+	if av.LayoutTypeTable != view.LayoutType && av.LayoutTypeCalendar != view.LayoutType {
 		return
 	}
 
@@ -4700,7 +4774,7 @@ func setAttributeViewColWrap(operation *Operation) (err error) {
 	newWrap := operation.Data.(bool)
 	allFieldWrap := true
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		for _, column := range view.Table.Columns {
 			if column.ID == operation.ID {
 				column.Wrap = newWrap
@@ -4750,7 +4824,7 @@ func setAttributeViewColHidden(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		for _, column := range view.Table.Columns {
 			if column.ID == operation.ID {
 				column.Hidden = operation.Data.(bool)
@@ -4797,7 +4871,7 @@ func setAttributeViewColPin(operation *Operation) (err error) {
 	}
 
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		for _, column := range view.Table.Columns {
 			if column.ID == operation.ID {
 				column.Pin = operation.Data.(bool)
@@ -5004,7 +5078,7 @@ func SortAttributeViewViewKey(avID, blockID, keyID, previousKeyID string) (err e
 
 	var curIndex, previousIndex int
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		var col *av.ViewTableColumn
 		for i, column := range view.Table.Columns {
 			if column.ID == keyID {
@@ -5469,7 +5543,7 @@ func RemoveAttributeViewKey(avID, keyID string, removeRelationDest bool) (err er
 				if removeRelationDest {
 					for _, view := range destAv.Views {
 						switch view.LayoutType {
-						case av.LayoutTypeTable:
+						case av.LayoutTypeTable, av.LayoutTypeCalendar:
 							for i, column := range view.Table.Columns {
 								if column.ID == removedKey.Relation.BackKeyID {
 									view.Table.Columns = append(view.Table.Columns[:i], view.Table.Columns[i+1:]...)
@@ -6167,6 +6241,9 @@ func updateAttributeViewColumnOptions(operation *Operation) (err error) {
 
 	var tmp []*av.SelectOption
 	for _, opt := range options {
+		if opt == nil || !av.ValidSelectColor(opt.Color) {
+			return errors.New("invalid category color")
+		}
 		if "" != opt.Name {
 			tmp = append(tmp, opt)
 		}
@@ -6305,6 +6382,9 @@ func updateAttributeViewColumnOption(operation *Operation) (err error) {
 	newName := strings.TrimSpace(data["newName"].(string))
 	newDesc := strings.TrimSpace(data["newDesc"].(string))
 	newColor := data["newColor"].(string)
+	if !av.ValidSelectColor(newColor) {
+		return errors.New("invalid category color")
+	}
 
 	found := false
 	if oldName != newName {
@@ -6378,6 +6458,11 @@ func updateAttributeViewColumnOption(operation *Operation) (err error) {
 	// Database select field filters follow option editing changes
 	for _, view := range attrView.Views {
 		av.RenameSelectOptionInFilters(view.Filters, key.ID, oldName, newName, newColor)
+		for _, rule := range view.ConditionalColors {
+			if rule != nil {
+				av.RenameSelectOptionInFilters([]*av.ViewFilter{rule.Filter}, key.ID, oldName, newName, newColor)
+			}
+		}
 	}
 
 	regenAttrViewGroups(attrView)

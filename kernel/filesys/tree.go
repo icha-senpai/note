@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"maps"
 	"os"
 	"path/filepath"
@@ -267,64 +268,73 @@ func LoadTreeByData(data []byte, boxID, p string, luteEngine *lute.Lute) (ret *p
 	return
 }
 
-func DocIAL(absPath string) (ret map[string]string) {
+var ErrInvalidDocIAL = errors.New("invalid document properties")
 
+func DocIAL(absPath string) map[string]string {
+	properties, _ := DocIALWithError(absPath)
+	return properties
+}
+
+// DocIALWithError distinguishes malformed properties from temporary read failures.
+func DocIALWithError(absPath string) (map[string]string, error) {
 	boxID := docIALBoxID(absPath)
 	if boxID != "" && DEKProvider != nil {
 		if dek, err := DEKProvider(boxID); err == nil && dek != nil {
-
-			raw, readErr := filelock.ReadFile(absPath)
-			if readErr != nil {
-				logging.LogErrorf("read file [%s] failed: %s", absPath, readErr)
-				return nil
+			raw, err := filelock.ReadFile(absPath)
+			if err != nil {
+				return nil, err
 			}
 			relPath := filepath.ToSlash(strings.TrimPrefix(absPath, filepath.Join(util.DataDir, boxID)+string(os.PathSeparator)))
-			plain, decErr := decryptData(boxID, relPath, raw)
-			if decErr != nil {
-
-				logging.LogErrorf("decrypt doc [%s] for IAL failed: %s", absPath, decErr)
-				return map[string]string{}
+			plain, err := decryptData(boxID, relPath, raw)
+			if err != nil {
+				return nil, err
 			}
-			iter := jsoniter.Parse(jsoniter.ConfigCompatibleWithStandardLibrary, bytes.NewReader(plain), 512)
-			for field := iter.ReadObject(); field != ""; field = iter.ReadObject() {
-				if field == "Properties" {
-					iter.ReadVal(&ret)
-					break
-				} else {
-					iter.Skip()
-				}
-			}
-			for k, v := range ret {
-				ret[k] = html.UnescapeAttrVal(v)
-			}
-			return
+			return parseDocIAL(bytes.NewReader(plain))
 		}
 	}
-
 	filelock.Lock(absPath)
+	defer filelock.Unlock(absPath)
 	file, err := os.Open(absPath)
 	if err != nil {
-		logging.LogErrorf("open file [%s] failed: %s", absPath, err)
-		filelock.Unlock(absPath)
-		return nil
+		return nil, err
 	}
+	defer file.Close()
+	return parseDocIAL(file)
+}
 
-	iter := jsoniter.Parse(jsoniter.ConfigCompatibleWithStandardLibrary, file, 512)
+// Based on SiYuan ce2e76ee4b; retain the underlying I/O error from jsoniter.
+type docIALReader struct {
+	io.Reader
+	err error
+}
+
+func (r *docIALReader) Read(p []byte) (int, error) {
+	n, err := r.Reader.Read(p)
+	if err != nil && err != io.EOF {
+		r.err = err
+	}
+	return n, err
+}
+func parseDocIAL(reader io.Reader) (ret map[string]string, err error) {
+	r := &docIALReader{Reader: reader}
+	iter := jsoniter.Parse(jsoniter.ConfigCompatibleWithStandardLibrary, r, 512)
 	for field := iter.ReadObject(); field != ""; field = iter.ReadObject() {
 		if field == "Properties" {
 			iter.ReadVal(&ret)
 			break
-		} else {
-			iter.Skip()
 		}
+		iter.Skip()
 	}
-	file.Close()
-	filelock.Unlock(absPath)
-
+	if r.err != nil {
+		return nil, r.err
+	}
+	if (iter.Error != nil && iter.Error != io.EOF) || len(ret) == 0 {
+		return nil, ErrInvalidDocIAL
+	}
 	for k, v := range ret {
 		ret[k] = html.UnescapeAttrVal(v)
 	}
-	return
+	return ret, nil
 }
 
 func TreeSize(tree *parse.Tree) (size uint64) {

@@ -1053,7 +1053,7 @@ export const onTransaction = (protyle: IProtyle, operations: IOperation[], isUnd
             "setAttrViewWrapField", "setAttrViewGroup", "removeAttrViewGroup", "hideAttrViewGroup", "sortAttrViewGroup",
             "foldAttrViewGroup", "hideAttrViewAllGroups", "setAttrViewFitImage", "setAttrViewDisplayFieldName",
             "insertAttrViewBlock", "setAttrViewColDateFillSpecificTime", "setAttrViewFillColBackgroundColor", "setAttrViewUpdatedIncludeTime",
-            "setAttrViewCreatedIncludeTime"].includes(operation.action)) {
+            "setAttrViewCreatedIncludeTime", "setAttrViewCalendar", "setAttrViewConditionalColors"].includes(operation.action)) {
             if (!isUndo) {
                 refreshAV(protyle, operation);
             } else if (operation.action === "setAttrViewName") {

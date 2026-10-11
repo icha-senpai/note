@@ -1,3 +1,4 @@
+import {selectColorStyle, selectColorValue} from "../../../util/color";
 import {transaction} from "../../wysiwyg/transaction";
 import {hasClosestBlock, hasClosestByClassName} from "../../util/hasClosest";
 import {openMenuPanel} from "./openMenuPanel";
@@ -91,7 +92,7 @@ export const genCellValueByElement = (colType: TAVCol, cellElement: HTMLElement)
         cellElement.querySelectorAll(".b3-chip").forEach((item: HTMLElement) => {
             mSelect.push({
                 content: item.textContent.trim(),
-                color: item.style.color.replace("var(--b3-font-color", "").replace(")", "")
+                color: selectColorValue(item.style.backgroundColor, item.style.color)
             });
         });
         cellValue.mSelect = mSelect;
@@ -947,7 +948,7 @@ export const renderCell = (cellValue: IAVCellValue, rowIndex = 0, showIcon = tru
             if (cellValue.type === "select" && index > 0) {
                 return;
             }
-            text += `<span class="b3-chip" style="background-color:var(--b3-font-background${item.color});color:var(--b3-font-color${item.color})">${escapeHtml(item.content)}</span>`;
+            text += `<span class="b3-chip" style="${selectColorStyle(item.color)}">${escapeHtml(item.content)}</span>`;
         });
     } else if (cellValue.type === "date") {
         const dataValue = cellValue ? cellValue.date : null;

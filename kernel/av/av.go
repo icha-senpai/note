@@ -230,19 +230,21 @@ type SelectOption struct {
 }
 
 type View struct {
-	ID               string         `json:"id"`
-	Icon             string         `json:"icon"`
-	Name             string         `json:"name"`
-	HideAttrViewName bool           `json:"hideAttrViewName"`
-	Desc             string         `json:"desc"`
-	Filters          []*ViewFilter  `json:"filters,omitempty"`
-	Sorts            []*ViewSort    `json:"sorts,omitempty"`
-	PageSize         int            `json:"pageSize"`
-	LayoutType       LayoutType     `json:"type"`
-	Table            *LayoutTable   `json:"table,omitempty"`
-	Gallery          *LayoutGallery `json:"gallery,omitempty"`
-	Kanban           *LayoutKanban  `json:"kanban,omitempty"`
-	ItemIDs          []string       `json:"itemIds,omitempty"`
+	Calendar          *CalendarConfig         `json:"calendar,omitempty"`
+	ConditionalColors []*ConditionalColorRule `json:"conditionalColors,omitempty"`
+	ID                string                  `json:"id"`
+	Icon              string                  `json:"icon"`
+	Name              string                  `json:"name"`
+	HideAttrViewName  bool                    `json:"hideAttrViewName"`
+	Desc              string                  `json:"desc"`
+	Filters           []*ViewFilter           `json:"filters,omitempty"`
+	Sorts             []*ViewSort             `json:"sorts,omitempty"`
+	PageSize          int                     `json:"pageSize"`
+	LayoutType        LayoutType              `json:"type"`
+	Table             *LayoutTable            `json:"table,omitempty"`
+	Gallery           *LayoutGallery          `json:"gallery,omitempty"`
+	Kanban            *LayoutKanban           `json:"kanban,omitempty"`
+	ItemIDs           []string                `json:"itemIds,omitempty"`
 
 	Group        *ViewGroup `json:"group,omitempty"`
 	GroupCreated int64      `json:"groupCreated"`
@@ -335,9 +337,10 @@ type GroupCalc struct {
 type LayoutType string
 
 const (
-	LayoutTypeTable   LayoutType = "table"
-	LayoutTypeGallery LayoutType = "gallery"
-	LayoutTypeKanban  LayoutType = "kanban"
+	LayoutTypeCalendar LayoutType = "calendar"
+	LayoutTypeTable    LayoutType = "table"
+	LayoutTypeGallery  LayoutType = "gallery"
+	LayoutTypeKanban   LayoutType = "kanban"
 )
 
 const (
@@ -420,7 +423,7 @@ type Viewable interface {
 func NewAttributeView(id string) (ret *AttributeView) {
 	view, blockKey, selectKey := NewTableViewWithBlockKey(ast.NewNodeID())
 	ret = &AttributeView{
-		Spec:              CurrentSpec,
+		Spec:              5,
 		ID:                id,
 		KeyValues:         []*KeyValues{{Key: blockKey}, {Key: selectKey}},
 		ViewID:            view.ID,
@@ -987,6 +990,15 @@ func (av *AttributeView) Clone() (ret *AttributeView) {
 		view.ID = ast.NewNodeID()
 
 		remapFilterColumns(view.Filters, keyIDMap)
+		if view.Calendar != nil {
+			view.Calendar.DateKeyID = keyIDMap[view.Calendar.DateKeyID]
+		}
+		for _, rule := range view.ConditionalColors {
+			if rule != nil {
+				rule.ID = ast.NewNodeID()
+				remapFilterColumns([]*ViewFilter{rule.Filter}, keyIDMap)
+			}
+		}
 		for _, s := range view.Sorts {
 			s.Column = keyIDMap[s.Column]
 		}
@@ -996,7 +1008,7 @@ func (av *AttributeView) Clone() (ret *AttributeView) {
 		}
 
 		switch view.LayoutType {
-		case LayoutTypeTable:
+		case LayoutTypeTable, LayoutTypeCalendar:
 			view.Table.ID = ast.NewNodeID()
 			for _, column := range view.Table.Columns {
 				column.ID = keyIDMap[column.ID]

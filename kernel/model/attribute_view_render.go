@@ -160,7 +160,7 @@ func renderAttributeView(attrView *av.AttributeView, nodeID, viewID, query strin
 
 	viewable = sql.RenderView(attrView, view, query, ignoreRows)
 	renderTargetItemID := targetItemID(target)
-	if view.IsGroupView() || view.LayoutType == av.LayoutTypeKanban {
+	if view.LayoutType != av.LayoutTypeCalendar && (view.IsGroupView() || view.LayoutType == av.LayoutTypeKanban) {
 		renderTargetItemID = ""
 	}
 	var targetIndex, targetOffset int
@@ -168,11 +168,11 @@ func renderAttributeView(attrView *av.AttributeView, nodeID, viewID, query strin
 	if nil != err {
 		return
 	}
-	if nil != target && target.Status != "viewNotFound" && targetIndex >= 0 && !view.IsGroupView() && view.LayoutType != av.LayoutTypeKanban {
+	if nil != target && target.Status != "viewNotFound" && targetIndex >= 0 && (view.LayoutType == av.LayoutTypeCalendar || (!view.IsGroupView() && view.LayoutType != av.LayoutTypeKanban)) {
 		setAttributeViewRenderTarget(target, "", targetIndex, targetOffset, view.PageSize)
 	}
 
-	if !ignoreRows || len(view.Groups) > 0 {
+	if view.LayoutType != av.LayoutTypeCalendar && (!ignoreRows || len(view.Groups) > 0) {
 		err = renderAttributeViewGroups(viewable, attrView, view, query, page, pageSize, groupPaging, ignoreRows, target, targetGroupID)
 	}
 	return
@@ -300,7 +300,7 @@ func renderAttributeViewGroups(viewable av.Viewable, attrView *av.AttributeView,
 		groups = append(groups, groupViewable)
 
 		switch groupView.LayoutType {
-		case av.LayoutTypeTable:
+		case av.LayoutTypeTable, av.LayoutTypeCalendar:
 			groupView.Table.Columns = nil
 		case av.LayoutTypeGallery:
 			groupView.Gallery.CardFields = nil
@@ -516,9 +516,18 @@ func renderViewableInstance(viewable av.Viewable, view *av.View, attrView *av.At
 	av.Filter(viewable, attrView, rollupFurtherCollections, cachedAttrViews)
 	av.Sort(viewable, attrView)
 	av.Calc(viewable, attrView)
+	colors := av.ConditionalItemColors(viewable, attrView, view.ConditionalColors, rollupFurtherCollections, cachedAttrViews)
+	switch projection := viewable.(type) {
+	case *av.Table:
+		projection.ItemColors = colors
+	case *av.Gallery:
+		projection.ItemColors = colors
+	case *av.Kanban:
+		projection.ItemColors = colors
+	}
 
 	switch viewable.GetType() {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		table := viewable.(*av.Table)
 		targetIndex = findAttributeViewTargetIndex(targetItemID, len(table.Rows), func(index int) string { return table.Rows[index].ID })
 		table.RowCount = len(table.Rows)
@@ -530,7 +539,12 @@ func renderViewableInstance(viewable av.Viewable, view *av.View, attrView *av.At
 		if targetIndex >= 0 {
 			targetOffset = start
 		}
-		table.Rows = table.Rows[start:end]
+		if view.LayoutType == av.LayoutTypeCalendar {
+			targetOffset = 0
+		}
+		if view.LayoutType != av.LayoutTypeCalendar {
+			table.Rows = table.Rows[start:end]
+		}
 	case av.LayoutTypeGallery:
 		gallery := viewable.(*av.Gallery)
 		targetIndex = findAttributeViewTargetIndex(targetItemID, len(gallery.Cards), func(index int) string { return gallery.Cards[index].ID })

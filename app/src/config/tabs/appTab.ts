@@ -13,6 +13,7 @@ import {isMac, saveExportFile} from "../../protyle/util/compatibility";
 import {afterExport} from "../../protyle/export/util";
 /// #endif
 import {genConfigItemMainHtml, genConfigItemName} from "../render/fragments";
+import {mountWorkspaceStorage} from "./workspaceStorage";
 import {sendAppSetting} from "./appRuntime";
 
 const genImportUploadButtonHtml = (inputId: string, label: string): string =>
@@ -272,4 +273,10 @@ export const registerAppTab = (tab: SettingTabBuilder) => {
     registerAppGeneralGroup(tab);
     registerAppDataGroup(tab);
     registerAppMaintenanceGroup(tab);
+    tab.group("storage", window.scribli.languages.workspaceStorage).slot({
+        key: "workspaceStorage",
+        keywords: [window.scribli.languages.workspaceStorage, window.scribli.languages.assets],
+        html: () => `<div class="b3-label config-item"><div data-type="workspace-storage"><div class="fn__flex"><strong class="fn__flex-1">${window.scribli.languages.workspaceStorage}</strong><button type="button" class="b3-button b3-button--outline">${window.scribli.languages.refresh}</button></div><div class="fn__hr"></div><div role="status" aria-live="polite"></div></div></div>`,
+        afterMount: mountWorkspaceStorage,
+    });
 };

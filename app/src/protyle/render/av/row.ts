@@ -31,10 +31,14 @@ export const getRowHTML = (options: {
     pinIndex?: number
 }) => {
     let html = "";
+    const color = options.data.itemColors?.[options.row.id];
+    const colored = color && /^#[0-9a-f]{6}$/i.test(color);
+    const colorClass = colored ? " av__rule-colored" : "";
+    const colorStyle = colored ? ` style="--av-rule-color:${color}"` : "";
     if (options.type === "gallery") {
         const galleryRow = options.row as IAVGalleryItem;
         const kanbanData = options.data as IAVGallery;
-        html += `<div data-id="${galleryRow.id}" data-index="${options.rowIndex}" draggable="true" class="av__gallery-item">`;
+        html += `<div data-id="${galleryRow.id}" data-index="${options.rowIndex}" draggable="true" class="av__gallery-item${colorClass}"${colorStyle}>`;
         if (kanbanData.coverFrom !== 0) {
             const coverClass = "av__gallery-cover av__gallery-cover--" + kanbanData.cardAspectRatio;
             if (galleryRow.coverURL) {
@@ -101,7 +105,7 @@ ${cell.color ? `color:${cell.color};` : ""}">${renderCell(cell.value, options.ro
     if (options.type === "kanban") {
         const kanbanRow = options.row as IAVGalleryItem;
         const kanbanData = options.data as IAVKanban;
-        html += `<div data-id="${kanbanRow.id}" data-index="${options.rowIndex}" draggable="true" class="av__gallery-item">`;
+        html += `<div data-id="${kanbanRow.id}" data-index="${options.rowIndex}" draggable="true" class="av__gallery-item${colorClass}"${colorStyle}>`;
         html += `<span class="av__kanban-drag ariaLabel" data-type="av-kanban-drag" draggable="true" contenteditable="false" data-position="north" aria-label="${window.scribli.languages.kanbanDragCard}"><svg><use xlink:href="#iconDrag"></use></svg></span>`;
         if (kanbanData.coverFrom !== 0) {
             const coverClass = "av__gallery-cover av__gallery-cover--" + kanbanData.cardAspectRatio;
@@ -167,7 +171,7 @@ ${cell.color ? `color:${cell.color};` : ""}">${renderCell(cell.value, options.ro
     const tableRow = options.row as IAVRow;
     const tableData = options.data as IAVTable;
 
-    html = `<div class="av__row" data-index="${options.rowIndex}" data-id="${tableRow.id}">`;
+    html = `<div class="av__row${colorClass}"${colorStyle} data-index="${options.rowIndex}" data-id="${tableRow.id}">`;
     if (options.pinIndex > -1) {
         html += '<div class="av__colsticky"><div class="av__firstcol"><svg><use xlink:href="#iconUncheck"></use></svg></div>';
     } else {
@@ -816,7 +820,7 @@ export const insertRows = (options: {
             previousId: options.previousID,
             groupID: options.groupID
         });
-    } else {
+    } else if (options.blockElement.getAttribute("data-av-type") !== "calendar") {
         insertAttrViewBlockAnimation({
             protyle: options.protyle,
             blockElement: options.blockElement,

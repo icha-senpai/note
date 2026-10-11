@@ -8,9 +8,13 @@ import {Constants} from "../../constants";
 import {pathPosix} from "../../util/pathName";
 import {Dialog} from "../../dialog";
 import {pickCanvasReference} from "./canvasPicker";
+import {canvasColor} from "../../util/color";
+import {openColorPicker} from "../../util/colorPicker";
+import {getAllEditor} from "../../layout/getAll";
 
 interface ICanvasNode {
     id: string;
+    color?: string;
     type?: string;
     text?: string;
     file?: string;
@@ -31,6 +35,7 @@ interface ICanvasNode {
 
 interface ICanvasEdge {
     id?: string;
+    color?: string;
     fromNode: string;
     toNode: string;
 }
@@ -161,11 +166,12 @@ const renderCanvasSurface = (surfaceElement: HTMLElement, canvas: ICanvasPayload
     const toolbarHTML = id ? canvasToolbarHTML(state) : "";
     const emptyStateHTML = placeholder || isBlankUnboundCanvas ? emptyCanvasHTML() : "";
     const panelHTML = state.panel ? canvasPanelHTML(state.panel) : "";
+    const editable = Boolean(id) && canEditCanvasColors(blockElement, true);
     surfaceElement.innerHTML = `${toolbarHTML}
 <div class="scribli-canvas__viewport" data-type="canvas-viewport" style="height:${bounds.height}px">
     <div class="scribli-canvas__stage" style="width:${bounds.width}px;height:${bounds.height}px;transform: translate(${state.panX}px, ${state.panY}px) scale(${state.scale})">
-        <svg class="scribli-canvas__edges" viewBox="${bounds.minX} ${bounds.minY} ${bounds.width} ${bounds.height}" preserveAspectRatio="none">${edgeHTML(edges, nodes)}</svg>
-        <div class="scribli-canvas__nodes" style="transform: translate(${-bounds.minX}px, ${-bounds.minY}px)">${nodes.map((node) => nodeHTML(node, state)).join("")}</div>
+        <svg class="scribli-canvas__edges" viewBox="${bounds.minX} ${bounds.minY} ${bounds.width} ${bounds.height}" preserveAspectRatio="none">${edgeHTML(edges, nodes, editable)}</svg>
+        <div class="scribli-canvas__nodes" style="transform: translate(${-bounds.minX}px, ${-bounds.minY}px)">${nodes.map((node) => nodeHTML(node, state, editable)).join("")}</div>
     </div>
     ${emptyStateHTML}
     ${panelHTML}
@@ -176,6 +182,42 @@ const renderCanvasSurface = (surfaceElement: HTMLElement, canvas: ICanvasPayload
     wireCanvasResizing(surfaceElement, canvas, id, blockElement);
     wireCanvasPanning(surfaceElement, canvas, id, blockElement);
     wireCanvasTextEditing(surfaceElement, canvas, id, blockElement);
+    if (editable) {
+        surfaceElement.querySelectorAll<SVGElement>("[data-canvas-edge]").forEach(line => {
+            const edit = (event: Event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const edge = edges[Number(line.dataset.canvasEdge)];
+                if (edge) { editCanvasColor(surfaceElement, id, blockElement, edge); }
+            };
+            line.addEventListener("pointerdown", event => event.stopPropagation());
+            line.addEventListener("click", edit);
+            line.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { edit(event); } });
+        });
+    }
+};
+
+const canEditCanvasColors = (blockElement?: HTMLElement, includeReadOnly = false) => {
+    if (!blockElement || (!includeReadOnly && window.scribli.config.readonly)) { return false; }
+    if (!window.scribli.layout || !window.scribli.dialogs || !window.scribli.blockPanels) { return false; }
+    const protyle = getAllEditor().find(editor => editor.protyle.wysiwyg.element.contains(blockElement))?.protyle;
+    return Boolean(protyle && (includeReadOnly || !protyle.disabled) && !protyle.options.history);
+};
+
+const editCanvasColor = (surfaceElement: HTMLElement, id: string, blockElement: HTMLElement, item: ICanvasNode | ICanvasEdge) => {
+    if (!canEditCanvasColors(blockElement)) { return; }
+    const isEdge = "fromNode" in item;
+    openColorPicker({title: lang(isEdge ? "canvasEdgeColor" : "canvasNodeColor", "Color"), color: canvasColor(item.color), allowReset: true, async onApply(color) {
+        if (!canEditCanvasColors(blockElement)) { throw new Error(lang("readonly", "Read-only")); }
+        const response = await fetchSyncPost("/api/canvas/call", {action: "get", id});
+        if (response.code !== 0 || response.data?.isError) { throw new Error(response.msg || lang("canvasLoadFailed", "Canvas load failed")); }
+        const latest = normalizeCanvasPayload(response.data?.structuredContent?.canvas);
+        const previous = cloneCanvas(latest);
+        const target = isEdge ? latest.edges.find(edge => item.id ? edge.id === item.id : edge.fromNode === item.fromNode && edge.toNode === item.toNode) : latest.nodes.find(node => node.id === item.id);
+        if (!target) { throw new Error(lang("notFound", "Not found")); }
+        if (color) { target.color = color; } else { delete target.color; }
+        if (!await persistCanvas(surfaceElement, latest, id, blockElement, previous)) { throw new Error(lang("failed", "Failed")); }
+    }});
 };
 
 const canvasToolbarHTML = (state: ICanvasViewState) => `<div class="scribli-canvas__toolbar" contenteditable="false">
@@ -288,7 +330,7 @@ const ensureCanvasToolbarDelegation = () => {
         event.stopPropagation();
         await finishActiveTextNodeEdit(surfaceElement);
         const runtime = await resolveCanvasRuntime(surfaceElement);
-        if (type === "canvas-node-duplicate" || type === "canvas-node-delete" || type === "canvas-node-edit-info") {
+        if (type === "canvas-node-duplicate" || type === "canvas-node-delete" || type === "canvas-node-edit-info" || type === "canvas-node-color") {
             const nodeID = target.closest(".scribli-canvas__node")?.getAttribute("data-node-id") || "";
             const state = canvasState(surfaceElement);
             state.selectedNodeID = nodeID;
@@ -298,6 +340,9 @@ const ensureCanvasToolbarDelegation = () => {
                 await deleteSelectedNode(surfaceElement, runtime.canvas, runtime.id, runtime.blockElement);
             } else if (runtime.id && type === "canvas-node-edit-info") {
                 await editScribliNodeInfo(surfaceElement, runtime.canvas, runtime.id, runtime.blockElement, nodeID);
+            } else if (runtime.id && type === "canvas-node-color") {
+                const node = runtime.canvas.nodes.find(item => item.id === nodeID);
+                if (node) { editCanvasColor(surfaceElement, runtime.id, runtime.blockElement, node); }
             }
             return;
         }
@@ -918,7 +963,9 @@ const persistCanvas = async (surfaceElement: HTMLElement, canvas: ICanvasPayload
             pushCanvasHistory(surfaceElement, previous);
         }
         renderCanvasSurface(surfaceElement, response.data?.structuredContent?.canvas || canvas, id, blockElement);
+        return true;
     }
+    return false;
 };
 
 const pushCanvasHistory = (surfaceElement: HTMLElement, canvas: ICanvasPayload) => {
@@ -1181,6 +1228,7 @@ const wireCanvasPanning = (surfaceElement: HTMLElement, canvas: ICanvasPayload, 
         }
     });
     viewport.addEventListener("pointerup", () => {
+        if (!active) { return; }
         active = undefined;
         renderCanvasSurface(surfaceElement, canvas, id, blockElement);
     });
@@ -1260,14 +1308,15 @@ const exportCanvas = (id: string, canvas: ICanvasPayload) => {
     URL.revokeObjectURL(url);
 };
 
-const nodeHTML = (node: ICanvasNode, state: ICanvasViewState) => {
+const nodeHTML = (node: ICanvasNode, state: ICanvasViewState, editable: boolean) => {
     const kind = node.scribli?.kind || node.type || "text";
     const title = node.scribli?.label || firstLine(node.text) || node.file || node.id;
     const body = nodeBody(node);
     const selectedClass = state.selectedNodeID === node.id ? " scribli-canvas__node--selected" : "";
     const connectClass = state.connectFromID === node.id ? " scribli-canvas__node--connecting" : "";
-    return `<div class="scribli-canvas__node${selectedClass}${connectClass}" data-node-id="${escapeAttr(node.id)}" data-kind="${escapeAttr(kind)}" data-ref-id="${escapeAttr(node.scribli?.refID || "")}" data-query="${escapeAttr(node.scribli?.query || "")}" data-asset-path="${escapeAttr(node.file || node.scribli?.assetPath || "")}" data-database-id="${escapeAttr(node.scribli?.databaseID || "")}" style="left:${numberValue(node.x, 0)}px;top:${numberValue(node.y, 0)}px;width:${numberValue(node.width, DEFAULT_NODE_WIDTH)}px;height:${numberValue(node.height, DEFAULT_NODE_HEIGHT)}px">
-    <div class="scribli-canvas__node-title" contenteditable="false"><div class="scribli-canvas__drag-handle" aria-label="${escapeAttr(lang("drag", "Drag"))}"><svg><use xlink:href="#iconDrag"></use></svg></div><span>${escapeHtml(title)}</span>${nodeActionHTML(node, kind)}${nodeButton("canvas-node-duplicate", "iconCopy", lang("duplicate", "Duplicate"))}${nodeButton("canvas-node-delete", "iconTrashcan", lang("delete", "Delete"))}</div>
+    const color = canvasColor(node.color);
+    return `<div class="scribli-canvas__node${selectedClass}${connectClass}${color ? " scribli-canvas__node--colored" : ""}" data-node-id="${escapeAttr(node.id)}" data-kind="${escapeAttr(kind)}" data-ref-id="${escapeAttr(node.scribli?.refID || "")}" data-query="${escapeAttr(node.scribli?.query || "")}" data-asset-path="${escapeAttr(node.file || node.scribli?.assetPath || "")}" data-database-id="${escapeAttr(node.scribli?.databaseID || "")}" style="left:${numberValue(node.x, 0)}px;top:${numberValue(node.y, 0)}px;width:${numberValue(node.width, DEFAULT_NODE_WIDTH)}px;height:${numberValue(node.height, DEFAULT_NODE_HEIGHT)}px;${color ? `--scribli-canvas-color:${color}` : ""}">
+    <div class="scribli-canvas__node-title" contenteditable="false"><div class="scribli-canvas__drag-handle" aria-label="${escapeAttr(lang("drag", "Drag"))}"><svg><use xlink:href="#iconDrag"></use></svg></div><span>${escapeHtml(title)}</span>${nodeActionHTML(node, kind)}${editable ? nodeButton("canvas-node-color", "iconPaintBucket", lang("canvasNodeColor", "Card color")) : ""}${nodeButton("canvas-node-duplicate", "iconCopy", lang("duplicate", "Duplicate"))}${nodeButton("canvas-node-delete", "iconTrashcan", lang("delete", "Delete"))}</div>
     <div class="scribli-canvas__node-body" contenteditable="false">${body}</div>
     <div class="scribli-canvas__resize" contenteditable="false"></div>
 </div>`;
@@ -1332,9 +1381,9 @@ const isActionableNode = (node: ICanvasNode, kind: string) => {
     return false;
 };
 
-const edgeHTML = (edges: ICanvasEdge[], nodes: ICanvasNode[]) => {
+const edgeHTML = (edges: ICanvasEdge[], nodes: ICanvasNode[], editable: boolean) => {
     const nodeMap = new Map(nodes.map((node) => [node.id, node]));
-    return edges.map((edge) => {
+    return edges.map((edge, index) => {
         const fromNode = nodeMap.get(edge.fromNode);
         const toNode = nodeMap.get(edge.toNode);
         if (!fromNode || !toNode) {
@@ -1344,7 +1393,9 @@ const edgeHTML = (edges: ICanvasEdge[], nodes: ICanvasNode[]) => {
         const y1 = numberValue(fromNode.y, 0) + numberValue(fromNode.height, DEFAULT_NODE_HEIGHT) / 2;
         const x2 = numberValue(toNode.x, 0) + numberValue(toNode.width, DEFAULT_NODE_WIDTH) / 2;
         const y2 = numberValue(toNode.y, 0) + numberValue(toNode.height, DEFAULT_NODE_HEIGHT) / 2;
-        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"></line>`;
+        const color = canvasColor(edge.color);
+        const coordinates = `x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"`;
+        return `<line ${coordinates}${color ? ` style="stroke:${color};stroke-opacity:1"` : ""}></line>${editable ? `<line ${coordinates} class="scribli-canvas__edge-hit" data-canvas-edge="${index}" tabindex="0" role="button" aria-label="${escapeAttr(lang("canvasEdgeColor", "Connector color"))}"></line>` : ""}`;
     }).join("");
 };
 

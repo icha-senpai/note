@@ -37,7 +37,7 @@ import (
 func RenderGroupView(attrView *av.AttributeView, view, groupView *av.View, query string) (ret av.Viewable) {
 	var err error
 	switch groupView.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 
 		err = copier.CopyWithOption(&groupView.Table.Columns, &view.Table.Columns, copier.Option{DeepCopy: true})
 		groupView.Table.ShowIcon = view.Table.ShowIcon
@@ -69,7 +69,7 @@ func RenderGroupView(attrView *av.AttributeView, view, groupView *av.View, query
 	if nil != err {
 		logging.LogErrorf("copy view fields [%s] to group [%s] failed: %s", view.ID, groupView.ID, err)
 		switch groupView.LayoutType {
-		case av.LayoutTypeTable:
+		case av.LayoutTypeTable, av.LayoutTypeCalendar:
 			groupView.Table.Columns = view.Table.Columns
 		case av.LayoutTypeGallery:
 			groupView.Gallery.CardFields = view.Gallery.CardFields
@@ -103,7 +103,7 @@ func renderView(attrView *av.AttributeView, view *av.View, query string, depth *
 
 	*depth++
 	switch view.LayoutType {
-	case av.LayoutTypeTable:
+	case av.LayoutTypeTable, av.LayoutTypeCalendar:
 		ret = RenderAttributeViewTable(attrView, view, query, depth, cachedAttrViews, ignoreRows)
 	case av.LayoutTypeGallery:
 		ret = RenderAttributeViewGallery(attrView, view, query, depth, cachedAttrViews, ignoreRows)

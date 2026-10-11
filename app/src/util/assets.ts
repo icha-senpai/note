@@ -13,6 +13,7 @@ import {
 import {setCodeTheme} from "../protyle/render/util";
 import {getBackend, getFrontend} from "./functions";
 import {getWorkspaceName} from "./processTitle";
+import {applyInterfaceColors} from "./interfaceColors";
 
 export const loadAssets = (data: Config.IAppearance) => {
     const htmlElement = document.getElementsByTagName("html")[0];
@@ -31,6 +32,7 @@ export const loadAssets = (data: Config.IAppearance) => {
         window.scribli.config.appearance.mode = (OSTheme === "light" ? 0 : 1);
     }
     const defaultStyleElement = document.getElementById("themeDefaultStyle");
+    applyInterfaceColors(data.interfaceColors, data.mode);
     const defaultThemeAddress = `/appearance/themes/${data.mode === 1 ? "midnight" : "daylight"}/theme.css?v=${Constants.SCRIBLI_VERSION}`;
     if (defaultStyleElement) {
         if (!defaultStyleElement.getAttribute("href").startsWith(defaultThemeAddress)) {

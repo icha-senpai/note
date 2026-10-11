@@ -42,6 +42,8 @@ type TOperation =
     | "setAttrViewColIcon"
     | "setAttrViewFilters"
     | "setAttrViewSorts"
+    | "setAttrViewCalendar"
+    | "setAttrViewConditionalColors"
     | "setAttrViewColCalc"
     | "updateAttrViewColNumberFormat"
     | "replaceAttrViewBlock"
@@ -98,7 +100,7 @@ type TEventBus = "ws-main" | "sync-start" | "sync-end" | "sync-fail" |
     "lock-screen" |
     "code-language-update" | "code-language-change" |
     "kernel-plugin-state-change"
-type TAVView = "table" | "gallery" | "kanban"
+type TAVView = "table" | "gallery" | "kanban" | "calendar"
 type TAVAlign = "" | "left" | "center" | "right"
 type TAVCol =
     "text"
@@ -841,7 +843,12 @@ interface IAVNewItemTemplate {
     contentTemplatePath?: string;
 }
 
+interface IAVConditionalColor {id: string; enabled: boolean; color: string; filter: IAVFilter}
+interface IAVCalendarConfig {dateKeyID: string}
 interface IAVView {
+    calendar?: IAVCalendarConfig;
+    conditionalColors?: IAVConditionalColor[];
+    itemColors?: Record<string, string>;
     name: string;
     desc: string;
     id: string;

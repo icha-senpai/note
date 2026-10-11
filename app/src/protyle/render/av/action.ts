@@ -43,6 +43,7 @@ import {createAttributeViewItem, openNewItemTemplateMenu} from "./newItemTemplat
 import {openDatabaseRowByData} from "./openDatabaseRow";
 import {kanbanColumnAction} from "./kanban/columns";
 import {openMoveToColumnMenu} from "./kanban/move";
+import {openConditionalColors} from "./conditionalColors";
 
 const isDetachedDatabaseCell = (cellElement: HTMLElement) => {
     return cellElement.dataset.detached === "true" || !cellElement.querySelector(".av__celltext--ref");
@@ -104,6 +105,12 @@ export const avClick = (protyle: IProtyle, event: MouseEvent & { target: HTMLEle
     let target = event.target;
     while (target && !target.isEqualNode(blockElement)) {
         const type = target.getAttribute("data-type");
+        if (type === "av-colors" && !protyle.disabled && !protyle.options.history) {
+            void openConditionalColors(protyle, blockElement);
+            event.preventDefault();
+            event.stopPropagation();
+            return true;
+        }
         if (["av-kanban-add-column", "av-kanban-rename-column", "av-kanban-column-menu", "av-kanban-starter"].includes(type) &&
             !protyle.disabled && !protyle.options.history) {
             kanbanColumnAction(protyle, blockElement, target, type);

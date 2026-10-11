@@ -24,7 +24,7 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/lute/ast"
 )
 
-const CurrentSpec = 5
+const CurrentSpec = 6
 
 const MaxFilterNestingDepth = 3
 
@@ -38,6 +38,23 @@ func UpgradeSpec(av *AttributeView) {
 	upgradeSpec3(av)
 	upgradeSpec4(av)
 	upgradeSpec5(av)
+	for _, values := range av.KeyValues {
+		if values.Key != nil {
+			for _, option := range values.Key.Options {
+				if option != nil && conditionalColorPattern.MatchString(option.Color) {
+					av.Spec = 6
+					return
+				}
+			}
+		}
+	}
+	// Only databases using the new stored presentation need the compatibility barrier.
+	for _, view := range av.Views {
+		if view.LayoutType == LayoutTypeCalendar || len(view.ConditionalColors) > 0 {
+			av.Spec = 6
+			break
+		}
+	}
 }
 
 func CheckSpec(av *AttributeView) (err error) {
@@ -104,7 +121,7 @@ func upgradeSpec3(av *AttributeView) {
 		}
 
 		switch view.LayoutType {
-		case LayoutTypeTable:
+		case LayoutTypeTable, LayoutTypeCalendar:
 			if nil != view.Table {
 				view.ItemIDs = view.Table.RowIDs
 			}
@@ -238,7 +255,7 @@ func upgradeSpec1(av *AttributeView) {
 
 				for _, view := range av.Views {
 					switch view.LayoutType {
-					case LayoutTypeTable:
+					case LayoutTypeTable, LayoutTypeCalendar:
 						for _, column := range view.Table.Columns {
 							if "" == column.ID {
 								column.ID = kv.Key.ID

@@ -1,3 +1,5 @@
+import {openColorPicker} from "../../../util/colorPicker";
+import {selectColorStyle} from "../../../util/color";
 import {Menu} from "../../../plugin/Menu";
 import {transaction} from "../../wysiwyg/transaction";
 import {hasClosestBlock, hasClosestByClassName} from "../../util/hasClosest";
@@ -40,7 +42,7 @@ const filterSelectHTML = (key: string, options: {
                 html += `<button data-type="addColOptionOrCell" class="b3-menu__item${currentName === item.name ? " b3-menu__item--current" : ""}" data-name="${escapeAttr(item.name)}" data-desc="${escapeAttr(item.desc || "")}" draggable="true" data-color="${item.color}">
     <svg class="b3-menu__icon fn__grab"><use xlink:href="#iconDrag"></use></svg>
     <div class="fn__flex-1 ariaLabel" data-position="parentW" aria-label="${airaLabel}">
-        <span class="b3-chip" style="background-color:var(--b3-font-background${item.color});color:var(--b3-font-color${item.color})">
+        <span class="b3-chip" style="${selectColorStyle(item.color)}">
             <span class="fn__ellipsis">${escapeHtml(item.name)}</span>
         </span>
     </div>
@@ -59,7 +61,7 @@ const filterSelectHTML = (key: string, options: {
         html = `<button data-type="addColOptionOrCell" class="b3-menu__item b3-menu__item--current" data-name="${key}" data-color="${colorIndex}">
 <svg class="b3-menu__icon"><use xlink:href="#iconAdd"></use></svg>
 <div class="fn__flex-1">
-    <span class="b3-chip" style="background-color:var(--b3-font-background${colorIndex});color:var(--b3-font-color${colorIndex})">
+    <span class="b3-chip" style="${selectColorStyle(String(colorIndex))}">
         <span class="fn__ellipsis">${escapeHtml(key)}</span>
     </span>
 </div>
@@ -360,6 +362,85 @@ export const setColOption = (protyle: IProtyle, data: IAV, target: HTMLElement, 
     Array.from(Array(14).keys()).forEach(index => {
         html += `<button data-color="${index + 1}" class="color__square${parseInt(color) === index + 1 ? " color__square--current" : ""}" style="color: var(--b3-font-color${index + 1});background-color: var(--b3-font-background${index + 1});">A</button>`;
     });
+    const applyColor = (newColor: string) => {
+        transaction(protyle, [{
+            action: "updateAttrViewColOption",
+            id: colId,
+            avID: data.id,
+            data: {
+                oldName: name,
+                newName: inputElement.value,
+                oldColor: color,
+                newColor,
+                newDesc: descElement.value
+            },
+        }, {
+            action: "doUpdateUpdated",
+            id: blockID,
+            data: dayjs().format("YYYYMMDDHHmmss"),
+        }], [{
+            action: "updateAttrViewColOption",
+            id: colId,
+            avID: data.id,
+            data: {
+                oldName: inputElement.value,
+                newName: name,
+                oldColor: newColor,
+                newColor: color,
+                newDesc: descElement.value
+            },
+        }]);
+
+        fields.find(column => {
+            if (column.id === colId) {
+                column.options.find((item) => {
+                    if (item.name === name) {
+                        item.name = inputElement.value;
+                        item.color = newColor;
+                        return true;
+                    }
+                });
+                return true;
+            }
+        });
+        const oldScroll = menuElement.querySelector(".b3-menu__items").scrollTop;
+        if (!cellElements) {
+            menuElement.innerHTML = getEditHTML({protyle, data, colId, isCustomAttr});
+            bindEditEvent({protyle, data, menuElement, isCustomAttr, blockID});
+        } else {
+            cellElements.forEach((cellElement: HTMLElement, cellIndex) => {
+                const rowID = getFieldIdByCellElement(cellElement, viewType);
+                if (viewType === "table") {
+                    cellElement = cellElements[cellIndex] = (blockElement.querySelector(`.av__row[data-id="${rowID}"] .av__cell[data-col-id="${cellElement.dataset.colId}"]`) ||
+                        blockElement.querySelector(`.fn__flex-1[data-col-id="${cellElement.dataset.colId}"]`)) as HTMLElement;
+                } else {
+                    cellElement = cellElements[cellIndex] = (blockElement.querySelector(`.av__gallery-item[data-id="${rowID}"] .av__cell[data-field-id="${cellElement.dataset.fieldId}"]`)) as HTMLElement;
+                }
+                cellValues[cellIndex].mSelect.find((item) => {
+                    if (item.content === name) {
+                        item.content = inputElement.value;
+                        item.color = newColor;
+                        return true;
+                    }
+                });
+                if (cellElement.classList.contains("custom-attr__avvalue")) {
+                    cellElement.innerHTML = genAVValueHTML(cellValues[cellIndex]);
+                } else {
+                    updateAttrViewCellAnimation(cellElement, cellValues[cellIndex]);
+                }
+            });
+            menuElement.innerHTML = getSelectHTML(fields, cellElements, false, blockElement);
+            bindSelectEvent(protyle, data, menuElement, cellElements, blockElement);
+        }
+        menuElement.querySelector(".b3-menu__items").scrollTop = oldScroll;
+        if (cellElements?.length) {
+            const cellRect = cellElements[cellElements.length - 1].getBoundingClientRect();
+            setPosition(menuElement, cellRect.left, cellRect.bottom, cellRect.height, 0, true);
+        }
+        name = inputElement.value;
+        desc = descElement.value;
+        color = newColor;
+    };
     menu.addItem({
         type: "empty",
         iconHTML: "",
@@ -370,86 +451,14 @@ export const setColOption = (protyle: IProtyle, data: IAV, target: HTMLElement, 
                 if (colorTarget.classList.contains("color__square") && !colorTarget.classList.contains("color__square--current")) {
                     element.querySelector(".color__square--current")?.classList.remove("color__square--current");
                     colorTarget.classList.add("color__square--current");
-                    const newColor = colorTarget.getAttribute("data-color");
-                    transaction(protyle, [{
-                        action: "updateAttrViewColOption",
-                        id: colId,
-                        avID: data.id,
-                        data: {
-                            oldName: name,
-                            newName: inputElement.value,
-                            oldColor: color,
-                            newColor,
-                            newDesc: descElement.value
-                        },
-                    }, {
-                        action: "doUpdateUpdated",
-                        id: blockID,
-                        data: dayjs().format("YYYYMMDDHHmmss"),
-                    }], [{
-                        action: "updateAttrViewColOption",
-                        id: colId,
-                        avID: data.id,
-                        data: {
-                            oldName: inputElement.value,
-                            newName: name,
-                            oldColor: newColor,
-                            newColor: color,
-                            newDesc: descElement.value
-                        },
-                    }]);
-
-                    fields.find(column => {
-                        if (column.id === colId) {
-                            column.options.find((item) => {
-                                if (item.name === name) {
-                                    item.name = inputElement.value;
-                                    item.color = newColor;
-                                    return true;
-                                }
-                            });
-                            return true;
-                        }
-                    });
-                    const oldScroll = menuElement.querySelector(".b3-menu__items").scrollTop;
-                    if (!cellElements) {
-                        menuElement.innerHTML = getEditHTML({protyle, data, colId, isCustomAttr});
-                        bindEditEvent({protyle, data, menuElement, isCustomAttr, blockID});
-                    } else {
-                        cellElements.forEach((cellElement: HTMLElement, cellIndex) => {
-                            const rowID = getFieldIdByCellElement(cellElement, viewType);
-                            if (viewType === "table") {
-                                cellElement = cellElements[cellIndex] = (blockElement.querySelector(`.av__row[data-id="${rowID}"] .av__cell[data-col-id="${cellElement.dataset.colId}"]`) ||
-                                    blockElement.querySelector(`.fn__flex-1[data-col-id="${cellElement.dataset.colId}"]`)) as HTMLElement;
-                            } else {
-                                cellElement = cellElements[cellIndex] = (blockElement.querySelector(`.av__gallery-item[data-id="${rowID}"] .av__cell[data-field-id="${cellElement.dataset.fieldId}"]`)) as HTMLElement;
-                            }
-                            cellValues[cellIndex].mSelect.find((item) => {
-                                if (item.content === name) {
-                                    item.content = inputElement.value;
-                                    item.color = newColor;
-                                    return true;
-                                }
-                            });
-                            if (cellElement.classList.contains("custom-attr__avvalue")) {
-                                cellElement.innerHTML = genAVValueHTML(cellValues[cellIndex]);
-                            } else {
-                                updateAttrViewCellAnimation(cellElement, cellValues[cellIndex]);
-                            }
-                        });
-                        menuElement.innerHTML = getSelectHTML(fields, cellElements, false, blockElement);
-                        bindSelectEvent(protyle, data, menuElement, cellElements, blockElement);
-                    }
-                    menuElement.querySelector(".b3-menu__items").scrollTop = oldScroll;
-                    const cellRect = cellElements[cellElements.length - 1].getBoundingClientRect();
-                    setPosition(menuElement, cellRect.left, cellRect.bottom, cellRect.height, 0, true);
-                    name = inputElement.value;
-                    desc = descElement.value;
-                    color = newColor;
+                    applyColor(colorTarget.getAttribute("data-color"));
                 }
             });
         }
     });
+    menu.addItem({icon: "iconPaintBucket", label: window.scribli.languages.customColor, click() {
+        openColorPicker({color, onApply: applyColor});
+    }});
     const rect = target.getBoundingClientRect();
     menu.open({
         x: rect.right,
@@ -666,7 +675,7 @@ export const getSelectHTML = (fields: IAVColumn[], cellElements: HTMLElement[], 
     const selected: string[] = [];
     cellValues[0].mSelect?.forEach((item) => {
         selected.push(item.content);
-        selectedHTML += `<div class="b3-chip b3-chip--middle fn__grab" data-content="${escapeAttr(item.content)}" style="white-space: nowrap;max-width:100%;background-color:var(--b3-font-background${item.color});color:var(--b3-font-color${item.color})"><span class="fn__ellipsis">${escapeHtml(item.content)}</span><svg class="b3-chip__close" data-type="removeCellOption"><use xlink:href="#iconClose"></use></svg></div>`;
+        selectedHTML += `<div class="b3-chip b3-chip--middle fn__grab" data-content="${escapeAttr(item.content)}" style="white-space: nowrap;max-width:100%;${selectColorStyle(item.color)}"><span class="fn__ellipsis">${escapeHtml(item.content)}</span><svg class="b3-chip__close" data-type="removeCellOption"><use xlink:href="#iconClose"></use></svg></div>`;
     });
 
     return `<div class="b3-menu__items" style="display: flex;flex-direction: column;flex: 1;">

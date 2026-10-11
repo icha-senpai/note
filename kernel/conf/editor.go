@@ -19,6 +19,7 @@ package conf
 import "github.com/icha-senpai/note/kernel/util"
 
 type Editor struct {
+	FrequentSlash                   *bool          `json:"frequentSlash,omitempty"`
 	AllowSVGScript                  bool           `json:"allowSVGScript"`
 	AllowHTMLBLockScript            bool           `json:"allowHTMLBLockScript"`
 	FontSize                        int            `json:"fontSize"`

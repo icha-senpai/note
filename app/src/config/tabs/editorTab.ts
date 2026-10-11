@@ -9,6 +9,10 @@ import {ipcRenderer} from "electron";
 
 const registerEditorBehaviorGroup = (tab: SettingTabBuilder) => {
     const group = tab.group("behavior", window.scribli.languages.configGroupBehavior);
+    group.switch("editor.frequentSlash", {
+        title: window.scribli.languages.frequentSlashCommands,
+        readConfig: () => window.scribli.config.editor.frequentSlash !== false,
+    });
     const readOnlyKeymap = window.scribli.config.keymap.general.editReadonly.custom;
     group.switch("editor.readOnly", {
         title: isMobile()

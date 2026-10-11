@@ -180,6 +180,9 @@ func (table *Table) GetValue(itemID, keyID string) (ret *Value) {
 	return nil
 }
 
-func (*Table) GetType() LayoutType {
+func (table *Table) GetType() LayoutType {
+	if table.BaseInstance != nil && table.ProjectionType == LayoutTypeCalendar {
+		return LayoutTypeCalendar
+	}
 	return LayoutTypeTable
 }

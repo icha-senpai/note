@@ -1,4 +1,5 @@
 import {Menu} from "../../../../plugin/Menu";
+import {openColorPicker} from "../../../../util/colorPicker";
 import {confirmDialog} from "../../../../dialog/confirmDialog";
 import {showMessage} from "../../../../dialog/message";
 import {escapeAttr, escapeHtml} from "../../../../util/escape";
@@ -187,14 +188,18 @@ const openColumnMenu = async (protyle: IProtyle, blockElement: HTMLElement, butt
     menu.addItem({
         icon: "iconPaintBucket",
         label: window.scribli.languages.color,
-        submenu: Array.from({length: 14}, (_, index) => ({
+        submenu: [...Array.from({length: 14}, (_, index) => ({
             label: window.scribli.languages.kanbanColumnColor.replace("${x}", String(index + 1)),
             iconHTML: `<span class="color__square" style="color:var(--b3-font-color${index + 1});background-color:var(--b3-font-background${index + 1})">A</span>`,
             checked: option.color === String(index + 1),
             click() {
                 changeColumns(protyle, blockElement, [optionOperation(context, option, name, String(index + 1))], [optionOperation(context, option, name)]);
             },
-        })),
+        })), {icon: "iconPaintBucket", label: window.scribli.languages.customColor, click() {
+            openColorPicker({color: option.color, onApply(newColor) {
+                changeColumns(protyle, blockElement, [optionOperation(context, option, name, newColor)], [optionOperation(context, option, name)]);
+            }});
+        }}],
     });
     const groups = context.data.view.groups;
     const index = groups.findIndex(group => group.id === button.dataset.groupId);

@@ -63,6 +63,7 @@ func ServeAPI(ginServer *gin.Engine) {
 	ginServer.Handle("POST", "/api/system/setUILayout", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, setUILayout)
 	ginServer.Handle("POST", "/api/system/getSysFonts", model.CheckAuth, model.CheckAdminRole, getSysFonts)
 	ginServer.Handle("POST", "/api/system/exit", model.CheckAuth, model.CheckAdminRole, exit)
+	ginServer.Handle("POST", "/api/system/getWorkspaceStorage", model.CheckAuth, model.CheckAdminRole, getWorkspaceStorage)
 	ginServer.Handle("POST", "/api/system/getConf", model.CheckAuth, getConf)
 	ginServer.Handle("POST", "/api/system/ensureOnboarding", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, ensureOnboarding)
 	ginServer.Handle("POST", "/api/system/dismissOnboarding", model.CheckAuth, model.CheckAdminRole, model.CheckReadonly, dismissOnboarding)

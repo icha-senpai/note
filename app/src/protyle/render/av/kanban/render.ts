@@ -1,3 +1,4 @@
+import {selectColorStyle, selectColorBackground} from "../../../../util/color";
 import {hasClosestByAttribute, hasClosestByClassName} from "../../../util/hasClosest";
 import {getPageSize} from "../groups";
 import {fetchSyncPost} from "../../../../util/fetch";
@@ -22,7 +23,7 @@ const getKanbanTitleHTML = (group: IAVView, counter: number, editable: boolean) 
     let nameHTML = "";
     if (["mSelect", "select"].includes(group.groupValue.type)) {
         group.groupValue.mSelect.forEach((item) => {
-            nameHTML += `<span class="b3-chip" style="background-color:var(--b3-font-background${item.color});color:var(--b3-font-color${item.color})">${escapeHtml(item.content)}</span>`;
+            nameHTML += `<span class="b3-chip" style="${selectColorStyle(item.color)}">${escapeHtml(item.content)}</span>`;
         });
     } else if (group.groupValue.type === "checkbox") {
         nameHTML = `<svg style="width:calc(1.625em - 12px);height:calc(1.625em - 12px);margin: 4px 0;float: left;"><use xlink:href="#icon${group.groupValue.checkbox.checked ? "Check" : "Uncheck"}"></use></svg>`;
@@ -190,7 +191,7 @@ export const renderKanban = async (options: {
                 }
                 if (isSelectGroup) {
                     if (group.groupValue.mSelect && group.groupValue.mSelect.length > 0) {
-                        selectBg = `style="--b3-av-kanban-background: var(--b3-font-background${group.groupValue.mSelect[0].color});"`;
+                        selectBg = `style="--b3-av-kanban-background:${selectColorBackground(group.groupValue.mSelect[0].color)};"`;
                     } else {
                         selectBg = 'style="--b3-av-kanban-background: var(--b3-border-color);"';
                     }

@@ -24,12 +24,20 @@ func relationsPath(boxID string) string {
 }
 
 func readRelations(boxID string) (avRels map[string][]string) {
+	avRels, err := readRelationsWithError(boxID)
+	if err != nil {
+		logging.LogErrorf("read attribute view relations failed: %s", err)
+	}
+	return
+}
+
+func readRelationsWithError(boxID string) (avRels map[string][]string, err error) {
 	avRels = map[string][]string{}
 	p := relationsPath(boxID)
-	if !filelock.IsExist(p) {
-		return
-	}
 	data, err := filelock.ReadFile(p)
+	if os.IsNotExist(err) {
+		return avRels, nil
+	}
 	if err != nil {
 		logging.LogErrorf("read attribute view relations failed: %s", err)
 		return
@@ -38,7 +46,7 @@ func readRelations(boxID string) (avRels map[string][]string) {
 		dec, decErr := decryptAVData(boxID, "relation", data)
 		if decErr != nil {
 			logging.LogErrorf("decrypt attribute view relations failed: %s", decErr)
-			return
+			return nil, decErr
 		}
 		data = dec
 	}
@@ -47,6 +55,14 @@ func readRelations(boxID string) (avRels map[string][]string) {
 		return
 	}
 	return
+}
+
+// GetSrcAvIDsWithError lets destructive callers reject an incomplete relation scan.
+func GetSrcAvIDsWithError(destAvID string) ([]string, error) {
+	attributeViewRelationsLock.Lock()
+	defer attributeViewRelationsLock.Unlock()
+	relations, err := readRelationsWithError(relationsBoxIDByAvID(destAvID))
+	return relations[destAvID], err
 }
 
 func writeRelations(boxID string, avRels map[string][]string) {

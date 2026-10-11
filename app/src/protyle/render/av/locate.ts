@@ -46,7 +46,7 @@ const highlightLocatedItem = (blockElement: HTMLElement, protyle: IProtyle, view
     const token = Symbol();
     highlightTokens.set(blockElement, token);
     const className = viewType === "table" ? "av__row--locate" : "av__gallery-item--locate";
-    const targetQuery = viewType === "table" ? `.av__row[data-id="${itemID}"]` : `.av__gallery-item[data-id="${itemID}"]`;
+    const targetQuery = viewType === "calendar" ? `[data-calendar-row="${itemID}"]` : viewType === "table" ? `.av__row[data-id="${itemID}"]` : `.av__gallery-item[data-id="${itemID}"]`;
     requestAnimationFrame(() => {
         if (!blockElement.isConnected || highlightTokens.get(blockElement) !== token) {
             return;
@@ -206,7 +206,7 @@ export const setAVLocateRequest = (blockElement: HTMLElement, request: IAVLocate
     locateRequests.set(blockElement, request);
 };
 
-const getAVLocateRequest = (blockElement: HTMLElement) => {
+export const getAVLocateRequest = (blockElement: HTMLElement) => {
     return locateRequests.get(blockElement);
 };
 
@@ -261,6 +261,7 @@ export const prepareAVLocate = (blockElement: HTMLElement, data: IAV, resetData:
         blockElement.setAttribute(Constants.CUSTOM_SY_AV_VIEW, request.viewID);
     }
     const view = (data.target.groupID ? data.view.groups?.find(item => item.id === data.target.groupID) : data.view) as IAVTable | IAVGallery | IAVKanban;
+    if (data.viewType === "calendar") { return; }
     const itemLength = data.viewType === "table" ? (view as IAVTable).rows.length : (view as IAVGallery | IAVKanban).cards.length;
     const offset = data.target.offset || 0;
     const localIndex = Math.max(0, data.target.index - offset);
@@ -330,14 +331,16 @@ export const finishAVLocate = (blockElement: HTMLElement, protyle: IProtyle, dat
         clearAVLocateRequest(blockElement, request);
         return;
     }
-    const groupQuery = data.target.groupID ? `.av__body[data-group-id="${data.target.groupID}"]` : ".av__body";
+    const groupQuery = data.viewType === "calendar" ? ".av__calendar" : data.target.groupID ? `.av__body[data-group-id="${data.target.groupID}"]` : ".av__body";
     const bodyElement = blockElement.querySelector(groupQuery) as HTMLElement;
     if (bodyElement?.classList.contains("fn__none")) {
         bodyElement.classList.remove("fn__none");
         bodyElement.previousElementSibling?.querySelector("[data-type=\"av-group-fold\"] svg")?.classList.add("av__group-arrow--open");
     }
     let targetElement: HTMLElement;
-    if (data.viewType === "table") {
+    if (data.viewType === "calendar") {
+        targetElement = bodyElement?.querySelector(`[data-calendar-row="${request.itemID}"]`) as HTMLElement;
+    } else if (data.viewType === "table") {
         const rowElement = bodyElement?.querySelector(`.av__row[data-id="${request.itemID}"]`) as HTMLElement;
         targetElement = rowElement?.querySelector(".av__cell[data-dtype=\"block\"]") as HTMLElement;
         if (targetElement && request.select !== false) {

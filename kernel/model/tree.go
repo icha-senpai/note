@@ -131,11 +131,19 @@ func resetTree(tree *parse.Tree, titleSuffix string, removeAvBinding bool) {
 }
 
 func pagedPaths(localPath string, pageSize int) (ret map[int][]string) {
+	ret, _ = pagedPathsWithError(localPath, pageSize)
+	return
+}
+
+func pagedPathsWithError(localPath string, pageSize int) (ret map[int][]string, err error) {
 	ret = map[int][]string{}
 	page := 1
-	filelock.Walk(localPath, func(path string, d fs.DirEntry, err error) error {
-		if nil != err || nil == d {
-			return nil
+	err = filelock.Walk(localPath, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d == nil {
+			return errors.New("missing directory entry")
 		}
 
 		if d.IsDir() {

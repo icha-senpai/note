@@ -25,6 +25,23 @@ import (
 	"github.com/icha-senpai/note/third_party/forks/vitess-sqlparser/sqlparser"
 )
 
+// QueryImageSpanMarkdowns reads normal-notebook image metadata from the global index.
+func QueryImageSpanMarkdowns() (ret []string, err error) {
+	rows, err := query("SELECT DISTINCT markdown FROM spans WHERE type = 'img'")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var markdown string
+		if err = rows.Scan(&markdown); err != nil {
+			return nil, err
+		}
+		ret = append(ret, markdown)
+	}
+	return ret, rows.Err()
+}
+
 func escapeLikePattern(s string) string {
 	var b strings.Builder
 	b.Grow(len(s))

@@ -240,6 +240,7 @@ declare namespace Config {
      * Scribli appearance related configuration
      */
     export interface IAppearance {
+        interfaceColors?: import("../util/interfaceColors").InterfaceColors;
         /**
          * Close button behavior
          * - `0`: Exit application
@@ -382,6 +383,7 @@ declare namespace Config {
      * Scribli editor related configuration
      */
     export interface IEditor {
+        frequentSlash?: boolean;
 
         /**
          * Whether to allow to execute javascript in the SVG

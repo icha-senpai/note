@@ -385,6 +385,8 @@ func performTx(tx *Transaction) (ret *TxErr) {
 				ret = tx.doSetAttrViewShowIcon(op)
 			case "setAttrViewWrapField":
 				ret = tx.doSetAttrViewWrapField(op)
+			case "setAttrViewCalendar", "setAttrViewConditionalColors":
+				ret = tx.doSetAttrViewPresentation(op)
 			case "changeAttrViewLayout":
 				ret = tx.doChangeAttrViewLayout(op)
 			case "setAttrViewBlockView":

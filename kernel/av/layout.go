@@ -46,17 +46,21 @@ type BaseValue struct {
 }
 
 type BaseInstance struct {
-	ID               string        `json:"id"` // ID
-	Icon             string        `json:"icon"`
-	Name             string        `json:"name"`
-	Desc             string        `json:"desc"`
-	HideAttrViewName bool          `json:"hideAttrViewName"`
-	Filters          []*ViewFilter `json:"filters"`
-	Sorts            []*ViewSort   `json:"sorts"`
-	Group            *ViewGroup    `json:"group"`
-	PageSize         int           `json:"pageSize"`
-	ShowIcon         bool          `json:"showIcon"`
-	WrapField        bool          `json:"wrapField"`
+	ProjectionType    LayoutType              `json:"-"`
+	Calendar          *CalendarConfig         `json:"calendar,omitempty"`
+	ConditionalColors []*ConditionalColorRule `json:"conditionalColors,omitempty"`
+	ItemColors        map[string]string       `json:"itemColors,omitempty"`
+	ID                string                  `json:"id"` // ID
+	Icon              string                  `json:"icon"`
+	Name              string                  `json:"name"`
+	Desc              string                  `json:"desc"`
+	HideAttrViewName  bool                    `json:"hideAttrViewName"`
+	Filters           []*ViewFilter           `json:"filters"`
+	Sorts             []*ViewSort             `json:"sorts"`
+	Group             *ViewGroup              `json:"group"`
+	PageSize          int                     `json:"pageSize"`
+	ShowIcon          bool                    `json:"showIcon"`
+	WrapField         bool                    `json:"wrapField"`
 
 	GroupKey    *Key       `json:"groupKey,omitempty"`
 	GroupValue  *Value     `json:"groupValue,omitempty"`
@@ -69,7 +73,7 @@ type BaseInstance struct {
 func NewViewBaseInstance(view *View) *BaseInstance {
 	showIcon, wrapField := true, false
 	switch view.LayoutType {
-	case LayoutTypeTable:
+	case LayoutTypeTable, LayoutTypeCalendar:
 		showIcon = view.Table.ShowIcon
 		wrapField = view.Table.WrapField
 	case LayoutTypeGallery:
@@ -80,6 +84,7 @@ func NewViewBaseInstance(view *View) *BaseInstance {
 		wrapField = view.Kanban.WrapField
 	}
 	return &BaseInstance{
+		ProjectionType: view.LayoutType, Calendar: view.Calendar, ConditionalColors: view.ConditionalColors,
 		ID:               view.ID,
 		Icon:             view.Icon,
 		Name:             view.Name,
