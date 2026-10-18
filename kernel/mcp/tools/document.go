@@ -18,6 +18,7 @@ package tools
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/icha-senpai/note/kernel/model"
@@ -28,17 +29,28 @@ import (
 
 var DocumentTool = &Tool{
 	Name:        "document",
-	Description: "Document operations. Actions: get(id), create(notebook, path=hPath, title, markdown?), update(id, markdown), list(notebook, path=hPath default /), delete(id), rename(id, title), move(id, notebook, path=target hPath), duplicate(id), search_docs(keyword), info(id).",
+	Description: "Document operations. Actions: get(id), create(notebook, path=hPath, title, markdown?), update(id, markdown), list(notebook, path=hPath default /), get_tree(id or notebook+path, depth?, includeContent?, offset?, maxChars?, maxDocs?) bulk-fetches a document and its descendant documents' kramdown in one call, recent(notebook?, since?, limit?, order?) lists documents by last-updated time across open notebooks, delete(id), rename(id, title), move(id, notebook, path=target hPath), duplicate(id), search_docs(keyword), info(id).",
 	InputSchema: ToolSchema{
 		Type: "object",
 		Properties: map[string]Property{
-			"action":   {Type: "string", Description: "Operation", Enum: []string{"get", "create", "update", "list", "delete", "rename", "move", "duplicate", "search_docs", "info"}},
+			"action":   {Type: "string", Description: "Operation", Enum: []string{"get", "create", "update", "list", "get_tree", "recent", "delete", "rename", "move", "duplicate", "search_docs", "info"}},
+			"since":    {Type: "string", Description: "Only include documents updated at or after this timestamp (YYYYMMDDHHMMSS; separators allowed)"},
+			"limit":    {Type: "integer", Description: "Max documents returned for recent (default 20)"},
+			"order":    {Type: "string", Description: "Sort order for recent: desc (newest first, default) or asc", Enum: []string{"desc", "asc"}},
 			"id":       {Type: "string", Description: "Document block ID"},
 			"title":    {Type: "string", Description: "Document title (for create, rename)"},
-			"path":     {Type: "string", Description: "Document hPath, the human-readable path shown in the document tree (e.g. /folder/doc). Used for create, list, move."},
+			"path":     {Type: "string", Description: "Document hPath, the human-readable path shown in the document tree (e.g. /folder/doc). Used for create, list, get_tree, move."},
 			"markdown": {Type: "string", Description: "Markdown content (for create, update)"},
 			"keyword":  {Type: "string", Description: "Search keyword (for search_docs)"},
-			"notebook": {Type: "string", Description: "Notebook ID (required for create, list, move)"},
+			"notebook": {Type: "string", Description: "Notebook ID (required for create, list, move; with path for get_tree)"},
+			"depth":    {Type: "integer", Description: "Max descendant depth for get_tree: 0/unset = unlimited, 1 = direct children only"},
+			"maxDocs":  {Type: "integer", Description: "Max documents included in get_tree"},
+			"offset":   {Type: "integer", Description: "Rune offset into the bundled output for paging (get_tree)"},
+			"maxChars": {Type: "integer", Description: "Maximum runes of bundled output to return (get_tree)"},
+			"includeContent": {
+				Type:        "boolean",
+				Description: "Include each document's kramdown in get_tree. Default true; false returns a recursive listing only.",
+			},
 			"redactSecrets": {
 				Type:        "boolean",
 				Description: "Redact likely credentials/tokens from read responses. Defaults to true.",
@@ -49,7 +61,7 @@ var DocumentTool = &Tool{
 	OutputSchema: structuredOutputSchema(),
 	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
-		effectMap(ToolEffects{LocalRead: true}, "get", "list", "search_docs", "info"),
+		effectMap(ToolEffects{LocalRead: true}, "get", "list", "get_tree", "recent", "search_docs", "info"),
 		effectMap(ToolEffects{LocalWrite: true}, "create", "update", "delete", "rename", "move", "duplicate"),
 	),
 	Handler: documentHandler,
@@ -70,6 +82,10 @@ func documentHandler(args map[string]any) (CallToolResult, error) {
 		return documentUpdate(args)
 	case "list":
 		return documentList(args)
+	case "get_tree":
+		return documentGetTree(args)
+	case "recent":
+		return documentRecent(args)
 	case "delete":
 		return documentDelete(args)
 	case "rename":
@@ -84,9 +100,207 @@ func documentHandler(args map[string]any) (CallToolResult, error) {
 		return documentInfo(args)
 	}
 	return CallToolResult{
-		Content: []ContentItem{{Type: "text", Text: "unknown action '" + action + "', expected one of: [get, create, update, list, delete, rename, move, duplicate, search_docs, info]"}},
+		Content: []ContentItem{{Type: "text", Text: "unknown action '" + action + "', expected one of: [get, create, update, list, get_tree, recent, delete, rename, move, duplicate, search_docs, info]"}},
 		IsError: true,
 	}, nil
+}
+
+func documentRecent(args map[string]any) (CallToolResult, error) {
+	notebook, _ := args["notebook"].(string)
+	since := normalizeSince(args["since"])
+	limit := intArg(args, "limit", 20)
+	if limit < 1 {
+		limit = 20
+	}
+	order, _ := args["order"].(string)
+	desc := order != "asc"
+
+	type recentDoc struct {
+		id, hPath, updated, box string
+	}
+	var docs []recentDoc
+	for _, box := range model.Conf.GetOpenedBoxes() {
+		if box == nil || (notebook != "" && box.ID != notebook) {
+			continue
+		}
+		for _, bt := range treenode.GetBlockTreesByBoxID(box.ID) {
+			if bt.Type != "d" || bt.RootID == "" {
+				continue
+			}
+			if since != "" && bt.Updated < since {
+				continue
+			}
+			docs = append(docs, recentDoc{id: bt.RootID, hPath: bt.HPath, updated: bt.Updated, box: box.ID})
+		}
+	}
+
+	sort.Slice(docs, func(i, j int) bool {
+		if desc {
+			return docs[i].updated > docs[j].updated
+		}
+		return docs[i].updated < docs[j].updated
+	})
+	if len(docs) > limit {
+		docs = docs[:limit]
+	}
+
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("Recently updated documents (%d):\n\n", len(docs)))
+	items := make([]map[string]any, 0, len(docs))
+	for _, d := range docs {
+		sb.WriteString(fmt.Sprintf("- %s (id: %s, updated: %s)\n", d.hPath, d.id, d.updated))
+		items = append(items, map[string]any{
+			"id": d.id, "hPath": d.hPath, "updated": d.updated, "notebook": d.box,
+		})
+	}
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":   "recent",
+		"notebook": notebook,
+		"since":    since,
+		"order":    order,
+		"count":    len(items),
+		"items":    items,
+	}), nil
+}
+
+func normalizeSince(raw any) string {
+	s, _ := raw.(string)
+	if s == "" {
+		return ""
+	}
+	var b strings.Builder
+	for _, r := range s {
+		if r >= '0' && r <= '9' {
+			b.WriteRune(r)
+		}
+	}
+	digits := b.String()
+	if len(digits) > 14 {
+		digits = digits[:14]
+	}
+	return digits
+}
+
+func documentGetTree(args map[string]any) (CallToolResult, error) {
+	id, _ := args["id"].(string)
+	notebook, _ := args["notebook"].(string)
+	hPath, _ := args["path"].(string)
+
+	var boxID, rootID, rootPath, rootHPath string
+	if id != "" {
+		tree, err := model.LoadTreeByBlockID(id)
+		if err != nil {
+			return CallToolResult{Content: []ContentItem{{Type: "text", Text: fmt.Sprintf("load doc failed: %s", err)}}, IsError: true}, nil
+		}
+		if tree == nil || tree.Root == nil {
+			return CallToolResult{Content: []ContentItem{{Type: "text", Text: "document not found: " + id}}, IsError: true}, nil
+		}
+		boxID, rootID, rootPath, rootHPath = tree.Box, tree.Root.ID, tree.Path, tree.HPath
+	} else if notebook != "" {
+		boxID = notebook
+		if hPath == "" || hPath == "/" {
+			rootPath, rootHPath = "/", "/"
+		} else {
+			bt := treenode.GetBlockTreeRootByHPath(notebook, hPath)
+			if bt == nil {
+				return CallToolResult{Content: []ContentItem{{Type: "text", Text: "target path not found: " + hPath}}, IsError: true}, nil
+			}
+			rootID, rootPath, rootHPath = bt.RootID, bt.Path, bt.HPath
+		}
+	} else {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "id or notebook is required"}}, IsError: true}, nil
+	}
+
+	depth := intArg(args, "depth", 0)
+	maxDocs := intArg(args, "maxDocs", 0)
+	offset := intArg(args, "offset", 0)
+	maxChars := intArg(args, "maxChars", 0)
+	includeContent := true
+	if v, ok := args["includeContent"].(bool); ok {
+		includeContent = v
+	}
+
+	// Descendant documents live under the root's directory path prefix.
+	dirPrefix := strings.TrimSuffix(rootPath, ".sy")
+	if rootPath == "/" {
+		dirPrefix = "/"
+	}
+
+	type docEntry struct {
+		id, hPath, docPath string
+		depth              int
+	}
+	var docs []docEntry
+	seenIDs := map[string]bool{}
+	if rootID != "" {
+		docs = append(docs, docEntry{id: rootID, hPath: rootHPath, docPath: rootPath})
+		seenIDs[rootID] = true
+	}
+	for _, bt := range treenode.GetBlockTreesByPathPrefix(boxID, dirPrefix) {
+		if bt.Type != "d" || bt.Path == rootPath || seenIDs[bt.RootID] {
+			continue
+		}
+		seenIDs[bt.RootID] = true
+		d := strings.Count(strings.TrimPrefix(bt.Path, dirPrefix), "/")
+		if depth > 0 && d > depth {
+			continue
+		}
+		docs = append(docs, docEntry{id: bt.RootID, hPath: bt.HPath, docPath: bt.Path, depth: d})
+	}
+	sort.Slice(docs, func(i, j int) bool { return docs[i].docPath < docs[j].docPath })
+
+	totalDocs := len(docs)
+	if maxDocs > 0 && len(docs) > maxDocs {
+		docs = docs[:maxDocs]
+	}
+
+	var kramdowns map[string]string
+	if includeContent {
+		ids := make([]string, 0, len(docs))
+		for _, d := range docs {
+			ids = append(ids, d.id)
+		}
+		kramdowns = model.GetBlockKramdownsInBox(ids, "md", boxID)
+	}
+
+	var sb strings.Builder
+	items := make([]map[string]any, 0, len(docs))
+	for _, d := range docs {
+		kd := maybeRedactSensitiveText(args, kramdowns[d.id])
+		sb.WriteString(fmt.Sprintf("===== %s (id: %s) =====\n\n", d.hPath, d.id))
+		if includeContent {
+			sb.WriteString(kd)
+			sb.WriteString("\n\n")
+		}
+		items = append(items, map[string]any{
+			"id":    d.id,
+			"hPath": d.hPath,
+			"depth": d.depth,
+			"chars": len([]rune(kd)),
+		})
+	}
+
+	bundle := sb.String()
+	paged, totalChars, nextOffset := sliceRunes(bundle, offset, maxChars)
+	text := paged
+	if nextOffset >= 0 {
+		text += fmt.Sprintf("\n[truncated: showing runes %d-%d of %d, continue with offset %d]", offset, nextOffset, totalChars, nextOffset)
+	}
+
+	return structuredTextResult(text, map[string]any{
+		"action":      "get_tree",
+		"rootID":      rootID,
+		"rootHPath":   rootHPath,
+		"notebook":    boxID,
+		"documents":   items,
+		"docCount":    len(items),
+		"totalDocs":   totalDocs,
+		"skippedDocs": totalDocs - len(items),
+		"totalChars":  totalChars,
+		"offset":      offset,
+		"truncated":   nextOffset >= 0,
+		"nextOffset":  nextOffset,
+	}), nil
 }
 
 func documentGet(args map[string]any) (CallToolResult, error) {

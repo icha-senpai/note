@@ -412,6 +412,9 @@ func syncGuardedTool(server *mcpsdk.Server, name string, tool *tools.Tool, adver
 		if arguments == nil {
 			arguments = map[string]any{}
 		}
+		if hint := missingActionHint(name, tool, arguments); hint != "" {
+			return toolErrorResult(hint), nil
+		}
 		if err := validator.ValidateInputContext(ctx, arguments); err != nil {
 			return toolErrorResult(fmt.Sprintf("invalid tool arguments: %v", err)), nil
 		}
@@ -533,4 +536,30 @@ func toolErrorResult(message string) *mcpsdk.CallToolResult {
 		Content: []mcpsdk.Content{&mcpsdk.TextContent{Text: message}},
 		IsError: true,
 	}
+}
+
+// missingActionHint replaces the raw schema error for the common case where a
+// caller forgets "action" on an action-routed tool, listing the valid actions.
+func missingActionHint(toolName string, tool *tools.Tool, arguments map[string]any) string {
+	requiresAction := false
+	for _, required := range tool.InputSchema.Required {
+		if required == "action" {
+			requiresAction = true
+			break
+		}
+	}
+	if !requiresAction {
+		return ""
+	}
+	if raw, exists := arguments["action"]; exists {
+		action, isString := raw.(string)
+		if !isString || strings.TrimSpace(action) != "" {
+			return ""
+		}
+	}
+	actions := tool.InputSchema.Properties["action"].Enum
+	if len(actions) == 0 {
+		return fmt.Sprintf("invalid tool arguments: %q requires an \"action\" argument", toolName)
+	}
+	return fmt.Sprintf("invalid tool arguments: %q requires \"action\": one of [%s]", toolName, strings.Join(actions, ", "))
 }

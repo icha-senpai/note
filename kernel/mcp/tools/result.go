@@ -43,3 +43,25 @@ func structuredTextResult(message string, structured map[string]any) CallToolRes
 		StructuredContentSet: true,
 	}
 }
+
+// sliceRunes returns text[offset:offset+maxChars] in runes. nextOffset is -1 when the end is reached.
+func sliceRunes(text string, offset, maxChars int) (sliced string, total int, nextOffset int) {
+	runes := []rune(text)
+	total = len(runes)
+	if offset < 0 {
+		offset = 0
+	}
+	if offset > total {
+		offset = total
+	}
+	end := total
+	if maxChars > 0 && offset+maxChars < end {
+		end = offset + maxChars
+	}
+	sliced = string(runes[offset:end])
+	nextOffset = -1
+	if end < total {
+		nextOffset = end
+	}
+	return
+}

@@ -29,7 +29,7 @@ import (
 
 var BlockTool = &Tool{
 	Name:        "block",
-	Description: "Block operations. Actions: get(id), get_kramdown(id), get_children(id), tree_stat(id, by document), dom(id), insert(data, dataType, parentID?, nextID?, previousID?), append(data, dataType, parentID) / prepend(...) add a NEW child — use after block.update when both modifying and adding, update(id, data, dataType) replaces ONE block only (no append), delete(id), move(id, parentID, previousID?), breadcrumb(id), batch_get(ids) / batch_kramdown(ids) where ids is comma-separated.",
+	Description: "Block operations. Actions: get(id), get_kramdown(id, offset?, maxChars?), get_children(id), tree_stat(id, by document), dom(id), insert(data, dataType, parentID?, nextID?, previousID?), append(data, dataType, parentID) / prepend(...) add a NEW child — use after block.update when both modifying and adding, update(id, data, dataType) replaces ONE block only (no append), delete(id), move(id, parentID, previousID?), breadcrumb(id), batch_get(ids) / batch_kramdown(ids) where ids is comma-separated.",
 	InputSchema: ToolSchema{
 		Type: "object",
 		Properties: map[string]Property{
@@ -41,6 +41,8 @@ var BlockTool = &Tool{
 			"parentID":   {Type: "string", Description: "Parent block ID"},
 			"nextID":     {Type: "string", Description: "Next sibling block ID (for insert)"},
 			"previousID": {Type: "string", Description: "Previous sibling block ID (for insert)"},
+			"offset":     {Type: "integer", Description: "Rune offset into the output for paging (get_kramdown)"},
+			"maxChars":   {Type: "integer", Description: "Maximum runes to return for paging (get_kramdown)"},
 			"redactSecrets": {
 				Type:        "boolean",
 				Description: "Redact likely credentials/tokens from read responses. Defaults to true.",
@@ -154,10 +156,22 @@ func blockGetKramdown(args map[string]any) (CallToolResult, error) {
 		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "block not found or empty: " + id}}, IsError: true}, nil
 	}
 
-	return structuredTextResult(kramdown, map[string]any{
-		"action":   "get_kramdown",
-		"id":       id,
-		"kramdown": kramdown,
+	offset := intArg(args, "offset", 0)
+	maxChars := intArg(args, "maxChars", 0)
+	paged, totalChars, nextOffset := sliceRunes(kramdown, offset, maxChars)
+	text := paged
+	if nextOffset >= 0 {
+		text += fmt.Sprintf("\n\n[truncated: showing runes %d-%d of %d, continue with offset %d]", offset, nextOffset, totalChars, nextOffset)
+	}
+
+	return structuredTextResult(text, map[string]any{
+		"action":     "get_kramdown",
+		"id":         id,
+		"kramdown":   paged,
+		"totalChars": totalChars,
+		"offset":     offset,
+		"truncated":  nextOffset >= 0,
+		"nextOffset": nextOffset,
 	}), nil
 }
 

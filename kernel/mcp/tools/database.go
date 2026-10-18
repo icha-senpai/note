@@ -28,24 +28,29 @@ import (
 
 var DatabaseTool = &Tool{
 	Name:        "database",
-	Description: "Attribute view (database) operations. Actions: create(name, id?, blockID?), search(keyword), get(id), render(id, viewID?, query?, page=1, pageSize=50), keys(id), key_add(id, name, type, icon?, prev?), key_remove(id, keyID, removeRelationDest?), item_add(id, blockID?, content?, viewID?, groupID?, previousID?, detached?, ignoreDefaultFill?), item_remove(id, itemIDs comma-separated), item_update(id, keyID, itemID, value as JSON string), unused(), clean(id?).",
+	Description: "Attribute view (database) operations. Actions: create(name, id?, blockID?), search(keyword), get(id), render(id, viewID?, query?, page=1, pageSize=50), keys(id), key_add(id, name, type, icon?, prev?), key_remove(id, keyID, removeRelationDest?), item_add(id, blockID?, content?, viewID?, groupID?, previousID?, detached?, ignoreDefaultFill?), item_remove(id, itemIDs comma-separated), item_update(id, keyID, itemID, value as JSON string), view_list(id), view_add(id, name?, layout?), view_remove(id, viewID), view_update(id, viewID, name?, desc?, icon?, pageSize?, hideName?), view_layout(id, blockID, layout) changes a bound view's layout, view_group(id, blockID, keyID?, order?, hideEmpty?) sets grouping/group-by on a bound view (empty keyID clears), unused(), clean(id?).",
 	InputSchema: ToolSchema{
 		Type: "object",
 		Properties: map[string]Property{
-			"action":             {Type: "string", Description: "Operation", Enum: []string{"create", "search", "get", "render", "keys", "key_add", "key_remove", "item_add", "item_remove", "item_update", "unused", "clean"}},
+			"action":             {Type: "string", Description: "Operation", Enum: []string{"create", "search", "get", "render", "keys", "key_add", "key_remove", "item_add", "item_remove", "item_update", "view_list", "view_add", "view_remove", "view_update", "view_layout", "view_group", "unused", "clean"}},
+			"layout":             {Type: "string", Description: "View layout: table/kanban/gallery/calendar (for view_add, view_layout)", Enum: []string{"table", "kanban", "gallery", "calendar"}},
+			"viewID":             {Type: "string", Description: "View ID (for render, item_add, view_remove, view_update)"},
+			"desc":               {Type: "string", Description: "View description (for view_update)"},
+			"order":              {Type: "string", Description: "Group order for view_group: asc/desc (default asc)", Enum: []string{"asc", "desc"}},
+			"hideEmpty":          {Type: "boolean", Description: "Hide empty groups (for view_group) or hide the database name (for view_update)"},
+			"hideName":           {Type: "boolean", Description: "Hide the attribute view name on the view (for view_update)"},
 			"keyword":            {Type: "string", Description: "Search keyword (for search)"},
-			"id":                 {Type: "string", Description: "Attribute view ID (optional for create, required for get, render, keys, key_add, key_remove, item_add, item_remove, item_update, clean)"},
-			"viewID":             {Type: "string", Description: "View ID (for render, item_add)"},
+			"id":                 {Type: "string", Description: "Attribute view ID (optional for create, required for get, render, keys, key_add, key_remove, item_add, item_remove, item_update, view_list, view_add, view_remove, view_update, view_layout, view_group, clean)"},
 			"query":              {Type: "string", Description: "Filter query (for render)"},
 			"page":               {Type: "number", Description: "Page number (default 1)"},
-			"pageSize":           {Type: "number", Description: "Results per page (default 50)"},
+			"pageSize":           {Type: "number", Description: "Results per page (default 50 for render; also sets page size for view_update)"},
 			"name":               {Type: "string", Description: "Database name (for create) or key name (for key_add)"},
 			"type":               {Type: "string", Description: "Key type: block/text/number/date/select/mSelect/url/email/phone/mAsset/template/created/updated/checkbox/relation/rollup/lineNumber (for key_add)"},
 			"icon":               {Type: "string", Description: "Key icon (for key_add, optional)"},
 			"prev":               {Type: "string", Description: "Previous key ID for ordering (for key_add, optional)"},
 			"keyID":              {Type: "string", Description: "Key ID (for key_remove, item_update)"},
 			"removeRelationDest": {Type: "boolean", Description: "Also remove related data in linked databases (for key_remove, optional)"},
-			"blockID":            {Type: "string", Description: "Block ID to bind the database to (for create, optional) or row block ID to bind (for item_add, optional)"},
+			"blockID":            {Type: "string", Description: "Block ID — for create = block to bind; item_add = row block to bind; view_layout/view_group = bound block owning the target view"},
 			"content":            {Type: "string", Description: "Block column text content (for item_add, optional)"},
 			"groupID":            {Type: "string", Description: "Group ID for positioning (for item_add, optional)"},
 			"previousID":         {Type: "string", Description: "Previous item ID for positioning (for item_add, optional)"},
@@ -64,8 +69,8 @@ var DatabaseTool = &Tool{
 	OutputSchema: structuredOutputSchema(),
 	EffectScope:  EffectScopeLocal,
 	ActionEffects: mergeEffectMaps(
-		effectMap(ToolEffects{LocalRead: true}, "search", "get", "render", "keys", "unused"),
-		effectMap(ToolEffects{LocalWrite: true}, "create", "key_add", "key_remove", "item_add", "item_remove", "item_update", "clean"),
+		effectMap(ToolEffects{LocalRead: true}, "search", "get", "render", "keys", "view_list", "unused"),
+		effectMap(ToolEffects{LocalWrite: true}, "create", "key_add", "key_remove", "item_add", "item_remove", "item_update", "view_add", "view_remove", "view_update", "view_layout", "view_group", "clean"),
 	),
 	Handler: databaseHandler,
 }
@@ -97,15 +102,290 @@ func databaseHandler(args map[string]any) (CallToolResult, error) {
 		return databaseItemRemove(args)
 	case "item_update":
 		return databaseItemUpdate(args)
+	case "view_list":
+		return databaseViewList(args)
+	case "view_add":
+		return databaseViewAdd(args)
+	case "view_remove":
+		return databaseViewRemove(args)
+	case "view_update":
+		return databaseViewUpdate(args)
+	case "view_layout":
+		return databaseViewLayout(args)
+	case "view_group":
+		return databaseViewGroup(args)
 	case "unused":
 		return databaseUnused(args)
 	case "clean":
 		return databaseClean(args)
 	}
 	return CallToolResult{
-		Content: []ContentItem{{Type: "text", Text: "unknown action '" + action + "', expected one of: [create, search, get, render, keys, key_add, key_remove, item_add, item_remove, item_update, unused, clean]"}},
+		Content: []ContentItem{{Type: "text", Text: "unknown action '" + action + "', expected one of: [create, search, get, render, keys, key_add, key_remove, item_add, item_remove, item_update, view_list, view_add, view_remove, view_update, view_layout, view_group, unused, clean]"}},
 		IsError: true,
 	}, nil
+}
+
+func databaseViewList(args map[string]any) (CallToolResult, error) {
+	attrView, result, done := parseAttrViewArg(args)
+	if done {
+		return result, nil
+	}
+
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("Views on '%s' (av: %s, current: %s):\n\n", attrView.Name, attrView.ID, attrView.ViewID))
+	items := make([]map[string]any, 0, len(attrView.Views))
+	for _, v := range attrView.Views {
+		item := map[string]any{
+			"id":        v.ID,
+			"name":      v.Name,
+			"layout":    string(v.LayoutType),
+			"pageSize":  v.PageSize,
+			"itemCount": len(v.ItemIDs),
+		}
+		if v.HideAttrViewName {
+			item["hideAttrViewName"] = true
+		}
+		if v.Icon != "" {
+			item["icon"] = v.Icon
+		}
+		if v.Desc != "" {
+			item["desc"] = v.Desc
+		}
+		if v.Group != nil {
+			item["group"] = map[string]any{
+				"field":     v.Group.Field,
+				"method":    int(v.Group.Method),
+				"order":     int(v.Group.Order),
+				"hideEmpty": v.Group.HideEmpty,
+			}
+		}
+		sb.WriteString(fmt.Sprintf("- %s [%s] (viewID: %s, items: %d)\n", v.Name, v.LayoutType, v.ID, len(v.ItemIDs)))
+		items = append(items, item)
+	}
+	return structuredTextResult(sb.String(), map[string]any{
+		"action":        "view_list",
+		"id":            attrView.ID,
+		"name":          attrView.Name,
+		"currentViewID": attrView.ViewID,
+		"count":         len(items),
+		"items":         items,
+	}), nil
+}
+
+func databaseViewAdd(args map[string]any) (CallToolResult, error) {
+	attrView, result, done := parseAttrViewArg(args)
+	if done {
+		return result, nil
+	}
+
+	layout, _ := args["layout"].(string)
+	var view *av.View
+	switch av.LayoutType(layout) {
+	case av.LayoutTypeKanban:
+		view = av.NewKanbanView()
+	case av.LayoutTypeGallery:
+		view = av.NewGalleryView()
+	case av.LayoutTypeCalendar:
+		view = av.NewTableView()
+		view.LayoutType = av.LayoutTypeCalendar
+		view.Table = nil
+		view.Calendar = &av.CalendarConfig{}
+		view.Name = av.GetAttributeViewI18n("calendar")
+	default:
+		view = av.NewTableView()
+	}
+	if name, _ := args["name"].(string); strings.TrimSpace(name) != "" {
+		view.Name = strings.TrimSpace(name)
+	}
+
+	attrView.Views = append(attrView.Views, view)
+	if attrView.ViewID == "" {
+		attrView.ViewID = view.ID
+	}
+	if err := av.SaveAttributeView(attrView); err != nil {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "save database failed: " + err.Error()}}, IsError: true}, nil
+	}
+	model.ReloadAttrView(attrView.ID)
+
+	return structuredTextResult(fmt.Sprintf("view added: %s [%s] (viewID: %s)", view.Name, view.LayoutType, view.ID), map[string]any{
+		"action": "view_add",
+		"id":     attrView.ID,
+		"viewID": view.ID,
+		"name":   view.Name,
+		"layout": string(view.LayoutType),
+	}), nil
+}
+
+func databaseViewRemove(args map[string]any) (CallToolResult, error) {
+	attrView, result, done := parseAttrViewArg(args)
+	if done {
+		return result, nil
+	}
+	viewID, _ := args["viewID"].(string)
+	if viewID == "" {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "viewID is required"}}, IsError: true}, nil
+	}
+	if len(attrView.Views) <= 1 {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "cannot remove the only view"}}, IsError: true}, nil
+	}
+
+	index := -1
+	for i, v := range attrView.Views {
+		if v.ID == viewID {
+			index = i
+			break
+		}
+	}
+	if index < 0 {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "view not found: " + viewID}}, IsError: true}, nil
+	}
+	attrView.Views = append(attrView.Views[:index], attrView.Views[index+1:]...)
+	if attrView.ViewID == viewID {
+		attrView.ViewID = attrView.Views[0].ID
+	}
+	if err := av.SaveAttributeView(attrView); err != nil {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "save database failed: " + err.Error()}}, IsError: true}, nil
+	}
+	model.ReloadAttrView(attrView.ID)
+
+	return structuredTextResult("view removed: "+viewID, map[string]any{
+		"action":        "view_remove",
+		"id":            attrView.ID,
+		"viewID":        viewID,
+		"currentViewID": attrView.ViewID,
+	}), nil
+}
+
+func databaseViewUpdate(args map[string]any) (CallToolResult, error) {
+	attrView, result, done := parseAttrViewArg(args)
+	if done {
+		return result, nil
+	}
+	viewID, _ := args["viewID"].(string)
+	if viewID == "" {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "viewID is required"}}, IsError: true}, nil
+	}
+	view := attrView.GetView(viewID)
+	if view == nil {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "view not found: " + viewID}}, IsError: true}, nil
+	}
+
+	changed := map[string]any{}
+	if name, exists := args["name"]; exists {
+		if s, ok := name.(string); ok && strings.TrimSpace(s) != "" {
+			view.Name = strings.TrimSpace(s)
+			changed["name"] = view.Name
+		}
+	}
+	if desc, exists := args["desc"]; exists {
+		if s, ok := desc.(string); ok {
+			view.Desc = s
+			changed["desc"] = view.Desc
+		}
+	}
+	if icon, exists := args["icon"]; exists {
+		if s, ok := icon.(string); ok {
+			view.Icon = s
+			changed["icon"] = view.Icon
+		}
+	}
+	if hideName, exists := args["hideName"]; exists {
+		if b, ok := hideName.(bool); ok {
+			view.HideAttrViewName = b
+			changed["hideAttrViewName"] = b
+		}
+	}
+	if pageSize := intArg(args, "pageSize", 0); pageSize > 0 {
+		view.PageSize = pageSize
+		changed["pageSize"] = pageSize
+	}
+	if len(changed) == 0 {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "nothing to update; pass name, desc, icon, hideName, or pageSize"}}, IsError: true}, nil
+	}
+
+	if err := av.SaveAttributeView(attrView); err != nil {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "save database failed: " + err.Error()}}, IsError: true}, nil
+	}
+	model.ReloadAttrView(attrView.ID)
+
+	changed["action"] = "view_update"
+	changed["id"] = attrView.ID
+	changed["viewID"] = viewID
+	return structuredTextResult("view updated: "+viewID, changed), nil
+}
+
+func databaseViewLayout(args map[string]any) (CallToolResult, error) {
+	id, _ := args["id"].(string)
+	if id == "" {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "id is required"}}, IsError: true}, nil
+	}
+	layout, _ := args["layout"].(string)
+	if layout == "" {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "layout is required"}}, IsError: true}, nil
+	}
+	blockID, _ := args["blockID"].(string)
+
+	if err := model.ChangeAttrViewLayout(blockID, id, av.LayoutType(layout)); err != nil {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "change layout failed: " + err.Error()}}, IsError: true}, nil
+	}
+	return structuredTextResult(fmt.Sprintf("layout changed to %s", layout), map[string]any{
+		"action":  "view_layout",
+		"id":      id,
+		"blockID": blockID,
+		"layout":  layout,
+	}), nil
+}
+
+func databaseViewGroup(args map[string]any) (CallToolResult, error) {
+	id, _ := args["id"].(string)
+	if id == "" {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "id is required"}}, IsError: true}, nil
+	}
+	blockID, _ := args["blockID"].(string)
+	keyID, _ := args["keyID"].(string)
+	hideEmpty, _ := args["hideEmpty"].(bool)
+	order, _ := args["order"].(string)
+
+	group := &av.ViewGroup{
+		Field:     keyID,
+		Method:    av.GroupMethodValue,
+		Order:     av.GroupOrderAsc,
+		HideEmpty: hideEmpty,
+	}
+	if order == "desc" {
+		group.Order = av.GroupOrderDesc
+	}
+	if keyID == "" {
+		group = &av.ViewGroup{}
+	}
+
+	if err := model.SetAttributeViewGroup(id, blockID, group); err != nil {
+		return CallToolResult{Content: []ContentItem{{Type: "text", Text: "set group failed: " + err.Error()}}, IsError: true}, nil
+	}
+	message := fmt.Sprintf("group set on key %s", keyID)
+	if keyID == "" {
+		message = "grouping cleared"
+	}
+	return structuredTextResult(message, map[string]any{
+		"action":    "view_group",
+		"id":        id,
+		"blockID":   blockID,
+		"keyID":     keyID,
+		"order":     group.Order,
+		"hideEmpty": group.HideEmpty,
+	}), nil
+}
+
+func parseAttrViewArg(args map[string]any) (attrView *av.AttributeView, result CallToolResult, done bool) {
+	id, _ := args["id"].(string)
+	if id == "" {
+		return nil, CallToolResult{Content: []ContentItem{{Type: "text", Text: "id is required"}}, IsError: true}, true
+	}
+	attrView, err := av.ParseAttributeView(id)
+	if err != nil {
+		return nil, CallToolResult{Content: []ContentItem{{Type: "text", Text: "parse database failed: " + err.Error()}}, IsError: true}, true
+	}
+	return attrView, CallToolResult{}, false
 }
 
 func databaseCreate(args map[string]any) (CallToolResult, error) {

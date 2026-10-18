@@ -739,3 +739,40 @@ func decodeResponse(t *testing.T, response *http.Response, target any) {
 		t.Fatalf("decode response %q: %v", data, err)
 	}
 }
+
+func TestMissingActionHintListsActions(t *testing.T) {
+	tool := &tools.Tool{
+		Name: "block",
+		InputSchema: tools.ToolSchema{
+			Type: "object",
+			Properties: map[string]tools.Property{
+				"action": {Type: "string", Enum: []string{"get", "update"}},
+			},
+			Required: []string{"action"},
+		},
+	}
+
+	hint := missingActionHint("block", tool, map[string]any{})
+	if hint == "" || !strings.Contains(hint, "get") || !strings.Contains(hint, "update") {
+		t.Fatalf("expected action hint listing actions, got %q", hint)
+	}
+	if hint = missingActionHint("block", tool, map[string]any{"action": "get"}); hint != "" {
+		t.Fatalf("expected no hint when action provided, got %q", hint)
+	}
+	if hint = missingActionHint("block", tool, map[string]any{"action": 42}); hint != "" {
+		t.Fatalf("expected no hint for non-string action (schema reports it), got %q", hint)
+	}
+}
+
+func TestMissingActionHintSkipsNonActionTools(t *testing.T) {
+	tool := &tools.Tool{
+		Name: "echo",
+		InputSchema: tools.ToolSchema{
+			Type:       "object",
+			Properties: map[string]tools.Property{"text": {Type: "string"}},
+		},
+	}
+	if hint := missingActionHint("echo", tool, map[string]any{}); hint != "" {
+		t.Fatalf("expected no hint for tool without required action, got %q", hint)
+	}
+}
