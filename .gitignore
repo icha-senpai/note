@@ -53,3 +53,9 @@ muslbin/
 
 # Workflows
 **/__pycache__
+vault_full2.txt
+vault_full.txt
+mcp_resp2.json
+mcp_resp.json
+mcp_req2.json
+mcp_req.json
